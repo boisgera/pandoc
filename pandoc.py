@@ -68,11 +68,14 @@ class Pandoc(PandocType):
     def write(self):
         return write(self)
 
+# TODO: better support for Meta
 class Meta(PandocType):
     def __json__(self):
         return {"unMeta": {}}
 
 unMeta = Meta
+
+# TODO: automate the creation of such types and complete the list.
 
 class Block(PandocType):
     pass
@@ -125,6 +128,7 @@ class Link(Inline):
 class Space(Inline):
     pass
 
+# TODO: document why this class is special.
 class Str(Inline):
     def __init__(self, *args):
         self.args = [u"".join(args)]
@@ -169,13 +173,8 @@ def read(text):
     """
     Read a markdown text as a Pandoc instance.
     """
-    #print "***text:", text
     json_text = str(sh.pandoc(read="markdown", write="json", _in=text))
     json_ = json.loads(json_text)
-    #import pprint
-    #pp = pprint.PrettyPrinter(indent=2).pprint
-    #print "***json:"
-    #pp(json_)
     return to_pandoc(json_)
 
 def write(doc):
@@ -193,7 +192,6 @@ def write(doc):
 # TODO: Pandoc json model to Python repr and back ? also with markdown text.
 
 if __name__ == "__main__": # json pandoc output to Python, and back to json
-    json_doc = json.loads(sys.stdin.read())
-    #print repr(to_pandoc(json_doc))
-    print json.dumps(to_json(to_pandoc(json_doc)))
+    json_ = json.loads(sys.stdin.read())
+    print json.dumps(to_json(to_pandoc(json_)))
 
