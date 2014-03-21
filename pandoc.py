@@ -68,12 +68,18 @@ class Pandoc(PandocType):
     def write(self):
         return write(self)
 
-# TODO: better support for Meta
+# TODO: better support for Meta.
+# Rk: meta is complex and introduces MANY new constructors (MetaList, MetaMap, 
+#     MetaBool, etc.). It would probably be sensible to flatten those structures
+#     and use Python native types instead. But then of course the conversions
+#     would be harder to dispatch on the types. Do the literal type translation
+#     first and see what can be done to simplify later ?
 class Meta(PandocType):
     def __json__(self):
         return {"unMeta": {}}
 
-unMeta = Meta
+unMeta = Meta # or derive from Meta ? That would actually be more faithful to
+              # the original design.
 
 # TODO: automate the creation of such types and complete the list.
 
