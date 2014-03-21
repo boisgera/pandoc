@@ -34,7 +34,9 @@ class PandocType(object):
     """
     Pandoc types base class
 
-    Refer to the [Pandoc data structure definition](http://hackage.haskell.org/packages/archive/pandoc-types/1.8/doc/html/Text-Pandoc-Definition.html) (in Haskell) for details.
+    Refer to the original [Pandoc Types][] documentation for details.
+
+    [Pandoc Types]: http://hackage.haskell.org/package/pandoc-types
     """
     def __init__(self, *args):
         self.args = list(args)
