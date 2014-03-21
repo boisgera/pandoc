@@ -140,22 +140,6 @@ class Strong(Inline):
 class Math(Inline):
     pass
 
-
-# TODO: check Pandoc version: in 1.12(.1 ?), change in the json output 
-#       structure ... Need to handle both kind of outputs ... selection
-#       of the format as a new argument to __json__ ? The Text.Pandoc.Definition
-#       has been moved to pandoc-types <http://hackage.haskell.org/package/pandoc-types>.
-#       Detect the format used by the conversion of a simple document ? Fuck, 
-#       In need to be able to access an "old" version of pandoc (the one packaged
-#       for ubuntu 12.04 ?). Ah, fuck, all this is a moving target. In 12.1,
-#       that's "tag" and "contents", but changelog of 12.1 stated that it is
-#       "t" and "c" ... I don't even know what version I am really using.
-#       What is supposed to be stable ? There is probably 3 target: the packaged
-#       ubuntu 12.04, the 1.12 installed as latest by cabal ... and the current
-#       git version ... 1.12.3 ouch. What's in Ubuntu 13.04 ? 13.10 ? The 1.11.1
-#       Errr ... Try to build from git the git version and see if there is
-#       really a change in the JSON format ?
-
 def to_pandoc(json):
     def is_doc(item):
         return isinstance(item, list) and \
