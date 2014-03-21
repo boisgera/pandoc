@@ -1,6 +1,17 @@
 #!/bin/env python
 
-# dependency: pandoc 1.12
+# Python 2.7 Standard Library
+pass
+
+# Third-Partly Libraries
+import sh
+try:
+    pandoc = sh.pandoc
+    magic, version = sh.pandoc("--version").splitlines()[0].split()
+    assert magic == "pandoc"
+    assert version.startswith("1.12")
+except:
+    raise ImportError("cannot find pandoc 1.12")
 
 #
 # Pandoc Document Model
@@ -16,7 +27,7 @@ def _tree_iter(item):
             for subitem in it:
                 for subsubitem in _tree_iter(subitem):
                     yield subsubitem
-        except TypeError:
+        except TypeError: # what kind of TypeError ? Why silence those ? 
             pass
 
 class PandocType(object):
@@ -30,9 +41,7 @@ class PandocType(object):
     def __iter__(self):
         "Child iterator"
         return iter(self.args)
-    def iter(self):
-        "Tree iterator"
-        return _tree_iter(self)
+    iter = _tree_iter
     def apply(self, transform): 
         apply(transform)(self)
     def __json__(self):
@@ -139,6 +148,7 @@ class Math(Inline):
 #       git version ... 1.12.3 ouch. What's in Ubuntu 13.04 ? 13.10 ? The 1.11.1
 #       Errr ... Try to build from git the git version and see if there is
 #       really a change in the JSON format ?
+
 def to_pandoc(json):
     def is_doc(item):
         return isinstance(item, list) and \
@@ -213,9 +223,15 @@ def set_min_header_level(doc, minimum=1):
             delta = minimum - min_
             increase_header_level(doc, delta)
 
+
 #
-# **TODO:** insert HorizontalRule before every level 2 section. Unless I do that
-# at the LaTeX level ? Or don't do it generally, just before functions
-# and classes (no transform, do it directly during markdown generation) ?
+# Command-Line Interface
+# ------------------------------------------------------------------------------
 #
+
+# TODO: Pandoc json model to Python repr and back.
+
+if __name__ == "__main__":
+    pass
+
 
