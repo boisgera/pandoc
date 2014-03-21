@@ -1,7 +1,8 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 # Python 2.7 Standard Library
-pass
+import json
+import sys
 
 # Third-Partly Libraries
 import sh
@@ -51,7 +52,7 @@ class PandocType(object):
         Convert the `PandocType instance` into a native Python structure that 
         may be encoded into text by `json.dumps`.
         """
-        return {type(self).__name__: to_json(list(self.args))}
+        return {"t": type(self).__name__, "c": to_json(list(self.args))}
     def __repr__(self):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self.args)
@@ -60,12 +61,18 @@ class PandocType(object):
 class Pandoc(PandocType):
     def __json__(self):
         meta, blocks = self.args[0], self.args[1]
-        return [meta, [to_json(block) for block in blocks]]
+        return [to_json(meta), [to_json(block) for block in blocks]]
     @staticmethod 
     def read(text):
         return read(text)
     def write(self):
         return write(self)
+
+class Meta(PandocType):
+    def __json__(self):
+        return {"unMeta": {}}
+
+unMeta = Meta
 
 class Block(PandocType):
     pass
@@ -91,6 +98,9 @@ class Plain(Block):
 class CodeBlock(Block):
     pass
 
+class DisplayMath(Block):
+    pass
+
 class BlockQuote(Block):
     pass
 
@@ -112,6 +122,9 @@ class Code(Inline):
 class Link(Inline):
     pass
 
+class Space(Inline):
+    pass
+
 class Str(Inline):
     def __init__(self, *args):
         self.args = [u"".join(args)]
@@ -119,15 +132,7 @@ class Str(Inline):
         text = self.args[0]
         return "{0}({1!r})".format("Str", text)
     def __json__(self):
-        return {"Str": self.args[0]}
-
-#
-# **Remark:** `Space` is encoded as a string in the json exported by pandoc.
-# That's kind of a problem because we won't typematch it like the other
-# instances and searching for the string "Space" may lead to false positive.
-# The only way to deal with it is to be aware of the context where the Space
-# atom (inline) may appear but here we typically are not aware of that.
-#
+        return {"t": "Str", "c": self.args[0]}
 
 class Strong(Inline):
     pass
@@ -156,15 +161,15 @@ def to_pandoc(json):
         return isinstance(item, list) and \
                len(item) == 2 and \
                isinstance(item[0], dict) and \
-               "docTitle" in item[0].keys()
+               "unMeta" in item[0].keys()
     if is_doc(json):
         return Pandoc(*[to_pandoc(item) for item in json])
     elif isinstance(json, list):
         return [to_pandoc(item) for item in json]
-    elif isinstance(json, dict) and len(json) == 1:
-        key, args = json.items()[0]
-        pandoc_type = eval(key)
-        return pandoc_type(*to_pandoc(args))
+    elif isinstance(json, dict) and "t" in json:
+        pandoc_type = eval(json["t"])
+        contents = json["c"]
+        return pandoc_type(*to_pandoc(contents))
     else:
         return json
     
@@ -197,43 +202,14 @@ def write(doc):
     return str(sh.pandoc(read="json", write="markdown", _in=json_text))
 
 #
-# Pandoc Transforms
-# ------------------------------------------------------------------------------
-#
-def apply(transform):
-    def doc_transform(doc_item):
-        for elt in doc_item.iter():
-            transform(elt)
-    return doc_transform
-
-
-def increase_header_level(doc, delta=1):
-    def _increase_header_level(delta):
-        def _increase(doc_item):
-            if isinstance(doc_item, Header):
-                doc_item.args[0] = doc_item.args[0] + delta
-        return _increase
-    return doc.apply(_increase_header_level(delta))
-
-def set_min_header_level(doc, minimum=1):
-    levels = [item.args[0] for item in doc.iter() if isinstance(item, Header)]
-    if not levels:
-        return
-    else:
-        min_ = min(levels)
-        if minimum > min_:
-            delta = minimum - min_
-            increase_header_level(doc, delta)
-
-
-#
 # Command-Line Interface
 # ------------------------------------------------------------------------------
 #
 
-# TODO: Pandoc json model to Python repr and back.
+# TODO: Pandoc json model to Python repr and back ? also with markdown text.
 
-if __name__ == "__main__":
-    pass
-
+if __name__ == "__main__": # json pandoc output to Python, and back to json
+    json_doc = json.loads(sys.stdin.read())
+    #print repr(to_pandoc(json_doc))
+    print json.dumps(to_json(to_pandoc(json_doc)))
 
