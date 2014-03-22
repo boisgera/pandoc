@@ -15,21 +15,10 @@ except:
     raise ImportError("cannot find pandoc 1.12")
 
 #
-# Pandoc Document Model
+# Pandoc Types
 # ------------------------------------------------------------------------------
 #
 
-def _tree_iter(item):
-    "Tree iterator"
-    yield item
-    if not isinstance(item, basestring):
-        try:
-            it = iter(item)
-            for subitem in it:
-                for subsubitem in _tree_iter(subitem):
-                    yield subsubitem
-        except TypeError: # what kind of TypeError ? Why silence those ? 
-            pass
 
 class PandocType(object):
     """
@@ -41,22 +30,43 @@ class PandocType(object):
     """
     def __init__(self, *args):
         self.args = list(args)
+
+    @staticmethod
+    def _tree_iter(item):
+        "Tree iterator"
+        yield item
+        if not isinstance(item, basestring):
+            try:
+                it = iter(item)
+                for subitem in it:
+                    for subsubitem in PandocType._tree_iter(subitem):
+                        yield subsubitem
+            except TypeError: # non-iterable. Is this check necessary ? 
+                pass
+
     def __iter__(self):
         "Child iterator"
         return iter(self.args)
-    iter = _tree_iter
-    def apply(self, transform): 
-        apply(transform)(self)
+
+    iter = _tree_iter.__func__
+
     def __json__(self):
         """
         Convert the `PandocType instance` into a native Python structure that 
         may be encoded into text by `json.dumps`.
         """
         return {"t": type(self).__name__, "c": to_json(list(self.args))}
+
     def __repr__(self):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
+
+# TODO: automatically implement type checkers from the spec ? Overkill ?
+def declare_types(type_spec, bases=[object], dct={}):
+    for type_spec_ in type_spec.strip().splitlines():
+       type_name = type_spec_.strip().split()[0]
+       globals()[type_name] = type(type_name, tuple(bases), dct)
 
 class Pandoc(PandocType):
     def __json__(self):
@@ -84,71 +94,65 @@ unMeta = Meta # or derive from Meta ? That would actually be more faithful to
 # TODO: automate the creation of such types and complete the list.
 
 class Block(PandocType):
-    pass
+    pass # TODO: make this type (and a buch of others) abstract ?
+    # Mmmm but we could have to redefine the constructor in every 
+    # derived class. Have a look at ABC ?
 
-class Header(Block):
-    pass
-
-class Table(Block):
-    pass
-
-class DefinitionList(Block):
-    pass
-
-class BulletList(Block):
-    pass
-
-class OrderedList(Block):
-    pass
-
-class Plain(Block):
-    pass
-
-class CodeBlock(Block):
-    pass
-
-class DisplayMath(Block):
-    pass
-
-class BlockQuote(Block):
-    pass
-
-class RawBlock(Block):
-    pass
+declare_types(\
+"""
+Plain [Inline]
+Para [Inline]
+CodeBlock Attr String
+RawBlock Format String
+BlockQuote [Block]
+OrderedList ListAttributes [[Block]]
+BulletList [[Block]]
+DefinitionList [([Inline], [[Block]])]
+Header Int Attr [Inline]
+HorizontalRule
+Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]
+Div Attr [Block]
+Null
+""", [Block])
 
 class Inline(PandocType):
-    pass
-
-class Emph(Inline):
-    pass
-
-class Para(Inline):
-    pass
-
-class Code(Inline):
-    pass
-
-class Link(Inline):
-    pass
-
-class Space(Inline):
     pass
 
 # TODO: document why this class is special.
 class Str(Inline):
     def __init__(self, *args):
         self.args = [u"".join(args)]
+    def __json__(self):
+        return {"t": "Str", "c": self.args[0]}
     def __repr__(self):
         text = self.args[0]
         return "{0}({1!r})".format("Str", text)
-    def __json__(self):
-        return {"t": "Str", "c": self.args[0]}
 
-class Strong(Inline):
-    pass
+declare_types(\
+"""
+Emph [Inline]	
+Strong [Inline]	
+Strikeout [Inline]	
+Superscript [Inline]	
+Subscript [Inline]	
+SmallCaps [Inline]	
+Quoted QuoteType [Inline]	
+Cite [Citation] [Inline]	
+Code Attr String	
+Space	
+LineBreak	
+Math MathType String	
+RawInline Format String	
+Link [Inline] Target	
+Image [Inline] Target	
+Note [Block]	
+Span Attr [Inline]	
+""", [Inline])
 
-class Math(Inline):
-    pass
+#
+# Json to Pandoc and Pandoc to Json converters
+# ------------------------------------------------------------------------------
+#
 
 def to_pandoc(json):
     def is_doc(item):
@@ -175,6 +179,11 @@ def to_json(doc_item):
     else:
         return doc_item
 
+#
+# Markdown to Pandoc and Pandoc to Markdown converters
+# ------------------------------------------------------------------------------
+#
+
 def read(text):
     """
     Read a markdown text as a Pandoc instance.
@@ -194,8 +203,6 @@ def write(doc):
 # Command-Line Interface
 # ------------------------------------------------------------------------------
 #
-
-# TODO: Pandoc json model to Python repr and back ? also with markdown text.
 
 if __name__ == "__main__": # json pandoc output to Python, and back to json
     json_ = json.loads(sys.stdin.read())
