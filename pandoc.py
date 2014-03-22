@@ -4,7 +4,7 @@
 import json
 import sys
 
-# Third-Partly Libraries
+# Third-Party Libraries
 import sh
 
 # Non-Python Dependencies
@@ -168,7 +168,7 @@ class MathInline(MathType):
     pass
 
 #
-# Json to Pandoc and Pandoc to Json converters
+# Json to Pandoc and Pandoc to Json
 # ------------------------------------------------------------------------------
 #
 
@@ -198,7 +198,7 @@ def to_json(doc_item):
         return doc_item
 
 #
-# Markdown to Pandoc and Pandoc to Markdown converters
+# Markdown to Pandoc and Pandoc to Markdown
 # ------------------------------------------------------------------------------
 #
 
