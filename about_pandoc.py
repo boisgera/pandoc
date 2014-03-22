@@ -1,0 +1,10 @@
+# coding: utf-8
+
+__author__  = u"Sébastien Boisgérault <Sebastien.Boisgerault@mines-paristech.fr>"
+__version__ = "0.1.0"
+__license__ = "MIT License"
+__url__     = "https://github.com/boisgera/pandoc"
+
+export = "author version license url".split()
+__all__ = ["__" + name + "__" for name in export]
+
