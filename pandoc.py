@@ -6,6 +6,8 @@ import sys
 
 # Third-Partly Libraries
 import sh
+
+# Non-Python Dependencies
 try:
     pandoc = sh.pandoc
     magic, version = sh.pandoc("--version").splitlines()[0].split()
@@ -13,6 +15,13 @@ try:
     assert version.startswith("1.12")
 except:
     raise ImportError("cannot find pandoc 1.12")
+
+#
+# Metadata
+# ------------------------------------------------------------------------------
+#
+
+from about_pandoc import *
 
 #
 # Pandoc Types
