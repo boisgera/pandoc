@@ -71,7 +71,6 @@ class PandocType(object):
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
 
-# TODO: automatically implement type checkers from the spec ? Overkill ?
 def declare_types(type_spec, bases=[object], dct={}):
     for type_spec_ in type_spec.strip().splitlines():
        type_name = type_spec_.strip().split()[0]
@@ -87,19 +86,39 @@ class Pandoc(PandocType):
     def write(self):
         return write(self)
 
-# TODO: better support for Meta.
-# Rk: meta is complex and introduces MANY new constructors (MetaList, MetaMap, 
-#     MetaBool, etc.). It would probably be sensible to flatten those structures
-#     and use Python native types instead. But then of course the conversions
-#     would be harder to dispatch on the types. Do the literal type translation
-#     first and see what can be done to simplify later ?
-
 class Meta(PandocType):
     pass
 
 class unMeta(Meta):
     def __json__(self):
         return {"unMeta": {}}
+
+class MetaValue(PandocType):
+    pass
+
+declare_types(\
+"""
+MetaList [MetaValue]	 
+MetaBool Bool	 
+MetaString String	 
+MetaInlines [Inline]	 
+MetaBlocks [Block]
+""", [MetaValue])
+
+# "MetaMap (Map String MetaValue)" has to be handled manually.
+class MetaMap(MetaValue):
+    def __init__(self, *kwargs):
+        self.kwargs = dict(kwargs)
+    def __repr__(self):
+        typename = type(self).__name__
+        kwargs = ", ".join("{0}={1!r}".format(k, v) for k, v in self.kwargs.items())
+        return "{0}({1})".format(typename, args)
+    def __json__(self):
+        """
+        Convert the `PandocType instance` into a native Python structure that 
+        may be encoded into text by `json.dumps`.
+        """
+        return {"t": type(self).__name__, "c": to_json(dict(self.kwargs))}
 
 class Block(PandocType):
     pass # TODO: make this type (and a buch of others) abstract ?
@@ -181,10 +200,16 @@ def to_pandoc(json):
         return Pandoc(*[to_pandoc(item) for item in json])
     elif isinstance(json, list):
         return [to_pandoc(item) for item in json]
+    elif isinstance(json, dict):
+        return {key: to_pandoc(json[key]) for key in json}
     elif isinstance(json, dict) and "t" in json:
         pandoc_type = eval(json["t"])
         contents = json["c"]
-        return pandoc_type(*to_pandoc(contents))
+        pandoc_contents = to_pandoc(contents)
+        if isinstance(pandoc_contents, list):
+            return pandoc_type(*pandoc_contents)
+        elif isinstance(pandoc_contents, dict):
+            return pandoc_type(**pandoc_contents)
     elif isinstance(json, dict) and "unMeta" in json:
         dct = json["unMeta"]
         return unMeta({key: to_pandoc(dct[key]) for key in dct})
@@ -196,6 +221,8 @@ def to_json(doc_item):
         return doc_item.__json__()
     elif isinstance(doc_item, list):
         return [to_json(item) for item in doc_item]
+    elif isinstance(doc_item, dict):
+        return {key: to_json(doc_item[key]) for key in doc_item}
     else:
         return doc_item
 
