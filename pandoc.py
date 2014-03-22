@@ -149,6 +149,15 @@ Note [Block]
 Span Attr [Inline]	
 """, [Inline])
 
+class MathType(PandocType):
+    pass
+
+class DisplayMath(MathType):
+    pass
+
+class MathInline(MathType):
+    pass
+
 #
 # Json to Pandoc and Pandoc to Json converters
 # ------------------------------------------------------------------------------
