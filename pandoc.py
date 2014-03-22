@@ -28,7 +28,7 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-
+# TODO: support kwargs at this level (for MetaValues).
 class PandocType(object):
     """
     Pandoc types base class
