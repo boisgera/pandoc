@@ -93,14 +93,13 @@ class Pandoc(PandocType):
 #     and use Python native types instead. But then of course the conversions
 #     would be harder to dispatch on the types. Do the literal type translation
 #     first and see what can be done to simplify later ?
+
 class Meta(PandocType):
+    pass
+
+class unMeta(Meta):
     def __json__(self):
         return {"unMeta": {}}
-
-unMeta = Meta # or derive from Meta ? That would actually be more faithful to
-              # the original design.
-
-# TODO: automate the creation of such types and complete the list.
 
 class Block(PandocType):
     pass # TODO: make this type (and a buch of others) abstract ?
@@ -186,6 +185,9 @@ def to_pandoc(json):
         pandoc_type = eval(json["t"])
         contents = json["c"]
         return pandoc_type(*to_pandoc(contents))
+    elif isinstance(json, dict) and "unMeta" in json:
+        dct = json["unMeta"]
+        return unMeta({key: to_pandoc(dct[key]) for key in dct})
     else:
         return json
     
