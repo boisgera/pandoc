@@ -38,7 +38,8 @@ from about_pandoc import *
 #       if the list / dict are expanded prior to the constructor call.
 #       Also, tuples/list args could/should be distinguished ? Tuples are
 #       heterogeneous sequences of fixed size, lists are homogeneous sequences
-#       of variable size ...
+#       of variable size ... Should we think of tuples and list differently
+#       during the iteration ?
 
 # Q: how do we support iteration if the constructor has keyword arguments ?
 
@@ -217,6 +218,13 @@ def to_pandoc(json):
         pandoc_type = eval(json["t"])
         contents = json["c"]
         pandoc_contents = to_pandoc(contents)
+        # rk: the "right thing to do" would be to expand multiple arguments
+        #     to a constructor (think of `CodeBlock Attr String` for example),
+        #     but *not* list of parameters to a constructor (such as
+        #     `Para [Inline]`), but we cannot do it from the simple examination
+        #     of the contents: in both cases, lists are used. We would need
+        #     to process the type spec to know beforehand the nature of the
+        #     arguments.
         if isinstance(pandoc_contents, list):
             return pandoc_type(*pandoc_contents)
         elif isinstance(pandoc_contents, dict):
