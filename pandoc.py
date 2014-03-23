@@ -225,7 +225,9 @@ def to_pandoc(json):
         #     `Para [Inline]`), but we cannot do it from the simple examination
         #     of the contents: in both cases, lists are used. We would need
         #     to process the type spec to know beforehand the nature of the
-        #     arguments.
+        #     arguments. Yes, do that but only superficially: if their is a
+        #     unique constructor argument and it is a list, we do *not*
+        #     expand it in the constructor call.
         if isinstance(pandoc_contents, list):
             return pandoc_type(*pandoc_contents)
         elif isinstance(pandoc_contents, dict):
