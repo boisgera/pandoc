@@ -29,6 +29,19 @@ from about_pandoc import *
 #
 
 # TODO: support kwargs at this level (for MetaValues).
+#       Arf actually, the constructor arguments could be a list/tuple of
+#       stuff, a dictionary of stuff or a single string. Here for the moment
+#       we support only list/tuple stuff in the constructor, this is why
+#       MetaMap and Str are implemented manually. Rk: that could even be
+#       a bool, see MetaBool ! The *args, **kwargs stuff is an issue because
+#       we cannot distinguish a single argument and a list of one argument
+#       if the list / dict are expanded prior to the constructor call.
+#       Also, tuples/list args could/should be distinguished ? Tuples are
+#       heterogeneous sequences of fixed size, lists are homogeneous sequences
+#       of variable size ...
+
+# Q: how do we support iteration if the constructor has keyword arguments ?
+
 class PandocType(object):
     """
     Pandoc types base class
@@ -37,7 +50,7 @@ class PandocType(object):
 
     [Pandoc Types]: http://hackage.haskell.org/package/pandoc-types
     """
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         self.args = list(args)
 
     @staticmethod
@@ -64,7 +77,7 @@ class PandocType(object):
         Convert the `PandocType instance` into a native Python structure that 
         may be encoded into text by `json.dumps`.
         """
-        return {"t": type(self).__name__, "c": to_json(list(self.args))}
+        return {"t": type(self).__name__, "c": to_json(self.args)}
 
     def __repr__(self):
         typename = type(self).__name__
@@ -200,8 +213,6 @@ def to_pandoc(json):
         return Pandoc(*[to_pandoc(item) for item in json])
     elif isinstance(json, list):
         return [to_pandoc(item) for item in json]
-    elif isinstance(json, dict):
-        return {key: to_pandoc(json[key]) for key in json}
     elif isinstance(json, dict) and "t" in json:
         pandoc_type = eval(json["t"])
         contents = json["c"]
@@ -210,9 +221,13 @@ def to_pandoc(json):
             return pandoc_type(*pandoc_contents)
         elif isinstance(pandoc_contents, dict):
             return pandoc_type(**pandoc_contents)
+        else:
+            return pandoc_type(pandoc_contents)
     elif isinstance(json, dict) and "unMeta" in json:
         dct = json["unMeta"]
         return unMeta({key: to_pandoc(dct[key]) for key in dct})
+    elif isinstance(json, dict):
+        return {key: to_pandoc(json[key]) for key in json}
     else:
         return json
     
@@ -251,7 +266,7 @@ def write(doc):
 # ------------------------------------------------------------------------------
 #
 
-if __name__ == "__main__": # json pandoc output to Python, and back to json
+if __name__ == "__main__":
     json_ = json.loads(sys.stdin.read())
-    print json.dumps(to_json(to_pandoc(json_)))
+    print repr(to_pandoc(json_))
 
