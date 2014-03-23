@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Python 2.7 Standard Library
+import collections
 import json
 import sys
 
@@ -259,7 +260,7 @@ def read(text):
     Read a markdown text as a Pandoc instance.
     """
     json_text = str(sh.pandoc(read="markdown", write="json", _in=text))
-    json_ = json.loads(json_text)
+    json_ = json.loads(json_text, object_pairs_hook=collections.OrderedDict)
     return to_pandoc(json_)
 
 def write(doc):
@@ -275,6 +276,6 @@ def write(doc):
 #
 
 if __name__ == "__main__":
-    json_ = json.loads(sys.stdin.read())
+    json_ = json.loads(sys.stdin.read(), object_pairs_hook=collections.OrderedDict)
     print repr(to_pandoc(json_))
 
