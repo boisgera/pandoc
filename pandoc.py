@@ -40,7 +40,10 @@ from about_pandoc import *
 #       Also, tuples/list args could/should be distinguished ? Tuples are
 #       heterogeneous sequences of fixed size, lists are homogeneous sequences
 #       of variable size ... Should we think of tuples and list differently
-#       during the iteration ?
+#       during the iteration ? Yes, but that will be solved beforehand.
+#       The remaining issue is the way we will handle keyword arguments.
+#       My first idea would be to return the key-value pair, then iterate on 
+#       the value.
 
 # Q: how do we support iteration if the constructor has keyword arguments ?
 
