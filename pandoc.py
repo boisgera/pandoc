@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Python 2.7 Standard Library
-import collections
+from collections import OrderedDict
 import json
 import sys
 
@@ -29,23 +29,7 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-# TODO: support kwargs at this level (for MetaValues).
-#       Arf actually, the constructor arguments could be a list/tuple of
-#       stuff, a dictionary of stuff or a single string. Here for the moment
-#       we support only list/tuple stuff in the constructor, this is why
-#       MetaMap and Str are implemented manually. Rk: that could even be
-#       a bool, see MetaBool ! The *args, **kwargs stuff is an issue because
-#       we cannot distinguish a single argument and a list of one argument
-#       if the list / dict are expanded prior to the constructor call.
-#       Also, tuples/list args could/should be distinguished ? Tuples are
-#       heterogeneous sequences of fixed size, lists are homogeneous sequences
-#       of variable size ... Should we think of tuples and list differently
-#       during the iteration ? Yes, but that will be solved beforehand.
-#       The remaining issue is the way we will handle keyword arguments.
-#       My first idea would be to return the key-value pair, then iterate on 
-#       the value.
-
-# Q: how do we support iteration if the constructor has keyword arguments ?
+# Q: how do we implement iteration if the constructor has keyword arguments ?
 
 class PandocType(object):
     """
@@ -55,8 +39,8 @@ class PandocType(object):
 
     [Pandoc Types]: http://hackage.haskell.org/package/pandoc-types
     """
-    def __init__(self, *args, **kwargs):
-        self.args = list(args)
+    def __init__(self, *args):
+        self.args = list(args) # ensure mutability
 
     @staticmethod
     def _tree_iter(item):
@@ -82,17 +66,33 @@ class PandocType(object):
         Convert the `PandocType instance` into a native Python structure that 
         may be encoded into text by `json.dumps`.
         """
-        return {"t": type(self).__name__, "c": to_json(self.args)}
+        k_v_pairs = [("t", type(self).__name__), ("c", to_json(self.args))] 
+        return OrderedDict(k_v_pairs)
 
     def __repr__(self):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
 
-def declare_types(type_spec, bases=[object], dct={}):
+def declare_types(type_spec, bases=object, dct={}):
+    if not isinstance(bases, (tuple, list)):
+        bases = (bases,)
+    else:
+        bases = tuple(bases)
     for type_spec_ in type_spec.strip().splitlines():
-       type_name = type_spec_.strip().split()[0]
-       globals()[type_name] = type(type_name, tuple(bases), dct)
+       type_parts = [part.strip() for part in type_spec_.strip().split()] 
+       type_name = type_parts[0]
+       type_args = " ".join(type_parts[1:])
+       list_arg = False
+       if type_args.startswith("["):
+           count = 0
+           for i, char in enumerate(type_args):
+               count += (char == "[") - (char == "]")
+               if count == 0:
+                   break
+           list_arg = (i == len(type_args) - 1)
+       dct["list_arg"] = list_arg
+       globals()[type_name] = type(type_name, bases, dct)
 
 class Pandoc(PandocType):
     def __json__(self):
@@ -107,36 +107,25 @@ class Pandoc(PandocType):
 class Meta(PandocType):
     pass
 
+# unMeta does not follow the classic json representation (no 't' and 'k' keys).
 class unMeta(Meta):
     def __json__(self):
-        return {"unMeta": {}}
+        dct = self.args[0]
+        k_v_pairs = [(k, to_json(dct[k])) for k in dct]
+        return {"unMeta": OrderedDict(k_v_pairs)}
 
 class MetaValue(PandocType):
     pass
 
 declare_types(\
 """
+MetaMap (Map String MetaValue)
 MetaList [MetaValue]	 
 MetaBool Bool	 
 MetaString String	 
 MetaInlines [Inline]	 
 MetaBlocks [Block]
 """, [MetaValue])
-
-# "MetaMap (Map String MetaValue)" has to be handled manually.
-class MetaMap(MetaValue):
-    def __init__(self, *kwargs):
-        self.kwargs = dict(kwargs)
-    def __repr__(self):
-        typename = type(self).__name__
-        kwargs = ", ".join("{0}={1!r}".format(k, v) for k, v in self.kwargs.items())
-        return "{0}({1})".format(typename, args)
-    def __json__(self):
-        """
-        Convert the `PandocType instance` into a native Python structure that 
-        may be encoded into text by `json.dumps`.
-        """
-        return {"t": type(self).__name__, "c": to_json(dict(self.kwargs))}
 
 class Block(PandocType):
     pass # TODO: make this type (and a buch of others) abstract ?
@@ -163,18 +152,9 @@ Null
 class Inline(PandocType):
     pass
 
-# TODO: document why this class is special.
-class Str(Inline):
-    def __init__(self, *args):
-        self.args = [u"".join(args)]
-    def __json__(self):
-        return {"t": "Str", "c": self.args[0]}
-    def __repr__(self):
-        text = self.args[0]
-        return "{0}({1!r})".format("Str", text)
-
 declare_types(\
 """
+Str String
 Emph [Inline]	
 Strong [Inline]	
 Strikeout [Inline]	
@@ -222,26 +202,15 @@ def to_pandoc(json):
         pandoc_type = eval(json["t"])
         contents = json["c"]
         pandoc_contents = to_pandoc(contents)
-        # rk: the "right thing to do" would be to expand multiple arguments
-        #     to a constructor (think of `CodeBlock Attr String` for example),
-        #     but *not* list of parameters to a constructor (such as
-        #     `Para [Inline]`), but we cannot do it from the simple examination
-        #     of the contents: in both cases, lists are used. We would need
-        #     to process the type spec to know beforehand the nature of the
-        #     arguments. Yes, do that but only superficially: if their is a
-        #     unique constructor argument and it is a list, we do *not*
-        #     expand it in the constructor call.
-        if isinstance(pandoc_contents, list):
+        if isinstance(pandoc_contents, list) and not getattr(pandoc_type, "list_arg", False):
             return pandoc_type(*pandoc_contents)
-        elif isinstance(pandoc_contents, dict):
-            return pandoc_type(**pandoc_contents)
         else:
             return pandoc_type(pandoc_contents)
     elif isinstance(json, dict) and "unMeta" in json:
         dct = json["unMeta"]
-        return unMeta({key: to_pandoc(dct[key]) for key in dct})
-    elif isinstance(json, dict):
-        return {key: to_pandoc(json[key]) for key in json}
+        k_v_pairs = [(k, to_pandoc(dct[k])) for k in dct]
+        return unMeta(OrderedDict(k_v_pairs))
+
     else:
         return json
     
@@ -265,7 +234,7 @@ def read(text):
     Read a markdown text as a Pandoc instance.
     """
     json_text = str(sh.pandoc(read="markdown", write="json", _in=text))
-    json_ = json.loads(json_text, object_pairs_hook=collections.OrderedDict)
+    json_ = json.loads(json_text, object_pairs_hook=OrderedDict)
     return to_pandoc(json_)
 
 def write(doc):
@@ -281,6 +250,9 @@ def write(doc):
 #
 
 if __name__ == "__main__":
-    json_ = json.loads(sys.stdin.read(), object_pairs_hook=collections.OrderedDict)
-    print repr(to_pandoc(json_))
+    json_ = json.loads(sys.stdin.read(), object_pairs_hook=OrderedDict)
+    #print json_
+    pandoc = to_pandoc(json_)
+    print repr(pandoc)
+    #print json.dumps(to_json(pandoc))
 
