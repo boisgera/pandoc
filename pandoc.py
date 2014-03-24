@@ -29,7 +29,15 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-# Q: how do we implement iteration if the constructor has keyword arguments ?
+# Q: how do we implement iteration if the args contain (ordered) dicts ?
+#    We could "forget" about the dictionary structure in a first approach and
+#    just iterate about the pandoc values. Generally, the tree iteration should
+#    only return stuff that is a Pandoc type.
+#    Mmmmm. But then, the children __iter__ can (should) yield non-pandoc values ?
+#    Think of the use cases a bit longer. 
+
+# Q: how do we iterate on the metadata ? That's not a problem because we access
+#    the children through __iter__. Right ?
 
 class PandocType(object):
     """
@@ -113,6 +121,8 @@ class unMeta(Meta):
         dct = self.args[0]
         k_v_pairs = [(k, to_json(dct[k])) for k in dct]
         return {"unMeta": OrderedDict(k_v_pairs)}
+    def __iter__(self):
+        raise NotImplementedError()
 
 class MetaValue(PandocType):
     pass
