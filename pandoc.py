@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Python 2.7 Standard Library
-from collections import OrderedDict
+import collections
 import json
 import sys
 
@@ -30,7 +30,7 @@ from about_pandoc import *
 #
 
 def tree_iter(item, delegate=True):
-    "Tree iterator"
+    "Return a tree iterator"
     if delegate:
         try: # try delegation first
             _tree_iter = item.iter
@@ -50,14 +50,10 @@ def tree_iter(item, delegate=True):
             except TypeError: # non-iterable
                 pass
 
-# Remark: in the context of Meta, ordered dicts behave "as expected" during 
-#         tree iteration: key-value pairs are produced and their contents are 
-#         iterated, so the full tree content is produced.
-#         But we do have the classic dict behavior (only keys are produced)
-#         if we iterate directly. Is it ok ? Changing the default dict behavior
-#         could lead to many surprises ... 
-#         Should we derive from OrderedDict (say Map) and implement the tree
-#         iteration at that level ? That would probably be saner.
+class Map(collections.OrderedDict):
+    def iter(self):
+        "Return a tree iterator on key-value pairs"
+        return tree_iter(self.items())
 
 class PandocType(object):
     """
@@ -71,11 +67,14 @@ class PandocType(object):
         self.args = list(args) # ensure mutability
 
     def __iter__(self):
-        "Child iterator"
+        "Return a child iterator"
         return iter(self.args)
 
-    # Tree iteration (really do it, don't call us back for its implementation)
-    iter = lambda self: tree_iter(self, delegate=False)
+    def iter(self):
+        "Return a tree iterator"
+        # The function tree_iter shall really perform the tree iteration, 
+        # not call this method back to do it, hence the `delegate=False`.
+        return tree_iter(self, delegate=False)
 
     def __json__(self):
         """
@@ -83,7 +82,7 @@ class PandocType(object):
         may be encoded into text by `json.dumps`.
         """
         k_v_pairs = [("t", type(self).__name__), ("c", to_json(self.args))] 
-        return OrderedDict(k_v_pairs)
+        return Map(k_v_pairs)
 
     def __repr__(self):
         typename = type(self).__name__
@@ -129,14 +128,7 @@ class unMeta(Meta):
     def __json__(self):
         dct = self.args[0]
         k_v_pairs = [(k, to_json(dct[k])) for k in dct]
-        return {"unMeta": OrderedDict(k_v_pairs)}
-    # implement key-value pair iteration on ordered dicts.
-    def iter(self):
-        yield self
-        yield self.args[0]
-        for k_v_pair in self.args[0].items():
-            for item in tree_iter(k_v_pair):
-                yield item
+        return {"unMeta": Map(k_v_pairs)}
 
 class MetaValue(PandocType):
     pass
@@ -233,7 +225,7 @@ def to_pandoc(json):
     elif isinstance(json, dict) and "unMeta" in json:
         dct = json["unMeta"]
         k_v_pairs = [(k, to_pandoc(dct[k])) for k in dct]
-        return unMeta(OrderedDict(k_v_pairs))
+        return unMeta(Map(k_v_pairs))
 
     else:
         return json
@@ -258,7 +250,7 @@ def read(text):
     Read a markdown text as a Pandoc instance.
     """
     json_text = str(sh.pandoc(read="markdown", write="json", _in=text))
-    json_ = json.loads(json_text, object_pairs_hook=OrderedDict)
+    json_ = json.loads(json_text, object_pairs_hook=Map)
     return to_pandoc(json_)
 
 def write(doc):
@@ -274,7 +266,7 @@ def write(doc):
 #
 
 if __name__ == "__main__":
-    json_ = json.loads(sys.stdin.read(), object_pairs_hook=OrderedDict)
+    json_ = json.loads(sys.stdin.read(), object_pairs_hook=Map)
     #print json_
     pandoc = to_pandoc(json_)
     print repr(pandoc)
