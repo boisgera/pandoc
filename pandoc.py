@@ -29,15 +29,25 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-# Q: how do we implement iteration if the args contain (ordered) dicts ?
-#    We could "forget" about the dictionary structure in a first approach and
-#    just iterate about the pandoc values. Generally, the tree iteration should
-#    only return stuff that is a Pandoc type.
-#    Mmmmm. But then, the children __iter__ can (should) yield non-pandoc values ?
-#    Think of the use cases a bit longer. 
+def _tree_iter(item, exclude=(basestring,)):
+    "Tree iterator"
+    yield item
+    # do not iterate on these types
+    if not isinstance(item, exclude):
+        try:
+            it = iter(item)
+            for subitem in it:
+                for subsubitem in _tree_iter(subitem, exclude):
+                    yield subsubitem
+        except TypeError: # non-iterable
+            pass
 
-# Q: how do we iterate on the metadata ? That's not a problem because we access
-#    the children through __iter__. Right ?
+# Remark: so far the tree iteration of metadata is probably not what we want
+#         because the ordered dicts are returning key values only. We could
+#         check for the presence of an `iter` method on iterated items 
+#         and delegate the tree iteration to this method when it exists.
+#         In this design, the `unMeta` class could implement a custom iteration
+#         for ordered dicts.
 
 class PandocType(object):
     """
@@ -50,24 +60,11 @@ class PandocType(object):
     def __init__(self, *args):
         self.args = list(args) # ensure mutability
 
-    @staticmethod
-    def _tree_iter(item):
-        "Tree iterator"
-        yield item
-        if not isinstance(item, basestring):
-            try:
-                it = iter(item)
-                for subitem in it:
-                    for subsubitem in PandocType._tree_iter(subitem):
-                        yield subsubitem
-            except TypeError: # non-iterable. Is this check necessary ? 
-                pass
-
     def __iter__(self):
         "Child iterator"
         return iter(self.args)
 
-    iter = _tree_iter.__func__
+    iter = _tree_iter
 
     def __json__(self):
         """
@@ -115,14 +112,12 @@ class Pandoc(PandocType):
 class Meta(PandocType):
     pass
 
-# unMeta does not follow the classic json representation (no 't' and 'k' keys).
+# unMeta does not follow the json representation with 't' and 'k' keys.
 class unMeta(Meta):
     def __json__(self):
         dct = self.args[0]
         k_v_pairs = [(k, to_json(dct[k])) for k in dct]
         return {"unMeta": OrderedDict(k_v_pairs)}
-    def __iter__(self):
-        raise NotImplementedError()
 
 class MetaValue(PandocType):
     pass
@@ -135,7 +130,7 @@ MetaBool Bool
 MetaString String	 
 MetaInlines [Inline]	 
 MetaBlocks [Block]
-""", [MetaValue])
+""", MetaValue)
 
 class Block(PandocType):
     pass # TODO: make this type (and a buch of others) abstract ?
@@ -157,7 +152,7 @@ HorizontalRule
 Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]
 Div Attr [Block]
 Null
-""", [Block])
+""", Block)
 
 class Inline(PandocType):
     pass
@@ -182,7 +177,7 @@ Link [Inline] Target
 Image [Inline] Target	
 Note [Block]	
 Span Attr [Inline]	
-""", [Inline])
+""", Inline)
 
 class MathType(PandocType):
     pass
