@@ -6,12 +6,18 @@ import os
 import sys
 import warnings
 
-# Setup Dependencies
+# Python Setup Dependencies
+try:
+    import setuptools
+except ImportError:
+    error  = "pip is not installed, "
+    error += "refer to <http://www.pip-installer.org> for instructions."
+    raise ImportError(error)
+sys.path.insert(0, "lib")
 import about
-import setuptools
 import sh
 
-# Runtime Dependencies
+# Python Runtime Dependencies
 requirements = dict(install_requires="sh")
 
 # Non-Python Runtime Dependencies 
@@ -23,6 +29,7 @@ try:
 except:
     warnings.warn("cannot find pandoc 1.12")
 
+# ------------------------------------------------------------------------------
 
 contents = dict(py_modules=["pandoc", "about_pandoc"])
 metadata = about.get_metadata("about_pandoc")
@@ -32,6 +39,7 @@ info.update(contents)
 info.update(metadata)
 info.update(requirements)
 
+# ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     setuptools.setup(**info)
