@@ -29,14 +29,14 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-def _tree_iter(item, delegate=True):
+def tree_iter(item, delegate=True):
     "Tree iterator"
     if delegate:
         try: # try delegation first
-            tree_iter = item.iter
+            _tree_iter = item.iter
         except AttributeError:
-            tree_iter = lambda: _tree_iter(item, delegate=False)
-        for subitem in tree_iter():
+            _tree_iter = lambda: tree_iter(item, delegate=False)
+        for subitem in _tree_iter():
             yield subitem
     else:                
         yield item
@@ -45,17 +45,17 @@ def _tree_iter(item, delegate=True):
             try:
                 it = iter(item)
                 for subitem in it:
-                    for subsubitem in _tree_iter(subitem):
+                    for subsubitem in tree_iter(subitem):
                         yield subsubitem
             except TypeError: # non-iterable
                 pass
 
-# Remark: so far the tree iteration of metadata is probably not what we want
-#         because the ordered dicts are returning key values only. We could
-#         check for the presence of an `iter` method on iterated items 
-#         and delegate the tree iteration to this method when it exists.
-#         In this design, the `unMeta` class could implement a custom iteration
-#         for ordered dicts.
+# Remark: in the context of Meta, ordered dicts behave "as expected" during 
+#         tree iteration: key-value pairs are produced and their contents are 
+#         iterated, so the full tree content is produced.
+#         But we do have the classic dict behavior (only keys are produced)
+#         if we iterate directly. Is it ok ? Changing the default dict behavior
+#         could lead to many surprises ...
 
 class PandocType(object):
     """
@@ -72,7 +72,8 @@ class PandocType(object):
         "Child iterator"
         return iter(self.args)
 
-    iter = lambda self: _tree_iter(self, delegate=False)
+    # Tree iteration (really do it, don't call us back for its implementation)
+    iter = lambda self: tree_iter(self, delegate=False)
 
     def __json__(self):
         """
@@ -120,12 +121,20 @@ class Pandoc(PandocType):
 class Meta(PandocType):
     pass
 
-# unMeta does not follow the json representation with 't' and 'k' keys.
+
 class unMeta(Meta):
+    # unMeta does not follow the json representation with 't' and 'k' keys.
     def __json__(self):
         dct = self.args[0]
         k_v_pairs = [(k, to_json(dct[k])) for k in dct]
         return {"unMeta": OrderedDict(k_v_pairs)}
+    # implement key-value pair iteration on ordered dicts.
+    def iter(self):
+        yield self
+        yield self.args[0]
+        for k_v_pair in self.args[0].items():
+            for item in tree_iter(k_v_pair):
+                yield item
 
 class MetaValue(PandocType):
     pass
