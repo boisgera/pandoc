@@ -29,18 +29,26 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-def _tree_iter(item, exclude=(basestring,)):
+def _tree_iter(item, delegate=True):
     "Tree iterator"
-    yield item
-    # do not iterate on these types
-    if not isinstance(item, exclude):
-        try:
-            it = iter(item)
-            for subitem in it:
-                for subsubitem in _tree_iter(subitem, exclude):
-                    yield subsubitem
-        except TypeError: # non-iterable
-            pass
+    if delegate:
+        try: # try delegation first
+            tree_iter = item.iter
+        except AttributeError:
+            tree_iter = lambda: _tree_iter(item, delegate=False)
+        for subitem in tree_iter():
+            yield subitem
+    else:                
+        yield item
+        # do not iterate on strings
+        if not isinstance(item, basestring):
+            try:
+                it = iter(item)
+                for subitem in it:
+                    for subsubitem in _tree_iter(subitem):
+                        yield subsubitem
+            except TypeError: # non-iterable
+                pass
 
 # Remark: so far the tree iteration of metadata is probably not what we want
 #         because the ordered dicts are returning key values only. We could
@@ -64,7 +72,7 @@ class PandocType(object):
         "Child iterator"
         return iter(self.args)
 
-    iter = _tree_iter
+    iter = lambda self: _tree_iter(self, delegate=False)
 
     def __json__(self):
         """
