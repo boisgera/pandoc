@@ -55,7 +55,9 @@ def tree_iter(item, delegate=True):
 #         iterated, so the full tree content is produced.
 #         But we do have the classic dict behavior (only keys are produced)
 #         if we iterate directly. Is it ok ? Changing the default dict behavior
-#         could lead to many surprises ...
+#         could lead to many surprises ... 
+#         Should we derive from OrderedDict (say Map) and implement the tree
+#         iteration at that level ? That would probably be saner.
 
 class PandocType(object):
     """
