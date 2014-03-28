@@ -29,6 +29,16 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
+# TODO: have a look at <http://johnmacfarlane.net/pandoc/scripting.html>
+#       for document transformations. Implement a 'walk' function (with
+#       implicit copy of the structure ?). An then do a mutable version ?
+#       Using the iter method with an action argument ? Another method ?
+#       (the goal being bottom-up application, this is not exactly what
+#       iter is doing with the action argument). Use the same function
+#       for in-place or copy with a copy argument ? Try only the mutable
+#       version ? And in the action, if something is returned, it should
+#       replace the original item in the parent structure ?
+
 def tree_iter(item, delegate=True):
     "Return a tree iterator"
     if delegate:
@@ -74,7 +84,7 @@ class PandocType(object):
         "Return a tree iterator"
         # The function tree_iter shall really perform the tree iteration, 
         # not call this method back to do it, hence the `delegate=False`.
-        return tree_iter(self, delegate=False)
+        return tree_iter(self, delegate=False)        
 
     def __json__(self):
         """
