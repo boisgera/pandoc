@@ -65,7 +65,7 @@ def tree_iter(item, delegate=True):
 
 class Map(object):
     "Mutable Ordered Dictionary"
-    # rk: this design is unsafe, mutable access to the items, may lead to
+    # rk: this design is unsafe, mutable access to the items may lead to
     #     the introduction of several instances of the same key.
     def __init__(self, items):
         self._items = []
