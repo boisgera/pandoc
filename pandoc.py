@@ -113,6 +113,16 @@ class Map(object):
                self._items.pop(i)
                break
 
+    def update(self, items, **kwargs):
+        if hasattr(items, keys):
+            for key in items.keys():
+                self[key] = items[key]
+        else:
+            for key, value in items:
+                self[key] = value
+        for key, value in kwargs.items():
+            self[key] = value
+
     def __repr__(self):
        return "Map({0})".format(self.items())
 
