@@ -123,6 +123,9 @@ class Map(object):
         for key, value in kwargs.items():
             self[key] = value
 
+    def clear(self):
+        self._items = []
+
     def __repr__(self):
        return "Map({0})".format(self.items())
 
