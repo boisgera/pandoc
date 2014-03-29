@@ -116,7 +116,7 @@ class Map(object):
     def __repr__(self):
        return "Map({0})".format(self.items())
 
-    __str__ == __repr__
+    __str__ = __repr__
 
 class PandocType(object):
     """
