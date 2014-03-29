@@ -37,7 +37,10 @@ from about_pandoc import *
 #       iter is doing with the action argument). Use the same function
 #       for in-place or copy with a copy argument ? Try only the mutable
 #       version ? And in the action, if something is returned, it should
-#       replace the original item in the parent structure ?
+#       replace the original item in the parent structure ? That would be
+#       a kind of map but with the option to mutate the iterated structure.
+#       Introduce another iterator method, or an iterator option, to
+#       select top-bottom or bottom-up ?
 
 def tree_iter(item, delegate=True):
     "Return a tree iterator"
@@ -60,10 +63,55 @@ def tree_iter(item, delegate=True):
             except TypeError: # non-iterable
                 pass
 
-class Map(collections.OrderedDict):
+class Map(object):
+    "Mutable Ordered Dictionary"
+    def __init__(self, items):
+        self._items = []
+        for k, v in items:
+            self[k] = v
+    
+    def keys(self):
+        return [item[0] for item in self.items()]
+
+    def value(self):
+        return [item[1] for item in self.items()]
+
+    def items(self):
+        return self._items
+
+    def __contains__(self, key):
+        return key in [item[0] for item in self.items()]
+
+    def __len__(self):
+        return len(self.items())
+
+    def __iter__(self):
+        return iter(self.keys())
+
     def iter(self):
         "Return a tree iterator on key-value pairs"
         return tree_iter(self.items())
+
+    def __getitem__(self, key):
+        for k, v in self.items():
+            if k == key:
+                return v
+        else:
+            raise KeyError(key)
+
+    def __setitem__(self, key, value):
+        for item in self.items():
+            if item[0] == key:
+                item[1] = value
+                break
+        else:
+            self._items.append([key, value])
+   
+    def __delitem__(self, key):
+        for i, k in enumerate(self.keys())
+           if k == key:
+               self._items.pop(i)
+               break
 
 class PandocType(object):
     """
