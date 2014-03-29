@@ -108,7 +108,7 @@ class Map(object):
             self._items.append([key, value])
    
     def __delitem__(self, key):
-        for i, k in enumerate(self.keys())
+        for i, k in enumerate(self.keys()):
            if k == key:
                self._items.pop(i)
                break
