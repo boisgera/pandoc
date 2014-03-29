@@ -73,7 +73,7 @@ class Map(object):
     def keys(self):
         return [item[0] for item in self.items()]
 
-    def value(self):
+    def values(self):
         return [item[1] for item in self.items()]
 
     def items(self):
