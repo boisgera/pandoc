@@ -113,6 +113,11 @@ class Map(object):
                self._items.pop(i)
                break
 
+    def __repr__(self):
+       return "Map({0})".format(self.items())
+
+    __str__ == __repr__
+
 class PandocType(object):
     """
     Pandoc types base class
