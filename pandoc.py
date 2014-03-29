@@ -66,7 +66,10 @@ def tree_iter(item, delegate=True):
 class Map(object):
     "Mutable Ordered Dictionary"
     # rk: this design is unsafe, mutable access to the items may lead to
-    #     the introduction of several instances of the same key.
+    #     the introduction of several instances of the same key.*
+    #     Solve this issue by a "compactification" of the items in the keys,
+    #     values and items methods ? How do we do it ? Remember the last
+    #     item with the same key but at the place of the first ?
     def __init__(self, items):
         self._items = []
         for k, v in items:
