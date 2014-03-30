@@ -42,6 +42,11 @@ from about_pandoc import *
 #       Introduce another iterator method, or an iterator option, to
 #       select top-bottom or bottom-up ?
 
+def apply(item, action):
+    pass # TODO: implement. Dispatch implementation in the different classes ?
+
+
+# TODO: rename iter.
 def tree_iter(item, delegate=True):
     "Return a tree iterator"
     if delegate:
@@ -65,16 +70,24 @@ def tree_iter(item, delegate=True):
 
 class Map(object):
     "Mutable Ordered Dictionary"
-    # rk: this design is unsafe, mutable access to the items may lead to
-    #     the introduction of several instances of the same key.*
-    #     Solve this issue by a "compactification" of the items in the keys,
-    #     values and items methods ? How do we do it ? Remember the last
-    #     item with the same key but at the place of the first ?
+
+    # TODO: document the behavior. Basically, the last key wins.
+
     def __init__(self, items):
         self._items = []
         for k, v in items:
             self[k] = v
-    
+
+    def _compact(self):
+        "Ensure key uniqueness"
+        keys = set()
+        items = []
+        for k, v in reversed(self._items):
+            if k not in keys:
+                items.insert(0, [k, v])
+                keys.add(k)
+        self._items[:] = items
+
     def keys(self):
         return [item[0] for item in self.items()]
 
@@ -82,6 +95,7 @@ class Map(object):
         return [item[1] for item in self.items()]
 
     def items(self):
+        self._compact()
         return self._items
 
     def __contains__(self, key):
