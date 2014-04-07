@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Python 2.7 Standard Library
+import __builtin__
 import collections
 import json
 import sys
@@ -29,47 +30,74 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-# TODO: have a look at <http://johnmacfarlane.net/pandoc/scripting.html>
-#       for document transformations. Implement a 'walk' function (with
-#       implicit copy of the structure ?). An then do a mutable version ?
-#       Using the iter method with an action argument ? Another method ?
-#       (the goal being bottom-up application, this is not exactly what
-#       iter is doing with the action argument). Use the same function
-#       for in-place or copy with a copy argument ? Try only the mutable
-#       version ? And in the action, if something is returned, it should
-#       replace the original item in the parent structure ? That would be
-#       a kind of map but with the option to mutate the iterated structure.
-#       Introduce another iterator method, or an iterator option, to
-#       select top-bottom or bottom-up ?
+nothing = type("Nothing", (object,), {})()
 
 def apply(item, action):
-    pass # TODO: implement. Dispatch implementation in the different classes ?
+    # TODO: let the items override the default apply implementation.
 
+    print "apply:", type(item), item
 
-# TODO: rename iter.
-def tree_iter(item, delegate=True):
+    if isinstance(item, PandocType):
+        subitems = [apply(subitem, action) for subitem in item]
+        for i, subitem in enumerate(subitems):
+            if subitem is not None:
+                # TODO: raise an error if `nothing` is found here
+                item.args[i] = subitem
+    elif isinstance(item, list):
+        subitems = [apply(subitem, action) for subitem in item]
+        for i, subitem in enumerate(subitems):
+            if subitem is not None:
+                item[i] = subitem
+        item[:] = [subitem for subitem in item if subitem is not nothing]
+    elif isinstance(item, dict):
+        subitems = []
+        for subitem in item.items():
+            new_subitem = apply(subitem, action)
+            if new_subitem is None:
+                subitems.append(subitem)
+            elif new_subitem is nothing:
+                pass
+            else:
+                subitems.append(new_subitem)
+        item.clear()
+        item.update(subitems)
+    elif isinstance(item, tuple):
+        pass
+        # TODO: check that the action returns None.
+    else:
+        pass
+        # TODO: check that the action returns None.
+        
+def iter(item, delegate=True):
     "Return a tree iterator"
     if delegate:
         try: # try delegation first
-            _tree_iter = item.iter
+            _iter = item.iter
         except AttributeError:
-            _tree_iter = lambda: tree_iter(item, delegate=False)
-        for subitem in _tree_iter():
+            _iter = lambda: iter(item, delegate=False)
+        for subitem in _iter():
             yield subitem
     else:                
         yield item
         # do not iterate on strings
         if not isinstance(item, basestring):
             try:
-                it = iter(item)
+                it = __builtin__.iter(item)
                 for subitem in it:
-                    for subsubitem in tree_iter(subitem):
+                    for subsubitem in iter(subitem):
                         yield subsubitem
             except TypeError: # non-iterable
                 pass
 
-class Map(object):
-    "Mutable Ordered Dictionary"
+class Map(collections.OrderedDict):
+    "Ordered Dictionary"
+    def iter(self):
+        "Return a tree iterator on key-value pairs"
+        return iter(self.items())
+
+# --- Not Ready Yet ------------------------------------------------------------
+class _Map(object):
+    "Fully Mutable Ordered Dictionary"
 
     # TODO: document the behavior. Basically, the last key wins.
 
@@ -109,7 +137,7 @@ class Map(object):
 
     def iter(self):
         "Return a tree iterator on key-value pairs"
-        return tree_iter(self.items())
+        return iter(self.items())
 
     def __getitem__(self, key):
         for k, v in self.items():
@@ -149,6 +177,15 @@ class Map(object):
        return "Map({0})".format(self.items())
 
     __str__ = __repr__
+# ------------------------------------------------------------------------------
+
+# TODO: implement all types.
+
+# BUG: there are style some extra parenthesis: when I output some json,
+#      i have a "when expecting a Object, encountered Array instead"
+#      pandoc error. Make some before / after tree comparison to see
+#      where we have this issue.
+
 
 class PandocType(object):
     """
@@ -158,6 +195,9 @@ class PandocType(object):
 
     [Pandoc Types]: http://hackage.haskell.org/package/pandoc-types
     """
+
+    list_arg = False
+
     def __init__(self, *args):
         self.args = list(args) # ensure mutability
 
@@ -165,24 +205,40 @@ class PandocType(object):
         "Return a child iterator"
         return iter(self.args)
 
+    def __getitem__(self, i):
+        return self.args[i]
+
+    def __setitem__(self, i, value):
+        self.args[i] = value
+
+    def __delitem__(self, i):
+        del self[i]
+
     def iter(self):
         "Return a tree iterator"
-        # The function tree_iter shall really perform the tree iteration, 
+        # The module function `iter` shall really perform the tree iteration, 
         # not call this method back to do it, hence the `delegate=False`.
-        return tree_iter(self, delegate=False)        
+        return iter(self, delegate=False)        
 
     def __json__(self):
         """
         Convert the `PandocType instance` into a native Python structure that 
         may be encoded into text by `json.dumps`.
         """
-        k_v_pairs = [("t", type(self).__name__), ("c", to_json(self.args))] 
+        content = to_json(self.args)
+        if len(content) == 1:
+            content = content[0]
+        k_v_pairs = [("t", type(self).__name__), ("c", content)] 
         return Map(k_v_pairs)
 
     def __repr__(self):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
+
+# TODO: the issue is not list_arg as much as it is single_arg that *may* be a list.
+#       It may be a Map too ... Analyze the type decl to get this info, including
+#       when Map arguments are used.
 
 def declare_types(type_spec, bases=object, dct={}):
     if not isinstance(bases, (tuple, list)):
@@ -216,7 +272,6 @@ class Pandoc(PandocType):
 
 class Meta(PandocType):
     pass
-
 
 class unMeta(Meta):
     # unMeta does not follow the json representation with 't' and 'k' keys.
@@ -259,6 +314,42 @@ Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]
 Div Attr [Block]
 Null
 """, Block)
+
+class Alignment(PandocType):
+    pass
+
+declare_types(\
+"""
+AlignLeft
+AlignRight
+AlignCenter
+AlignDefault
+""", Alignment)
+
+class ListNumberStyle(PandocType):
+    pass
+
+declare_types(\
+"""
+DefaultStyle	 
+Example	 
+Decimal	 
+LowerRoman	 
+UpperRoman	 
+LowerAlpha	 
+UpperAlpha
+""", ListNumberStyle)
+
+class ListNumberDelim(PandocType):
+    pass
+
+declare_types(\
+"""
+DefaultDelim	 
+Period	 
+OneParen	 
+TwoParens
+""", ListNumberDelim)
 
 class Inline(PandocType):
     pass
@@ -345,7 +436,7 @@ def read(text):
     Read a markdown text as a Pandoc instance.
     """
     json_text = str(sh.pandoc(read="markdown", write="json", _in=text))
-    json_ = json.loads(json_text, object_pairs_hook=Map)
+    json_ = json.loads(json_text, object_pairs_hook=Map) # still some stuff loaded as dict ???
     return to_pandoc(json_)
 
 def write(doc):
@@ -361,9 +452,15 @@ def write(doc):
 #
 
 if __name__ == "__main__":
-    json_ = json.loads(sys.stdin.read(), object_pairs_hook=Map)
-    #print json_
+    input = sys.stdin.read()
+#    print
+#    print input
+#    print
+    json_ = json.loads(input, object_pairs_hook=Map)
+#    print json_
+#    print
     pandoc = to_pandoc(json_)
-    print repr(pandoc)
-    #print json.dumps(to_json(pandoc))
-
+#    print repr(pandoc)
+#    print
+    print json.dumps(to_json(pandoc))
+#    print
