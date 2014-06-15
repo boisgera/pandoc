@@ -421,7 +421,7 @@ def to_json(doc_item):
         return doc_item.__json__()
     elif isinstance(doc_item, list):
         return [to_json(item) for item in doc_item]
-    elif isinstance(doc_item, dict):
+    elif isinstance(doc_item, dict): # TODO: keep order
         return {key: to_json(doc_item[key]) for key in doc_item}
     else:
         return doc_item

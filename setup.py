@@ -27,6 +27,9 @@ try:
     assert magic == "pandoc"
     assert version.startswith("1.12")
 except:
+    # if root runs the setup script, it's ok if pandoc is not available,
+    # as long as the users have it. Hence we cannot raise an exception here,
+    # we only produce a warning. 
     warnings.warn("cannot find pandoc 1.12")
 
 # ------------------------------------------------------------------------------
