@@ -49,7 +49,10 @@ def main():
         else:
             print "FAIL"
 
-# TODO: verbose mode and select the name of a test (for full error ?)
+# TODO: sort test files by size
+# TODO: use argparse
+# TODO: verbose mode
+# TODO: select the name of a test (for full error diagnostic)
 if __name__ == "__main__":
     main()
 
