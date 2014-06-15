@@ -38,7 +38,7 @@ def main():
             py_file = namebase + ".py"
             output = open(dst / py_file, "w")
             output.write(repr(doc))
-            js2_file = namebase + "2" + ".json"
+            js2_file = namebase + "2" + ".js"
             json2 = pandoc.to_json(doc)
             json.dump(json2, open(dst /js2_file, "w"))
         except Exception:
