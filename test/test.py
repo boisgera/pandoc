@@ -25,6 +25,7 @@ def main():
         file.remove()
 
     md_files = [file for file in src.listdir() if file.ext in [".txt", ".md"]]
+    md_files.sort(key=lambda file: file.getsize())
     for md_file in md_files:
         namebase = md_file.namebase
         print "{0:20} ...".format(namebase[:20]), 
@@ -41,6 +42,8 @@ def main():
             js2_file = namebase + "2" + ".js"
             json2 = pandoc.to_json(doc)
             json.dump(json2, open(dst /js2_file, "w"))
+            sh.pandoc("-t", "markdown", "-o", dst / namebase + ".txt", 
+                      "-f", "json", dst / js2_file)
         except Exception:
             error = True        
 
@@ -49,7 +52,6 @@ def main():
         else:
             print "FAIL"
 
-# TODO: sort test files by size
 # TODO: use argparse
 # TODO: verbose mode
 # TODO: select the name of a test (for full error diagnostic)
