@@ -42,7 +42,8 @@ def main():
             js2_file = namebase + "2" + ".js"
             json2 = pandoc.to_json(doc)
             json.dump(json2, open(dst /js2_file, "w"))
-            sh.pandoc("-t", "markdown", "-o", dst / namebase + ".txt", 
+            sh.pandoc("-s",
+                      "-t", "markdown", "-o", dst / namebase + ".txt", 
                       "-f", "json", dst / js2_file)
         except Exception:
             error = True        
