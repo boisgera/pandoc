@@ -92,7 +92,12 @@ nothing = type("Nothing", (object,), {})()
 # (or instances of Nothing to get rid of stuff ? How to add stuff ? That
 # has to be done at the dict level ? Mmmm that can probably be managed at
 # the intermediate LIST level instead where sublists and nothings could
-# be managed/consolidated (by the user)).
+# be managed/consolidated (by the user)). But at the list-level, we do
+# have the context that this is a dict ... that's tricky. AH ! We could
+# advocated a coding ? Like, replace "a": 56 with "a": None or "a": [1,2,3]
+# and consolidate at the dict level (by the user) ? This is not totally
+# stupid and somehow similar to how lists and handled (dispatch + consolid.
+# at the type level)
 #
 # Note that most of the time, it is useless to transform directly the
 # primitive types. Only the context in which they are used is useful to
@@ -110,7 +115,7 @@ def apply(item, action):
 
     # Action is never called directly ?
 
-    # Bug: tree iteration is borked ATM.
+    # Bug: tree iteration is totally borked ATM.
 
     if isinstance(item, PandocType):
         # "subitems" are args (cst number, heterogeneous), deal with it accordingly.
