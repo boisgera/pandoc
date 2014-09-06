@@ -32,17 +32,95 @@ from about_pandoc import *
 
 nothing = type("Nothing", (object,), {})()
 
+# we want to support in-place algs & functional-style in a single scheme.
+# have a look at the classic "fold" operation on trees of func. prog.
+# (or rather, foldr).
+# NB: the classic fold is fct first, node second, change signature.
+# There is also the "initial value" in the sig, that explains how the 
+# empty list because in tree-like structures based on list, an atom
+# 5 may be represented as [5, []]. It's a way to distinguish the action
+# that is to be applied to leafs somehow.
+#
+# Consider:
+#
+#     data Tree a = Leaf a | Branch (Tree a) (Tree a) deriving (Show)
+#     data [a]    = []     | (:)    a [a]
+#
+#     treeFold :: (b -> b -> b) -> (a -> b) -> Tree a -> b
+#     treeFold fbranch fleaf = g where
+#       g (Leaf x) = fleaf x
+#       g (Branch left right) = fbranch (g left) (g right)
+#
+# This fold specifies TWO functions, one to be used if the node is a leaf,
+# the other one to use if the node is a branch (given that the subnodes
+# have already been transformed). Here we don't care that much because the
+# writer of the transformation can look the type of the object to see if
+# it's primitive or not.
+#
+# Our structure is a bit more complex: our pandoc node is either a primitive
+# object, or made of:
+#   - a type
+#   - a tuple of primitive / pandoc types / lists / dicts (k: string, v: anything)
+#
+# Ouch. "Tuple" here is meant to represent fixed-width, heterogeneous collection
+# of stuff, it doesn't make sense to iterate on it automatically. The iteration
+# that fold achieves can/shall be done on lists and dicts however, but how this
+# thing translates into the management of the type arguments cannot be done
+# automatically.
+#
+# OK, so the writer of transformations has to write rules to deal with:
+#   1. atoms (Python primitive, non-container types). 
+#   2. lists (unknown length, homogeneous type).
+#   3. dicts (ordered, string key, node values).
+#   4. pandoc nodes.
+#
+# The implementaion of a transformation would typically be:
+# if pandoc doc stuff, if list do stuff, if dict do stuff, else, this is
+# an atom, do stuff.
+# 
+# What do we do on lists and dicts ? Even list is not trivial, because it is
+# not into the classic car-cons shape. And we cannot only apply the 
+# transformation to each member of the list ... YES, we can do that in foldr,
+# THEN give the result back to the transformation writer that may change
+# the "type" of the list object accordingly.
+#
+# What is the responsibility of fold wtf dicts ? Apply the transformation
+# to values only ? Consider that the structure is DICT [LIST-OF-PAIRS]
+# and use the same mecanism as for pandoc types ? (the transf. writer then
+# relies on the detection of tuples to know that a dict is iterated and
+# the contract is that he is supposed to return the same kind of output ?
+# (or instances of Nothing to get rid of stuff ? How to add stuff ? That
+# has to be done at the dict level ? Mmmm that can probably be managed at
+# the intermediate LIST level instead where sublists and nothings could
+# be managed/consolidated (by the user)).
+#
+# Note that most of the time, it is useless to transform directly the
+# primitive types. Only the context in which they are used is useful to
+# determine what to do, so that's in the holder, a pandoc type instance,
+# that we can do something. Example: don't transform str atoms, transform
+# Str pandoc types.
+
 def apply(item, action):
     # TODO: let the items override the default apply implementation.
 
     print "apply:", type(item), item
 
+    # Interpretation of the action return value ? An object vs None vs Nothing ?
+    # None means don't change anything, Nothing means get rid of it ?
+
+    # Action is never called directly ?
+
+    # Bug: tree iteration is borked ATM.
+
     if isinstance(item, PandocType):
+        # "subitems" are args (cst number, heterogeneous), deal with it accordingly.
+        # for example, Nothing is not applicable.
         subitems = [apply(subitem, action) for subitem in item]
         for i, subitem in enumerate(subitems):
             if subitem is not None:
                 # TODO: raise an error if `nothing` is found here
                 item.args[i] = subitem
+                # in-place modification ? Is that really what we mean ? Nope.
     elif isinstance(item, list):
         subitems = [apply(subitem, action) for subitem in item]
         for i, subitem in enumerate(subitems):
@@ -382,7 +460,7 @@ class MathType(PandocType):
 class DisplayMath(MathType):
     pass
 
-class MathInline(MathType):
+class InlineMath(MathType):
     pass
 
 #
