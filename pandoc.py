@@ -2,6 +2,7 @@
 
 # Python 2.7 Standard Library
 import __builtin__
+import copy as _copy
 import collections
 import json
 import sys
@@ -32,6 +33,8 @@ from about_pandoc import *
 
 nothing = type("Nothing", (object,), {})()
 
+# Consider map, not only fold ? What is the main pattern ?
+#
 # we want to support in-place algs & functional-style in a single scheme.
 # have a look at the classic "fold" operation on trees of func. prog.
 # (or rather, foldr).
@@ -104,6 +107,31 @@ nothing = type("Nothing", (object,), {})()
 # determine what to do, so that's in the holder, a pandoc type instance,
 # that we can do something. Example: don't transform str atoms, transform
 # Str pandoc types.
+
+# TODO: review iteration to make it consistent with fold.
+
+# TODO: dude, we deal with MUTABLE structures here, make sure we copy stuff
+#       by default ? We wouldn't want our result to get entangled with the
+#       input data structure.
+def fold(f, node, copy=True):
+    # rk: if all types where iterable *in the right way*, we could collapse
+    #     most of this implementation. But is it wise ? Iteration on Pandoc
+    #     types constructor argument is kind of weird and for Map, that would
+    #     conflict with the standard behavior of the parent class.
+    if copy:
+        node = _copy.deepcopy(node)
+        copy = False 
+    if isinstance(node, PandocType):
+        type_ = type(node) 
+        args = [fold(f, arg, copy) for arg in node.args]
+        return f(type_(*args))
+    elif isinstance(node, (tuple, list)):
+        type_ = type(node)
+        return f(type_([fold(f, item, copy) for item in node]))
+    elif isinstance(node, Map):
+        return f(Map([fold(f, item, copy) for item in node.items()]))
+    else: # Python atomic type 
+        return f(node)
 
 def apply(item, action):
     # TODO: let the items override the default apply implementation.
@@ -375,6 +403,15 @@ MetaString String
 MetaInlines [Inline]	 
 MetaBlocks [Block]
 """, MetaValue)
+
+# TODO: consider the example of YAML metadat given in the pandoc doc.
+#       here, when we parse it, we shouldn't have any dict with 
+#       "t" and "c" keys anymore, those dicts should be abstracted 
+#       away. Currently some of them are, some aren't.
+#       
+#       Hey OBVIOUSLY. `declare_types` knows nothing of the 
+#       "Map String Metavalue" construct used in MetaMap, this
+#       is interpreted as a sequence of three arguments.      
 
 class Block(PandocType):
     pass # TODO: make this type (and a buch of others) abstract ?
