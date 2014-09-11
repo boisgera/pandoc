@@ -405,11 +405,9 @@ def tokenize(string):
     tokens = split(tokens, "", "\s+")
     return tokens
 
-def parse(string_or_tokens):
-    if isinstance(string_or_tokens, str):
-        tokens = tokenize(string_or_tokens)
-    else:
-        tokens = string_or_tokens
+def parse(tokens):
+    if isinstance(tokens, str):
+        tokens = tokenize(tokens)
 
     stack = [["list", []]]
 
@@ -417,32 +415,35 @@ def parse(string_or_tokens):
         stack.append([tag, []])
 
     def push(item):
+        tag = stack[-1][0]
         stack[-1][1].append(item)
+        if tag == "map" and len(stack[-1][1]) == 2:
+            fold()
 
     def fold():
         item = stack.pop() 
         stack[-1][1].append(item)
 
-    # Need to manage tuples, where the comma is used as a separator.
-    # You cant push unless you have received a comma. In a first 
-    # approach, we may probably be able to pass when a comma is found.
-    # We also need to need to deal with map, that can accept EXACTLY
-    # two pushes, and then they auto-fold. That behavior shall be 
-    # implemented in the push function. We could also check that
-    # lists do not accept more than one item if we wished to make some
-    # validity checks (which we don't).
     for token in tokens:
         if token == "[":
             insert("list")
-        elif token == "]":
+        elif token == "(":
+            insert("tuple")
+        elif token == "Map":
+            insert("map")
+        elif token == "]" or token == ")":
             fold()
+        elif token == ",":
+            pass
         else:
             push(token)
 
     if len(stack) != 1:
-        raise SyntaxError("invalid type definition syntax")
-    else:
-        return stack[0][1]
+        raise SyntaxError("invalid type definition syntax: {0}".format(stack))
+    
+    ast = stack[0][1]
+    # TODO: get rid of the wrapping of tuples with exactly one element.
+    return ast
 
 # ------------------------------------------------------------------------------
 
