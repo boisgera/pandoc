@@ -348,6 +348,8 @@ class PandocType(object):
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
 
+# ------------------------------------------------------------------------------
+
 # TODO: the issue is not list_arg as much as it is single_arg that *may* be a list.
 #       It may be a Map too ... Analyze the type decl to get this info, including
 #       when Map arguments are used.
@@ -402,6 +404,47 @@ def tokenize(string):
         tokens = split(tokens, sep)
     tokens = split(tokens, "", "\s+")
     return tokens
+
+def parse(string_or_tokens):
+    if isinstance(string_or_tokens, str):
+        tokens = tokenize(string_or_tokens)
+    else:
+        tokens = string_or_tokens
+
+    stack = [["list", []]]
+
+    def insert(tag):
+        stack.append([tag, []])
+
+    def push(item):
+        stack[-1][1].append(item)
+
+    def fold():
+        item = stack.pop() 
+        stack[-1][1].append(item)
+
+    # Need to manage tuples, where the comma is used as a separator.
+    # You cant push unless you have received a comma. In a first 
+    # approach, we may probably be able to pass when a comma is found.
+    # We also need to need to deal with map, that can accept EXACTLY
+    # two pushes, and then they auto-fold. That behavior shall be 
+    # implemented in the push function. We could also check that
+    # lists do not accept more than one item if we wished to make some
+    # validity checks (which we don't).
+    for token in tokens:
+        if token == "[":
+            insert("list")
+        elif token == "]":
+            fold()
+        else:
+            push(token)
+
+    if len(stack) != 1:
+        raise SyntaxError("invalid type definition syntax")
+    else:
+        return stack[0][1]
+
+# ------------------------------------------------------------------------------
 
 def declare_types(type_spec, bases=object, dct={}):
     if not isinstance(bases, (tuple, list)):
