@@ -5,6 +5,7 @@ import __builtin__
 import copy as _copy
 import collections
 import json
+import re
 import sys
 
 # Third-Party Libraries
@@ -350,6 +351,57 @@ class PandocType(object):
 # TODO: the issue is not list_arg as much as it is single_arg that *may* be a list.
 #       It may be a Map too ... Analyze the type decl to get this info, including
 #       when Map arguments are used.
+
+# TODO: control the number of arguments in the constructor
+# TODO: control the type of the arguments in the constructor (worth the effort ?)
+# TODO: deal with Haskell Maps in constructors. What should accept the constructor ?
+#       (keyword arguments ? a single dict-like argument ? list of pairs, several
+#       pair arguments ? Does the args attribute still "works" ? We also have
+#       a problem when we deal with the Pythonification of the json maps, because
+#       they are dicts WITHOUT the "t" and "c" keys, or if the keys are here,
+#       they should not be interpreted as type info. Hence the classic
+#       pythonization of the args before the constructor call cannot take place. 
+#       Hence 'to_pandoc' should be adapted. Need some extra "map_arg" flag in
+#       the type to deal with the recursive structure adequaltly. BUT, it 
+#       doesn't solve the constructor / arg pb. If we mimick dict, we should
+#       accept dict, sequence of pairs AND keyword arguments. And we store the
+#       stuff in args[0]
+# TODO: wrapper around single Map or List should inherit from the python type
+#       (list or Map). Buuuut ... the delegation of the behavior to the content
+#       of args[0] may be a bit nasty ... via getattr ?
+#       Grpmh dunno ... doin so would make some sense BUT it may also scramble
+#       the way fold is applied as we are going to "lose" the type tag on
+#       top of the object. So, well, too bad, such objects have to be unwrapped
+#       before their list or map interface can be used.
+#
+#       The type declaration are lists of types / tuples of types / lists
+#       (homogeneous, based on a single type) / maps (based on homogeneous
+#       key type and homogeneou value type). [] are used for lists, (,) for
+#       tuples, () for priority and Map for maps.
+#
+# TODO: lexer of (constructor) type decl: first, split on '(', ')', '[', ']'
+#       and whitespace (normalize to one space).
+
+def split(strings, symbol, pattern=None):
+    if isinstance(strings, str):
+        strings = [strings]
+    if pattern is None:
+        pattern = re.escape(symbol)
+    output = []
+    for string in strings:
+        splitted = re.split(pattern, string)
+        parts = []
+        for item in splitted:
+            parts.extend([item, symbol])
+        output.extend(parts[:-1])
+    return [item for item in output if item != ""]
+  
+def tokenize(string):
+    tokens = [string]
+    for sep in "( ) [ ] ,".split():
+        tokens = split(tokens, sep)
+    tokens = split(tokens, "", "\s+")
+    return tokens
 
 def declare_types(type_spec, bases=object, dct={}):
     if not isinstance(bases, (tuple, list)):
