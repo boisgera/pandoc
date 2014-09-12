@@ -308,7 +308,8 @@ class PandocType(object):
     [Pandoc Types]: http://hackage.haskell.org/package/pandoc-types
     """
 
-    list_arg = False
+    args_type = [] # TODO: define properly args_type for every manually defined 
+                   #       pandoc type.
 
     def __init__(self, *args):
         self.args = list(args) # ensure mutability
@@ -409,7 +410,7 @@ def parse(tokens):
     if isinstance(tokens, str):
         tokens = tokenize(tokens)
 
-    stack = [["list", []]]
+    stack = [[None, []]]
 
     def insert(tag):
         stack.append([tag, []])
@@ -442,8 +443,22 @@ def parse(tokens):
         raise SyntaxError("invalid type definition syntax: {0}".format(stack))
     
     ast = stack[0][1]
-    # TODO: get rid of the wrapping of tuples with exactly one element.
+    
+    def filter(node, _root=True):
+        if _root is True:
+            return [filter(item, _root=False) for item in node]
+        elif isinstance(node, list):
+            if node[0] == "tuple" and len(node[1]) == 1:
+                return filter(node[1][0], _root=False)
+            else:
+                return [node[0]] + [filter(item, _root=False) for item in node[1:]]
+        else:
+            return node
+
+    filter(ast)
+
     return ast
+
 
 # ------------------------------------------------------------------------------
 
@@ -453,19 +468,11 @@ def declare_types(type_spec, bases=object, dct={}):
     else:
         bases = tuple(bases)
     for type_spec_ in type_spec.strip().splitlines():
-       type_parts = [part.strip() for part in type_spec_.strip().split()] 
-       type_name = type_parts[0]
-       type_args = " ".join(type_parts[1:])
-       list_arg = False
-       if type_args.startswith("["):
-           count = 0
-           for i, char in enumerate(type_args):
-               count += (char == "[") - (char == "]")
-               if count == 0:
-                   break
-           list_arg = (i == len(type_args) - 1)
-       dct["list_arg"] = list_arg
-       globals()[type_name] = type(type_name, bases, dct)
+        type_spec_ = parse(type_spec_)
+        type_name, args_type = type_spec_[0], type_spec_[1:]
+        print "***", type_name, args_type
+        type_ = globals()[type_name] = type(type_name, bases, dct)
+        type_.args_type = args_type
 
 class Pandoc(PandocType):
     def __json__(self):
@@ -616,14 +623,17 @@ def to_pandoc(json):
         return Pandoc(*[to_pandoc(item) for item in json])
     elif isinstance(json, list):
         return [to_pandoc(item) for item in json]
-    elif isinstance(json, dict) and "t" in json:
+    elif isinstance(json, dict) and "t" in json: # that's a bit weak ...
         pandoc_type = eval(json["t"])
         contents = json["c"]
         pandoc_contents = to_pandoc(contents)
-        if isinstance(pandoc_contents, list) and not getattr(pandoc_type, "list_arg", False):
-            return pandoc_type(*pandoc_contents)
-        else:
+        args_type = pandoc_type.args_type
+        if len(args_type) == 1 and args_type[0][0] == "list" or\
+           not isinstance(pandoc_contents, list):
             return pandoc_type(pandoc_contents)
+        else: # list of arguments, to be interpreted as several arguments
+            return pandoc_type(*pandoc_contents)
+        # TODO: is map correctly handled ?
     elif isinstance(json, dict) and "unMeta" in json:
         dct = json["unMeta"]
         k_v_pairs = [(k, to_pandoc(dct[k])) for k in dct]
