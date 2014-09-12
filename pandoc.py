@@ -207,6 +207,14 @@ class Map(collections.OrderedDict):
         "Return a tree iterator on key-value pairs"
         return iter(self.items())
 
+    def __tree_str__(self, depth=0):
+        tab = 2 * depth * " "
+        out = tab + "{\n"
+        for key, val in self.items():
+            out += tab + "  " +key + ": " + tree_str(val, depth+1) + "\n"
+        out += tab + "}"
+        return out
+
 # --- Not Ready Yet ------------------------------------------------------------
 class _Map(object):
     "Fully Mutable Ordered Dictionary"
@@ -299,6 +307,18 @@ class _Map(object):
 #      where we have this issue.
 
 
+# TODO: need to manage dicts properly (see map stuff, that's not ok).
+# TODO: also need to manage lists ; in both cases, do it directly in
+#       tree_str global, don't dispatch the implementation (can't do it
+#       for lists anyway).
+
+def tree_str(item, depth=0):
+    method = getattr(item, "__tree_str__", None)
+    if method:
+        return method(depth)
+    else:
+        return 2 * " " * depth + str(item)
+
 class PandocType(object):
     """
     Pandoc types base class
@@ -348,6 +368,19 @@ class PandocType(object):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
+
+    def __str__(self):
+        return tree_str(self)
+
+    def __tree_str__(self, depth=0):
+        tab = 2 * depth * " "
+        out = tab + type(self).__name__ + "\n"
+        for arg in self.args:
+            out += tree_str(arg, depth+1) + "\n"
+        return out[:-1]
+            
+
+
 
 # ------------------------------------------------------------------------------
 
