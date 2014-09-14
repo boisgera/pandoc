@@ -20,6 +20,10 @@ import sh
 # Python Runtime Dependencies
 requirements = dict(install_requires="sh")
 
+# Local
+sys.path.insert(0, "")
+import about_pandoc
+
 # Non-Python Runtime Dependencies 
 try:
     pandoc = sh.pandoc
@@ -35,7 +39,7 @@ except:
 # ------------------------------------------------------------------------------
 
 contents = dict(py_modules=["pandoc", "about_pandoc"])
-metadata = about.get_metadata("about_pandoc")
+metadata = about.get_metadata(about_pandoc)
 
 info = {}
 info.update(contents)
