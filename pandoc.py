@@ -22,6 +22,9 @@ try:
 except:
     raise ImportError("cannot find pandoc 1.12")
 
+# Q: make pandoc optional and remove the markdown input/output from the CLI 
+#    and Python API ? Is is too smart/complex ?
+
 #
 # Metadata
 # ------------------------------------------------------------------------------
@@ -651,7 +654,7 @@ def to_markdown(doc):
 
 # Q: wrap into a consol script (with setuptools entry point) ?
 #    But under what name ? Keep the "python -m pandoc [ARGS]" scheme instead ?
-#    Or install a pandoc-convert script ?
+#    Or install a `pandoc-convert` script ?
 
 if __main__:
     description = "Convert pandoc formats."
@@ -664,9 +667,6 @@ if __main__:
                         type = argparse.FileType("w"),
                         default = sys.stdout,
                         help = "output file (default: standard output)")
-    # TODO: add automatic detection of input formats based on file extension ?
-    #       Mmmm not sure we can do this if we rely on argparse.FileType.
-    #       Aaah, yes we can, with the 'name' attribute.
     parser.add_argument("-f", "--from", 
                         type = str, choices = ["auto", "markdown", "json", "python"],
                         default = "auto",
@@ -679,8 +679,6 @@ if __main__:
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
     writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr)
-
-    # So far, we refuse to take a guess w.r.t. input and output representation.
 
     from_ = args.__dict__.get("from")
     if from_ == "auto":
