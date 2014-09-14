@@ -6,6 +6,7 @@ import argparse
 import copy as _copy
 import collections
 import json
+import os.path
 import re
 import sys
 
@@ -648,7 +649,9 @@ def to_markdown(doc):
 # ------------------------------------------------------------------------------
 #
 
-# TODO: deliver the CLI as a setuptools console script.
+# Q: wrap into a consol script (with setuptools entry point) ?
+#    But under what name ? Keep the "python -m pandoc [ARGS]" scheme instead ?
+#    Or install a pandoc-convert script ?
 
 if __main__:
     description = "Convert pandoc formats."
@@ -665,23 +668,49 @@ if __main__:
     #       Mmmm not sure we can do this if we rely on argparse.FileType.
     #       Aaah, yes we can, with the 'name' attribute.
     parser.add_argument("-f", "--from", 
-                        type = str, choices = ["markdown", "json", "python"],
-                        default = "markdown",
-                        help = "input representation format (default: markdown)")
+                        type = str, choices = ["auto", "markdown", "json", "python"],
+                        default = "auto",
+                        help = "input representation format (default: auto)")
     parser.add_argument("-t", "--to", 
-                        type = str, choices = ["markdown", "json", "python"],
-                        default = "python",
+                        type = str, choices = ["auto", "markdown", "json", "python"],
+                        default = "auto",
                         help = "output representation format (default: python)")
     args = parser.parse_args()
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
     writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr)
 
-    reader = readers[args.__dict__.get("from")]
-    writer = writers[args.to]
+    # So far, we refuse to take a guess w.r.t. input and output representation.
 
-    print args.input.name
+    from_ = args.__dict__.get("from")
+    if from_ == "auto":
+        _, ext = os.path.splitext(args.input.name)
+        if ext == ".py":
+            from_ = "python"
+        elif ext in [".js", ".json"]:
+            from_ = "json"
+        elif ext in [".md", ".txt"]:
+            from_ = "markdown"
+        else:
+            sys.exit("error: unknown input format")
 
+    # TODO: reduce code duplication
+    to = args.to
+    if to == "auto":
+        _, ext = os.path.splitext(args.output.name)
+        if ext == ".py":
+            to = "python"
+        elif ext in [".js", ".json"]:
+            to = "json"
+        elif ext in [".md", ".txt"]:
+            to = "markdown"
+        else:
+            sys.exit("error: unknown output format")
+
+    reader = readers[from_]
+    writer = writers[to]
+ 
+    # TODO: can we overwrite the input file ? 
     output = writer(reader(args.input.read()))
     if output and output[-1] != "\n":
         output += "\n"
