@@ -648,6 +648,8 @@ def to_markdown(doc):
 # ------------------------------------------------------------------------------
 #
 
+# TODO: deliver the CLI as a setuptools console script.
+
 if __main__:
     description = "Convert pandoc formats."
     parser = argparse.ArgumentParser(description=description)
@@ -659,6 +661,9 @@ if __main__:
                         type = argparse.FileType("w"),
                         default = sys.stdout,
                         help = "output file (default: standard output)")
+    # TODO: add automatic detection of input formats based on file extension ?
+    #       Mmmm not sure we can do this if we rely on argparse.FileType.
+    #       Aaah, yes we can, with the 'name' attribute.
     parser.add_argument("-f", "--from", 
                         type = str, choices = ["markdown", "json", "python"],
                         default = "markdown",
@@ -669,9 +674,17 @@ if __main__:
                         help = "output representation format (default: python)")
     args = parser.parse_args()
 
-    print "****"
-    # TODO: read, convert to and from Pandoc repr., write.
-    print args
-    args.output.write(repr(from_markdown(args.input.read())))
+    readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
+    writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr)
+
+    reader = readers[args.__dict__.get("from")]
+    writer = writers[args.to]
+
+    print args.input.name
+
+    output = writer(reader(args.input.read()))
+    if output and output[-1] != "\n":
+        output += "\n"
+    args.output.write(output)
     sys.exit(0)
 
