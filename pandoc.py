@@ -2,6 +2,7 @@
 
 # Python 2.7 Standard Library
 import __builtin__
+import argparse
 import copy as _copy
 import collections
 import json
@@ -24,6 +25,8 @@ except:
 # Metadata
 # ------------------------------------------------------------------------------
 #
+
+__main__ = (__name__ == "__main__")
 
 from about_pandoc import *
 
@@ -327,7 +330,7 @@ class PandocType(object):
 #       they are dicts WITHOUT the "t" and "c" keys, or if the keys are here,
 #       they should not be interpreted as type info. Hence the classic
 #       pythonization of the args before the constructor call cannot take place. 
-#       Hence 'to_pandoc' should be adapted. Need some extra "map_arg" flag in
+#       Hence 'from_json' should be adapted. Need some extra "map_arg" flag in
 #       the type to deal with the recursive structure adequaltly. BUT, it 
 #       doesn't solve the constructor / arg pb. If we mimick dict, we should
 #       accept dict, sequence of pairs AND keyword arguments. And we store the
@@ -575,25 +578,20 @@ class InlineMath(MathType):
 # ------------------------------------------------------------------------------
 #
 
-# TODO: explain what "json" is: a Python object that represents some json data
-#       as defined by the json module.
-# TODO: rename "to_pandoc" into "from_json" ('Pandoc' is the pivot representation)
-# TODO: add some "from_json_str" and "to_json_str" for convenience.
-
-def to_pandoc(json):
+def from_json(json):
     def is_doc(item):
         return isinstance(item, list) and \
                len(item) == 2 and \
                isinstance(item[0], dict) and \
                "unMeta" in item[0].keys()
     if is_doc(json):
-        return Pandoc(*[to_pandoc(item) for item in json])
+        return Pandoc(*[from_json(item) for item in json])
     elif isinstance(json, list):
-        return [to_pandoc(item) for item in json]
+        return [from_json(item) for item in json]
     elif isinstance(json, dict) and "t" in json: # that's a bit weak ...
         pandoc_type = eval(json["t"])
         contents = json["c"]
-        pandoc_contents = to_pandoc(contents)
+        pandoc_contents = from_json(contents)
         args_type = pandoc_type.args_type
         if len(args_type) == 1 and args_type[0][0] == "list" or\
            not isinstance(pandoc_contents, list):
@@ -603,62 +601,77 @@ def to_pandoc(json):
         # TODO: is map correctly handled ?
     elif isinstance(json, dict) and "unMeta" in json:
         dct = json["unMeta"]
-        k_v_pairs = [(k, to_pandoc(dct[k])) for k in dct]
+        k_v_pairs = [(k, from_json(dct[k])) for k in dct]
         return unMeta(Map(k_v_pairs))
-
     else:
         return json
+
+def from_json_str(json_str):
+    return from_json(json.loads(json_str, object_pairs_hook=Map))
+
     
-def to_json(doc_item):
-    if hasattr(doc_item, "__json__"):
-        return doc_item.__json__()
-    elif isinstance(doc_item, list):
-        return [to_json(item) for item in doc_item]
-    elif isinstance(doc_item, dict): # TODO: keep order
-        return {key: to_json(doc_item[key]) for key in doc_item}
+def to_json(doc):
+    if hasattr(doc, "__json__"):
+        return doc.__json__()
+    elif isinstance(doc, list):
+        return [to_json(item) for item in doc]
+    elif isinstance(doc, dict): # TODO: keep order
+        return {key: to_json(doc[key]) for key in doc}
     else:
-        return doc_item
+        return doc
+
+def to_json_str(doc):
+    return json.dumps(to_json(doc))
 
 #
 # Markdown to Pandoc and Pandoc to Markdown
 # ------------------------------------------------------------------------------
 #
 
-# TODO: rename read/write, this is UGLY, not explicit at all, and confusing:
-#       having some "print read(stuff)" is plain stupid.
-#       Consider that the implicit pivot format is the Pandoc (Python) object,
-#       and have to_FORMAT / from_FORMAT methods.
-
-def read(text):
+def from_markdown(string):
     """
     Read a markdown text as a Pandoc instance.
     """
-    json_text = str(sh.pandoc(read="markdown", write="json", _in=text))
-    json_ = json.loads(json_text, object_pairs_hook=Map) # still some stuff loaded as dict ???
-    return to_pandoc(json_)
+    json_str = str(sh.pandoc(read="markdown", write="json", _in=string))
+    json_ = json.loads(json_str, object_pairs_hook=Map)
+    return from_json(json_)
 
-def write(doc):
+def to_markdown(doc):
     """
     Write a Pandoc instance as a markdown text.
     """
-    json_text = json.dumps(to_json(doc))
-    return str(sh.pandoc(read="json", write="markdown", _in=json_text))
+    json_str = json.dumps(to_json(doc))
+    return str(sh.pandoc(read="json", write="markdown", _in=json_str))
 
 #
 # Command-Line Interface
 # ------------------------------------------------------------------------------
 #
 
-if __name__ == "__main__":
-    input = sys.stdin.read()
-#    print
-#    print input
-#    print
-    json_ = json.loads(input, object_pairs_hook=Map)
-#    print json_
-#    print
-    pandoc = to_pandoc(json_)
-#    print repr(pandoc)
-#    print
-    print json.dumps(to_json(pandoc))
-#    print
+if __main__:
+    description = "Convert pandoc formats."
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("input", nargs='?', 
+                         type = argparse.FileType("r"),
+                         default = sys.stdin,
+                         help = "input file (default: standard input)")
+    parser.add_argument("-o", "--output", 
+                        type = argparse.FileType("w"),
+                        default = sys.stdout,
+                        help = "output file (default: standard output)")
+    parser.add_argument("-f", "--from", 
+                        type = str, choices = ["markdown", "json", "python"],
+                        default = "markdown",
+                        help = "input representation format (default: markdown)")
+    parser.add_argument("-t", "--to", 
+                        type = str, choices = ["markdown", "json", "python"],
+                        default = "python",
+                        help = "output representation format (default: python)")
+    args = parser.parse_args()
+
+    print "****"
+    # TODO: read, convert to and from Pandoc repr., write.
+    print args
+    args.output.write(repr(from_markdown(args.input.read())))
+    sys.exit(0)
+
