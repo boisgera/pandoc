@@ -710,7 +710,6 @@ if __main__:
     reader = readers[from_]
     writer = writers[to]
  
-    # TODO: can we overwrite the input file ? 
     output = writer(reader(args.input.read()))
     if output and output[-1] != "\n":
         output += "\n"
