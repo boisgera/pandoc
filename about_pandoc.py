@@ -2,7 +2,7 @@
 
 metadata = dict(
   __name__    = "pandoc",
-  __version__ = "1.0.0-alpha.3",
+  __version__ = "1.0.0-alpha.4",
   __license__ = "MIT License",
   __author__  = u"Sébastien Boisgérault <Sebastien.Boisgerault@mines-paristech.fr>",
   __url__     = "https://github.com/boisgera/pandoc",
@@ -10,5 +10,5 @@ metadata = dict(
 )
 
 globals().update(metadata)
-__all__ = ["__" + name + "__" for name in metadata]
+__all__ = metadata.keys()
 
