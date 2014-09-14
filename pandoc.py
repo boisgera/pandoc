@@ -180,6 +180,9 @@ def apply(item, action):
         pass
         # TODO: check that the action returns None.
         
+# TODO: externalize all the code in iter and remove from the classes.
+#       Get rid of delegation, it is complex for little (or no) benefit.
+
 def iter(item, delegate=True):
     "Return a tree iterator"
     if delegate:
@@ -206,14 +209,6 @@ class Map(collections.OrderedDict):
     def iter(self):
         "Return a tree iterator on key-value pairs"
         return iter(self.items())
-
-    def __tree_str__(self, depth=0):
-        tab = 2 * depth * " "
-        out = tab + "{\n"
-        for key, val in self.items():
-            out += tab + "  " +key + ": " + tree_str(val, depth+1) + "\n"
-        out += tab + "}"
-        return out
 
 # --- Not Ready Yet ------------------------------------------------------------
 class _Map(object):
@@ -314,10 +309,29 @@ class _Map(object):
 
 def tree_str(item, depth=0):
     method = getattr(item, "__tree_str__", None)
+    tab = 2 * u" " * depth
     if method:
         return method(depth)
-    else:
-        return 2 * " " * depth + str(item)
+    elif isinstance(item, list):
+        output = u""
+        for child in item:
+            child_str = tree_str(child, depth + 1)
+            child_str = tab + u"- " + child_str[2*(depth+1):]
+            output += child_str + u"\n"
+        return output[:-1]
+    elif isinstance(item, dict):
+        output = ""
+        for key, value in item.items():
+            output += tab + unicode(key) + u":\n" + tree_str(value, depth + 1) + u"\n"
+        return output[:-1]
+    else: # TODO: smarter behavior for multiline objects.
+        try:
+            string = unicode(item)
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            string = item.decode("utf-8")
+        lines = string.split(u"\n")
+        return u"\n".join([tab + line for line in lines]) 
+
 
 class PandocType(object):
     """
@@ -369,18 +383,17 @@ class PandocType(object):
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
 
-    def __str__(self):
-        return tree_str(self)
-
     def __tree_str__(self, depth=0):
-        tab = 2 * depth * " "
-        out = tab + type(self).__name__ + "\n"
+        tab = 2 * depth * u" "
+        out = tab + unicode(type(self).__name__) + u"\n"
         for arg in self.args:
-            out += tree_str(arg, depth+1) + "\n"
+            out += tree_str(arg, depth+1) + u"\n"
         return out[:-1]
-            
 
+    __unicode__ = __tree_str__            
 
+    def __str__(self):
+        return unicode(self).encode("utf-8")
 
 # ------------------------------------------------------------------------------
 
@@ -503,7 +516,6 @@ def declare_types(type_spec, bases=object, dct={}):
     for type_spec_ in type_spec.strip().splitlines():
         type_spec_ = parse(type_spec_)
         type_name, args_type = type_spec_[0], type_spec_[1:]
-        print "***", type_name, args_type
         type_ = globals()[type_name] = type(type_name, bases, dct)
         type_.args_type = args_type
 
@@ -646,6 +658,11 @@ class InlineMath(MathType):
 # ------------------------------------------------------------------------------
 #
 
+# TODO: explain what "json" is: a Python object that represents some json data
+#       as defined by the json module.
+# TODO: rename "to_pandoc" into "from_json" ('Pandoc' is the pivot representation)
+# TODO: add some "from_json_str" and "to_json_str" for convenience.
+
 def to_pandoc(json):
     def is_doc(item):
         return isinstance(item, list) and \
@@ -689,6 +706,11 @@ def to_json(doc_item):
 # Markdown to Pandoc and Pandoc to Markdown
 # ------------------------------------------------------------------------------
 #
+
+# TODO: rename read/write, this is UGLY, not explicit at all, and confusing:
+#       having some "print read(stuff)" is plain stupid.
+#       Consider that the implicit pivot format is the Pandoc (Python) object,
+#       and have to_FORMAT / from_FORMAT methods.
 
 def read(text):
     """
