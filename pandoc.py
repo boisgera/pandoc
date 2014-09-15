@@ -130,7 +130,10 @@ nothing = type("Nothing", (object,), {})()
 #       applied on the [fold(sub) for sub in ...] list to get a new list.
 #       rk: everything is easy to support (at least for lists), but the 
 #       insertion of a collection. The pandocfilters trick to use a list has
-#       issues: it is ambiguous when the child *already* are lists. He can
+#       issues: it is ambiguous when the child *already* are lists. 
+# UP:   We could use an extra level of list and detect that. That would
+#       not be ambiguous.
+# TODO: adaptation for types that are not lists ?
 def fold(f, node, copy=True):
     # rk: if all types where iterable *in the right way*, we could collapse
     #     most of this implementation. But is it wise ? Iteration on Pandoc
@@ -146,7 +149,7 @@ def fold(f, node, copy=True):
     elif isinstance(node, (tuple, list)):
         type_ = type(node)
         return f(type_([fold(f, item, copy) for item in node]))
-    elif isinstance(node, Map): # child of unMeta or MetaMap
+    elif isinstance(node, Map): # child of unMeta or MetaMap, str keys.
         return f(Map([fold(f, item, copy) for item in node.items()]))
     else: # Python atomic type 
         return f(node)
