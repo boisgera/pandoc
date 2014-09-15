@@ -121,11 +121,21 @@ nothing = type("Nothing", (object,), {})()
 # TODO: dude, we deal with MUTABLE structures here, make sure we copy stuff
 #       by default ? We wouldn't want our result to get entangled with the
 #       input data structure.
+
+# TODO: we need to support object replacement, do-not-change, object replacement
+#       by a collection of objects and object deletion, either in this fold fct,
+#       or by patterns in client code that are compatible with fold. Another
+#       possibility would be for the user to install filters applied in
+#       each clause. Would it make the job ? MMmmm maybe at the right level.
+#       applied on the [fold(sub) for sub in ...] list to get a new list.
+#       rk: everything is easy to support (at least for lists), but the 
+#       insertion of a collection. The pandocfilters trick to use a list has
+#       issues: it is ambiguous when the child *already* are lists. He can
 def fold(f, node, copy=True):
     # rk: if all types where iterable *in the right way*, we could collapse
     #     most of this implementation. But is it wise ? Iteration on Pandoc
     #     types constructor argument is kind of weird and for Map, that would
-    #     conflict with the standard behavior of the parent class.
+    #     conflict with the standard behavior of the parent class. 
     if copy:
         node = _copy.deepcopy(node)
         copy = False 
@@ -136,7 +146,7 @@ def fold(f, node, copy=True):
     elif isinstance(node, (tuple, list)):
         type_ = type(node)
         return f(type_([fold(f, item, copy) for item in node]))
-    elif isinstance(node, Map):
+    elif isinstance(node, Map): # child of unMeta or MetaMap
         return f(Map([fold(f, item, copy) for item in node.items()]))
     else: # Python atomic type 
         return f(node)
