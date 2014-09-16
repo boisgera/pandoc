@@ -132,7 +132,7 @@ nothing = type("Nothing", (object,), {})()
 #       insertion of a collection. The pandocfilters trick to use a list has
 #       issues: it is ambiguous when the child *already* are lists. 
 # UP:   We could use an extra level of list and detect that. That would
-#       not be ambiguous.
+#       not be ambiguous. ... EXCEPT IF WE HAVE SOME EMPTY LISTS ? Think of it ...
 # TODO: adaptation for types that are not lists ?
 def fold(f, node, copy=True):
     # rk: if all types where iterable *in the right way*, we could collapse
