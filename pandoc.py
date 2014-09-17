@@ -147,9 +147,26 @@ def fold(f, node, copy=True):
         type_ = type(node) 
         args = [fold(f, arg, copy) for arg in node.args]
         return f(type_(*args))
-    elif isinstance(node, (tuple, list)):
+    elif isinstance(node, (list, tuple)):
         type_ = type(node)
-        return f(type_([fold(f, item, copy) for item in node]))
+        items = []
+        items_ = [fold(f, item, copy) for item in node]
+        for i, item in enumerate(items_):
+            if item is None:
+                pass
+            elif isinstance(item, list) and not isinstance(node[i], list):
+                items.extend(item)
+            # The clause below works because in the pandoc model, we have no 
+            # more than two levels of lists, so a list of lists in a list node
+            # has to be an extra level added by the user to return multiple
+            # values. Note that for tuples, that appear only in maps, as pairs, 
+            # neither the key not the value may be a list so the clause above
+            # applies.
+            elif isinstance(item, list) and len(item) != 0 and isinstance(item[0], list):
+                items.extend(item)
+            else:
+                items.append(item)
+        return f(type_(items))
     elif isinstance(node, Map): # child of unMeta or MetaMap, str keys.
         return f(Map([fold(f, item, copy) for item in node.items()]))
     else: # Python atomic type 
