@@ -257,6 +257,8 @@ class Map(collections.OrderedDict):
 #      where we have this issue.
 
 
+
+
 # TODO: need to manage dicts properly (see map stuff, that's not ok).
 # TODO: also need to manage lists ; in both cases, do it directly in
 #       tree_str global, don't dispatch the implementation (can't do it
@@ -287,6 +289,34 @@ def tree_str(item, depth=0):
         lines = string.split(u"\n")
         return u"\n".join([tab + line for line in lines]) 
 
+def alt_repr(item, depth=0):
+    tab = 2 * depth * u" "
+    # TODO: work with list of strings and join at the end, that's simpler
+    if isinstance(item, PandocType):
+        out = tab + unicode(type(item).__name__) + "(" + u"\n"
+        for arg in item.args:
+            out += alt_repr(arg, depth + 1) + u"\n" + tab + u"  ," + u"\n"
+        return out[:-4] + ")" # broken if empty args
+    elif isinstance(item, list):
+        out = tab + u"["+ u"\n"
+        for child in item:
+            out += alt_repr(child, depth + 1) + u"\n" + tab + u"  ," + u"\n"
+        return out[:-4] + "]"
+    elif isinstance(item, tuple):
+        out = tab + u"("+ u"\n"
+        for child in item:
+            out += alt_repr(child, depth + 1) + u"\n" + tab + u"  ," + u"\n"
+        return out[:-4] + ")"
+    elif isinstance(item, Map):
+        out = tab + u"Map(" + u"\n"
+        out += alt_repr(list(item.items()), depth + 1)
+        return out + u"\n" + tab + ")"
+    else:
+        try:
+            string = unicode(item)
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            string = item.decode("utf-8")
+        return tab + repr(string) 
 
 class PandocType(object):
     """
@@ -337,6 +367,8 @@ class PandocType(object):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
+
+
 
     def __tree_str__(self, depth=0):
         tab = 2 * depth * u" "
@@ -704,10 +736,15 @@ def main():
                         type = str, choices = ["auto", "markdown", "json", "python"],
                         default = "auto",
                         help = "output representation format (default: python)")
+    parser.add_argument("-p", "--pretty-print", 
+                        dest = "alt",
+                        action = "store_true",
+                        help = "pretty-print the representation")
     args = parser.parse_args()
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
-    writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr)
+    writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr,
+                   alt_python=alt_repr)
 
     from_ = args.__dict__.get("from")
     if from_ == "auto":
@@ -733,6 +770,11 @@ def main():
             to = "markdown"
         else:
             sys.exit("error: unknown output format")
+
+    if to == "python" and args.alt is True:
+        to = "alt_python"
+
+    # TODO: same thing for json.
 
     reader = readers[from_]
     writer = writers[to]
