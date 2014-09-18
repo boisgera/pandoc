@@ -40,10 +40,16 @@ except:
 
 contents = dict(py_modules=["pandoc", "about_pandoc"])
 metadata = about.get_metadata(about_pandoc)
-
+script   = {"entry_points":
+             {"console_scripts": 
+               ["pandoc-convert = pandoc:main"]
+             }
+           }
+        
 info = {}
 info.update(contents)
 info.update(metadata)
+info.update(script)
 info.update(requirements)
 
 # ------------------------------------------------------------------------------

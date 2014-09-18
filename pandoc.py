@@ -683,11 +683,9 @@ def to_markdown(doc):
 # ------------------------------------------------------------------------------
 #
 
-# Q: wrap into a consol script (with setuptools entry point) ?
-#    But under what name ? Keep the "python -m pandoc [ARGS]" scheme instead ?
-#    Or install a `pandoc-convert` script ?
+def main():
+    "CLI entry point, exposed as pandoc-convert"
 
-if __main__:
     description = "Convert pandoc formats."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("input", nargs='?', 
@@ -744,4 +742,9 @@ if __main__:
         output += "\n"
     args.output.write(output)
     sys.exit(0)
+
+if __main__:
+    main()
+
+
 
