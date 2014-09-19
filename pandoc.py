@@ -290,33 +290,45 @@ def tree_str(item, depth=0):
         return u"\n".join([tab + line for line in lines]) 
 
 def alt_repr(item, depth=0):
-    tab = 2 * depth * u" "
-    # TODO: work with list of strings and join at the end, that's simpler
+    pad = 2 * u" "
+    tab = depth * pad
     if isinstance(item, PandocType):
-        out = tab + unicode(type(item).__name__) + "(" + u"\n"
+        out = [tab, unicode(type(item).__name__), u"("]
         for arg in item.args:
-            out += alt_repr(arg, depth + 1) + u"\n" + tab + u"  ," + u"\n"
-        return out[:-4] + ")" # broken if empty args
+            out += [u"\n", alt_repr(arg, depth + 1), u"\n", tab, pad, u","]
+        if len(item.args):
+            out = out[:-2] + [")"]
+        else:
+            out = out + [")"]
     elif isinstance(item, list):
-        out = tab + u"["+ u"\n"
+        out = [tab, u"["]
         for child in item:
-            out += alt_repr(child, depth + 1) + u"\n" + tab + u"  ," + u"\n"
-        return out[:-4] + "]"
+            out += [u"\n", alt_repr(child, depth + 1), u"\n", tab, pad, u","]
+        if len(item):
+            out = out[:-2] + ["]"]
+        else:
+            out += ["]"] 
     elif isinstance(item, tuple):
-        out = tab + u"("+ u"\n"
+        out = [tab, u"("]
         for child in item:
-            out += alt_repr(child, depth + 1) + u"\n" + tab + u"  ," + u"\n"
-        return out[:-4] + ")"
+            out += [u"\n", alt_repr(child, depth + 1), u"\n", tab, pad, u","]
+        if len(item):
+            out = out[:-2] + [")"]
+        else:
+            out += [")"] 
     elif isinstance(item, Map):
-        out = tab + u"Map(" + u"\n"
-        out += alt_repr(list(item.items()), depth + 1)
-        return out + u"\n" + tab + ")"
+        out = [tab, u"Map("]
+        if len(item):
+            out += [u"\n", alt_repr(list(item.items()), depth + 1), u"\n"]
+        out += [u")"]
     else:
         try:
             string = unicode(item)
         except (UnicodeEncodeError, UnicodeDecodeError):
             string = item.decode("utf-8")
-        return tab + repr(string) 
+        out = [tab, repr(string)]
+    return u"".join(out) 
+
 
 class PandocType(object):
     """
@@ -736,10 +748,10 @@ def main():
                         type = str, choices = ["auto", "markdown", "json", "python"],
                         default = "auto",
                         help = "output representation format (default: python)")
-    parser.add_argument("-p", "--pretty-print", 
+    parser.add_argument("-x", "--expand", 
                         dest = "alt",
                         action = "store_true",
-                        help = "pretty-print the representation")
+                        help = "expand the representation")
     args = parser.parse_args()
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
