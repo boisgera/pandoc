@@ -264,6 +264,8 @@ class Map(collections.OrderedDict):
 #       tree_str global, don't dispatch the implementation (can't do it
 #       for lists anyway).
 
+
+# TODO: get rid of tree_str ? alt_rep is probably good enough and can be eval'd.
 def tree_str(item, depth=0):
     method = getattr(item, "__tree_str__", None)
     tab = 2 * u" " * depth
@@ -289,6 +291,7 @@ def tree_str(item, depth=0):
         lines = string.split(u"\n")
         return u"\n".join([tab + line for line in lines]) 
 
+# TODO: refactor: reduce code duplication 
 def alt_repr(item, depth=0):
     pad = 2 * u" "
     tab = depth * pad
