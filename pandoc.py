@@ -168,10 +168,6 @@ def fold(f, node, copy=True):
     else: # Python atomic type 
         return f(node)
 
-        
-# TODO: externalize all the code in iter and remove from the classes.
-#       Get rid of delegation, it is complex for little (or no) benefit.
-
 def iter(item, delegate=True):
     "Return a tree iterator"
     if isinstance(item, (PandocType, list, tuple)):
