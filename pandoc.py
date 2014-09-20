@@ -136,10 +136,6 @@ nothing = type("Nothing", (object,), {})()
 #       Consider BulletList for example that contains a [[Block]]
 # TODO: adaptation for types that are not lists ?
 def fold(f, node, copy=True):
-    # rk: if all types where iterable *in the right way*, we could collapse
-    #     most of this implementation. But is it wise ? Iteration on Pandoc
-    #     types constructor argument is kind of weird and for Map, that would
-    #     conflict with the standard behavior of the parent class. 
     if copy:
         node = _copy.deepcopy(node)
         copy = False 
@@ -172,51 +168,6 @@ def fold(f, node, copy=True):
     else: # Python atomic type 
         return f(node)
 
-def apply(item, action):
-    # TODO: let the items override the default apply implementation.
-
-    print "apply:", type(item), item
-
-    # Interpretation of the action return value ? An object vs None vs Nothing ?
-    # None means don't change anything, Nothing means get rid of it ?
-
-    # Action is never called directly ?
-
-    # Bug: tree iteration is totally borked ATM.
-
-    if isinstance(item, PandocType):
-        # "subitems" are args (cst number, heterogeneous), deal with it accordingly.
-        # for example, Nothing is not applicable.
-        subitems = [apply(subitem, action) for subitem in item]
-        for i, subitem in enumerate(subitems):
-            if subitem is not None:
-                # TODO: raise an error if `nothing` is found here
-                item.args[i] = subitem
-                # in-place modification ? Is that really what we mean ? Nope.
-    elif isinstance(item, list):
-        subitems = [apply(subitem, action) for subitem in item]
-        for i, subitem in enumerate(subitems):
-            if subitem is not None:
-                item[i] = subitem
-        item[:] = [subitem for subitem in item if subitem is not nothing]
-    elif isinstance(item, dict):
-        subitems = []
-        for subitem in item.items():
-            new_subitem = apply(subitem, action)
-            if new_subitem is None:
-                subitems.append(subitem)
-            elif new_subitem is nothing:
-                pass
-            else:
-                subitems.append(new_subitem)
-        item.clear()
-        item.update(subitems)
-    elif isinstance(item, tuple):
-        pass
-        # TODO: check that the action returns None.
-    else:
-        pass
-        # TODO: check that the action returns None.
         
 # TODO: externalize all the code in iter and remove from the classes.
 #       Get rid of delegation, it is complex for little (or no) benefit.
