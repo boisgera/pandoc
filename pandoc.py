@@ -188,17 +188,6 @@ def iter(item, delegate=True):
 
 class Map(collections.OrderedDict):
     "Ordered Dictionary"
-    def iter(self):
-        "Return a tree iterator on key-value pairs"
-        return iter(self.items())
-
-
-# TODO: implement all types.
-
-# BUG: there are style some extra parenthesis: when I output some json,
-#      i have a "when expecting a Object, encountered Array instead"
-#      pandoc error. Make some before / after tree comparison to see
-#      where we have this issue.
 
 # TODO: refactor: reduce code duplication 
 def alt_repr(item, depth=0):
