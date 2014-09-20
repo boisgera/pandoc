@@ -238,8 +238,15 @@ class PandocType(object):
     [Pandoc Types]: http://hackage.haskell.org/package/pandoc-types
     """
 
-    args_type = [] # TODO: define properly args_type for every manually defined 
-                   #       pandoc type.
+    args_type = None # TODO: define properly args_type for every manually defined 
+                     #       pandoc type. "None" should be a marker for abstract
+                     #       types.
+
+    # TODO: perform some type_checking of args based on args_type ? That would
+    #       force us to have a well-defined args_type for every PandocType
+    #       that is ever instantiated and currently, this is not the cases for
+    #       the ones that are manually built. Pure Pandoc types (that are never
+    #       instantiated) should probably have a None args_type.
 
     def __init__(self, *args):
         self.args = list(args) # ensure mutability
@@ -247,8 +254,8 @@ class PandocType(object):
 # ------------------------------------------------------------------------------
 # The list-like methods can be handy, but that should not go too far: PandocType
 # shall not inherit from list or tuple. Given our current designed, this is a
-# typed/tagged structure that wraps a inhomogeneous, fixed-length, mutable
-# sequence, hence a hybrid of tuple and list.
+# typed/tagged structure that *wraps* (but is not) a inhomogeneous, fixed-length, 
+# mutable sequence, hence a hybrid of tuple and list.
 
     def __iter__(self):
         "Return a child iterator"
@@ -284,7 +291,7 @@ class PandocType(object):
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
 
-   __str__ == __repr__
+    __str__ = __repr__
 
     def __unicode__(self):
         return str(self).decode("utf-8")
@@ -414,6 +421,9 @@ def declare_types(type_spec, bases=object, dct={}):
         type_.args_type = args_type
 
 class Pandoc(PandocType):
+
+    args_type = ["Meta", ["list", ["Block"]]]
+
     def __json__(self):
         meta, blocks = self.args[0], self.args[1]
         return [to_json(meta), [to_json(block) for block in blocks]]
@@ -427,6 +437,8 @@ class Meta(PandocType):
     pass
 
 class unMeta(Meta):
+    args_type = ["MetaValue"]
+
     # unMeta does not follow the json representation with 't' and 'k' keys.
     def __json__(self):
         dct = self.args[0]
@@ -541,11 +553,11 @@ Span Attr [Inline]
 class MathType(PandocType):
     pass
 
-class DisplayMath(MathType):
-    pass
-
-class InlineMath(MathType):
-    pass
+declare_types(\
+"""
+DisplayMath
+InlineMath
+""", MathType)
 
 #
 # Json to Pandoc and Pandoc to Json
@@ -689,7 +701,12 @@ def main():
     reader = readers[from_]
     writer = writers[to]
  
-    output = writer(reader(args.input.read()))
+    input = args.input.read()
+    try:
+        args.input.close()
+    except AttributeError:
+        pass
+    output = writer(reader(input))
     if output and output[-1] != "\n":
         output += "\n"
     args.output.write(output)
