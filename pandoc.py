@@ -626,7 +626,7 @@ def to_markdown(doc):
     Write a Pandoc instance as a markdown text.
     """
     json_str = json.dumps(to_json(doc))
-    return str(sh.pandoc(read="json", write="markdown", _in=json_str))
+    return str(sh.pandoc("-s", read="json", write="markdown", _in=json_str))
 
 #
 # Command-Line Interface
