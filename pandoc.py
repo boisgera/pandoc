@@ -711,7 +711,7 @@ def main():
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
     writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr,
-                   alt_python=alt_repr)
+                   alt_python=alt_repr   , alt_json=alt_repr)
 
     from_ = args.__dict__.get("from")
     if from_ == "auto":
@@ -740,8 +740,8 @@ def main():
 
     if to == "python" and args.alt is True:
         to = "alt_python"
-
-    # TODO: same thing for json.
+    if to == "json" and args.alt is True:
+        to = "alt_json"
 
     reader = readers[from_]
     writer = writers[to]
