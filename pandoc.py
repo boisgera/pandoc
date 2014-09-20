@@ -249,8 +249,6 @@ class PandocType(object):
 # shall not inherit from list or tuple. Given our current designed, this is a
 # typed/tagged structure that wraps a inhomogeneous, fixed-length, mutable
 # sequence, hence a hybrid of tuple and list.
-# The _delitem__ method is stupid for example, it should be removed. 
-# The __len__ should probably be added.
 
     def __iter__(self):
         "Return a child iterator"
@@ -262,8 +260,8 @@ class PandocType(object):
     def __setitem__(self, i, value):
         self.args[i] = value
 
-    def __delitem__(self, i):
-        del self[i]
+    def __len__(self):
+        return len(self.args)
 
     def iter(self):
         "Return a tree iterator"
