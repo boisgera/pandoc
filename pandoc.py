@@ -200,41 +200,6 @@ class Map(collections.OrderedDict):
 #      pandoc error. Make some before / after tree comparison to see
 #      where we have this issue.
 
-
-
-
-# TODO: need to manage dicts properly (see map stuff, that's not ok).
-# TODO: also need to manage lists ; in both cases, do it directly in
-#       tree_str global, don't dispatch the implementation (can't do it
-#       for lists anyway).
-
-
-# TODO: get rid of tree_str ? alt_rep is probably good enough and can be eval'd.
-def tree_str(item, depth=0):
-    method = getattr(item, "__tree_str__", None)
-    tab = 2 * u" " * depth
-    if method:
-        return method(depth)
-    elif isinstance(item, list):
-        output = u""
-        for child in item:
-            child_str = tree_str(child, depth + 1)
-            child_str = tab + u"- " + child_str[2*(depth+1):]
-            output += child_str + u"\n"
-        return output[:-1]
-    elif isinstance(item, dict):
-        output = ""
-        for key, value in item.items():
-            output += tab + unicode(key) + u":\n" + tree_str(value, depth + 1) + u"\n"
-        return output[:-1]
-    else: # TODO: smarter behavior for multiline objects.
-        try:
-            string = unicode(item)
-        except (UnicodeEncodeError, UnicodeDecodeError):
-            string = item.decode("utf-8")
-        lines = string.split(u"\n")
-        return u"\n".join([tab + line for line in lines]) 
-
 # TODO: refactor: reduce code duplication 
 def alt_repr(item, depth=0):
     pad = 2 * u" "
@@ -334,19 +299,10 @@ class PandocType(object):
         args = ", ".join(repr(arg) for arg in self.args)
         return "{0}({1})".format(typename, args)
 
+   __str__ == __repr__
 
-
-    def __tree_str__(self, depth=0):
-        tab = 2 * depth * u" "
-        out = tab + unicode(type(self).__name__) + u"\n"
-        for arg in self.args:
-            out += tree_str(arg, depth+1) + u"\n"
-        return out[:-1]
-
-    __unicode__ = __tree_str__            
-
-    def __str__(self):
-        return unicode(self).encode("utf-8")
+    def __unicode__(self):
+        return str(self).decode("utf-8")
 
 # ------------------------------------------------------------------------------
 
@@ -642,7 +598,6 @@ def from_json(json):
 def from_json_str(json_str):
     return from_json(json.loads(json_str, object_pairs_hook=Map))
 
-    
 def to_json(doc):
     if hasattr(doc, "__json__"):
         return doc.__json__()
