@@ -174,24 +174,18 @@ def fold(f, node, copy=True):
 
 def iter(item, delegate=True):
     "Return a tree iterator"
-    if delegate:
-        try: # try delegation first
-            _iter = item.iter
-        except AttributeError:
-            _iter = lambda: iter(item, delegate=False)
-        for subitem in _iter():
-            yield subitem
-    else:                
+    if isinstance(item, (PandocType, list, tuple)):
+        it = __builtin__.iter(item)
+    elif isinstance(item, dict):
+        it = item.items()
+    else: # atom
+        it = []
+    yield item
+    for subitem in it:
+        for subsubitem in iter(subitem):
+            yield subsubitem
+    elif isinstance(item, dict):
         yield item
-        # do not iterate on strings
-        if not isinstance(item, basestring):
-            try:
-                it = __builtin__.iter(item)
-                for subitem in it:
-                    for subsubitem in iter(subitem):
-                        yield subsubitem
-            except TypeError: # non-iterable
-                pass
 
 class Map(collections.OrderedDict):
     "Ordered Dictionary"
@@ -299,6 +293,14 @@ class PandocType(object):
     def __init__(self, *args):
         self.args = list(args) # ensure mutability
 
+# ------------------------------------------------------------------------------
+# The list-like methods can be handy, but that should not go too far: PandocType
+# shall not inherit from list or tuple. Given our current designed, this is a
+# typed/tagged structure that wraps a inhomogeneous, fixed-length, mutable
+# sequence, hence a hybrid of tuple and list.
+# The _delitem__ method is stupid for example, it should be removed. 
+# The __len__ should probably be added.
+
     def __iter__(self):
         "Return a child iterator"
         return iter(self.args)
@@ -314,9 +316,8 @@ class PandocType(object):
 
     def iter(self):
         "Return a tree iterator"
-        # The module function `iter` shall really perform the tree iteration, 
-        # not call this method back to do it, hence the `delegate=False`.
-        return iter(self, delegate=False)        
+        return iter(self)        
+# ------------------------------------------------------------------------------
 
     def __json__(self):
         """
