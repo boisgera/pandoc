@@ -180,12 +180,11 @@ def iter(item, delegate=True):
         it = item.items()
     else: # atom
         it = []
+
     yield item
     for subitem in it:
         for subsubitem in iter(subitem):
             yield subsubitem
-    elif isinstance(item, dict):
-        yield item
 
 class Map(collections.OrderedDict):
     "Ordered Dictionary"
@@ -654,8 +653,8 @@ def to_json(doc):
     else:
         return doc
 
-def to_json_str(doc):
-    return json.dumps(to_json(doc))
+def to_json_str(doc, indent=None):
+    return json.dumps(to_json(doc), indent=indent)
 
 #
 # Markdown to Pandoc and Pandoc to Markdown
@@ -710,8 +709,12 @@ def main():
     args = parser.parse_args()
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
-    writers = dict(markdown=to_markdown  , json=to_json_str  , python=repr,
-                   alt_python=alt_repr   , alt_json=alt_repr)
+    writers = dict(markdown   = to_markdown, 
+                   json       = to_json_str, 
+                   python     = repr       ,
+                   alt_python = alt_repr   , 
+                   alt_json   = lambda doc: to_json_str(doc, indent=2),
+                  )
 
     from_ = args.__dict__.get("from")
     if from_ == "auto":
