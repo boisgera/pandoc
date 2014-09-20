@@ -190,6 +190,8 @@ class Map(collections.OrderedDict):
     "Ordered Dictionary"
 
 # TODO: refactor: reduce code duplication 
+# TODO: consider: no newline for ",", no nesting for single items.
+#       It would be more compact and probably more readable for most docs.
 def alt_repr(item, depth=0):
     pad = 2 * u" "
     tab = depth * pad
