@@ -260,7 +260,7 @@ class PandocType(object):
 
     def __iter__(self):
         "Return a child iterator"
-        return iter(self.args)
+        return __builtin__.iter(self.args)
 
     def __getitem__(self, i):
         return self.args[i]
