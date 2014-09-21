@@ -82,7 +82,7 @@ nothing = type("Nothing", (object,), {})()
 # OK, so the writer of transformations has to write rules to deal with:
 #   1. atoms (Python primitive, non-container types). 
 #   2. lists (unknown length, homogeneous type).
-#   3. dicts (ordered, string key, node values).
+#   3. dicts (ordered, string key, node values) ... or lists of tuples
 #   4. pandoc nodes.
 #
 # The implementaion of a transformation would typically be:
@@ -139,6 +139,23 @@ nothing = type("Nothing", (object,), {})()
 # BUG: this is not a true "fold", we could not use it to map for example an
 #      unMeta instance to a Python dict with only Python lists, dicts, etc.
 #      So: 1) what is it ? 2) can I implement a scheme that is general enough ?
+#      Is it an implementation of fmap ? We change the content of the leaves
+#      but not the nature of the constructors of the trees ? (Actually, we
+#      also do a bit more surgery with the leaves but forget that for a while).
+#      MMmmm, not totally true, because f is also called after the fold on the
+#      arguments, so we can change the type of the result. 
+#      Have a look at <http://en.wikipedia.org/wiki/Map_%28higher-order_function%29>
+#      Think of the need for a more general system wrt the "meta" use case,
+#      when you wan to end up with a Python/JSON data structure, without all
+#      the funny type tags.
+#   
+# TODO: consider the complex structure of Pandoc documents as a "uniform"
+#       tree where the container nodes hold a type tag ? And then offer
+#       a transformation process parametrized by one function that acts
+#       on nodes (type arguments), and the other on TYPES (aka constructor
+#       themselves ?). Would it be convenient AND solve the need to change
+#       fundamentally the tree structure without breaking typing of constructor
+#       arguments ?
 
 def fold(f, node, copy=True):
     if copy:
