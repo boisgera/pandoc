@@ -168,19 +168,20 @@ def fold(f, node, copy=True):
     else: # Python atomic type 
         return f(node)
 
-def iter(item, delegate=True):
+def iter(item):
     "Return a tree iterator"
     if isinstance(item, (PandocType, list, tuple)):
         it = __builtin__.iter(item)
     elif isinstance(item, dict):
         it = item.items()
     else: # atom
-        it = []
+        it = None
 
     yield item
-    for subitem in it:
-        for subsubitem in iter(subitem):
-            yield subsubitem
+    if it is not None:
+        for subitem in it:
+            for subsubitem in iter(subitem):
+                yield subsubitem
 
 class Map(collections.OrderedDict):
     "Ordered Dictionary"
