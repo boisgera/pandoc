@@ -135,6 +135,11 @@ nothing = type("Nothing", (object,), {})()
 #       not be ambiguous. ... EXCEPT IF WE HAVE SOME EMPTY LISTS ? Think of it ...
 #       Consider BulletList for example that contains a [[Block]]
 # TODO: adaptation for types that are not lists ?
+
+# BUG: this is not a true "fold", we could not use it to map for example an
+#      unMeta instance to a Python dict with only Python lists, dicts, etc.
+#      So: 1) what is it ? 2) can I implement a scheme that is general enough ?
+
 def fold(f, node, copy=True):
     if copy:
         node = _copy.deepcopy(node)
@@ -168,6 +173,9 @@ def fold(f, node, copy=True):
     else: # Python atomic type 
         return f(node)
 
+# Rk: we don't know what's going on if the item gets muted during the iteration.
+#     This iter is usable to extract data or for algorithms that create new
+#     structures (and even them, copies should be made).
 def iter(item):
     "Return a tree iterator"
     if isinstance(item, (PandocType, list, tuple)):
