@@ -157,6 +157,23 @@ nothing = type("Nothing", (object,), {})()
 #       fundamentally the tree structure without breaking typing of constructor
 #       arguments ?
 
+# TODO: make two functions ? One simple one ("map") that does not change the
+#       type of the nodes and works only with instances and the other one
+#       ("fold") that is used to implement the first and can change the type
+#       of the nodes ? MMmmph, not the right terms. Have a look at "fmap" too,
+#       and Functors (includes map applied to trees).
+#       <http://en.wikibooks.org/wiki/Haskell/The_Functor_class>
+#       Also look at "scrap your boilerplate" by Peyton-Jones ? (the old
+#       version of the paper, with "Generic Programming" in the title).
+#       In this paper, the author considers "transforms" (where the type
+#       of the nodes is unchanged), then "queries" (where the output has
+#       a fixed type that does not depend on the node type) ; we have a
+#       more general scheme: any type can be transformed to something else
+#       so we can build from a pandoc document any other document with a
+#       totally different grammar. Homogeneous transformations and queries
+#       are special cases of that ... The article calls the step from local
+#       transform to tree transform everywhere ... urk.
+
 def fold(f, node, copy=True):
     if copy:
         node = _copy.deepcopy(node)
