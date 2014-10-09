@@ -173,6 +173,62 @@ nothing = type("Nothing", (object,), {})()
 #       totally different grammar. Homogeneous transformations and queries
 #       are special cases of that ... The article calls the step from local
 #       transform to tree transform everywhere ... urk.
+#       See the annex 9.2 of the article for a discussion of the "non-recursive
+#       map trick".
+#       See also "A Fold for All Seasons" by Sheard & Fegaras.
+
+# Signature for f ? takes type + args and returns an instance ? And optionnaly
+# in the transform list of arguments, you can simplify to get heterogeneous
+# transform instead or query ?
+# To deal with primitive vs type/args construct, one could have args set to
+# None (that means, you have an instance), and check that the first argument
+# is not an instance of type.
+# 
+# Introduce a "type-to-type" mapping to let transform take care of the
+# type transform ? (can be a function or a dict) ; that only means that
+# the selection of the type cannot depend on the args, which is probably
+# not a big restriction (and may even be a sound one). Erf. And even then:
+# the target type can be a function that examines the args before it
+# produces an actual instance, so complex schemes can theoretically be
+# implemented.
+# That argument could be a function (easy), or in simple cases a dict, but then
+# we would probably have to deal with the search for the most specialized match ... 
+# ok, that can be fun :)
+#
+def transform(node, node_map=None, type_map=None, copy=True):
+    if type_map is None:
+        type_map = lambda type_: type_
+    if copy:
+        node = _copy.deepcopy(node)
+        copy = False
+
+    new_type = type_map(type(node))
+    if isinstance(node, (PandocType, list, tuple)):
+        new_args = [transform(arg, node_map, type_map, copy) for arg in node]
+        return f(new_type(new_args))
+    elif isinstance(node, Map): # child of unMeta or MetaMap, str keys.
+        new_args = [transform(arg, node_map, type_map, copy) for arg in node.items()]
+        return f(new_type(new_args))
+    else: # Python atomic type
+        return f(node)
+
+def make_type_map(dict_):
+    def type_map(type_):
+        try:
+            return dict_[type_]
+        except KeyError:
+            # TODO: implement best-match (based on __mro__)
+            raise ValueError("no matching type found")
+    return type_map
+
+# Can we / Shall we restore the special interpretation of a return of None
+# or extra list levels in transform ? That can probably be achieved via
+# a special list factory right ? (a function, not a type, that will examine
+# its arguments).
+
+
+
+    
 
 def fold(f, node, copy=True):
     if copy:
