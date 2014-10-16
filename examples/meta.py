@@ -2,6 +2,7 @@
 
 # Python 2.7 Standard Library
 import argparse
+import json
 import sys
 
 # Third-Party Libraries
@@ -21,22 +22,11 @@ def node_map(node):
 
 def type_map(type_):
 
-    def unwrap(args):
+    def unwrap(*args):
         return args[0]
 
     def to_text(args):
-        print "*", args[0] # gives Str([...]) on meta.txt ?
-        # Arf, fuck, this is transform, we have an issue:
-        # some type constructors take a list of args (such as list, tuple, map),
-        # others an expanded list (*args). This wouldn't be a problem
-        # if we were not mutating types ... Think of a solution.
-        # make a special case for the non-expanded types (as containers ?).
-        # Check for the ABC Container ? Nah, would also work for pandoc
-        # types. Introduce an HomogeneousSequence ABC and register list,
-        # tuple and dict ? (that lets the user register other types if needed).
-        # Mmmm, that may do the trick.
         doc = as_doc(args[0])
-        print doc
         return to_markdown(doc)
 
     if issubclass(type_, Meta):
@@ -78,9 +68,12 @@ def main():
 
     doc = from_markdown(src)
 
-    meta = doc[0] 
+    meta = doc[0] # ok. The DOM is borked already, some 't', 'c' stuff is still there.
+    args.output.write(repr(meta) + 2*"\n") 
     meta = transform(meta, node_map, type_map)
-    args.output.write(repr(meta) + u"\n")
+    args.output.write(repr(meta) + 2*"\n")
+    json_ = json.dumps(meta)
+    args.output.write(json_ + "\n")
 
 if __name__ == "__main__":
     main()

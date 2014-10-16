@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Python 2.7 Standard Library
+import abc
 import __builtin__
 import argparse
 import copy as _copy
@@ -195,29 +196,46 @@ nothing = type("Nothing", (object,), {})()
 # we would probably have to deal with the search for the most specialized match ... 
 # ok, that can be fun :)
 #
+
+class Sequence(object):
+    __metaclass__ = abc.ABCMeta
+
+Sequence.register(tuple)
+Sequence.register(list)
+Sequence.register(dict) # yeah, right, sue me.
+
 def transform(node, node_map=None, type_map=None, copy=True):
+    if node_map is None:
+        node_map = lambda node_: node_
     if type_map is None:
         type_map = lambda type_: type_
+    elif isinstance(type_map, dict):
+        type_map = make_type_map(type_map)
     if copy:
         node = _copy.deepcopy(node)
         copy = False
 
     new_type = type_map(type(node))
-    if isinstance(node, (PandocType, list, tuple)):
+    if isinstance(node, (PandocType, list, tuple, dict)):
+        if isinstance(node, dict):
+            node = node.items()
         new_args = [transform(arg, node_map, type_map, copy) for arg in node]
-        return f(new_type(new_args))
-    elif isinstance(node, Map): # child of unMeta or MetaMap, str keys.
-        new_args = [transform(arg, node_map, type_map, copy) for arg in node.items()]
-        return f(new_type(new_args))
+        if type(new_type) is type and issubclass(new_type, Sequence):
+            new_instance = new_type(new_args)
+        else:
+            new_instance = new_type(*new_args)
+        return node_map(new_instance) # apply node_map pre AND post ?
     else: # Python atomic type
-        return f(node)
+        return node_map(node)
 
 def make_type_map(dict_):
+    dict_ = _copy.copy(dict_)
     def type_map(type_):
         try:
             return dict_[type_]
         except KeyError:
-            # TODO: implement best-match (based on __mro__)
+            # TODO: implement best-match (based on __mro__); 
+            # extend `dict_` accordingly when a match is found. 
             raise ValueError("no matching type found")
     return type_map
 
