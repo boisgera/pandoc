@@ -39,6 +39,11 @@ from about_pandoc import *
 
 class Sequence(object):
     __metaclass__ = abc.ABCMeta
+    @staticmethod
+    def iter(sequence):
+        if isinstance(sequence, dict):
+            sequence = sequence.items()
+        return __builtin__.iter(sequence)
 
 Sequence.register(tuple)
 Sequence.register(list)
@@ -49,87 +54,33 @@ def transform(node, node_map=None, type_map=None, copy=True):
         node_map = lambda node_: node_
     if type_map is None:
         type_map = lambda type_: type_
-    elif isinstance(type_map, dict):
-        type_map = make_type_map(type_map)
     if copy:
         node = _copy.deepcopy(node)
         copy = False
 
     new_type = type_map(type(node))
     if isinstance(node, (PandocType, Sequence)):
-        if isinstance(node, dict):
-            node = node.items()
-        new_args = [transform(arg, node_map, type_map, copy) for arg in node]
+        if isinstance(node, Sequence):
+            it = Sequence.iter(node)
+        else:
+            it = __builtin__.iter(node)
+        new_args = [transform(arg, node_map, type_map, copy) for arg in it]
         if type(new_type) is type and issubclass(new_type, Sequence):
             new_instance = new_type(new_args)
         else:
             new_instance = new_type(*new_args)
-        # Q: remove the post application of node-map ?
         return node_map(new_instance)
-    else: # Python atomic type
+    else: # atom
         return node_map(node)
-
-def make_type_map(dict_):
-    dict_ = _copy.copy(dict_)
-    def type_map(type_):
-        try:
-            return dict_[type_]
-        except KeyError:
-            # TODO: implement best-match (based on __mro__); 
-            # extend `dict_` accordingly when a match is found. 
-            raise ValueError("no matching type found")
-    return type_map
-
-# Can we / Shall we restore the special interpretation of a return of None
-# or extra list levels in transform ? That can probably be achieved via
-# a special list factory right ? (a function, not a type, that will examine
-# its arguments).
-
-
-
-    
-
-def fold(f, node, copy=True):
-    if copy:
-        node = _copy.deepcopy(node)
-        copy = False 
-    if isinstance(node, PandocType):
-        type_ = type(node) 
-        args = [fold(f, arg, copy) for arg in node.args]
-        return f(type_(*args))
-    elif isinstance(node, (list, tuple)):
-        type_ = type(node)
-        items = []
-        items_ = [fold(f, item, copy) for item in node]
-        for i, item in enumerate(items_):
-            if item is None:
-                pass
-            elif isinstance(item, list) and not isinstance(node[i], list):
-                items.extend(item)
-            # The clause below works because in the pandoc model, we have no 
-            # more than two levels of lists, so a list of lists in a list node
-            # has to be an extra level added by the user to return multiple
-            # values. Note that for tuples, that appear only in maps, as pairs, 
-            # neither the key not the value may be a list so the clause above
-            # applies.
-            elif isinstance(item, list) and len(item) != 0 and isinstance(item[0], list):
-                items.extend(item)
-            else:
-                items.append(item)
-        return f(type_(items))
-    elif isinstance(node, Map): # child of unMeta or MetaMap, str keys.
-        return f(Map([fold(f, item, copy) for item in node.items()]))
-    else: # Python atomic type 
-        return f(node)
 
 # Rk: we don't know what's going on if the item gets muted during the iteration.
 #     This iter is usable to extract data or for algorithms that create new
 #     structures (and even them, copies should be made).
-def iter(item):
+def iter(node):
     "Return a tree iterator"
-    if isinstance(item, (PandocType, list, tuple)):
+    if isinstance(node, PandocType):
         it = __builtin__.iter(item)
-    elif isinstance(item, dict):
+    elif isinstance(node, Sequence):
         it = item.items()
     else: # atom
         it = None
