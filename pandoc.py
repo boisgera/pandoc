@@ -224,7 +224,7 @@ def transform(node, node_map=None, type_map=None, copy=True):
             new_instance = new_type(new_args)
         else:
             new_instance = new_type(*new_args)
-        return node_map(new_instance) # apply node_map pre AND post ?
+        return node_map(new_instance) # apply node_map pre AND post ? really ?
     else: # Python atomic type
         return node_map(node)
 
@@ -706,6 +706,9 @@ def from_json(json):
         dct = json["unMeta"]
         k_v_pairs = [(k, from_json(dct[k])) for k in dct]
         return unMeta(Map(k_v_pairs))
+    elif isinstance(json, dict):
+        k_v_pairs = [(k, from_json(json[k])) for k in json]
+        return Map(k_v_pairs)
     else:
         return json
 
