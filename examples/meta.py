@@ -22,9 +22,11 @@ def type_map(type_):
     def unwrap(*args):
         return args[0]
 
-    def to_text(args):
+    def to_text(*args):
+        print args
         doc = as_doc(args[0])
         text = to_markdown(doc)
+        print text
         if text.endswith(u"\n"):
             text = text[:-1]
         return text
