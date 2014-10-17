@@ -23,9 +23,6 @@ try:
 except:
     raise ImportError("cannot find pandoc 1.12")
 
-# Q: make pandoc optional and remove the markdown input/output from the CLI 
-#    and Python API ? Is is too smart/complex ?
-
 #
 # Metadata
 # ------------------------------------------------------------------------------
@@ -40,169 +37,12 @@ from about_pandoc import *
 # ------------------------------------------------------------------------------
 #
 
-nothing = type("Nothing", (object,), {})()
-
-# Consider map, not only fold ? What is the main pattern ?
-#
-# we want to support in-place algs & functional-style in a single scheme.
-# have a look at the classic "fold" operation on trees of func. prog.
-# (or rather, foldr).
-# NB: the classic fold is fct first, node second, change signature.
-# There is also the "initial value" in the sig, that explains how the 
-# empty list because in tree-like structures based on list, an atom
-# 5 may be represented as [5, []]. It's a way to distinguish the action
-# that is to be applied to leafs somehow.
-#
-# Consider:
-#
-#     data Tree a = Leaf a | Branch (Tree a) (Tree a) deriving (Show)
-#     data [a]    = []     | (:)    a [a]
-#
-#     treeFold :: (b -> b -> b) -> (a -> b) -> Tree a -> b
-#     treeFold fbranch fleaf = g where
-#       g (Leaf x) = fleaf x
-#       g (Branch left right) = fbranch (g left) (g right)
-#
-# This fold specifies TWO functions, one to be used if the node is a leaf,
-# the other one to use if the node is a branch (given that the subnodes
-# have already been transformed). Here we don't care that much because the
-# writer of the transformation can look the type of the object to see if
-# it's primitive or not.
-#
-# Our structure is a bit more complex: our pandoc node is either a primitive
-# object, or made of:
-#   - a type
-#   - a tuple of primitive / pandoc types / lists / dicts (k: string, v: anything)
-#
-# Ouch. "Tuple" here is meant to represent fixed-width, heterogeneous collection
-# of stuff, it doesn't make sense to iterate on it automatically. The iteration
-# that fold achieves can/shall be done on lists and dicts however, but how this
-# thing translates into the management of the type arguments cannot be done
-# automatically.
-#
-# OK, so the writer of transformations has to write rules to deal with:
-#   1. atoms (Python primitive, non-container types). 
-#   2. lists (unknown length, homogeneous type).
-#   3. dicts (ordered, string key, node values) ... or lists of tuples
-#   4. pandoc nodes.
-#
-# The implementaion of a transformation would typically be:
-# if pandoc doc stuff, if list do stuff, if dict do stuff, else, this is
-# an atom, do stuff.
-# 
-# What do we do on lists and dicts ? Even list is not trivial, because it is
-# not into the classic car-cons shape. And we cannot only apply the 
-# transformation to each member of the list ... YES, we can do that in foldr,
-# THEN give the result back to the transformation writer that may change
-# the "type" of the list object accordingly.
-#
-# What is the responsibility of fold wtf dicts ? Apply the transformation
-# to values only ? Consider that the structure is DICT [LIST-OF-PAIRS]
-# and use the same mecanism as for pandoc types ? (the transf. writer then
-# relies on the detection of tuples to know that a dict is iterated and
-# the contract is that he is supposed to return the same kind of output ?
-# (or instances of Nothing to get rid of stuff ? How to add stuff ? That
-# has to be done at the dict level ? Mmmm that can probably be managed at
-# the intermediate LIST level instead where sublists and nothings could
-# be managed/consolidated (by the user)). But at the list-level, we do
-# have the context that this is a dict ... that's tricky. AH ! We could
-# advocated a coding ? Like, replace "a": 56 with "a": None or "a": [1,2,3]
-# and consolidate at the dict level (by the user) ? This is not totally
-# stupid and somehow similar to how lists and handled (dispatch + consolid.
-# at the type level)
-#
-# Note that most of the time, it is useless to transform directly the
-# primitive types. Only the context in which they are used is useful to
-# determine what to do, so that's in the holder, a pandoc type instance,
-# that we can do something. Example: don't transform str atoms, transform
-# Str pandoc types.
-
-# TODO: review iteration to make it consistent with fold.
-
-# TODO: dude, we deal with MUTABLE structures here, make sure we copy stuff
-#       by default ? We wouldn't want our result to get entangled with the
-#       input data structure.
-
-# TODO: we need to support object replacement, do-not-change, object replacement
-#       by a collection of objects and object deletion, either in this fold fct,
-#       or by patterns in client code that are compatible with fold. Another
-#       possibility would be for the user to install filters applied in
-#       each clause. Would it make the job ? MMmmm maybe at the right level.
-#       applied on the [fold(sub) for sub in ...] list to get a new list.
-#       rk: everything is easy to support (at least for lists), but the 
-#       insertion of a collection. The pandocfilters trick to use a list has
-#       issues: it is ambiguous when the child *already* are lists. 
-# UP:   We could use an extra level of list and detect that. That would
-#       not be ambiguous. ... EXCEPT IF WE HAVE SOME EMPTY LISTS ? Think of it ...
-#       Consider BulletList for example that contains a [[Block]]
-# TODO: adaptation for types that are not lists ?
-
-# BUG: this is not a true "fold", we could not use it to map for example an
-#      unMeta instance to a Python dict with only Python lists, dicts, etc.
-#      So: 1) what is it ? 2) can I implement a scheme that is general enough ?
-#      Is it an implementation of fmap ? We change the content of the leaves
-#      but not the nature of the constructors of the trees ? (Actually, we
-#      also do a bit more surgery with the leaves but forget that for a while).
-#      MMmmm, not totally true, because f is also called after the fold on the
-#      arguments, so we can change the type of the result. 
-#      Have a look at <http://en.wikipedia.org/wiki/Map_%28higher-order_function%29>
-#      Think of the need for a more general system wrt the "meta" use case,
-#      when you wan to end up with a Python/JSON data structure, without all
-#      the funny type tags.
-#   
-# TODO: consider the complex structure of Pandoc documents as a "uniform"
-#       tree where the container nodes hold a type tag ? And then offer
-#       a transformation process parametrized by one function that acts
-#       on nodes (type arguments), and the other on TYPES (aka constructor
-#       themselves ?). Would it be convenient AND solve the need to change
-#       fundamentally the tree structure without breaking typing of constructor
-#       arguments ?
-
-# TODO: make two functions ? One simple one ("map") that does not change the
-#       type of the nodes and works only with instances and the other one
-#       ("fold") that is used to implement the first and can change the type
-#       of the nodes ? MMmmph, not the right terms. Have a look at "fmap" too,
-#       and Functors (includes map applied to trees).
-#       <http://en.wikibooks.org/wiki/Haskell/The_Functor_class>
-#       Also look at "scrap your boilerplate" by Peyton-Jones ? (the old
-#       version of the paper, with "Generic Programming" in the title).
-#       In this paper, the author considers "transforms" (where the type
-#       of the nodes is unchanged), then "queries" (where the output has
-#       a fixed type that does not depend on the node type) ; we have a
-#       more general scheme: any type can be transformed to something else
-#       so we can build from a pandoc document any other document with a
-#       totally different grammar. Homogeneous transformations and queries
-#       are special cases of that ... The article calls the step from local
-#       transform to tree transform everywhere ... urk.
-#       See the annex 9.2 of the article for a discussion of the "non-recursive
-#       map trick".
-#       See also "A Fold for All Seasons" by Sheard & Fegaras.
-
-# Signature for f ? takes type + args and returns an instance ? And optionnaly
-# in the transform list of arguments, you can simplify to get heterogeneous
-# transform instead or query ?
-# To deal with primitive vs type/args construct, one could have args set to
-# None (that means, you have an instance), and check that the first argument
-# is not an instance of type.
-# 
-# Introduce a "type-to-type" mapping to let transform take care of the
-# type transform ? (can be a function or a dict) ; that only means that
-# the selection of the type cannot depend on the args, which is probably
-# not a big restriction (and may even be a sound one). Erf. And even then:
-# the target type can be a function that examines the args before it
-# produces an actual instance, so complex schemes can theoretically be
-# implemented.
-# That argument could be a function (easy), or in simple cases a dict, but then
-# we would probably have to deal with the search for the most specialized match ... 
-# ok, that can be fun :)
-#
-
 class Sequence(object):
     __metaclass__ = abc.ABCMeta
 
 Sequence.register(tuple)
 Sequence.register(list)
-Sequence.register(dict) # yeah, right, sue me.
+Sequence.register(dict)
 
 def transform(node, node_map=None, type_map=None, copy=True):
     if node_map is None:
@@ -216,7 +56,7 @@ def transform(node, node_map=None, type_map=None, copy=True):
         copy = False
 
     new_type = type_map(type(node))
-    if isinstance(node, (PandocType, list, tuple, dict)):
+    if isinstance(node, (PandocType, Sequence)):
         if isinstance(node, dict):
             node = node.items()
         new_args = [transform(arg, node_map, type_map, copy) for arg in node]
@@ -224,7 +64,8 @@ def transform(node, node_map=None, type_map=None, copy=True):
             new_instance = new_type(new_args)
         else:
             new_instance = new_type(*new_args)
-        return node_map(new_instance) # apply node_map pre AND post ? really ?
+        # Q: remove the post application of node-map ?
+        return node_map(new_instance)
     else: # Python atomic type
         return node_map(node)
 
