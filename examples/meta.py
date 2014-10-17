@@ -17,9 +17,6 @@ def as_doc(inline_or_block):
     doc = Pandoc(unMeta(Map()), inline_or_block)
     return doc
 
-def node_map(node):
-    return node
-
 def type_map(type_):
 
     def unwrap(*args):
@@ -27,25 +24,23 @@ def type_map(type_):
 
     def to_text(args):
         doc = as_doc(args[0])
-        return to_markdown(doc)
+        text = to_markdown(doc)
+        if text.endswith(u"\n"):
+            text = text[:-1]
+        return text
 
     if issubclass(type_, Meta):
+        assert type_ is unMeta
         return unwrap
     elif issubclass(type_, MetaValue):
-        if type_ is MetaMap:
+        if type_ in (MetaMap, MetaList, MetaBool, MetaString):
             return unwrap
-        elif type_ is MetaList:
-            return unwrap
-        elif type_ is MetaBool:
-            return unwrap
-        elif type_ is MetaString:
-            return unwrap
-        elif type_ is MetaInlines:
-            return to_text
-        elif type_ is MetaBlocks:
+        elif type_ in (MetaInlines, MetaBlocks):
             return to_text
         else:
-            raise AssertionError("invalid Meta type")
+            type_name = type_.__name__
+            error = "invalid MetaValue type {0!r}"
+            raise AssertionError(error.format(type_name))
     else:
         return type_
 
@@ -68,10 +63,8 @@ def main():
 
     doc = from_markdown(src)
 
-    meta = doc[0] # ok. The DOM is borked already, some 't', 'c' stuff is still there.
-    args.output.write(repr(meta) + 2*"\n") 
-    meta = transform(meta, node_map, type_map)
-    args.output.write(repr(meta) + 2*"\n")
+    meta = doc[0] 
+    meta = transform(meta, type_map=type_map)
     json_ = json.dumps(meta)
     args.output.write(json_ + "\n")
 
