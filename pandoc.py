@@ -81,7 +81,7 @@ def iter(node):
     if isinstance(node, PandocType):
         it = __builtin__.iter(item)
     elif isinstance(node, Sequence):
-        it = item.items()
+        it = Sequence.iter(node)
     else: # atom
         it = None
 
