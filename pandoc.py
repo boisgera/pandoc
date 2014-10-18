@@ -83,13 +83,12 @@ def iter(node):
     elif isinstance(node, Sequence):
         it = Sequence.iter(node)
     else: # atom
-        it = None
+        it = __builtin__.iter([])
 
     yield item
-    if it is not None:
-        for subitem in it:
-            for subsubitem in iter(subitem):
-                yield subsubitem
+    for subitem in it:
+        for subsubitem in iter(subitem):
+            yield subsubitem
 
 class Map(collections.OrderedDict):
     "Ordered Dictionary"
