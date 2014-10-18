@@ -75,7 +75,7 @@ def transform(node, node_map=None, type_map=None, copy=True):
 
 # Rk: we don't know what's going on if the item gets muted during the iteration.
 #     This iter is usable to extract data or for algorithms that create new
-#     structures (and even them, copies should be made).
+#     structures (and even then, copies should be made).
 def iter(node):
     "Return a tree iterator"
     if isinstance(node, PandocType):
