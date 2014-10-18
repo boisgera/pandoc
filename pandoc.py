@@ -97,6 +97,7 @@ class Map(collections.OrderedDict):
 # TODO: refactor: reduce code duplication 
 # TODO: consider: no newline for ",", no nesting for single items.
 #       It would be more compact and probably more readable for most docs.
+# TODO: consider several possible levels of expansion, invoked with -x, -xx, etc.
 def alt_repr(item, depth=0):
     pad = 2 * u" "
     tab = depth * pad
