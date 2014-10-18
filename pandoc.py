@@ -545,6 +545,9 @@ def to_markdown(doc):
 # ------------------------------------------------------------------------------
 #
 
+# TODO: accept inlines(s) and block(s) fragement as valid data ; 
+#       expose the function that wraps them in a doc.  
+
 def main():
     "CLI entry point, exposed as pandoc-convert"
 
