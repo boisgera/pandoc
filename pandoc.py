@@ -549,7 +549,7 @@ def to_markdown(doc):
 #       expose the function that wraps them in a doc.  
 
 def main():
-    "CLI entry point, exposed as pandoc-convert"
+    "CLI entry point, invoked as `python -m pandoc`"
 
     description = "Convert pandoc formats."
     parser = argparse.ArgumentParser(description=description)
