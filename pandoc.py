@@ -447,8 +447,7 @@ Strikeout [Inline]
 Superscript [Inline]	
 Subscript [Inline]	
 SmallCaps [Inline]	
-Quoted QuoteType [Inline]	
-Cite [Citation] [Inline]	
+Quoted QuoteType [Inline]
 Code Attr String	
 Space	
 LineBreak	
@@ -468,6 +467,80 @@ declare_types(\
 DisplayMath
 InlineMath
 """, MathType)
+
+#
+# Citations
+# ------------------------------------------------------------------------------
+#
+
+# Oo, this is messy. When the --bibliography option is not given to pandoc
+# citations are available as the following 'Cite' inline:
+#
+#     [{"t":"Cite","c":[
+#       [
+#         {"citationSuffix":[],
+#          "citationNoteNum":0,
+#          "citationMode":{"t":"NormalCitation","c":[]},
+#          "citationPrefix":[],
+#          "citationId":"Rud87",
+#          "citationHash":0}
+#       ],
+#       [
+#         {"t":"Str","c":"[@Rud87]"}
+#       ]
+#     ]}]}]]
+#
+# and when the bibliography is resolved, the second part ([@Rud87]) is 
+# substituted with a list of inlines (the citation content):
+#
+#
+#     [{"t":"Cite","c":[
+#       [
+#         {"citationSuffix":[],
+#          "citationNoteNum":0,
+#          "citationMode":{"t":"NormalCitation","c":[]},
+#          "citationPrefix":[],
+#          "citationId":"Rud87",
+#          "citationHash":1
+#         }
+#       ],
+#       LIST_OF_INLINES (the citation content) 
+#     ]}]
+#
+# AND, there is some reference to the bibliography file in the metadata.
+# (but the 'content' of the citation is NOT printed with the markdown output
+# anyway ... that's kinda weird if you ask me (and not a behavior shared by
+# all backends). Well anyway: json format can embed the citation data
+# but the markdown output won't. 
+
+# Concretely, if I keep on opening the markdown files myself (without any
+# reference to a bibliography file), I am gonna miss the citations content.
+
+
+class Cite(Inline):
+    args_type = [["list", ["Citation"]], ["list", ["Inline"]]]
+
+    
+#declare_types(\
+#"""
+#citationId :: String
+#citationPrefix :: [Inline]
+#citationSuffix :: [Inline]
+#citationMode :: CitationMode
+#citationNoteNum :: Int
+#citationHash :: Int
+#""", Citation)
+
+class CitationMode(PandocType):
+    pass
+
+declare_types(\
+"""
+Constructors
+AuthorInText
+SuppressAuthor
+NormalCitation
+""", CitationMode)
 
 #
 # Json to Pandoc and Pandoc to Json
