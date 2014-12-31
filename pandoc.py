@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 # Python 2.7 Standard Library
-import abc
 import __builtin__
+import abc
 import argparse
 import copy as _copy
 import collections
+import contextlib
 import json
 import os.path
 import re
@@ -49,6 +50,7 @@ Sequence.register(tuple)
 Sequence.register(list)
 Sequence.register(dict)
 
+# TODO: migrate in a distinct module the transform part.
 def transform(node, node_map=None, type_map=None, copy=True):
     if node_map is None:
         node_map = lambda node_: node_
@@ -94,6 +96,14 @@ def iter(node):
 class Map(collections.OrderedDict):
     "Ordered Dictionary"
 
+map = Map
+list = list
+tuple = tuple # arf. We store tuples as list to get mutability ... sort that out !
+Int = int = int
+Bool = bool = bool
+String = unicode = unicode
+Double = float = float
+
 # TODO: refactor: reduce code duplication 
 # TODO: consider: no newline for ",", no nesting for single items.
 #       It would be more compact and probably more readable for most docs.
@@ -138,6 +148,15 @@ def alt_repr(item, depth=0):
         out = [tab, repr(string)]
     return u"".join(out) 
 
+_typecheck = True
+
+@contextlib.contextmanager
+def no_typecheck():
+    global _typecheck
+    status = _typecheck
+    _typecheck = False
+    yield
+    _typecheck = status
 
 class PandocType(object):
     """
@@ -160,6 +179,16 @@ class PandocType(object):
 
     def __init__(self, *args):
         self.args = list(args) # ensure mutability
+        if _typecheck:
+            self.typecheck()
+
+    def typecheck(self, recursive=False):
+        if len(self.args) != len(self.args_type):
+            error = "invalid number of arguments, {0} instead of {1}"
+            raise TypeError(error.format(len(self.args), len(self.args_type)))
+        else:
+            for arg, type in zip(self.args, self.args_type):
+                typecheck(arg, type, recursive=recursive)
 
 # ------------------------------------------------------------------------------
 # The list-like methods can be handy, but that should not go too far: PandocType
@@ -167,7 +196,7 @@ class PandocType(object):
 # typed/tagged structure that *wraps* (but is not) a inhomogeneous, fixed-length, 
 # mutable sequence, hence a hybrid of tuple and list.
 
-    def __iter__(self):
+    def __iter__(self): # Maybe __iter__ should not be implemented ...
         "Return a child iterator"
         return __builtin__.iter(self.args)
 
@@ -177,7 +206,7 @@ class PandocType(object):
     def __setitem__(self, i, value):
         self.args[i] = value
 
-    def __len__(self):
+    def __len__(self): # I don't know about len either ...
         return len(self.args)
 
     def iter(self):
@@ -316,10 +345,75 @@ def parse(tokens):
 
     return ast
 
+# TODO: the typechecker does not grok derivation so far. So for example a type
+#       spec may refer to "unMeta" but a Meta is actually used. The args_type
+#       of Meta is irrelevant, None should be used, this is abstract
+
+def typecheck(item, type, recursive=False):
+
+    # `type` can be for example: "Block", Block, ["list", ["Block"]], list
+
+    # `recursive=False` means don't recurse on pandoc types, but we still
+    # check the native Python objects, that do not typecheck in __init__.
+
+    # TODO: handle tuples properly: tuples exist as lists in the json AND
+    #       we also store them as lists (ex: Attr) to keep the mutability.
+    #       Only maps have "real" tuples ? Check that. Rethink the mutability ?
+    #       Mutability matters, but the ability to infer the "natural" Python
+    #       type from the Haskell spec also matters ... Think about Attr and Map
+    #       together wrt the use of tuples (these are the only occurences afaict)
+
+    types = globals()
+    if isinstance(type, str):
+        root_type = type = types[type]
+    if isinstance(type, __builtin__.type) and not issubclass(type, PandocType):
+        assert type in (list, tuple, map, int, bool, unicode, float)
+        return isinstance(item, type) # relax for tuples.
+
+    if isinstance(type, list):
+        root_type = types[type[0]] 
+
+    if issubclass(root_type, PandocType):
+        if not isinstance(item, root_type):
+            error = "{0} is not of type {1}"
+            raise TypeError(error.format(item, root_type))
+        root_type = __builtin__.type(item)
+        if recursive:
+            if len(list(item)) != len(root_type.args_type):
+                error = "invalid number of arguments, {0} instead of {1}"
+                raise TypeError(error.format(len(list(item)), len(root_type.args_type)))
+            else:
+                for _type, child in zip(root_type.args_type, list(item)):
+                    typecheck(child, _type, recursive=recursive)
+    else:
+        assert root_type in (list, tuple, map)
+        if not isinstance(item, root_type): # relax for tuples.
+            error = "{0} is not of type {1}"
+            raise TypeError(error.format(item, root_type))
+        if root_type is list:
+            for child in list(item):
+                child_type = type[1][0]
+                typecheck(child, child_type, recursive=recursive)
+        elif root_type is tuple:
+            child_types = type[1]
+            if len(child_types) !=  len(list(item)):
+                error = "invalid number of arguments, {0} instead of {1}"
+                raise TypeError(error.format(len(child_types), len(list(item))))
+            else:
+               for _type, child in zip(child_types, list(item)):
+                   typecheck(child, _type, recursive=recursive)
+        elif root_type is map:
+            map_as_list = list(Sequence.iter(item))
+            kv_type = type[1]
+            _type = ["list", ["tuple", kv_type]]
+            typecheck(map_as_list, _type, recursive=recursive)
+
 
 # ------------------------------------------------------------------------------
 
-def declare_types(type_spec, bases=object, dct={}):
+def declare_types(type_spec, bases=object, inline={}, dct={}):
+    for k, v in Map(inline).items():
+        type_spec = re.sub(r"\b{0}\b".format(k), v, type_spec)
     if not isinstance(bases, (tuple, list)):
         bases = (bases,)
     else:
@@ -344,10 +438,11 @@ class Pandoc(PandocType):
         return write(self)
 
 class Meta(PandocType):
+    args_type = None
     pass
 
 class unMeta(Meta):
-    args_type = ["MetaValue"]
+    args_type = [["map", ["String", "MetaValue"]]]
 
     # unMeta does not follow the json representation with 't' and 'k' keys.
     def __json__(self):
@@ -382,6 +477,8 @@ class Block(PandocType):
     # Mmmm but we could have to redefine the constructor in every 
     # derived class. Have a look at ABC ?
 
+# TODO: manage ListAttributes and derived stuff.
+
 declare_types(\
 """
 Plain [Inline]
@@ -397,7 +494,40 @@ HorizontalRule
 Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]
 Div Attr [Block]
 Null
-""", Block)
+""", 
+Block, 
+inline={
+  "Attr": "(String, [String], [(String, String)])", 
+  "TableCell": "[Block]",
+  "ListAttributes": "(Int, ListNumberStyle, ListNumberDelim)",
+})
+
+class ListNumberStyle(PandocType):
+    pass
+
+declare_types(\
+"""
+DefaultStyle	 
+Example	 
+Decimal	 
+LowerRoman	 
+UpperRoman	 
+LowerAlpha	 
+UpperAlpha
+""",
+ListNumberStyle)
+
+class ListNumberDelim(PandocType):
+    pass
+
+declare_types(\
+"""
+DefaultDelim	 
+Period	 
+OneParen	 
+TwoParens
+"""
+)
 
 class Alignment(PandocType):
     pass
@@ -457,7 +587,9 @@ Link [Inline] Target
 Image [Inline] Target	
 Note [Block]	
 Span Attr [Inline]	
-""", Inline)
+""", 
+Inline,
+inline={"Attr": "(String, [String], [(String, String)])", "Target": "(String, String)"})
 
 class MathType(PandocType):
     pass
@@ -547,12 +679,58 @@ NormalCitation
 # ------------------------------------------------------------------------------
 #
 
+# TODO: the parsing of Attr has issues : as in the json, they are represented as
+#       lists instead of tuples. The issue is that we cannot infer the correct
+#       type (and coerce to it), unless we take into account the (type) context.
+#       Short-term: hack something.
+#       Long-term: drive the reco by the type info.
+
+def _Attrify(type, args):
+    """\
+Turn list-based descriptions of Attr into:
+    
+    (String, [String], [(String, String)])
+"""
+    _Attr_holders = Map([(Code, 0), (CodeBlock, 0), (Div, 0), (Header, 1), (Span, 0)])
+    if type in _Attr_holders.keys():
+        index = _Attr_holders[type]
+        attr = args[index]
+        first, second, third = attr
+        third = [tuple(child) for child in third]
+        args[index] = tuple([first, second, third])
+
+def _Targetify(type, args):
+    """\
+Turn list-based descriptions of Target into:
+
+    (String, String)
+"""
+    _Target_holders = Map([(Link, 1), (Image, 1)])
+    if type in _Target_holders.keys():
+        index = _Target_holders[type]
+        args[index] = tuple(args[index])
+
+def _DefinitionListify(type, args):
+    """
+    --> [([Inline], [[Block]])]
+"""
+
+    if type is DefinitionList:
+        args[:] = [tuple(item) for item in args]
+
+def _ListAttributesify(type, args):
+    """
+    """
+    if type is OrderedList:
+        args[0] = tuple(args[0])
+
 def from_json(json):
     def is_doc(item):
         return isinstance(item, list) and \
                len(item) == 2 and \
                isinstance(item[0], dict) and \
                "unMeta" in item[0].keys()
+
     if is_doc(json):
         return Pandoc(*[from_json(item) for item in json])
     elif isinstance(json, list):
@@ -561,6 +739,10 @@ def from_json(json):
         pandoc_type = eval(json["t"])
         contents = json["c"]
         pandoc_contents = from_json(contents)
+        _Attrify(pandoc_type, pandoc_contents)
+        _Targetify(pandoc_type, pandoc_contents)
+        _DefinitionListify(pandoc_type, pandoc_contents)
+        _ListAttributesify(pandoc_type, pandoc_contents)
         args_type = pandoc_type.args_type
         if len(args_type) == 1 and args_type[0][0] == "list" or\
            not isinstance(pandoc_contents, list):
