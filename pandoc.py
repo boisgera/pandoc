@@ -453,6 +453,7 @@ class unMeta(Meta):
 class MetaValue(PandocType):
     pass
 
+# BUG: MetaMap incorrectly parsed as tuple of stuff, solve that.
 declare_types(\
 """
 MetaMap (Map String MetaValue)
