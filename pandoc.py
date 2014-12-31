@@ -454,6 +454,7 @@ class MetaValue(PandocType):
     pass
 
 # BUG: MetaMap incorrectly parsed as tuple of stuff, solve that.
+#      Then test typechecking with the sandbox/meta.txt example.
 declare_types(\
 """
 MetaMap (Map String MetaValue)
