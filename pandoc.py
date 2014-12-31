@@ -24,6 +24,10 @@ try:
 except:
     raise ImportError("cannot find pandoc 1.12")
 
+# TODO: rethink the tuple thing. Tuple may yield a structure closer to the
+#       original one, but also limit the mutability. Replace tuples with
+#       list and update the typechecking accordingly ? (even in maps ?)
+
 #
 # Metadata
 # ------------------------------------------------------------------------------
