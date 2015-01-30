@@ -20,9 +20,9 @@ try:
     pandoc = sh.pandoc
     magic, version = sh.pandoc("--version").splitlines()[0].split()
     assert magic == "pandoc"
-    assert version.startswith("1.12")
+    assert version >= "1.12"
 except:
-    raise ImportError("cannot find pandoc 1.12")
+    raise ImportError("cannot find pandoc >= 1.12")
 
 # TODO: rethink the tuple thing. Tuple may yield a structure closer to the
 #       original one, but also limit the mutability. Replace tuples with
