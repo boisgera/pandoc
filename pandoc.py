@@ -20,13 +20,18 @@ try:
     pandoc = sh.pandoc
     magic, version = sh.pandoc("--version").splitlines()[0].split()
     assert magic == "pandoc"
-    assert version.startswith("1.12")
+    assert version.startswith("1.12") or version.startswith("1.13")
 except:
-    raise ImportError("cannot find pandoc 1.12")
+    raise ImportError("cannot find pandoc 1.12 / 1.13")
 
 # TODO: rethink the tuple thing. Tuple may yield a structure closer to the
 #       original one, but also limit the mutability. Replace tuples with
 #       list and update the typechecking accordingly ? (even in maps ?)
+
+# TODO: analyze jQuery-like style to implement (mutable) transformations.
+#       Selectors mutable transforms that apply on all elements of the list.
+#       What would selector look like ? getattr magic to be applied to a
+#       list-derived type ?
 
 #
 # Metadata
