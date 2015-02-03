@@ -160,12 +160,12 @@ def alt_repr(item, depth=0):
 _typecheck = True
 
 @contextlib.contextmanager
-def no_typecheck():
+def enable_typecheck(status):
     global _typecheck
-    status = _typecheck
-    _typecheck = False
-    yield
+    _status = _typecheck
     _typecheck = status
+    yield
+    _typecheck = _status
 
 class PandocType(object):
     """
@@ -360,6 +360,8 @@ def parse(tokens):
 
 def typecheck(item, type, recursive=False):
 
+    print "t args:", item, type, recursive
+
     # `type` can be for example: "Block", Block, ["list", ["Block"]], list
 
     # `recursive=False` means don't recurse on pandoc types, but we still
@@ -508,7 +510,8 @@ Null
 """, 
 Block, 
 inline={
-  "Attr": "(String, [String], [(String, String)])", 
+  "Attr": "(String, [String], [(String, String)])",
+  "Format": "String", 
   "TableCell": "[Block]",
   "ListAttributes": "(Int, ListNumberStyle, ListNumberDelim)",
 })
@@ -600,7 +603,9 @@ Note [Block]
 Span Attr [Inline]	
 """, 
 Inline,
-inline={"Attr": "(String, [String], [(String, String)])", "Target": "(String, String)"})
+inline={"Attr": "(String, [String], [(String, String)])", 
+        "Format": "String", 
+        "Target": "(String, String)"})
 
 class MathType(PandocType):
     pass
@@ -664,18 +669,38 @@ class Cite(Inline):
     args_type = [["list", ["Citation"]], ["list", ["Inline"]]]
 
     
-#declare_types(\
-#"""
-#citationId :: String
-#citationPrefix :: [Inline]
-#citationSuffix :: [Inline]
-#citationMode :: CitationMode
-#citationNoteNum :: Int
-#citationHash :: Int
-#""", Citation)
+class Citation(object):
+    pass
 
 class CitationMode(PandocType):
     pass
+
+declare_types(\
+"""
+AuthorInText	 
+SuppressAuthor	 
+NormalCitation
+""", CitationMode)
+
+
+
+
+# This is a mistake: Citation is not a collection of possible constructors here,
+# but a "struct" with several fields. Define accordingly ! And update the
+# typechecker for "structs". Here "Citation" does not wrap but "is" a struct,
+# there is no type info with "citation".
+
+declare_types(\
+"""
+citationId :: String
+citationPrefix :: [Inline]
+citationSuffix :: [Inline]
+citationMode :: CitationMode
+citationNoteNum :: Int
+citationHash :: Int
+""", Citation)
+
+
 
 declare_types(\
 """
@@ -840,6 +865,10 @@ def main():
                         dest = "alt",
                         action = "store_true",
                         help = "expand the representation")
+    parser.add_argument("-n", "--no-typecheck", 
+                        dest = "typecheck_status",
+                        action = "store_false",
+                        help = "disable pandoc type checker")
     args = parser.parse_args()
 
     readers = dict(markdown=from_markdown, json=from_json_str, python=eval)
@@ -888,7 +917,10 @@ def main():
         args.input.close()
     except AttributeError:
         pass
-    output = writer(reader(input))
+
+    with enable_typecheck(args.typecheck_status):
+        output = writer(reader(input))
+
     if output and output[-1] != "\n":
         output += "\n"
     args.output.write(output)
