@@ -1,0 +1,6 @@
+
+
+  - generate the classes from type hierarchy, create a 
+    "type name to Python class" map.
+
+  - generate the parser
