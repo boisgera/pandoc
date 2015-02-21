@@ -19,7 +19,7 @@ hs_to_py = {}
 # so pandoc (the Haskell lib/prg) is not required.
 
 # List of features shared by pandoc types (eventually):
-#   - repr / str 
+#   - repr / str / pprint ?
 #   - ==
 #   - type-checking / signature ----> target 2.0
 #   - "pickable" ----> see later
@@ -29,10 +29,25 @@ hs_to_py = {}
 # specific settings of Aeson ATM in the Python model.
 
 class PandocType(object): # TODO: abstract type
-    pass
+    def __init__(self, *args):
+        self.args = args
+    
+for type_name, decl in hs.items():
+    print decl[0]
+    if decl[0] == "data":
+        hs_to_py[type_name] = parent = type(type_name, (PandocType,), {})
+        constructors = decl[1][1]
+        for constructor in constructors:
+            constructor_name = constructor[0]
+            hs_to_py[constructor_name] = type(constructor_name, (parent,), {})
+
+globs = globals()
+for type_name, type in hs_to_py.items():
+    globs[type_name] = type
 
 # for "data" types (or "newtype", look at the constructors ; if all of them have 
-# arguments, create an abstract base type, otherwise a normal one. 
+# arguments, create an abstract base type, otherwise a normal one. (First step:
+# make the easiest think that works: don't bother with abstract data types) 
 # For every constructor
 # without arguments, create a named singleton instance. For the other ones,
 # create a derived types with *args constructor sign. (for now, no typechecking

@@ -15,8 +15,8 @@ type_declarations = [
   [ 'Attr',
     [ 'tuple',
       [ 'String',
-        ['list', 'String'],
-        ['list', ['tuple', ['String', 'String']]]]]]]
+        ['list', ['String']],
+        ['list', [['tuple', ['String', 'String']]]]]]]]
 ,
 
 # data Block
@@ -35,25 +35,26 @@ type_declarations = [
 #   | Null
 [ 'data',
   [ 'Block',
-    [ ['Plain', [['list', 'Inline']]],
-      ['Para', [['list', 'Inline']]],
+    [ ['Plain', [['list', ['Inline']]]],
+      ['Para', [['list', ['Inline']]]],
       ['CodeBlock', ['Attr', 'String']],
       ['RawBlock', ['Format', 'String']],
-      ['BlockQuote', [['list', 'Block']]],
-      ['OrderedList', ['ListAttributes', ['list', ['list', 'Block']]]],
-      ['BulletList', [['list', ['list', 'Block']]]],
+      ['BlockQuote', [['list', ['Block']]]],
+      ['OrderedList', ['ListAttributes', ['list', [['list', ['Block']]]]]],
+      ['BulletList', [['list', [['list', ['Block']]]]]],
       [ 'DefinitionList',
         [ [ 'list',
-            ['tuple', [['list', 'Inline'], ['list', ['list', 'Block']]]]]]],
-      ['Header', ['Int', 'Attr', ['list', 'Inline']]],
+            [ [ 'tuple',
+                [['list', ['Inline']], ['list', [['list', ['Block']]]]]]]]]],
+      ['Header', ['Int', 'Attr', ['list', ['Inline']]]],
       ['HorizontalRule', []],
       [ 'Table',
-        [ ['list', 'Inline'],
-          ['list', 'Alignment'],
-          ['list', 'Double'],
-          ['list', 'TableCell'],
-          ['list', ['list', 'TableCell']]]],
-      ['Div', ['Attr', ['list', 'Block']]],
+        [ ['list', ['Inline']],
+          ['list', ['Alignment']],
+          ['list', ['Double']],
+          ['list', ['TableCell']],
+          ['list', [['list', ['TableCell']]]]]],
+      ['Div', ['Attr', ['list', ['Block']]]],
       ['Null', []]]]]
 ,
 
@@ -69,8 +70,8 @@ type_declarations = [
     [ [ 'Citation',
         [ 'struct',
           [ ['citationId', 'String'],
-            ['citationPrefix', ['list', 'Inline']],
-            ['citationSuffix', ['list', 'Inline']],
+            ['citationPrefix', ['list', ['Inline']]],
+            ['citationSuffix', ['list', ['Inline']]],
             ['citationMode', 'CitationMode'],
             ['citationNoteNum', 'Int'],
             ['citationHash', 'Int']]]]]]]
@@ -108,23 +109,23 @@ type_declarations = [
 [ 'data',
   [ 'Inline',
     [ ['Str', ['String']],
-      ['Emph', [['list', 'Inline']]],
-      ['Strong', [['list', 'Inline']]],
-      ['Strikeout', [['list', 'Inline']]],
-      ['Superscript', [['list', 'Inline']]],
-      ['Subscript', [['list', 'Inline']]],
-      ['SmallCaps', [['list', 'Inline']]],
-      ['Quoted', ['QuoteType', ['list', 'Inline']]],
-      ['Cite', [['list', 'Citation'], ['list', 'Inline']]],
+      ['Emph', [['list', ['Inline']]]],
+      ['Strong', [['list', ['Inline']]]],
+      ['Strikeout', [['list', ['Inline']]]],
+      ['Superscript', [['list', ['Inline']]]],
+      ['Subscript', [['list', ['Inline']]]],
+      ['SmallCaps', [['list', ['Inline']]]],
+      ['Quoted', ['QuoteType', ['list', ['Inline']]]],
+      ['Cite', [['list', ['Citation']], ['list', ['Inline']]]],
       ['Code', ['Attr', 'String']],
       ['Space', []],
       ['LineBreak', []],
       ['Math', ['MathType', 'String']],
       ['RawInline', ['Format', 'String']],
-      ['Link', [['list', 'Inline'], 'Target']],
-      ['Image', [['list', 'Inline'], 'Target']],
-      ['Note', [['list', 'Block']]],
-      ['Span', ['Attr', ['list', 'Inline']]]]]]
+      ['Link', [['list', ['Inline']], 'Target']],
+      ['Image', [['list', ['Inline']], 'Target']],
+      ['Note', [['list', ['Block']]]],
+      ['Span', ['Attr', ['list', ['Inline']]]]]]]
 ,
 
 # type ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
@@ -182,15 +183,15 @@ type_declarations = [
 [ 'data',
   [ 'MetaValue',
     [ ['MetaMap', [['map', ['String', 'MetaValue']]]],
-      ['MetaList', [['list', 'MetaValue']]],
+      ['MetaList', [['list', ['MetaValue']]]],
       ['MetaBool', ['Bool']],
       ['MetaString', ['String']],
-      ['MetaInlines', [['list', 'Inline']]],
-      ['MetaBlocks', [['list', 'Block']]]]]]
+      ['MetaInlines', [['list', ['Inline']]]],
+      ['MetaBlocks', [['list', ['Block']]]]]]]
 ,
 
 # data Pandoc = Pandoc Meta [Block]
-['data', ['Pandoc', [['Pandoc', ['Meta', ['list', 'Block']]]]]]
+['data', ['Pandoc', [['Pandoc', ['Meta', ['list', ['Block']]]]]]]
 ,
 
 # data QuoteType = SingleQuote | DoubleQuote
@@ -198,7 +199,7 @@ type_declarations = [
 ,
 
 # type TableCell = [Block]
-['type', ['TableCell', ['list', 'Block']]]
+['type', ['TableCell', ['list', ['Block']]]]
 ,
 
 # type Target = (String, String)

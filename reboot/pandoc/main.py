@@ -107,7 +107,7 @@ def p_type_conid(p):
 
 def p_type_list(p):
     "type : LBRACKET type RBRACKET"
-    p[0] = ["list", p[2]]
+    p[0] = ["list", [p[2]]]
 
 def p_comma_separated_types_2(p):
     "comma_separated_types : type COMMA type"
