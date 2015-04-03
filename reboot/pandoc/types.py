@@ -1,16 +1,9 @@
 
 from declarations import type_declarations
 
-hs = {}
-for decl in type_declarations:
-    name = decl[1][0]
-    hs[name] = decl
-
-# distinguish python symbols available to the user (mix of types and instances)
-# and the factories that given the args already converted to python returns the
-# python instance ? Probably no need, we can check if the Python object is a 
-# type and act accordingly.
-hs_to_py = {}
+types = {}
+instances = {}
+# TODO: typedefs = {} ? What would I put in there ? A kind of spec ?
 
 # TODO: transfer to doc this paragraph.
 # NOTA: the reboot of pandoc design includes ONLY:
@@ -28,42 +21,77 @@ hs_to_py = {}
 # Json repr (import / export) is EXTERNAL by design, we don't harcode the
 # specific settings of Aeson ATM in the Python model.
 
-class PandocType(object): # TODO: abstract type
-    def __init__(self, *args):
-        self.args = args
-    
-for type_name, decl in hs.items():
-    print decl[0]
-    if decl[0] == "data":
-        hs_to_py[type_name] = parent = type(type_name, (PandocType,), {})
+# TODO: introduce abstract data types where applicable (PandocTypes, data types,
+#       etc).
+
+class Type(object):
+    pass
+
+class Data(Type):
+    def __init__(self, *args, **kwargs):
+        if args:
+            assert not kwargs
+            self.args = args
+            self.name = None
+        else:
+            assert "name" in kwargs
+            self.name = kwargs["name"]
+            self.args = None
+
+    def __repr__(self):
+        if self.args:
+            typename = type(self).__name__
+            args = ", ".join(repr(arg) for arg in self.args)
+            return "{0}({1})".format(typename, args)
+        else:
+            return self.name
+
+    __str__ = __repr__
+
+class Record(Type):
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def __repr__(self):
+        typename = type(self).__name__
+        items = self.kwargs.items()
+        kwargs = ", ".join("{0}={1!r}".format(k, v) for k, v in items)
+        return "{0}({1})".format(typename, kwargs)
+
+    __str__ = __repr__
+
+for decl in type_declarations:
+    decl_type = decl[0]
+    type_name = decl[1][0]
+
+    if decl_type in ("data", "newtype"):
         constructors = decl[1][1]
-        for constructor in constructors:
+
+        if len(constructors) == 1:
+            constructor = constructors[0]
             constructor_name = constructor[0]
-            hs_to_py[constructor_name] = type(constructor_name, (parent,), {})
+            if constructor_name == type_name:
+                # single constructor, same name as the type: 
+                # we create a single type, not two.
+                if constructor[1][0] == "record":
+                    base = Record
+                else:
+                    base = Data
+                types[type_name] = type(type_name, (base,), {})
+        else:
+            types[type_name] = base = type(type_name, (Data,), {})
+            for constructor in constructors:
+                constructor_name = constructor[0]
+                constructor_args = constructor[1]
+                if constructor_args:
+                    types[constructor_name] = type(constructor_name, (base,), {})
+                else:
+                    instances[constructor_name] = base(name=constructor_name)
 
-globs = globals()
-for type_name, type in hs_to_py.items():
-    globs[type_name] = type
+globals().update(types)
+globals().update(instances)
 
-# for "data" types (or "newtype", look at the constructors ; if all of them have 
-# arguments, create an abstract base type, otherwise a normal one. (First step:
-# make the easiest think that works: don't bother with abstract data types) 
-# For every constructor
-# without arguments, create a named singleton instance. For the other ones,
-# create a derived types with *args constructor sign. (for now, no typechecking
-# at all, not even the number of args), and store the result in args attribute.
-# The other option for singletons / enums is to design a type that has a 
-# single instance, say AlignedLeftType that would derive from Alignment and
-# has a single AlignedLeft instance ... yes, I kind of like that better somehow.
+__all__ = list(types) + list(instances)
 
-# NOTA: the many args vs single list arg info is needed by the JSON parser
-# given the current JSON representation but we couldn't care less, the parser
-# will handle it, the Python repr is not supposed to know this.
 
-# EXCEPT that record types should be treated differently: we create a unique
-# concrete type with kwargs (not checked for now). We could create an 
-# intermediate type "Record" or "RecordType" that would derive from PandocType 
-# to simplify pattern matching.
-
-# for type declaration, we do nothing for now (they are "inlined").
 
