@@ -146,9 +146,9 @@ def p_type_record(p):
                    | LBRACE assignments RBRACE
     """
     if len(p) == 3:
-       p[0] = ["struct", []]
+       p[0] = ["record", []]
     else:
-       p[0] = ["struct", p[2]]
+       p[0] = ["record", p[2]]
 
 def p_types(p):
     """types : type

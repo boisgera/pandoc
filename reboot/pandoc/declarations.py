@@ -68,7 +68,7 @@ type_declarations = [
 [ 'data',
   [ 'Citation',
     [ [ 'Citation',
-        [ 'struct',
+        [ 'record',
           [ ['citationId', 'String'],
             ['citationPrefix', ['list', ['Inline']]],
             ['citationSuffix', ['list', ['Inline']]],
@@ -170,7 +170,7 @@ type_declarations = [
 #                       String MetaValue}
 [ 'newtype',
   [ 'Meta',
-    [['Meta', ['struct', [['unMeta', ['map', ['String', 'MetaValue']]]]]]]]]
+    [['Meta', ['record', [['unMeta', ['map', ['String', 'MetaValue']]]]]]]]]
 ,
 
 # data MetaValue

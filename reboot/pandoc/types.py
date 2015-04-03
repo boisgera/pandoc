@@ -1,8 +1,13 @@
 
 from declarations import type_declarations
 
+# I need to be able to identify primitives, types, instances
+
+primitives = {"String": unicode, "Bool": bool, "Int": int, 
+              "list": list, "tuple": tuple}
 types = {}
-instances = {}
+singletons = {}
+typedefs = {}
 # TODO: typedefs = {} ? What would I put in there ? A kind of spec ?
 
 # TODO: transfer to doc this paragraph.
@@ -49,6 +54,9 @@ class Data(Type):
     __str__ = __repr__
 
 class Record(Type):
+
+    # Shit, we are losing the order of arguments here :(
+    # Could be restored with the knowledge of the type decl.
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
@@ -59,6 +67,10 @@ class Record(Type):
         return "{0}({1})".format(typename, kwargs)
 
     __str__ = __repr__
+
+class Typedef(object):
+    def __init__(self, decl):
+         self.decl = decl
 
 for decl in type_declarations:
     decl_type = decl[0]
@@ -86,12 +98,16 @@ for decl in type_declarations:
                 if constructor_args:
                     types[constructor_name] = type(constructor_name, (base,), {})
                 else:
-                    instances[constructor_name] = base(name=constructor_name)
-
+                    singletons[constructor_name] = base(name=constructor_name)
+    if decl_type == "type":
+        typedefs[type_name] = Typedef(decl[1][1])
+        
+globals().update(primitives)
 globals().update(types)
-globals().update(instances)
+globals().update(singletons)
+globals().update(typedefs)
 
-__all__ = list(types) + list(instances)
+__all__ = list(primitives) + list(types) + list(singletons) + list(typedefs)
 
 
 
