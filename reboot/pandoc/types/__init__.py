@@ -1,5 +1,5 @@
 
-from declarations import type_declarations
+import pandoc.types.defs
 
 # I need to be able to identify primitives, types, instances
 
@@ -7,7 +7,7 @@ primitives = {"String": unicode, "Bool": bool, "Int": int,
               "list": list, "tuple": tuple}
 types = {}
 singletons = {}
-typedefs = {}
+typedefs = {} # name "aliases" instead
 # TODO: typedefs = {} ? What would I put in there ? A kind of spec ?
 
 # TODO: transfer to doc this paragraph.
@@ -54,9 +54,8 @@ class Data(Type):
     __str__ = __repr__
 
 class Record(Type):
-
     # Shit, we are losing the order of arguments here :(
-    # Could be restored with the knowledge of the type decl.
+    # Could be restored with the knowledge of the type decl however.
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
@@ -72,7 +71,8 @@ class Typedef(object):
     def __init__(self, decl):
          self.decl = decl
 
-for decl in type_declarations:
+# Shit, pandoc.types is not finished yet ...
+for decl in pandoc.types.defs.defs:
     decl_type = decl[0]
     type_name = decl[1][0]
 

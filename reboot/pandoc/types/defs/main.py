@@ -201,7 +201,7 @@ parser = yacc.yacc()
 
 # Main
 # ------------------------------------------------------------------------------
-print "type_declarations = ["
+print "defs = ["
 print
 for typedecl in typedecls:
     for line in typedecl.splitlines():

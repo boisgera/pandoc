@@ -1,4 +1,4 @@
-type_declarations = [
+defs = [
 
 # data Alignment
 #   = AlignLeft | AlignRight | AlignCenter | AlignDefault
