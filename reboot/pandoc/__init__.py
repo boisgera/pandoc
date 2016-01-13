@@ -4,13 +4,12 @@ import collections
 import json
 import sys
 
-import pandoc.types
-import pandoc.types.defs
-
 class map(collections.OrderedDict):
     pass
 
 def load(json_obj, type_): # TODO: rename typedef ? Dunno.
+    import pandoc.types
+    import pandoc.types.defs
     if isinstance(type_, str):
         py_type = pandoc.types.types[type_]
         if py_type in __builtin__.__dict__.values():

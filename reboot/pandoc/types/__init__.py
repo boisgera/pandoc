@@ -1,10 +1,10 @@
 
-import pandoc.types.defs
-
-# I need to be able to identify primitives, types, instances
-
-primitives = {"String": unicode, "Bool": bool, "Int": int, 
-              "list": list, "tuple": tuple}
+from .defs import defs
+primitives = {"String": unicode, 
+              "Bool": bool, 
+              "Int": int, 
+              "list": list, 
+              "tuple": tuple}
 types = {}
 singletons = {}
 typedefs = {} # name "aliases" instead
@@ -67,12 +67,10 @@ class Record(Type):
 
     __str__ = __repr__
 
-class Typedef(object):
-    def __init__(self, decl):
-         self.decl = decl
+class Typedef(Type):
+    pass
 
-# Shit, pandoc.types is not finished yet ...
-for decl in pandoc.types.defs.defs:
+for decl in defs:
     decl_type = decl[0]
     type_name = decl[1][0]
 
@@ -82,32 +80,33 @@ for decl in pandoc.types.defs.defs:
         if len(constructors) == 1:
             constructor = constructors[0]
             constructor_name = constructor[0]
+            constructor_args = constructor[1]
             if constructor_name == type_name:
-                # single constructor, same name as the type: 
-                # we create a single type, not two.
+                # There is a single constructor whose name is the type name; 
+                # we create a single type instead of two.
                 if constructor[1][0] == "record":
                     base = Record
+                    decl = constructor_args[1]
+                    print "***", base, decl
                 else:
                     base = Data
-                types[type_name] = type(type_name, (base,), {})
+                    decl = constructor_args
+                types[type_name] = type(type_name, (base,), {"_decl": decl})
         else:
-            types[type_name] = base = type(type_name, (Data,), {})
+            types[type_name] = base = type(type_name, (Data,), {"_decl": constructors})
             for constructor in constructors:
                 constructor_name = constructor[0]
                 constructor_args = constructor[1]
                 if constructor_args:
-                    types[constructor_name] = type(constructor_name, (base,), {})
+                    types[constructor_name] = \
+                      type(constructor_name, (base,), {"_decl": constructor_args})
                 else:
                     singletons[constructor_name] = base(name=constructor_name)
     if decl_type == "type":
-        typedefs[type_name] = Typedef(decl[1][1])
+        typedefs[type_name] = type(type_name, (Typedef,), {"_decl": decl[1][1]})
         
 globals().update(primitives)
 globals().update(types)
 globals().update(singletons)
 globals().update(typedefs)
-
-__all__ = list(primitives) + list(types) + list(singletons) + list(typedefs)
-
-
 
