@@ -98,6 +98,12 @@ class NewType(Type):
 #     a record ... That totally pleads in favor of having the records having 
 #     the full data behaviors, but we know that we are going to run into
 #     trouble if we allow such structures to be mutable ...
+#
+#   One semi-radical approach to records is NOT TO SUPPORT THEM: we still flag
+#   then as records because it matters at the serialization level, but we don't
+#   offer any support for field access. That's only semi-radical because `Meta`
+#   is a "fake" record, and that means that there is only `Citation` left ...
+#   Yeah, I kind of like this approach.
 
 class Record(Type):
     def __init__(self, **kwargs):
@@ -123,6 +129,18 @@ class TypeDef(Type):
 #       is the same as the type name, etc. In other words: make sure that the
 #       record / newtype (or merely single-constructor-with-same-name which is
 #       mandatory for newtypes) treatments are orthogonal.
+#
+#       Question: as AESON seems to strip the type info from records,
+#       what would happen if a type had declared several record constructors ?
+#       The names of the fields *could* in principle be used to get rid of
+#       the ambiguity, but (that would suck and) that wouldn't cover the case
+#       of empty records:
+#
+#           data A = B {}
+#                  | C {}
+#
+#       How could we know from the JSON if the `{}` refers to an `A` or a `B` ?
+
 for decl in defs:
     decl_type = decl[0]
     type_name = decl[1][0]
