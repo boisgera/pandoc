@@ -117,6 +117,12 @@ class Record(Type):
 class TypeDef(Type):
     pass
 
+# TODO: note that there is no reason why the record is the single constructor
+#       (hence the record nature should be attached to the constructor, not
+#       the type itself), there is no reason why the record constructor name
+#       is the same as the type name, etc. In other words: make sure that the
+#       record / newtype (or merely single-constructor-with-same-name which is
+#       mandatory for newtypes) treatments are orthogonal.
 for decl in defs:
     decl_type = decl[0]
     type_name = decl[1][0]

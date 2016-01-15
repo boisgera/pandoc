@@ -1,4 +1,6 @@
-% Pandoc Types
+% Pandoc
+% Sébastien Boisgérault
+% January 13, 2016
 
   - What we intend to do: go beyond the JSON representation in Python,
     leverage a typed representation that is more natural ("Pythonic"),
@@ -13,10 +15,10 @@
     even when it is not strictly ambiguous, the differentiation may be a mess).
 
 
-JSON Representation of Documents
+The Pandoc Document Model
 ================================================================================
 
-Playing with `Text.Pandoc.Types`
+Structure of `Text.Pandoc.Types`
 --------------------------------------------------------------------------------
 
 Rk: display the full document model hierarchy in `ghci`:
@@ -110,7 +112,55 @@ Study <https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/ghci.html
 
 
 
-Helper to display the representation of a document fragment ?
+
+
+Pythonize this info
+--------------------------------------------------------------------------------
+
+  - copy-and-paste the type definition info from ghci into `_types.hs`.
+
+  - invoke 
+
+        $ pandoc/types/defs/main.py _types.hs > _types.py
+
+  - `types.py` now contains a Python description of the type structure,
+    into a `defs` global variable.
+
+Hence 
+
+  - `pandoc.types.def` contains info about the Pandoc DOM structure, 
+    in a raw form
+
+  - `pandoc.types` declares the Python classes from this structure:
+    explain this stuff in the next section ...
+
+
+Pandoc.Types
+--------------------------------------------------------------------------------
+
+Every Haskell data type corresponds to one Python data type defined in
+`pandoc.types`. It is either a primitive, a type (for the lack of a better
+world), a singleton or a typedef. Every such class is available as a symbol
+of the `pandoc.types` module and as a key of the `primitives`, `types`,
+`singletons` or `typedefs` dictionary.
+
+  - Primitives are matched directly to Python native types: 
+    `String` corresponds to `unicode`, `Bool` to `bool`, etc.
+
+  - Types correspond the Haskell data types declared with the `data` or `newtype` 
+    keywords
+
+  - Typedefs are type aliases (or synonyms), introduced in Haskell with the
+    `type` keyword.
+
+Source: <https://wiki.haskell.org/Type>
+
+JSON Serialization
+================================================================================
+
+Need to document/understand how ALL constructs of the Pandoc document model
+are serialized. A small helper to display the representation of a document 
+fragment would be nice ...
 
 Ref to the doc / source of the Haskell librray.
 
@@ -129,5 +179,40 @@ display examples of the different kind of serialisation used:
 
   - records: Meta, Citation
 
+-----
+
+newtype: Meta, Format, records: Meta, Citation.
+
+examples:
+
+    Meta -> {"unMeta": metadata_map}
+
+No indication in the json of the Meta type, and not a list of arguments but a
+map indexed by the (here unique) fields.
+
+    Format -> "html"
+
+The type info has been stripped, and the content directly exposed. Mmmm,
+the content is not even in a list ? How would have been exposed a newtype
+wrapper with multiple args ? OK, it CANNOT happen, by construction, 
+newtypes have a single field.
+
+    Citation -> {"citationSuffix":...,
+                 "citationNoteNum":...,
+                 "citationMode":...,
+                 "citationPrefix":...,
+                 "citationId":...,
+                 "citationHash":...}
+
+So basically, records are serialized as dictionaries and their type info is
+stripped; newtypes are also stripped type info. That's all there is.
+
+-----
+
+Need to explain of a "JSON parsing" driven by a type hierarchy can work.
+
+THIS is meant to be implemented at the top-level, in `pandoc` main 
+(`load` function; a script would also be nice to test this stuff from 
+the command-line).
 
 
