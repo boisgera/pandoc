@@ -140,6 +140,17 @@ class TypeDef(Type):
 #                  | C {}
 #
 #       How could we know from the JSON if the `{}` refers to an `A` or a `B` ?
+#       Is this actually "solved" in a ad hoc manner by the declaration in Pandoc
+#       of a custom `FromJSON` function that explicits the unserialization
+#       (actually there is no possible conflict in Pandoc structures, it can
+#       always be resolved unambiguously) ? Grmph, no, for Meta and Citations,
+#       Pandoc uses the same, generic AESON converter. Oh, this is funny:
+#       Pandoc is using a generic JSON method, but AESON detects given the decl
+#       of the structures that there is no ambiguity and gets rid of the type
+#       info; if the records had siblings constructors, the maps would inherit
+#       a `"t"` field with the name of the constructor. So AESON recognize the
+#       most common use of records (single constructor) and "optimize" the
+#       representation for this scheme.
 
 for decl in defs:
     decl_type = decl[0]
