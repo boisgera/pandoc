@@ -2,7 +2,15 @@
 % Sébastien Boisgérault
 % January 13, 2016
 
-Goals:
+Goals / the take-away:
+
+  - If you intend to parse the JSON output from pandoc -- outside of Haskell, 
+    say in Javascript, Python, etc. -- 
+    you will thank me.
+
+  - If you want to use the current tools to do stuff with pandoc documents
+    in dynamic languages (yeah, I am looking at you `pandoc-filters`),
+    think again.
 
   - High-level: prepare for a Python lib to instantiate, analyze, transform, etc.
     documents that are instance of the Pandoc Document Model into Pythonic type. 
@@ -271,6 +279,8 @@ There is no new Haskell type construct here, everything should be clear.
 JSON Representation
 ================================================================================
 
+### The Basics
+
 Pandoc leverages the [aeson] package to serialize pandoc type instances as JSON
 strings.
 With three lines of Haskell we may define a function `js` that displays the JSON
@@ -282,153 +292,204 @@ representation of any pandoc construct:
     > import qualified Data.ByteString.Lazy.Char8 as BS
     > let js :: (ToJSON a) => a -> IO (); js = BS.putStrLn . encode
 
-Let's play with this a bit:
+Let's start with the most basic types to see how this works. 
+First, consider the primitive types used in the document model, 
+that is booleans, integers and strings:
 
-    > let doc = Pandoc (nullMeta) []
-    > js doc
-    [{"unMeta":{}},[]]
+    > js True
+    true
+    > js 42
+    42
+    > js "text"
+    "text"
 
-**FUCK**, this is insane, one argument is treated differently from 0 or 
-many ? Or is it the string type ? Jeezus wept, what a giant mess.
+Nothing to surprising here. Now, consider the standard containers used in 
+Haskell: lists, tuples and maps.
 
-    > let inline = Str "pandoc"
-    > js inline
-    {"t":"Str","c":"pandoc"}
-    > let inline = Space
-    > js inline
-    {"t":"Space","c":[]}
-    > js $ Emph [Str "kkk"]
-    {"t":"Emph","c":[{"t":"Str","c":"kkk"}]}
+    > js ["a", "b", "c"]
+    ["a","b","c"]
 
-Is it basic aeson behavior or a pandoc configuration ? Aeson stuff, definitively.
-Apparently, when a constructor has a single argument, the string wrapper is
-dropped
+    > let map = fromList [("a", 1), ("b", 2)]
+    > js map
+    {"a":1,"b":2}
+
+    > js (True, 1, "text")
+    [true,42,"text"]
+
+Haskell lists are mapped to javascript lists, maps to javascript objects,
+but tuples, that have no equivalent in javascript, are also mapped to lists.
+Is this ambiguity an issue if we want to recreate the original tuple from 
+its JSON representation ? Well, it depends if you still know that the original
+data was a tuple ... we will study this subject in greater generality 
+in detail later. 
+
+Note that the rules to serialize a datum are applied
+recursively to the contents of containers -- and that property holds for
+standard Haskell types as well as all pandoc types. So we have for example:
+
+    > js ("a", ["b"], [("c", "d")])
+    ["a",["b"],[["c","d"]]]
+
+Let's have a look at pandoc types now. Consider `MathType` ;
+both its constructors take no argument:
+
+    > :info MathType
+    data MathType = DisplayMath | InlineMath
+
+Such data is serialized as a
+
+    > js InlineMath
+    {"t":"InlineMath","c":[]}
+
+Basically: a javascript object where the constructor name is associated with the 
+`"t"` key (think of "tag" or "type constructor") and the list of constructor 
+arguments (here empty) is associated to the `"c"` key (think of "contents")
+
+Yes, again, this is potentially ambiguous: how do you know that the JSON string
+refers to an instance of `InlineMath` and not a Haskell map ?
+
+
+
+The same rules apply when we consider constructors with arguments. 
+For example, consider the `MathType` constructor associated to 
+the `Inline` data type:
+
+    > :info Math
+    data Inline = ... | Math MathType String | ...
+
+Its instances are serialized as follows:
+
+    > js (Math InlineMath "a=1")
+    {"t":"Math","c":[{"t":"InlineMath","c":[]},"a=1"]}
+
+
+### Special Cases
+
+... context ... explain this stuff as "optimizations" (json output length).
+
+#### Single Argument
+
+Consider for example
+
+    > :info Str
+    data Inline = Str String | ...
+
+Obviously, `js (Str "text")` should be serialized as `{"t":"Str","c":["text"]}`,
+right ? Think again:
+
+    > js (Str "text")
+    {"t":"Str","c":"text"}
+
+When constructors have a single argument, the list associated to the "c" key
+is unwrapped. This can get slightly tricky: only one level of list is removed.
+For example, for the emphasis
+
+    > :info Emph
+    data Inline = ... | Emph [Inline] | ...
+
+we have
+
+    > js (Emph [Str "text"])
+    {"t":"Emph","c":[{"t":"Str","c":"text"}]}
+
+instead of `{"t":"Emph","c":[[{"t":"Str","c":"text"}]]}`.
+
+Records have there own serialization scheme. Consider for example
+
+    > :info Citation
+    data Citation
+      = Citation {citationId :: String,
+                  citationPrefix :: [Inline],
+                  citationSuffix :: [Inline],
+                  citationMode :: CitationMode,
+                  citationNoteNum :: Int,
+                  citationHash :: Int}
+
+The principle is simple: instead of the `"c"` key in the javascript object,
+a key-value pair is added for every record field:
+
+    > js (Citation "" [] [] NormalCitation 0 0)
+    {"t":"Citation","citationSuffix":[],"citationNoteNum":0,"citationMode":
+    {"t":"NormalCitation","c":[]},"citationPrefix":[],"citationId":"",
+    "citationHash":0}
+
+Actually this is not *exactly* what happens because citations fall into the
+scope of the type erasure special case explained in the next section. I would
+happily show you an example of a pandoc record that is handled according to
+the general principle ... but the only other one is `Meta` and it's also a 
+special case!
+
+
+### Single Constructor 
+
+Consider the JSON representation of an instance of type that has a single
+constructor: if you know the type of the data, the type constructor 
+information associated to the "t" key is redundant, hence pandoc gets
+rid of it of the unused structures.
+
+For example, consider
+
+    > :info Meta
+    newtype Meta
+      = Meta {unMeta :: Map String MetaValue}
+    ...
+
+The generic serialization of `nullMeta` should be `{"t":Meta,"unMeta":{}}`.
+But if you know that you deal with an instance of `Meta`, given that there
+is a single constructor (also called `Meta`) for this type, pandoc does
+not need the type constructor info to reconstruct the data, hence, it does
+not include it, and you have instead:
+
+    > js nullMeta
+    {"unMeta":{}}
+
+Similarly, consider the `Format` type:
+
+    > :info Format
+    newtype Format = Format String
+    ...
+
+For `Format "html"`, instead of `{"t":"Format","c":"html"}`, we can get
+rid of the `"t"` key and the whole JS object becomes unnecessary, only 
+the value of the "c" key is kept:
+
+    > js (Format "html")
+    "html"
+
+### Ambiguities
+
+Philosophy: what should be in the JSON, static vs dynamic languages.
+
+Makes sense for Haskell-to-Haskell serialization.
+
+Blame it on aeson.
+
+  - tuples vs lists
+
+  - maps
+
+  - single argument
+
+  - single constructor
+
+Abuse each one of them ? Can't probably. Find at least on exploit to 
+fuck pandoc-filters.
+
 
 -----
 
 How I learned to hate AESON: JSON exports that is supposed to
 be helpful but is not really unless u have kept the type hierarchy (or:
 "premature optimization"): stripped types and single-argument unwrapping
-optimization.
+optimization and tuples are lists and maps may be maps or pandoc types.
+List these ambiguities, and exploit them somehow.
 
 TODO: fuck pandoc-filters, JSON is not usable unless you also pull the
-types definition info.
+types definition info. Either the output format contains all there is
+to know about the data AND the type info, or you need to get the type
+info into your parser ...
 
 \newpage
-
-
-
-Pythonize this info
---------------------------------------------------------------------------------
-
-  - copy-and-paste the type definition info from ghci into `_types.hs`.
-
-  - invoke 
-
-        $ pandoc/types/defs/main.py _types.hs > _types.py
-
-  - `types.py` now contains a Python description of the type structure,
-    into a `defs` global variable.
-
-Hence 
-
-  - `pandoc.types.def` contains info about the Pandoc DOM structure, 
-    in a raw form
-
-  - `pandoc.types` declares the Python classes from this structure:
-    explain this stuff in the next section ...
-
-
-Pandoc.Types
---------------------------------------------------------------------------------
-
-Every Haskell data type corresponds to one Python data type defined in
-`pandoc.types`. It is either a primitive, a type (for the lack of a better
-world), a singleton or a typedef. Every such class is available as a symbol
-of the `pandoc.types` module and as a key of the `primitives`, `types`,
-`singletons` or `typedefs` dictionary.
-
-  - Primitives are matched directly to Python native types: 
-    `String` corresponds to `unicode`, `Bool` to `bool`, etc.
-
-  - Types correspond the Haskell data types declared with the `data` or `newtype` 
-    keywords
-
-  - Typedefs are type aliases (or synonyms), introduced in Haskell with the
-    `type` keyword.
-
-Source: <https://wiki.haskell.org/Type>
-
-JSON Serialization
-================================================================================
-
-Insist on the fact that Pandoc and Aeson conspire to make the JSON output as
-minimal as possible.
-
-Need to document/understand how ALL constructs of the Pandoc document model
-are serialized. A small helper to display the representation of a document 
-fragment would be nice ...
-
-Ref to the doc / source of the Haskell librray.
-
-A word about AESON, the settings used in `Text.Pandoc.Types`, the results:
-display examples of the different kind of serialisation used:
-
-  - primitive types: Int, String, etc.
-
-  - lists, maps,
-
-  - algebraic data types
-
-  - newtype stuff (ex: Format)
-
-  - type Target = (String, String),
-
-  - records: Meta, Citation
-
------
-
-newtype: Meta, Format, records: Meta, Citation.
-
-examples:
-
-    Meta -> {"unMeta": metadata_map}
-
-No indication in the json of the Meta type, and not a list of arguments but a
-map indexed by the (here unique) fields.
-
-    Format -> "html"
-
-The type info has been stripped, and the content directly exposed. Mmmm,
-the content is not even in a list? How would have been exposed a newtype
-wrapper with multiple args? OK, it CANNOT happen, by construction, 
-newtypes have a single field.
-
-    Citation -> {"citationSuffix":...,
-                 "citationNoteNum":...,
-                 "citationMode":...,
-                 "citationPrefix":...,
-                 "citationId":...,
-                 "citationHash":...}
-
-So basically, records are serialized as dictionaries and their type info is
-stripped; newtypes are also stripped type info. That's all there is.
-
------
-
-Need to explain of a "JSON parsing" driven by a type hierarchy can work.
-
-THIS is meant to be implemented at the top-level, in `pandoc` main 
-(`load` function; a script would also be nice to test this stuff from 
-the command-line).
-
-------
-
-AAAAH. The special case about the serialization of Pandoc. Is it because 
-there is a single constructor, hence the constructor name is not required?
-(when you have access to the type hierarchy). That would make sense.
-Test this assumption with custom types. YEAH, THAT'S IT !
-
 
 Appendix -- Pandoc Types Definition
 ================================================================================
@@ -549,7 +610,7 @@ The output of this command sequence, slightly reformated to enhance readability:
 
     ...
 
-(function declarations have been omitted).
+Function declarations have been omitted.
 
 
 
