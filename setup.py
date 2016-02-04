@@ -3,7 +3,9 @@
 
 # Python 2.7 Standard Library
 import os
+import shutil
 import sys
+import tempfile
 import warnings
 
 # Pip Package Manager
@@ -20,42 +22,31 @@ def local(path):
 
 # Extra Third-Party Libraries
 sys.path.insert(1, local(".lib"))
-try:
-    setup_requires = ["about>=4.0.0", "sh"]
-    require = lambda *r: pkg_resources.WorkingSet().require(*r)
-    require(*setup_requires)
-    import about
-except pkg_resources.DistributionNotFound:
-    error = """{req!r} not found; install it locally with:
-
-    pip install --target=.lib --ignore-installed {req}
-"""
-    raise ImportError(error.format(req=" ".join(setup_requires)))
+setup_requires = ["about==5.0.0a1"]
+for req in setup_requires:
+    try:
+        require = lambda *r: pkg_resources.WorkingSet().require(*r)
+        require(req)
+    except pkg_resources.DistributionNotFound:
+        error  = "{req!r} not found; install it locally with:"
+        error += "\n"
+        error += "pip install --target=.lib --ignore-installed {req!r}"
+        raise ImportError(error.format(req=" ".join(setup_requires)))
 import about
-import sh
 
-# Python Runtime Dependencies
-requirements = dict(install_requires="sh")
-
-# Local
-sys.path.insert(0, "")
+# Local Metadata
+tmp_dir = tempfile.mkdtemp()
+source = local("pandoc/about.py")
+target = os.path.join(tmp_dir, "about_pandoc.py")
+shutil.copyfile(source, target)
+sys.path.insert(1, tmp_dir)
 import about_pandoc
-
-# Non-Python Runtime Dependencies 
-try:
-    pandoc = sh.pandoc
-    magic, version = sh.pandoc("--version").splitlines()[0].split()
-    assert magic == "pandoc"
-    assert version.startswith("1.12") or version.startswith("1.13")
-except:
-    # if root runs the setup script, it's ok if pandoc is not available,
-    # as long as the users have it. Hence we cannot raise an exception here,
-    # we only produce a warning. 
-    warnings.warn("cannot find pandoc 1.12 / 1.13")
+del sys.path[1]
+shutil.rmtree(tmp_dir)
 
 # ------------------------------------------------------------------------------
-
-contents = dict(py_modules=["pandoc", "about_pandoc"])
+contents = {"packages": setuptools.find_packages()}
+requirements = {}
 metadata = about.get_metadata(about_pandoc)
         
 info = {}
@@ -63,8 +54,9 @@ info.update(contents)
 info.update(metadata)
 info.update(requirements)
 
-# ------------------------------------------------------------------------------
+print info
 
+# ------------------------------------------------------------------------------
 if __name__ == "__main__":
     setuptools.setup(**info)
 

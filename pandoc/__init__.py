@@ -35,7 +35,7 @@ def load(json_obj, type_): # TODO: rename typedef ? Dunno.
         # reduce this case to the case of a decl
         pass
     elif type_ is pandoc.types.Pandoc:
-        wrap = map([("t": "Pandoc"), ("c": json_obj)])
+        wrap = map([("t", "Pandoc"), ("c", json_obj)])
         return load(wrap)
     else:
         # need to consider a general decl ... and deal with it !
