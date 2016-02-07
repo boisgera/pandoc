@@ -54,11 +54,9 @@ data ListNumberStyle
   | LowerAlpha
   | UpperAlpha
 data MathType = DisplayMath | InlineMath
-newtype Meta
-  = Meta {unMeta :: containers-0.5.0.0:Data.Map.Base.Map
-                      String MetaValue}
+newtype Meta = Meta {unMeta :: Map String MetaValue}
 data MetaValue
-  = MetaMap (containers-0.5.0.0:Data.Map.Base.Map String MetaValue)
+  = MetaMap (Map String MetaValue)
   | MetaList [MetaValue]
   | MetaBool Bool
   | MetaString String

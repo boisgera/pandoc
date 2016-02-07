@@ -46,15 +46,16 @@ shutil.rmtree(tmp_dir)
 
 # Setup Configuration
 # ------------------------------------------------------------------------------
-contents = {"packages": setuptools.find_packages()}
-requirements = {}
 metadata = about.get_metadata(about_pandoc)
-        
-print metadata
+contents = {
+  "packages": setuptools.find_packages(),
+  "package_data": {"pandoc": ["Definition.hs"]},
+}
+requirements = {}
 
 info = {}
-info.update(contents)
 info.update(metadata)
+info.update(contents)
 info.update(requirements)
 
 if __name__ == "__main__":

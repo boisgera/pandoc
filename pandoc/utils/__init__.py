@@ -1,38 +1,11 @@
-#!/usr/bin/env python
 
 # Python 2.7 Standard Library
-import pprint ; pprint = pprint.PrettyPrinter(indent=2).pprint
-import re
-import sys
+pass
 
 # PLY
 import ply.lex as lex
 import ply.yacc as yacc
 
-
-# Command-Line Interface
-# ------------------------------------------------------------------------------
-if len(sys.argv) >= 2:
-    filename = sys.argv[1]
-else:
-    filename = "types.hs"
-
-# Pre-Processing
-# ------------------------------------------------------------------------------
-src = open(filename).read()
-src = re.sub(r"[a-zA-Z0-9\-\.\:]+\.Map", "Map", src)
-
-def keep(line):
-    prefixes = [" ", "data ", "newtype ", "type "]
-    return any(line.startswith(prefix) for prefix in prefixes)
-src = "\n".join(line for line in src.splitlines() if keep(line))
-
-typedecls = []
-for line in src.splitlines():
-    if not line.startswith(" "):
-        typedecls.append(line)
-    else:
-        typedecls[-1] = typedecls[-1] + "\n" + line
 
 # Lexer
 # ------------------------------------------------------------------------------
@@ -188,28 +161,29 @@ def p_datatypedecl(p):
 
 def p_newtypedecl(p):
     "newtypedecl : NEWTYPE CONID EQUAL constructor"
-    # The constructor -- despite being unique --  is wrapped in a list 
-    # so that the `newtype` type declaration yields a structure similar
-    # to the 'data' type declaration.
     p[0] = [p[1], [p[2], [p[4]]]]
  
 # Error rule for syntax errors
 def p_error(p):
     print "Syntax error in input."
 
-parser = yacc.yacc()
+parser = yacc.yacc(debug=0, write_tables=0)
 
-# Main
+# Type Declarations
 # ------------------------------------------------------------------------------
-print "defs = ["
-print
-for typedecl in typedecls:
-    for line in typedecl.splitlines():
-        print "#", line
-    lexer.input(typedecl)
-    pprint(parser.parse(typedecl))
-    print ","
-    print
-print "]"
+def split(src):
+    def keep(line):
+        prefixes = [" ", "data ", "newtype ", "type "]
+        return any(line.startswith(prefix) for prefix in prefixes)
+    src = "\n".join(line for line in src.splitlines() if keep(line))
+    type_decls = []
+    for line in src.splitlines():
+        if not line.startswith(" "):
+            type_decls.append(line)
+        else:
+            type_decls[-1] = type_decls[-1] + "\n" + line
+    return type_decls
 
+def parse(src):
+    return [parser.parse(type_decl) for type_decl in split(src)]
 
