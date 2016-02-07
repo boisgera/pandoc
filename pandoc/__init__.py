@@ -1,13 +1,17 @@
 
+# Python 2.7 Standard Library
 import __builtin__
 import collections
 import json
 import sys
 
+# Local
+from .about import *
+
+
 class map(collections.OrderedDict):
     pass
 
-    
 def load(json_obj, type_): # TODO: rename typedef ? Dunno.
     import pandoc.types
     import pandoc.types.defs
