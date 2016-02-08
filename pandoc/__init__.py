@@ -72,6 +72,13 @@ def read(json_, type_=types.Pandoc):
     C = getattr(types, constructor[0])
     return C(*args)
 
+# Main Entry Point
+# ------------------------------------------------------------------------------
+def main():
+    json_ = json.load(sys.stdin)
+    print pandoc.read(json_)
+
+
 def load(json_obj, type_): # TODO: rename typedef ? Dunno.
     import pandoc.types
     import pandoc.types.defs
