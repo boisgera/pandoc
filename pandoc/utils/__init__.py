@@ -134,7 +134,7 @@ def p_types(p):
 
 def p_types_type_record(p):
     "types : type_record"
-    p[0] = p[1]
+    p[0] = [p[1]]
 
 
 def p_constructor(p):
