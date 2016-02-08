@@ -14,7 +14,7 @@ from .about import *
 from . import utils
 from . import types
 
-def read(json_, type_):
+def read(json_, type_=types.Pandoc):
     if isinstance(type_, str):
         type_ = getattr(types, type_)
     if not isinstance(type_, list): # not a type def (yet).
@@ -22,11 +22,12 @@ def read(json_, type_):
             type_ = type_._def
         else: # primitive type
             return type_(json_)
+
     if type_[0] == "type": # type alias
         type_ = type[1][1]
         return read(json_, type_)
     if type_[0] == "list":
-        item_type = type_[1]
+        item_type = type_[1][0]
         return [read(item, item_type) for item in json_]
     if type_[0] == "tuple":
         tuple_types = type_[1]
@@ -35,12 +36,41 @@ def read(json_, type_):
         key_type, value_type = type_[1]
         return types.map([(read(k, key_type), read(v, value_type)) for (k, v) in json_.items()])
 
-    # TODO:
-    #   - detect abstract types, "deoptimize" the data if needed ?
-    #   - if type_ is concrete (constructor), we need a handle on the abstract 
-    #     data type to see if deoptimization is required.
+    data_type = None
+    constructor = None
+    if type_[0] in ("data", "newtype"):
+        data_type = type_
+        constructors = data_type[1][1]
+        if len(constructors) == 1:
+            constructor = constructors[0]
+        else:
+            constructor = getattr(types, json_["t"])._def
+    elif type_[0][0] == type_[0][0].upper():
+        constructor = type_
+        constructor_type = getattr(types, constructor[0])
+        data_type = constructor_type.__mro__[2]._def
 
+    single_type_constructor = (len(data_type[1][1]) == 1)
+    single_constructor_argument = (len(constructor[1][1]) == 1)
+    is_record = (constructor[1][0] == "map")
 
+    json_args = None
+    args = None
+    if not is_record:
+        if single_type_constructor:
+            json_args = json_
+        else:
+            json_args = json_["c"]
+        if single_constructor_argument:
+            json_args = [json_args]
+        args = [read(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
+    else:
+        keys = [k for k,t in constructor[1][1]]
+        types_= [t for k, t in constructor[1][1]]
+        json_args = [json_[k] for k in keys]
+        args = [read(jarg, t) for jarg, t in zip(json_args, types_)]
+    C = getattr(types, constructor[0])
+    return C(*args)
 
 def load(json_obj, type_): # TODO: rename typedef ? Dunno.
     import pandoc.types
