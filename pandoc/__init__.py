@@ -24,7 +24,7 @@ def read(json_, type_=types.Pandoc):
             return type_(json_)
 
     if type_[0] == "type": # type alias
-        type_ = type[1][1]
+        type_ = type_[1][1]
         return read(json_, type_)
     if type_[0] == "list":
         item_type = type_[1][0]
