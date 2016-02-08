@@ -57,8 +57,8 @@ def make_types(defs=None):
         decl_type = decl[0]
         type_name = decl[1][0]
         if decl_type in ("data", "newtype"):
-            base = type(type_name, (Data,), {"_def": decl})
-            types_dict[type_name] = base
+            data_type = type(type_name, (Data,), {"_def": decl})
+            types_dict[type_name] = data_type
             # Remark: when there is a constructor with the same name as its
             #         data type, the data type is shadowed. 
             #         This is intentional, but it's only consistent because 
@@ -66,7 +66,8 @@ def make_types(defs=None):
             # TODO: add an assert / check for this condition.
             for constructor in decl[1][1]:
                 constructor_name = constructor[0]
-                type_ = type(constructor_name, (Constructor, base), {"_def": constructor})
+                bases = (Constructor, data_type)
+                type_ = type(constructor_name, bases, {"_def": constructor})
                 types_dict[constructor_name] = type_
         elif decl_type == "type":
             type_ = type(type_name, (TypeDef,), {"_def": decl})
