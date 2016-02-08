@@ -119,9 +119,9 @@ def p_record(p):
                    | LBRACE assignments RBRACE
     """
     if len(p) == 3:
-       p[0] = ["record", []]
+       p[0] = ["map", []]
     else:
-       p[0] = ["record", p[2]]
+       p[0] = ["map", p[2]]
 
 def p_types(p):
     """types : type
@@ -137,7 +137,7 @@ def p_constructor(p):
                    | CONID
                    | CONID type_record
     """
-    if len(p) == 3 and p[2][0] == "record":
+    if len(p) == 3 and p[2][0] == "map":
         p[0] = [p[1], p[2]]
     else:
         if len(p) == 2:
