@@ -2,6 +2,7 @@
 # Python 2.7 Standard Library
 import __builtin__
 import collections
+import inspect
 import json
 import sys
 
@@ -12,6 +13,32 @@ import pkg_resources
 from .about import *
 from . import utils
 from . import types
+
+def read(json_, type_):
+    if isinstance(type_, str):
+        type_ = getattr(types, type_)
+    if not isinstance(type_, list): # not a type def (yet).
+        if issubclass(type_, types.Type):
+            type_ = type_._def
+        else: # primitive type
+            return type_(json_)
+    if type_[0] == "type": # type alias
+        type_ = type[1][1]
+        return read(json_, type_)
+    if type_[0] == "list":
+        item_type = type_[1]
+        return [read(item, item_type) for item in json_]
+    if type_[0] == "tuple":
+        tuple_types = type_[1]
+        return tuple(read(item, item_type) for (item, item_type) in zip(json_, tuple_types))
+    if type_[0] == "map":
+        key_type, value_type = type_[1]
+        return types.map([(read(k, key_type), read(v, value_type)) for (k, v) in json_.items()])
+
+    # TODO:
+    #   - detect abstract types, "deoptimize" the data if needed ?
+    #   - if type_ is concrete (constructor), we need a handle on the abstract 
+    #     data type to see if deoptimization is required.
 
 
 
