@@ -8,13 +8,15 @@ import json
 import sys
 
 # Third-Party Libraries
-import pkg_resources
+pass
 
 # Pandoc
 from .about import *
 from . import utils
 from . import types
 
+# JSON Reader
+# ------------------------------------------------------------------------------
 def read(json_, type_=types.Pandoc):
     if isinstance(type_, str):
         type_ = getattr(types, type_)
@@ -72,6 +74,26 @@ def read(json_, type_=types.Pandoc):
         args = [read(jarg, t) for jarg, t in zip(json_args, types_)]
     C = getattr(types, constructor[0])
     return C(*args)
+
+# JSON Writer
+# ------------------------------------------------------------------------------
+def write(object_):
+    odict = collections.OrderedDict
+    type_ = type(object_)
+    if not isinstance(object_, types.Type):
+        if isinstance(object_, list):
+            json_ = [write(item) for item in object_]
+        elif isinstance(object_, tuple):
+            json_ = tuple(write(item) for item in object_)
+        elif isinstance(object_, dict):
+            json_ = odict((k, write(v) for v in object_.items())
+        else: # primitive type
+            json_ = object_
+    else:
+        jargs = [write(arg) for arg in object_.args]
+        json_ = odict([("t", type(object_).__name__), ("c", jargs)]
+    # TODO: implement special cases.
+    return json_
 
 # Main Entry Point
 # ------------------------------------------------------------------------------
