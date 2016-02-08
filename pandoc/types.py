@@ -19,13 +19,13 @@ map = type("map", (collections.OrderedDict,), {})
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
-def fail_init(self, *args, **kwargs):
+def _fail_init(self, *args, **kwargs):
     type_name = type(self).__name__
     error = "cannot instantiate abstract type {type}"
     raise NotImplementedError(error.format(type=type_name))
 
 class Type(object):
-    __init__ = fail_init
+    __init__ = _fail_init
 
 class Data(Type):
     pass
@@ -33,7 +33,7 @@ class Data(Type):
 class Constructor(Data):
     def __init__(self, *args):
         if type(self) is Constructor:
-            fail_init(self, *args)
+            _fail_init(self, *args)
         else:
             self.args = args
     def __repr__(self):
