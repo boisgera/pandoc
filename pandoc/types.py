@@ -10,9 +10,10 @@ import pandoc.utils
 
 # Haskell Primitives & Containers
 # ------------------------------------------------------------------------------
-String = unicode
 Bool = bool
+Double = float
 Int = int
+String = unicode
 list = list
 tuple = tuple
 map = type("map", (collections.OrderedDict,), {})
