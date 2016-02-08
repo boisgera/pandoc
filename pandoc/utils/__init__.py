@@ -114,7 +114,7 @@ def p_assignments(p):
     else: 
         p[0] = [p[1]] + p[3]
 
-def p_type_record(p):
+def p_record(p):
     """type_record : LBRACE RBRACE
                    | LBRACE assignments RBRACE
     """
@@ -131,20 +131,19 @@ def p_types(p):
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[2]
-
-def p_types_type_record(p):
-    "types : type_record"
-    p[0] = [p[1]]
-
-
+    
 def p_constructor(p):
     """constructor : CONID types
                    | CONID
+                   | CONID type_record
     """
-    if len(p) == 2:
-        p[0] = [p[1], []]
+    if len(p) == 3 and p[2][0] == "record":
+        p[0] = [p[1], p[2]]
     else:
-        p[0] = p[1:]
+        if len(p) == 2:
+            p[0] = [p[1], ["list", []]]
+        else:
+            p[0] = [p[1], ["list", p[2]]]
 
 def p_constructors(p):
     """constructors : constructor
