@@ -5,12 +5,15 @@ import collections
 import json
 import sys
 
-# Local
+# Third-Party Libraries
+import pkg_resources
+
+# Pandoc
 from .about import *
+from . import utils
+from . import types
 
 
-class map(collections.OrderedDict):
-    pass
 
 def load(json_obj, type_): # TODO: rename typedef ? Dunno.
     import pandoc.types
