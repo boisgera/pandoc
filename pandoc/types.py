@@ -17,7 +17,7 @@ list = list
 tuple = tuple
 map = type("map", (collections.OrderedDict,), {})
 
-# Haskell Abstract Types
+# Haskell Type Constructs
 # ------------------------------------------------------------------------------
 def fail_init(self, *args, **kwargs):
     type_name = type(self).__name__
