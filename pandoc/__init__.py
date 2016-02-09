@@ -15,6 +15,7 @@ from .about import *
 from . import utils
 from . import types
 
+
 # JSON Reader
 # ------------------------------------------------------------------------------
 def read(json_, type_=types.Pandoc):
@@ -75,6 +76,7 @@ def read(json_, type_=types.Pandoc):
     C = getattr(types, constructor[0])
     return C(*args)
 
+
 # JSON Writer
 # ------------------------------------------------------------------------------
 def write(object_):
@@ -86,14 +88,34 @@ def write(object_):
         elif isinstance(object_, tuple):
             json_ = tuple(write(item) for item in object_)
         elif isinstance(object_, dict):
-            json_ = odict((k, write(v) for v in object_.items())
+            json_ = odict((k, write(v)) for k, v in object_.items())
         else: # primitive type
             json_ = object_
     else:
-        jargs = [write(arg) for arg in object_.args]
-        json_ = odict([("t", type(object_).__name__), ("c", jargs)]
-    # TODO: implement special cases.
+        constructor = type(object_)._def
+        data_type = type(object_).__mro__[2]._def
+        single_type_constructor = (len(data_type[1][1]) == 1)
+        single_constructor_argument = (len(constructor[1][1]) == 1)
+        is_record = (constructor[1][0] == "map")
+
+        json_ = odict()
+        if not single_type_constructor:
+            json_["t"] = type(object_).__name__
+
+        if not is_record:
+            c = [write(arg) for arg in object_.args]
+            if single_constructor_argument:
+                c = c[0]
+            if single_type_constructor:
+                json_ = c
+            else:
+                json_["c"] = c
+        else:
+            keys = [kt[0] for kt in constructor[1][1]]
+            for key, arg in zip(keys, object_.args):
+                json_[key] = write(arg)
     return json_
+
 
 # Main Entry Point
 # ------------------------------------------------------------------------------
@@ -101,14 +123,18 @@ def main():
     prog = "python -m pandoc"
     description = "Read/write pandoc JSON documents with Python"
     parser = argparse.ArgumentParser(prog=prog, description=description)
-    parser.add_argument("-r", "--read", action="store_true", 
+    parser.add_argument("-r", "--read", 
+                        action="store_true", 
                         help="read JSON file")
-    parser.add_argument("-w", "--write", dest="read", action="store_false", 
+    parser.add_argument("-w", "--write", 
+                        dest="read", action="store_false", 
                         help="write JSON file")
-    parser.add_argument("input", nargs="?", metavar="INPUT",
+    parser.add_argument("input", 
+                        nargs="?", metavar="INPUT",
                         type=argparse.FileType("r"), default=sys.stdin,
                         help="input file")
-    parser.add_argument("-o", "--output", nargs="?", 
+    parser.add_argument("-o", "--output", 
+                        nargs="?", 
                         type=argparse.FileType("w"), default=sys.stdout,
                         help="output file")
     args = parser.parse_args()
@@ -121,5 +147,6 @@ def main():
         globs = globals()
         globs.update(types.__dict__)
         doc = eval(args.input.read(), globs)
-        args.output.write("TODO -- convert the doc:\n  " + repr(doc) +"\n")
+        json_ = write(doc)
+        args.output.write(json.dumps(json_) + "\n")
 

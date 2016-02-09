@@ -58,8 +58,6 @@ info.update(metadata)
 info.update(contents)
 info.update(requirements)
 
-print "*", info
-
 if __name__ == "__main__":
     setuptools.setup(**info)
 
