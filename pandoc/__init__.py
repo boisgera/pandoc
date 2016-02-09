@@ -16,6 +16,17 @@ from . import utils
 from . import types
 
 
+# Iteration
+# ------------------------------------------------------------------------------
+def iter(elt):
+    yield elt
+    if isinstance(elt, map):
+        elt = elt.items()
+    if hasattr(elt, "__iter__"):
+        for child in elt:
+             for subelt in iter(child):
+                 yield subelt
+
 # JSON Reader
 # ------------------------------------------------------------------------------
 def read(json_, type_=types.Pandoc):
