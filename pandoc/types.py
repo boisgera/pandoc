@@ -39,6 +39,8 @@ class Constructor(Data):
             _fail_init(self, *args)
         else:
             self._args = args
+    def __iter__(self):
+       return iter(self._args)
     def __getitem__(self, key):
         return self._args[key]
     def __setitem__(self, key, value):
