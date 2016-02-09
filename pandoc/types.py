@@ -8,6 +8,7 @@ import pkg_resources
 # Pandoc
 import pandoc.utils
 
+
 # Haskell Primitives & Containers
 # ------------------------------------------------------------------------------
 Bool = bool
@@ -17,6 +18,7 @@ String = unicode
 list = list
 tuple = tuple
 map = type("map", (collections.OrderedDict,), {})
+
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
@@ -43,6 +45,10 @@ class Constructor(Data):
         self._args[key] = value
     def __len__(self):
         return len(self._args)
+    def __eq__(self, other):
+         return type(self) == type(other) and self[:] == other[:]
+    def __neq__(self, other):
+         return not (self == other)
     def __repr__(self):
         typename = type(self).__name__
         args = ", ".join(repr(arg) for arg in self)
