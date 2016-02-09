@@ -103,7 +103,7 @@ def write(object_):
             json_["t"] = type(object_).__name__
 
         if not is_record:
-            c = [write(arg) for arg in object_.args]
+            c = [write(arg) for arg in object_]
             if single_constructor_argument:
                 c = c[0]
             if single_type_constructor:
@@ -112,7 +112,7 @@ def write(object_):
                 json_["c"] = c
         else:
             keys = [kt[0] for kt in constructor[1][1]]
-            for key, arg in zip(keys, object_.args):
+            for key, arg in zip(keys, object_):
                 json_[key] = write(arg)
     return json_
 
@@ -140,6 +140,7 @@ def main():
     args = parser.parse_args()
 
     # TODO: guess the read or write mode from file extensions; default to read?
+    #       and/or guess based on the content ?
     if args.read:
         json_ = json.load(args.input, object_pairs_hook=collections.OrderedDict)
         args.output.write(repr(read(json_))+"\n")

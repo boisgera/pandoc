@@ -36,10 +36,16 @@ class Constructor(Data):
         if type(self) is Constructor:
             _fail_init(self, *args)
         else:
-            self.args = args
+            self._args = args
+    def __getitem__(self, key):
+        return self._args[key]
+    def __setitem__(self, key, value):
+        self._args[key] = value
+    def __len__(self):
+        return len(self._args)
     def __repr__(self):
         typename = type(self).__name__
-        args = ", ".join(repr(arg) for arg in self.args)
+        args = ", ".join(repr(arg) for arg in self)
         return "{0}({1})".format(typename, args)
     __str__ = __repr__
 
