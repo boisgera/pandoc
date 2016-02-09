@@ -51,7 +51,9 @@ contents = {
   "packages": setuptools.find_packages(),
   "package_data": {"pandoc": ["Definition.hs"]},
 }
-requirements = {}
+requirements = {
+  "install_requires": ["ply"],
+}
 
 info = {}
 info.update(metadata)
