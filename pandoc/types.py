@@ -38,7 +38,7 @@ class Constructor(Data):
         if type(self) is Constructor:
             _fail_init(self, *args)
         else:
-            self._args = args
+            self._args = list(args)
     def __iter__(self):
        return iter(self._args)
     def __getitem__(self, key):
