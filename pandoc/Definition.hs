@@ -36,11 +36,12 @@ data Inline
   | Cite [Citation] [Inline]
   | Code Attr String
   | Space
+  | SoftBreak
   | LineBreak
   | Math MathType String
   | RawInline Format String
-  | Link [Inline] Target
-  | Image [Inline] Target
+  | Link Attr [Inline] Target
+  | Image Attr [Inline] Target
   | Note [Block]
   | Span Attr [Inline]
 type ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
