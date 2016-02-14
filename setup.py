@@ -9,6 +9,7 @@ import tempfile
 import warnings
 
 # Pip Package Manager
+# ------------------------------------------------------------------------------
 try:
     import pip
     import setuptools
@@ -21,6 +22,7 @@ def local(path):
     return os.path.join(os.path.dirname(__file__), path)
 
 # Extra Third-Party Libraries
+# ------------------------------------------------------------------------------
 sys.path.insert(0, local(".lib"))
 setup_requires = ["about>=5.1,<6"]
 def not_found(req):
@@ -46,7 +48,8 @@ for req in setup_requires:
             raise not_found(req)
 import about
 
-# Local Metadata
+# Pandoc Metadata
+# ------------------------------------------------------------------------------
 tmp_dir = tempfile.mkdtemp()
 source = local("pandoc/about.py")
 target = os.path.join(tmp_dir, "about_pandoc.py")
