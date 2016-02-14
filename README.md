@@ -1,9 +1,137 @@
 
-**Disclaimer:** this project is not ready for prime time ; if you need to
-call pandoc (the Haskell program) from Python right now, you'd better 
-consider other options (such as: pypandoc, os.system, sh, etc.).
+Pandoc (Python Library)
+================================================================================
 
-The goal of this project is to provide a Pythonic model for pandoc documents 
-to enable Python developer to inspect, query, transform them with familiar 
-methods.
+Preamble
+--------------------------------------------------------------------------------
+
+This project is *not* a Python binding for [pandoc], the command-line tool. 
+If this is what you need, you can either use [pypandoc], [pyandoc], etc.,
+or create you own wrapper with [subprocess] or [sh].
+
+[pandoc]: http://pandoc.org/
+[pypandoc]: https://pypi.python.org/pypi/pypandoc/
+[pyandoc]: https://github.com/kennethreitz/pyandoc
+[sh]: https://amoffat.github.io/sh/
+[subprocess]: https://docs.python.org/2/library/subprocess.html
+
+Instead, this library provides a Pythonic way to analyze, create and 
+transform documents.
+It targets the developers which have this kind of need and are more productive
+in Python than in Haskell (the native language of the pandoc library).
+
+The pandoc Python library only reads/writes documents in the pandoc JSON format.
+Use the pandoc command-line tool to convert documents in/to markdown,
+html, latex, etc.
+
+**Warning:** this library is still in its alpha phase and not yet documented.
+At this stage, only a few examples are provided to give you a feel of the API.
+
+
+Common Code
+--------------------------------------------------------------------------------
+
+For all examples, we use the following imports
+
+    import json
+    import sys
+    import pandoc
+    from pandoc.types import *
+
+and the following depth-first document iterator: 
+
+    def iter(elt, enter=None, exit=None):
+        yield elt
+        if enter is not None:
+            enter(elt)
+        if isinstance(elt, dict):
+            elt = elt.items()
+        if hasattr(elt, "__iter__"): # exclude strings
+            for child in elt:
+                 for subelt in iter(child, enter, exit):
+                     yield subelt
+        if exit is not None:
+            exit(elt)
+
+
+Mathematics
+--------------------------------------------------------------------------------
+
+Define the file `math.py` to count the number of math items in documents:
+
+    def find_math(doc):
+        return [elt for elt in iter(doc) if type(elt) is Math]
+        
+    if __name__ == "__main__":
+        doc = pandoc.read(json.load(sys.stdin))
+        print "math:", len(find_math(doc)), "items."
+
+Then, use it on the (markdown) document `doc.txt`:
+
+    $ pandoc -t json doc.txt | python math.py
+
+
+Implicit Sections
+--------------------------------------------------------------------------------
+
+I like to use bold text at the beginning of a paragraph to denote the existence 
+of a low-level section. 
+This pattern can be detected and the sections automatically explicited.
+
+Define a `sections.py` file ; then, use the hooks defined in the depth-first
+iterator factory to provide the full path from the root to the element at 
+each step:
+
+    def iter_path(elt):
+        parents = []
+        def enter(elt_):
+            parents.append(elt_)
+        def exit(elt_):
+            parents.pop()
+        for elt_ in iter(elt, enter, exit):
+            yield parents + [elt_]
+
+Leverage this new iterator to find the parent of an element:
+
+    def find_parent(doc, elt):
+        for path in iter_path(doc):
+            elt_ = path[-1]
+            parent = path[-2] if len(path) >= 2 else None
+            if elt is elt_:
+                 return parent
+
+To detect a paragraph that is an implicit section, define:
+
+    def match_implicit_section(elt):
+        if type(elt) is Para:
+            content = elt[0]
+            if len(content) >= 1 and type(content[0]) is Strong:
+                return True
+        return False
+
+The transformation itself:
+
+    def explicit_sections(doc, level=6):
+        for para in filter(match_implicit_section, iter(doc)):
+            blocks = find_parent(doc, para)
+            content = para[0].pop(0)[0]
+            if len(para[0]) >= 1 and para[0][0] == Space():
+                para[0].pop(0)
+            index = blocks.index(para)
+            header = Header(level, ("", [], []), content)
+            blocks.insert(index, header)
+        return doc
+
+Finally, provide the command-line API with
+
+    if __name__ == "__main__":
+        doc = pandoc.read(json.load(sys.stdin))
+        doc = explicit_sections(doc)
+        print json.dumps(pandoc.write(doc))
+
+and use it like that:
+
+    $ pandoc -t json doc.txt | \
+    > python sections.py | \
+    > pandoc -f json -o doc2.txt
 
