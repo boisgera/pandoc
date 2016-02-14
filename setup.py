@@ -22,16 +22,28 @@ def local(path):
 
 # Extra Third-Party Libraries
 sys.path.insert(0, local(".lib"))
-setup_requires = ["about>=5.0.1"]
+setup_requires = ["about>=5.1,<6"]
+def not_found(req):
+    error  = "{req!r} not found; install it locally with:\n"
+    error += "    pip install --target=.lib --ignore-installed {req!r}"
+    return ImportError(error.format(req=req))
+def local_conflict(req, found):
+    error  = "Found {found!r} locally that conflicts with {req!r}.\n"
+    error += "Delete the '.lib' directory and start over."
+    raise ImportError(error.format(found=found, req=req))
 for req in setup_requires:
     try:
         require = lambda *r: pkg_resources.WorkingSet().require(*r)
         require(req)
-    except (pkg_resources.DistributionNotFound, pkg_resources.VersionConflict):
-        error  = "{req!r} not found; install it locally with:"
-        error += "\n"
-        error += "    pip install --target=.lib --ignore-installed {req!r}"
-        raise ImportError(error.format(req=req))
+    except pkg_resources.DistributionNotFound:
+        raise not_found(req)
+    except pkg_resources.VersionConflict as version_error:
+        found_dist = version_error.args[0]
+        found = found_dist.project_name + "==" + found_dist.version
+        if found_dist.location == local(".lib"):
+            raise local_conflict(req=req, found=found)
+        else:
+            raise not_found(req)
 import about
 
 # Local Metadata
