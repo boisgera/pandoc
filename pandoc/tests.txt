@@ -1,0 +1,17 @@
+
+Imports:
+
+    >>> from pandoc.types import *
+    >>> import pandoc
+
+Empty document:
+
+    >>> empty = [{"unMeta":{}},[]]
+    >>> doc = pandoc.read(empty)
+    >>> doc
+    Pandoc(Meta(map()), [])
+    >>> pandoc.write(doc) == empty
+    True
+
+
+
