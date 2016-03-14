@@ -1,17 +1,57 @@
 
+Pandoc Test Suite
+================================================================================
+
 Imports:
 
     >>> from pandoc.types import *
     >>> import pandoc
 
+Helper functions:
+
+    >>> def wrap_blocks(*json_blocks):
+    ...     return [{"unMeta":{}}, list(json_blocks)]
+    >>> def wrap_inlines(*json_inlines):
+    ...     return wrap_blocks({"t":"Para", "c":list(json_inlines)})
+
 Empty document:
 
-    >>> empty = [{"unMeta":{}},[]]
-    >>> doc = pandoc.read(empty)
+    >>> json_doc = [{"unMeta": {}}, []]
+    >>> doc = pandoc.read(json_doc)
     >>> doc
     Pandoc(Meta(map()), [])
-    >>> pandoc.write(doc) == empty
+    >>> pandoc.write(doc) == json_doc
     True
 
+Hello world:
+ 
+    >>> json_doc = wrap_inlines(
+    ...   {"t":"Str"  ,"c":"Hello" },
+    ...   {"t":"Space","c":[]      },
+    ...   {"t":"Str"  ,"c":"World!"}
+    ... )
+    >>> doc = pandoc.read(json_doc)
+    >>> doc[1]
+    [Para([Str(u'Hello'), Space(), Str(u'World!')])]
+    >>> pandoc.write(doc) == json_doc
+    True
 
+Standard Metadata:
+
+    >>> json_doc = [
+    ...   {"unMeta": {
+    ...     "date":{"t":"MetaInlines","c":[{"t":"Str","c":"date"}]},
+    ...     "author":{
+    ...       "t":"MetaList",
+    ...       "c":[{"t":"MetaInlines","c":[{"t":"Str","c":"author"}]}]
+    ...     },
+    ...     "title":{"t":"MetaInlines","c":[{"t":"Str","c":"title"}]}}
+    ...   },
+    ...   []
+    ... ]
+    >>> doc = pandoc.read(json_doc)
+    >>> doc
+    Pandoc(Meta(map([(u'date', MetaInlines([Str(u'date')])), (u'title', MetaInlines([Str(u'title')])), (u'author', MetaList([MetaInlines([Str(u'author')])]))])), [])
+    >>> pandoc.write(doc) == json_doc
+    True
 

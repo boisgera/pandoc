@@ -11,7 +11,8 @@ path = pkg_resources.resource_filename("pandoc", "tests.txt")
 suite = doctest.DocFileSuite(path, module_relative=False)
 
 def run():
-    result = {}
+    # TODO: use doctest API instead.
+    result = unittest.TestResult()
     suite.run(result)
     return result
 
