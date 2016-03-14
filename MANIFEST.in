@@ -1,0 +1,4 @@
+include README.txt
+recursive-include .lib *
+recursive-exclude .lib *.pyc
+
