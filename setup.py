@@ -56,8 +56,8 @@ target = os.path.join(tmp_dir, "about_pandoc.py")
 shutil.copyfile(source, target)
 sys.path.insert(0, tmp_dir)
 import about_pandoc
-#del sys.path[0]
-#shutil.rmtree(tmp_dir)
+del sys.path[0]
+shutil.rmtree(tmp_dir)
 
 # Setup Configuration
 # ------------------------------------------------------------------------------

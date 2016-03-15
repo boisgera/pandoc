@@ -1,8 +1,8 @@
 
-Pandoc Test Suite
+Pandoc (Python) Test Suite
 ================================================================================
 
-### Command-Line Tool
+### Pandoc (Haskell)
 
 This test suite requires pandoc 1.16:
 
@@ -30,9 +30,6 @@ This test suite requires pandoc 1.16:
     ...     chunks = [text[i:i+length] for i in range(0, len(text), length)]
     ...     return "\n".join(chunks)
 
-    >>> doc = None
-    >>> json_ref = None
-    >>> json_res = None
     >>> def test(txt):
     ...     global doc, json_ref, json_res
     ...     json_ref = to_json(txt)
