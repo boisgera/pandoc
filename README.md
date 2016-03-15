@@ -6,9 +6,6 @@ Pandoc (Python Library)
 [![PyPi](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
  [![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 
-Preamble
---------------------------------------------------------------------------------
-
 **Warning.**
 This project is *not* a Python binding for [pandoc], the command-line tool. 
 If this is what you need, you can either use [pypandoc], [pyandoc], etc.,
