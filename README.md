@@ -3,12 +3,10 @@
 Pandoc (Python Library)
 ================================================================================
 
-Available on Pypi (in alpha stage):
+Available on Pypi / Test Status:
 
 [![PyPi](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
-
-Tests Status:
-
+/
 [![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 
 Preamble
