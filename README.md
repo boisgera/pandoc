@@ -28,8 +28,8 @@ The pandoc Python library only reads/writes documents in the pandoc JSON format.
 Use the pandoc command-line tool to convert documents in/to markdown,
 html, latex, etc.
 
-**Warning:** this library is still in its alpha phase and not yet documented.
-At this stage, to get you a feel of the API, have a look at the [test suite][].
+This library is still in its alpha stage;
+to get you a feel of the API, have a look at the [test suite][].
 
 [test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
 
