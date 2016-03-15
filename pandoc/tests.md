@@ -5,7 +5,7 @@ Preamble
 Pandoc (Haskell)
 --------------------------------------------------------------------------------
 
-This show suite requires pandoc 1.16:
+This test suite requires pandoc 1.16:
 
     >>> from subprocess import Popen, PIPE
     >>> p = Popen(["pandoc", "-v"], stdout=PIPE)
