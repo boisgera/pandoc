@@ -2,56 +2,133 @@
 Pandoc Test Suite
 ================================================================================
 
-Imports:
+### Command-Line Tool
+
+This test suite requires pandoc 1.16:
+
+    >>> from subprocess import Popen, PIPE
+    >>> p = Popen(["pandoc", "-v"], stdout=PIPE)
+    >>> if "pandoc 1.16" not in p.communicate()[0]:
+    ...     raise RuntimeError("pandoc 1.16 not found")
+
+### Imports
 
     >>> from pandoc.types import *
     >>> import pandoc
 
-Helper functions:
+### Helper functions
+
+    >>> from subprocess import Popen, PIPE
+    >>> import json
+    >>> def to_json(txt):
+    ...     p = Popen(["pandoc", "-tjson"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    ...     json_string = p.communicate(input=txt.encode("utf-8"))[0]
+    ...     json_doc = json.loads(json_string)
+    ...     return json_doc
+
+    >>> def linebreak(text, length=80):
+    ...     chunks = [text[i:i+length] for i in range(0, len(text), length)]
+    ...     return "\n".join(chunks)
+
+    >>> doc = None
+    >>> json_ref = None
+    >>> json_res = None
+    >>> def test(txt):
+    ...     global doc, json_ref, json_res
+    ...     json_ref = to_json(txt)
+    ...     doc = pandoc.read(json_ref)
+    ...     print linebreak(repr(doc), length=80-4)
+    ...     json_res = pandoc.write(doc)
+    ...     if json_ref != json_res:
+    ...         error = """\
+    ... pandoc read-write roundtrip failed. 
+    ...
+    ... The reference:
+    ...
+    ... {0}
+    ...
+    ... and the actual result:
+    ...
+    ... {1}
+    ...
+    ... are different.
+    ... """
+    ...         raise ValueError(error.format(json_ref, json_res))
 
     >>> def wrap_blocks(*json_blocks):
     ...     return [{"unMeta":{}}, list(json_blocks)]
     >>> def wrap_inlines(*json_inlines):
     ...     return wrap_blocks({"t":"Para", "c":list(json_inlines)})
 
+
+Basic Tests
+--------------------------------------------------------------------------------
+
 Empty document:
 
-    >>> json_doc = [{"unMeta": {}}, []]
-    >>> doc = pandoc.read(json_doc)
-    >>> doc
+    >>> test(u"")
     Pandoc(Meta(map()), [])
-    >>> pandoc.write(doc) == json_doc
-    True
 
 Hello world:
  
-    >>> json_doc = wrap_inlines(
-    ...   {"t":"Str"  ,"c":"Hello" },
-    ...   {"t":"Space","c":[]      },
-    ...   {"t":"Str"  ,"c":"World!"}
-    ... )
-    >>> doc = pandoc.read(json_doc)
-    >>> doc[1]
-    [Para([Str(u'Hello'), Space(), Str(u'World!')])]
-    >>> pandoc.write(doc) == json_doc
-    True
+    >>> test(u"Hello World!")
+    Pandoc(Meta(map()), [Para([Str(u'Hello'), Space(), Str(u'World!')])])
 
 Standard Metadata:
+    >>> test(
+    ... """\
+    ... % title
+    ... % author
+    ... % date
+    ... """
+    ... )
+    Pandoc(Meta(map([(u'date', MetaInlines([Str(u'date')])), (u'title', MetaInli
+    nes([Str(u'title')])), (u'author', MetaList([MetaInlines([Str(u'author')])])
+    )])), [])
 
-    >>> json_doc = [
-    ...   {"unMeta": {
-    ...     "date":{"t":"MetaInlines","c":[{"t":"Str","c":"date"}]},
-    ...     "author":{
-    ...       "t":"MetaList",
-    ...       "c":[{"t":"MetaInlines","c":[{"t":"Str","c":"author"}]}]
-    ...     },
-    ...     "title":{"t":"MetaInlines","c":[{"t":"Str","c":"title"}]}}
-    ...   },
-    ...   []
-    ... ]
-    >>> doc = pandoc.read(json_doc)
-    >>> doc
-    Pandoc(Meta(map([(u'date', MetaInlines([Str(u'date')])), (u'title', MetaInlines([Str(u'title')])), (u'author', MetaList([MetaInlines([Str(u'author')])]))])), [])
-    >>> pandoc.write(doc) == json_doc
-    True
+
+Inlines
+--------------------------------------------------------------------------------
+
+### Emphasis
+
+    >>> test("""This text is _emphasized with underscores_, and this
+    ... is *emphasized with asterisks*.""")
+    Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'text'), Space(), Str
+    (u'is'), Space(), Emph([Str(u'emphasized'), Space(), Str(u'with'), Space(), 
+    Str(u'underscores')]), Str(u','), Space(), Str(u'and'), Space(), Str(u'this'
+    ), SoftBreak(), Str(u'is'), Space(), Emph([Str(u'emphasized'), Space(), Str(
+    u'with'), Space(), Str(u'asterisks')]), Str(u'.')])])
+
+    >>> test("This is **strong emphasis** and __with underscores__.")
+    Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Stron
+    g([Str(u'strong'), Space(), Str(u'emphasis')]), Space(), Str(u'and'), Space(
+    ), Strong([Str(u'with'), Space(), Str(u'underscores')]), Str(u'.')])])
+
+    >>> test("This is * not emphasized *, and \*neither is this\*.")
+    Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Str(u
+    '*'), Space(), Str(u'not'), Space(), Str(u'emphasized'), Space(), Str(u'*,')
+    , Space(), Str(u'and'), Space(), Str(u'*neither'), Space(), Str(u'is'), Spac
+    e(), Str(u'this*.')])])
+
+
+### Verbatim
+
+    >>> test("`>`")
+    >>> json_ref[1][0]["c"][0]["c"][0] == json_res[1][0]["c"][0]["c"][0]
+    >>> json_ref[1][0]["c"][0]["c"][0]
+    >>> json_res[1][0]["c"][0]["c"][0]
+
+#    >>> test(r"What is the difference between `>>=` and `>>`?")
+
+#    >>> test(r"Here is a literal backtick `` ` ``.")
+
+#    >>> test(r"This is a backslash followed by an asterisk: `\*`.")
+
+
+
+Blocks 
+--------------------------------------------------------------------------------
+
+
 
