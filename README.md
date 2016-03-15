@@ -9,6 +9,7 @@ Pandoc (Python Library)
 Preamble
 --------------------------------------------------------------------------------
 
+**Warning.**
 This project is *not* a Python binding for [pandoc], the command-line tool. 
 If this is what you need, you can either use [pypandoc], [pyandoc], etc.,
 or create you own wrapper with [subprocess] or [sh].
@@ -19,17 +20,41 @@ or create you own wrapper with [subprocess] or [sh].
 [sh]: https://amoffat.github.io/sh/
 [subprocess]: https://docs.python.org/2/library/subprocess.html
 
-Instead, this library provides a Pythonic way to analyze, create and 
+This library provides a Pythonic way to analyze, create and 
 transform documents.
-It targets the developers which have this kind of need and are more productive
+It targets the pandoc power users which are more productive
 in Python than in Haskell (the native language of the pandoc library).
 
-The pandoc Python library only reads/writes documents in the pandoc JSON format.
-Use the pandoc command-line tool to convert documents in/to markdown,
-html, latex, etc.
+The pandoc Python library translates documents between the native 
+pandoc JSON format and our Python document model. 
+If you need to manage other formats (html, latex, etc.) use the 
+pandoc command-line tool to convert to/from the JSON format.
 
-This library is still in the alpha stage;
-to get you a feel of the API, have a look at the [test suite][].
+This library is still in the alpha stage and not documented;
+the typical workflow is the following:
+
+ 1. Get a document in the JSON format:
+
+        >>> json_input = [{"unMeta":{}},[{"t":"Para","c":[{"t":"Str","c":"Hello"}]}]]
+
+ 2. Read it as a Python document
+
+        >>> import pandoc
+        >>> doc = pandoc.read(json_doc)
+        >>> doc
+        Pandoc(Meta(map()), [Para([Str(u'Hello!')])])
+
+ 3. Analyze or Transform the document
+
+        >>> from pandoc.types import Space, Str
+        >>> doc[1].extend([Space(), Str(u"World!")])
+
+ 4. Export the resulting document to JSON
+
+        >>> json_output = pandoc.write(doc)
+
+To get a better feel of the Python document model, 
+have a look at the [test suite][].
 
 [test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
 
