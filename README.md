@@ -1,8 +1,13 @@
 
+[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
+
+[![Coverage](https://codecov.io/github.com/boisgera/pandoc/coverage.svg?branch=master)](https://codecov.io/github.com/boisgera/pandoc/coverage.svg?branch=master)
+
 Pandoc (Python Library)
 ================================================================================
 
-[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
+
+
 
 Preamble
 --------------------------------------------------------------------------------
