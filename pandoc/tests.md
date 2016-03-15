@@ -201,6 +201,66 @@ This extension does not work for JSON output format.
     'See'), Space(), Link((u'', [], []), [Str(u'foo')], (u'bar', u''))])])
 
 
+Block Quotations
+--------------------------------------------------------------------------------
+
+    >>> show("""
+    ... > This is a block quote. This
+    ... > paragraph has two lines.
+    ... >
+    ... > 1. This is a list inside a block quote.
+    ... > 2. Second item.
+    ... """)
+    Pandoc(Meta(map()), [BlockQuote([Para([Str(u'This'), Space(), Str(u'is'), Sp
+    ace(), Str(u'a'), Space(), Str(u'block'), Space(), Str(u'quote.'), Space(), 
+    Str(u'This'), SoftBreak(), Str(u'paragraph'), Space(), Str(u'has'), Space(),
+     Str(u'two'), Space(), Str(u'lines.')]), OrderedList((1, Decimal(), Period()
+    ), [[Plain([Str(u'This'), Space(), Str(u'is'), Space(), Str(u'a'), Space(), 
+    Str(u'list'), Space(), Str(u'inside'), Space(), Str(u'a'), Space(), Str(u'bl
+    ock'), Space(), Str(u'quote.')])], [Plain([Str(u'Second'), Space(), Str(u'it
+    em.')])]])])])
+
+    >>> show("""
+    ... > This is a block quote. This
+    ... paragraph has two lines.
+    ... 
+    ... > 1. This is a list inside a block quote.
+    ... 2. Second item.
+    ... """)
+    Pandoc(Meta(map()), [BlockQuote([Para([Str(u'This'), Space(), Str(u'is'), Sp
+    ace(), Str(u'a'), Space(), Str(u'block'), Space(), Str(u'quote.'), Space(), 
+    Str(u'This'), SoftBreak(), Str(u'paragraph'), Space(), Str(u'has'), Space(),
+     Str(u'two'), Space(), Str(u'lines.')])]), BlockQuote([OrderedList((1, Decim
+    al(), Period()), [[Plain([Str(u'This'), Space(), Str(u'is'), Space(), Str(u'
+    a'), Space(), Str(u'list'), Space(), Str(u'inside'), Space(), Str(u'a'), Spa
+    ce(), Str(u'block'), Space(), Str(u'quote.')])], [Plain([Str(u'Second'), Spa
+    ce(), Str(u'item.')])]])])])
+
+    >>> show("""
+    ... > This is a block quote.
+    ... >
+    ... > > A block quote within a block quote.
+    ... """)
+    Pandoc(Meta(map()), [BlockQuote([Para([Str(u'This'), Space(), Str(u'is'), Sp
+    ace(), Str(u'a'), Space(), Str(u'block'), Space(), Str(u'quote.')]), BlockQu
+    ote([Para([Str(u'A'), Space(), Str(u'block'), Space(), Str(u'quote'), Space(
+    ), Str(u'within'), Space(), Str(u'a'), Space(), Str(u'block'), Space(), Str(
+    u'quote.')])])])])
+
+    >>> show(">     code")
+    Pandoc(Meta(map()), [BlockQuote([CodeBlock((u'', [], []), u'code')])])
+
+#### Extension: `blank_before_blockquote`
+
+    >>> show("""
+    ... > This is a block quote.
+    ... >> Nested.
+    ... """)
+    Pandoc(Meta(map()), [BlockQuote([Para([Str(u'This'), Space(), Str(u'is'), Sp
+    ace(), Str(u'a'), Space(), Str(u'block'), Space(), Str(u'quote.'), SoftBreak
+    (), Str(u'>'), Space(), Str(u'Nested.')])])])
+
+
 Emphasis
 --------------------------------------------------------------------------------
 
