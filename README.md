@@ -39,7 +39,7 @@ the typical workflow is the following:
  2. Read it as a Python document
 
         >>> import pandoc
-        >>> doc = pandoc.read(json_doc)
+        >>> doc = pandoc.read(json_input)
         >>> doc
         Pandoc(Meta(map()), [Para([Str(u'Hello!')])])
 
