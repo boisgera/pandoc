@@ -141,6 +141,66 @@ Headers
     ace(), Str(u'and'), Space(), Str(u'#5.')])])
 
 
+Header identifiers
+--------------------------------------------------------------------------------
+
+#### Extension: `header_attributes`
+
+    >>> show("""
+    ... # My header {#foo}
+    ... 
+    ... ## My header ##    {#foo}
+    ... 
+    ... My other header   {#foo}
+    ... ---------------""")
+    Pandoc(Meta(map()), [Header(1, (u'foo', [], []), [Str(u'My'), Space(), Str(u
+    'header')]), Header(2, (u'foo', [], []), [Str(u'My'), Space(), Str(u'header'
+    )]), Header(2, (u'foo', [], []), [Str(u'My'), Space(), Str(u'other'), Space(
+    ), Str(u'header')])])
+
+    >>> show("# My header {-}")
+    Pandoc(Meta(map()), [Header(1, (u'my-header', [u'unnumbered'], []), [Str(u'M
+    y'), Space(), Str(u'header')])])
+
+    >>> show("# My header {.unnumbered}")
+    Pandoc(Meta(map()), [Header(1, (u'my-header', [u'unnumbered'], []), [Str(u'M
+    y'), Space(), Str(u'header')])])
+
+#### Extension: `auto_identifiers`
+
+This extension does not work for JSON output format.
+
+#### Extension: `implicit_header_references`
+
+    >>> show("""
+    ... # Header Identifiers
+    ... 
+    ... [header identifiers](#header-identifiers),
+    ... [header identifiers],
+    ... [header identifiers][],
+    ... [the section on header identifiers][header identifiers]
+    ... """)
+    Pandoc(Meta(map()), [Header(1, (u'header-identifiers', [], []), [Str(u'Heade
+    r'), Space(), Str(u'Identifiers')]), Para([Link((u'', [], []), [Str(u'header
+    '), Space(), Str(u'identifiers')], (u'#header-identifiers', u'')), Str(u',')
+    , SoftBreak(), Link((u'', [], []), [Str(u'header'), Space(), Str(u'identifie
+    rs')], (u'#header-identifiers', u'')), Str(u','), SoftBreak(), Link((u'', []
+    , []), [Str(u'header'), Space(), Str(u'identifiers')], (u'#header-identifier
+    s', u'')), Str(u','), SoftBreak(), Link((u'', [], []), [Str(u'the'), Space()
+    , Str(u'section'), Space(), Str(u'on'), Space(), Str(u'header'), Space(), St
+    r(u'identifiers')], (u'#header-identifiers', u''))])])
+
+    >>> show("""
+    ... # Foo
+    ... 
+    ... [foo]: bar
+    ... 
+    ... See [foo]
+    ... """)
+    Pandoc(Meta(map()), [Header(1, (u'foo', [], []), [Str(u'Foo')]), Para([Str(u
+    'See'), Space(), Link((u'', [], []), [Str(u'foo')], (u'bar', u''))])])
+
+
 Emphasis
 --------------------------------------------------------------------------------
 
