@@ -83,10 +83,8 @@ def write(object_):
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):
-        if isinstance(object_, list):
+        if isinstance(object_, (list, tuple)):
             json_ = [write(item) for item in object_]
-        elif isinstance(object_, tuple):
-            json_ = tuple(write(item) for item in object_)
         elif isinstance(object_, dict):
             json_ = odict((k, write(v)) for k, v in object_.items())
         else: # primitive type

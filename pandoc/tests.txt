@@ -114,16 +114,22 @@ Inlines
 
 ### Verbatim
 
-    >>> test("`>`")
-    >>> json_ref[1][0]["c"][0]["c"][0] == json_res[1][0]["c"][0]["c"][0]
-    >>> json_ref[1][0]["c"][0]["c"][0]
-    >>> json_res[1][0]["c"][0]["c"][0]
+    >>> test("What is the difference between `>>=` and `>>`?")
+    Pandoc(Meta(map()), [Para([Str(u'What'), Space(), Str(u'is'), Space(), Str(u
+    'the'), Space(), Str(u'difference'), Space(), Str(u'between'), Space(), Code
+    ((u'', [], []), u'>>='), Space(), Str(u'and'), Space(), Code((u'', [], []), 
+    u'>>'), Str(u'?')])])
 
-#    >>> test(r"What is the difference between `>>=` and `>>`?")
+    >>> test("Here is a literal backtick `` ` ``.")
+    Pandoc(Meta(map()), [Para([Str(u'Here'), Space(), Str(u'is'), Space(), Str(u
+    'a'), Space(), Str(u'literal'), Space(), Str(u'backtick'), Space(), Code((u'
+    ', [], []), u'`'), Str(u'.')])])
 
-#    >>> test(r"Here is a literal backtick `` ` ``.")
-
-#    >>> test(r"This is a backslash followed by an asterisk: `\*`.")
+    >>> test("This is a backslash followed by an asterisk: `\*`.")
+    Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Str(u
+    'a'), Space(), Str(u'backslash'), Space(), Str(u'followed'), Space(), Str(u'
+    by'), Space(), Str(u'an'), Space(), Str(u'asterisk:'), Space(), Code((u'', [
+    ], []), u'\\*'), Str(u'.')])])
 
 
 
