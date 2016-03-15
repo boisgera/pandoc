@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc) [![Coverage](https://codecov.io/github.com/boisgera/pandoc/coverage.svg?branch=master)](https://codecov.io/github.com/boisgera/pandoc/coverage.svg?branch=master)
+[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc) [![Coverage](https://codecov.io/github/boisgera/pandoc/coverage.svg?branch=master)](https://codecov.io/github/boisgera/pandoc/coverage.svg?branch=master)
 
 Pandoc (Python Library)
 ================================================================================
