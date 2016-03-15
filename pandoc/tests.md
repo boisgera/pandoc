@@ -1,22 +1,27 @@
 
-Pandoc (Python) Test Suite
+Preamble
 ================================================================================
 
-### Pandoc (Haskell)
+Pandoc (Haskell)
+--------------------------------------------------------------------------------
 
-This test suite requires pandoc 1.16:
+This show suite requires pandoc 1.16:
 
     >>> from subprocess import Popen, PIPE
     >>> p = Popen(["pandoc", "-v"], stdout=PIPE)
     >>> if "pandoc 1.16" not in p.communicate()[0]:
     ...     raise RuntimeError("pandoc 1.16 not found")
 
-### Imports
+
+Imports
+--------------------------------------------------------------------------------
 
     >>> from pandoc.types import *
     >>> import pandoc
 
-### Helper functions
+
+Helper functions
+--------------------------------------------------------------------------------
 
     >>> from subprocess import Popen, PIPE
     >>> import json
@@ -30,7 +35,7 @@ This test suite requires pandoc 1.16:
     ...     chunks = [text[i:i+length] for i in range(0, len(text), length)]
     ...     return "\n".join(chunks)
 
-    >>> def test(txt):
+    >>> def show(txt):
     ...     global doc, json_ref, json_res
     ...     json_ref = to_json(txt)
     ...     doc = pandoc.read(json_ref)
@@ -58,39 +63,87 @@ This test suite requires pandoc 1.16:
     ...     return wrap_blocks({"t":"Para", "c":list(json_inlines)})
 
 
-Basic Tests
+Pandoc Test Suite
+================================================================================
+
+Source: [Pandoc's User Guide](http://pandoc.org/README.html)
+
+
+Paragraphs
 --------------------------------------------------------------------------------
 
-Empty document:
+    >>> show("""\
+    ... a paragraph
+    ...
+    ... another paragraph""")
+    Pandoc(Meta(map()), [Para([Str(u'a'), Space(), Str(u'paragraph')]), Para([St
+    r(u'another'), Space(), Str(u'paragraph')])])
 
-    >>> test(u"")
-    Pandoc(Meta(map()), [])
-
-Hello world:
- 
-    >>> test(u"Hello World!")
-    Pandoc(Meta(map()), [Para([Str(u'Hello'), Space(), Str(u'World!')])])
-
-Standard Metadata:
-
-    >>> test(
-    ... """\
-    ... % title
-    ... % author
-    ... % date
-    ... """
-    ... )
-    Pandoc(Meta(map([(u'date', MetaInlines([Str(u'date')])), (u'title', MetaInli
-    nes([Str(u'title')])), (u'author', MetaList([MetaInlines([Str(u'author')])])
-    )])), [])
+    >>> show("a paragraph  \nanother paragraph""")
+    Pandoc(Meta(map()), [Para([Str(u'a'), Space(), Str(u'paragraph'), LineBreak(
+    ), Str(u'another'), Space(), Str(u'paragraph')])])
 
 
-User's Guide Tests
+#### Extension: `escaped_line_breaks`
+
+    >>> show(r"""a paragraph\
+    ... another paragraph""")
+    Pandoc(Meta(map()), [Para([Str(u'a'), Space(), Str(u'paragraph'), LineBreak(
+    ), Str(u'another'), Space(), Str(u'paragraph')])])
+
+
+Headers
 --------------------------------------------------------------------------------
 
-### Emphasis
+### Setext-style headers
 
-    >>> test("""This text is _emphasized with underscores_, and this
+    >>> show("""\
+    ... A level-one header
+    ... ==================
+    ... 
+    ... A level-two header
+    ... ------------------
+    ... """)
+    Pandoc(Meta(map()), [Header(1, (u'a-level-one-header', [], []), [Str(u'A'), 
+    Space(), Str(u'level-one'), Space(), Str(u'header')]), Header(2, (u'a-level-
+    two-header', [], []), [Str(u'A'), Space(), Str(u'level-two'), Space(), Str(u
+    'header')])])
+
+### ATX-style headers
+
+    >>> show("""\
+    ... ## A level-two header
+    ... 
+    ... ### A level-three header ###
+    ... """)
+    Pandoc(Meta(map()), [Header(2, (u'a-level-two-header', [], []), [Str(u'A'), 
+    Space(), Str(u'level-two'), Space(), Str(u'header')]), Header(3, (u'a-level-
+    three-header', [], []), [Str(u'A'), Space(), Str(u'level-three'), Space(), S
+    tr(u'header')])])
+
+    >>> show("# A level-one header with a [link](/url) and *emphasis*")
+    Pandoc(Meta(map()), [Header(1, (u'a-level-one-header-with-a-link-and-emphasi
+    s', [], []), [Str(u'A'), Space(), Str(u'level-one'), Space(), Str(u'header')
+    , Space(), Str(u'with'), Space(), Str(u'a'), Space(), Link((u'', [], []), [S
+    tr(u'link')], (u'/url', u'')), Space(), Str(u'and'), Space(), Emph([Str(u'em
+    phasis')])])])
+
+#### Extension: `blank_before_header`
+
+    >>> show("""\
+    ... I like several of their flavors of ice cream:
+    ... #22, for example, and #5.""")
+    Pandoc(Meta(map()), [Para([Str(u'I'), Space(), Str(u'like'), Space(), Str(u'
+    several'), Space(), Str(u'of'), Space(), Str(u'their'), Space(), Str(u'flavo
+    rs'), Space(), Str(u'of'), Space(), Str(u'ice'), Space(), Str(u'cream:'), So
+    ftBreak(), Str(u'#22,'), Space(), Str(u'for'), Space(), Str(u'example,'), Sp
+    ace(), Str(u'and'), Space(), Str(u'#5.')])])
+
+
+Emphasis
+--------------------------------------------------------------------------------
+
+    >>> show("""This text is _emphasized with underscores_, and this
     ... is *emphasized with asterisks*.""")
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'text'), Space(), Str
     (u'is'), Space(), Emph([Str(u'emphasized'), Space(), Str(u'with'), Space(), 
@@ -98,79 +151,91 @@ User's Guide Tests
     ), SoftBreak(), Str(u'is'), Space(), Emph([Str(u'emphasized'), Space(), Str(
     u'with'), Space(), Str(u'asterisks')]), Str(u'.')])])
 
-    >>> test("This is **strong emphasis** and __with underscores__.")
+    >>> show("This is **strong emphasis** and __with underscores__.")
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Stron
     g([Str(u'strong'), Space(), Str(u'emphasis')]), Space(), Str(u'and'), Space(
     ), Strong([Str(u'with'), Space(), Str(u'underscores')]), Str(u'.')])])
 
-    >>> test("This is * not emphasized *, and \*neither is this\*.")
+    >>> show("This is * not emphasized *, and \*neither is this\*.")
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Str(u
     '*'), Space(), Str(u'not'), Space(), Str(u'emphasized'), Space(), Str(u'*,')
     , Space(), Str(u'and'), Space(), Str(u'*neither'), Space(), Str(u'is'), Spac
     e(), Str(u'this*.')])])
 
-    >>> test("feas*ible*, not feas*able*.")
+    >>> show("feas*ible*, not feas*able*.")
     Pandoc(Meta(map()), [Para([Str(u'feas'), Emph([Str(u'ible')]), Str(u','), Sp
     ace(), Str(u'not'), Space(), Str(u'feas'), Emph([Str(u'able')]), Str(u'.')])
     ])
 
-### Strikeout
 
-    >>> test("This ~~is deleted text.~~")
+Strikeout
+--------------------------------------------------------------------------------
+
+    >>> show("This ~~is deleted text.~~")
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Strikeout([Str(u'is'), Spa
     ce(), Str(u'deleted'), Space(), Str(u'text.')])])])
 
-### Superscripts and Subscripts
 
-    >>> test("H~2~O is a liquid.  2^10^ is 1024.")
+Superscripts and Subscripts
+--------------------------------------------------------------------------------
+
+    >>> show("H~2~O is a liquid.  2^10^ is 1024.")
     Pandoc(Meta(map()), [Para([Str(u'H'), Subscript([Str(u'2')]), Str(u'O'), Spa
     ce(), Str(u'is'), Space(), Str(u'a'), Space(), Str(u'liquid.'), Space(), Str
     (u'2'), Superscript([Str(u'10')]), Space(), Str(u'is'), Space(), Str(u'1024.
     ')])])
 
-### Verbatim
 
-    >>> test("What is the difference between `>>=` and `>>`?")
+Verbatim
+--------------------------------------------------------------------------------
+
+    >>> show("What is the difference between `>>=` and `>>`?")
     Pandoc(Meta(map()), [Para([Str(u'What'), Space(), Str(u'is'), Space(), Str(u
     'the'), Space(), Str(u'difference'), Space(), Str(u'between'), Space(), Code
     ((u'', [], []), u'>>='), Space(), Str(u'and'), Space(), Code((u'', [], []), 
     u'>>'), Str(u'?')])])
 
-    >>> test("Here is a literal backtick `` ` ``.")
+    >>> show("Here is a literal backtick `` ` ``.")
     Pandoc(Meta(map()), [Para([Str(u'Here'), Space(), Str(u'is'), Space(), Str(u
     'a'), Space(), Str(u'literal'), Space(), Str(u'backtick'), Space(), Code((u'
     ', [], []), u'`'), Str(u'.')])])
 
-    >>> test("This is a backslash followed by an asterisk: `\*`.")
+    >>> show("This is a backslash followed by an asterisk: `\*`.")
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Str(u
     'a'), Space(), Str(u'backslash'), Space(), Str(u'followed'), Space(), Str(u'
     by'), Space(), Str(u'an'), Space(), Str(u'asterisk:'), Space(), Code((u'', [
     ], []), u'\\*'), Str(u'.')])])
 
-    >>> test("`<$>`{.haskell}")
+    >>> show("`<$>`{.haskell}")
     Pandoc(Meta(map()), [Para([Code((u'', [u'haskell'], []), u'<$>')])])
 
-### Small Caps
 
-    >>> test("<span style='font-variant:small-caps;'>Small caps</span>")
+Small Caps
+--------------------------------------------------------------------------------
+
+    >>> show("<span style='font-variant:small-caps;'>Small caps</span>")
     Pandoc(Meta(map()), [Para([SmallCaps([Str(u'Small'), Space(), Str(u'caps')])
     ])])
 
-### Math
 
-    >>> test("$a=1$")
+Math
+--------------------------------------------------------------------------------
+
+    >>> show("$a=1$")
     Pandoc(Meta(map()), [Para([Math(InlineMath(), u'a=1')])])
 
-    >>> test("$$\int_0^1 f(x)\, dx$$")
+    >>> show("$$\int_0^1 f(x)\, dx$$")
     Pandoc(Meta(map()), [Para([Math(DisplayMath(), u'\\int_0^1 f(x)\\, dx')])])
 
-### Raw HTML
 
-    >>> test("<html></html>")
+Raw HTML
+--------------------------------------------------------------------------------
+
+    >>> show("<html></html>")
     Pandoc(Meta(map()), [RawBlock(Format(u'html'), u'<html>'), RawBlock(Format(u
     'html'), u'</html>')])
 
-    >>> test("""\
+    >>> show("""\
     ... <table>
     ... <tr>
     ... <td>*one*</td>
@@ -184,14 +249,16 @@ User's Guide Tests
     p://google.com', u''))]), RawBlock(Format(u'html'), u'</td>'), RawBlock(Form
     at(u'html'), u'</tr>'), RawBlock(Format(u'html'), u'</table>')])
 
-### Raw TeX
 
-    >>> test("This result was proved in \cite{jones.1967}.")
+Raw TeX
+--------------------------------------------------------------------------------
+
+    >>> show("This result was proved in \cite{jones.1967}.")
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'result'), Space(), S
     tr(u'was'), Space(), Str(u'proved'), Space(), Str(u'in'), Space(), RawInline
     (Format(u'tex'), u'\\cite{jones.1967}'), Str(u'.')])])
 
-    >>> test(r"""\begin{tabular}{|l|l|}\hline
+    >>> show(r"""\begin{tabular}{|l|l|}\hline
     ... Age & Frequency \\ \hline
     ... 18--25  & 15 \\
     ... 26--35  & 33 \\
@@ -201,7 +268,7 @@ User's Guide Tests
     line\nAge & Frequency \\\\ \\hline\n18--25  & 15 \\\\\n26--35  & 33 \\\\\n36
     --45  & 22 \\\\ \\hline\n\\end{tabular}')])
 
-    >>> test(r"""\newcommand{\tuple}[1]{\langle #1 \rangle}
+    >>> show(r"""\newcommand{\tuple}[1]{\langle #1 \rangle}
     ...
     ... $\tuple{a, b, c}$""")
     Pandoc(Meta(map()), [Para([Math(InlineMath(), u'{\\langle a, b, c \\rangle}'

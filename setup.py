@@ -64,7 +64,7 @@ shutil.rmtree(tmp_dir)
 metadata = about.get_metadata(about_pandoc)
 contents = {
   "packages": setuptools.find_packages(),
-  "package_data": {"pandoc": ["Definition.hs", "tests.txt"]},
+  "package_data": {"pandoc": ["Definition.hs", "tests.md"]},
 }
 requirements = {
   "install_requires": ["ply"],
