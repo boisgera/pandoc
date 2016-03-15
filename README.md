@@ -20,6 +20,8 @@ or create you own wrapper with [subprocess] or [sh].
 [sh]: https://amoffat.github.io/sh/
 [subprocess]: https://docs.python.org/2/library/subprocess.html
 
+-----
+
 This library provides a Pythonic way to analyze, create and 
 transform documents.
 It targets the pandoc power users which are more productive
