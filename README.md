@@ -1,8 +1,13 @@
 
-[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 
 Pandoc (Python Library)
 ================================================================================
+
+Pypi status:
+[![PyPi](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
+
+Continuous integration:
+[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 
 Preamble
 --------------------------------------------------------------------------------
