@@ -2,6 +2,8 @@
 Pandoc (Python Library)
 ================================================================================
 
+[![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
+
 Preamble
 --------------------------------------------------------------------------------
 
