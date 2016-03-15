@@ -25,7 +25,7 @@ It targets the pandoc power users which are more productive
 in Python than in Haskell (the native language of the pandoc library).
 
 The pandoc Python library translates documents between the native 
-pandoc JSON format and our Python document model. 
+pandoc JSON format and a Python document model. 
 If you need to manage other formats (html, latex, etc.) use the 
 pandoc command-line tool to convert to/from the JSON format.
 
