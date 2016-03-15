@@ -43,7 +43,7 @@ the typical workflow is the following:
         >>> doc
         Pandoc(Meta(map()), [Para([Str(u'Hello!')])])
 
- 3. Analyze or Transform the document
+ 3. Analyze and/or transform the document
 
         >>> from pandoc.types import Space, Str
         >>> doc[1].extend([Space(), Str(u"World!")])
