@@ -26,7 +26,8 @@ Helper functions
     >>> from subprocess import Popen, PIPE
     >>> import json
     >>> def to_json(txt):
-    ...     p = Popen(["pandoc", "-tjson"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    ...     p = Popen(["pandoc", "-tjson"], 
+    ...               stdout=PIPE, stdin=PIPE, stderr=PIPE)
     ...     json_string = p.communicate(input=txt.encode("utf-8"))[0]
     ...     json_doc = json.loads(json_string)
     ...     return json_doc

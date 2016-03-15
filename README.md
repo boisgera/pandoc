@@ -29,8 +29,12 @@ Use the pandoc command-line tool to convert documents in/to markdown,
 html, latex, etc.
 
 **Warning:** this library is still in its alpha phase and not yet documented.
-At this stage, only a few examples are provided to give you a feel of the API.
+At this stage, to get you a feel of the API, have a look at the [test suite][].
 
+[test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
+
+
+<!--
 
 Common Code
 --------------------------------------------------------------------------------
@@ -138,4 +142,6 @@ and use it like that:
     $ pandoc -t json doc.txt | \
     > python sections.py | \
     > pandoc -f json -o doc2.txt
+
+-->
 
