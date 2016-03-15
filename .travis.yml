@@ -7,6 +7,7 @@ before_install:
   - sudo apt-get update && sudo apt-get install stack -y
   - stack setup
   - stack install pandoc
+  - export PATH=$HOME/.local/bin:$PATH
   - pip install --target=.lib --ignore-installed 'about>=5.1,<6'
 install: "pip install ."
 # command to run tests
