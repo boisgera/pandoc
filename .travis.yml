@@ -1,7 +1,12 @@
 language: python
 python:
   - "2.7"
-before_install: "pip install --target=.lib --ignore-installed 'about>=5.1,<6'"
+before_install:
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
+  - echo 'deb http://download.fpcomplete.com/ubuntu precise main'|sudo tee /etc/apt/sources.list.d/fpco.list
+  - sudo apt-get update && sudo apt-get install stack -y
+  - stack install pandoc
+  - pip install --target=.lib --ignore-installed 'about>=5.1,<6'
 install: "pip install ."
 # command to run tests
 script: "python setup.py test"
