@@ -52,8 +52,8 @@ the typical workflow is the following:
 
         >>> json_output = pandoc.write(doc)
 
-To get a better feel of the Python document model,
-which is a mechanical translation in Python of [the Haskell one][Text.Pandoc.Definition],
+To get a better feel of the Python document model
+(an automated translation of [the Haskell one][Text.Pandoc.Definition])
 have a look at the [test suite][].
 
 [Text.Pandoc.Definition]: https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html 
