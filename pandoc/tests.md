@@ -20,50 +20,6 @@ Imports
     >>> import pandoc
 
 
-Helper functions
---------------------------------------------------------------------------------
-
-    >>> from subprocess import Popen, PIPE
-    >>> import json
-    >>> def to_json(txt):
-    ...     p = Popen(["pandoc", "-tjson"], 
-    ...               stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    ...     json_string = p.communicate(input=txt.encode("utf-8"))[0]
-    ...     json_doc = json.loads(json_string)
-    ...     return json_doc
-
-    >>> def linebreak(text, length=80):
-    ...     chunks = [text[i:i+length] for i in range(0, len(text), length)]
-    ...     return "\n".join(chunks)
-
-    >>> def show(txt):
-    ...     global doc, json_ref, json_res
-    ...     json_ref = to_json(txt)
-    ...     doc = pandoc.read(json_ref)
-    ...     print linebreak(repr(doc), length=80-4)
-    ...     json_res = pandoc.write(doc)
-    ...     if json_ref != json_res:
-    ...         error = """\
-    ... pandoc read-write roundtrip failed. 
-    ...
-    ... The reference:
-    ...
-    ... {0}
-    ...
-    ... and the actual result:
-    ...
-    ... {1}
-    ...
-    ... are different.
-    ... """
-    ...         raise ValueError(error.format(json_ref, json_res))
-
-    >>> def wrap_blocks(*json_blocks):
-    ...     return [{"unMeta":{}}, list(json_blocks)]
-    >>> def wrap_inlines(*json_inlines):
-    ...     return wrap_blocks({"t":"Para", "c":list(json_inlines)})
-
-
 Pandoc Test Suite
 ================================================================================
 
