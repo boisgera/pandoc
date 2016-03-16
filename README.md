@@ -30,7 +30,14 @@ If you need to manage other formats (html, latex, etc.) use the
 pandoc command-line tool to convert to/from the JSON format.
 
 This library is still in the alpha stage and not documented;
-the typical workflow is the following:
+to get a better feel of the Python document model
+(an automated translation of [the Haskell one][Text.Pandoc.Definition])
+have a look at the [test suite][].
+
+[Text.Pandoc.Definition]: https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html 
+[test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
+
+The typical workflow is the following:
 
  1. Get a document in the JSON format:
 
@@ -66,13 +73,6 @@ the typical workflow is the following:
         >>> os.system("pandoc doc.json")
         <p>Hello World!</p>
         0
-
-To get a better feel of the Python document model
-(an automated translation of [the Haskell one][Text.Pandoc.Definition])
-have a look at the [test suite][].
-
-[Text.Pandoc.Definition]: https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html 
-[test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
 
 
 <!--
