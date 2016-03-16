@@ -31,7 +31,7 @@ pandoc command-line tool to convert to/from the JSON format.
 
 This library is still in the alpha stage and not documented.
 To get a better feel of the Python document model
-(an automated translation of [the Haskell one][Text.Pandoc.Definition])
+(an automated translation of [the Haskell one][Text.Pandoc.Definition]),
 have a look at the [test suite][].
 The typical workflow is the following:
 
