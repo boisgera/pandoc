@@ -1,5 +1,9 @@
 
+# Python 2.7 Directives
+from __future__ import absolute_import
+
 # Python 2.7 Standard Library
+import pandoc.doctest
 import doctest
 import unittest
 
