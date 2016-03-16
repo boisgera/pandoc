@@ -54,7 +54,7 @@ the typical workflow is the following:
 
         >>> json_output = pandoc.write(doc)
 
-    and maybe, print the JSON string to the terminal with
+    and maybe, print the JSON string to your terminal with
      
         >>> import json
         >>> print json.dumps(json_output)
