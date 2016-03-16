@@ -62,8 +62,8 @@ the typical workflow is the following:
     and maybe, print the JSON string to your terminal with
 
         >>> import json     
-        >>> print json.dumps(json_output)
-        [{"unMeta": {}}, [{"t": "Para", "c": [{"t": "Str", "c": "Hello"}]}, {"t": "Space", "c": []}, {"t": "Str", "c": "World!"}]]
+        >>> print json.dumps(json_output, separators=(',',':'))
+        [{"unMeta":{}},[{"t":"Para","c":[{"t":"Str","c":"Hello"}]},{"t":"Space","c":[]},{"t":"Str","c":"World!"}]]
 
 To get a better feel of the Python document model
 (an automated translation of [the Haskell one][Text.Pandoc.Definition])
