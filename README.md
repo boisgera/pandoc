@@ -73,7 +73,7 @@ The typical workflow is the following:
 
 [Text.Pandoc.Definition]: https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html 
 [test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
-
+ 
 <!--
 
 Common Code
