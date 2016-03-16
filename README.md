@@ -56,11 +56,13 @@ The typical workflow is the following:
 
         >>> from pandoc.types import Space, Str
         >>> doc[1][0][0].extend([Space(), Str(u"World!")])
+        >>> doc
         Pandoc(Meta(map()), [Para([Str(u'Hello'), Space(), Str(u'World!')])])
 
  4. Export the resulting document to JSON
 
         >>> json_output = pandoc.write(doc)
+        >>> json_output
 
     and maybe, generate its HTML version:
 
