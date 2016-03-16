@@ -62,7 +62,6 @@ The typical workflow is the following:
  4. Export the resulting document to JSON
 
         >>> json_output = pandoc.write(doc)
-        >>> json_output
 
     and maybe, generate its HTML version:
 
