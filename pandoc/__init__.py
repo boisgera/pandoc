@@ -19,6 +19,9 @@ from . import types
 # JSON Reader
 # ------------------------------------------------------------------------------
 def read(json_, type_=types.Pandoc):
+
+    raise ValueError("MUHAHAHA!")
+
     if isinstance(type_, str):
         type_ = getattr(types, type_)
     if not isinstance(type_, list): # not a type def (yet).
