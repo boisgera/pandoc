@@ -36,7 +36,7 @@ the typical workflow is the following:
 
         >>> json_input = [{"unMeta":{}},[{"t":"Para","c":[{"t":"Str","c":"Hello"}]}]]
 
-    (I produced this one with the `echo "Hello" | pandoc -t json` command).
+    (I produced this one with the `$ echo "Hello" | pandoc -t json` bash command).
 
  2. Read it as a Python document
 
@@ -53,6 +53,11 @@ the typical workflow is the following:
  4. Export the resulting document to JSON
 
         >>> json_output = pandoc.write(doc)
+
+    and maybe, print the JSON string to the terminal with
+     
+        >>> import json
+        >>> print json.dumps(json_output)
 
 To get a better feel of the Python document model
 (an automated translation of [the Haskell one][Text.Pandoc.Definition])
