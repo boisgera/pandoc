@@ -33,10 +33,6 @@ This library is still in the alpha stage and not documented.
 To get a better feel of the Python document model
 (an automated translation of [the Haskell one][Text.Pandoc.Definition])
 have a look at the [test suite][].
-
-[Text.Pandoc.Definition]: https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html 
-[test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
-
 The typical workflow is the following:
 
  1. Get a document in the JSON format:
@@ -74,6 +70,8 @@ The typical workflow is the following:
         <p>Hello World!</p>
         0
 
+[Text.Pandoc.Definition]: https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html 
+[test suite]: https://github.com/boisgera/pandoc/blob/master/pandoc/tests.md
 
 <!--
 
