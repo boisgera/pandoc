@@ -59,7 +59,7 @@ the typical workflow is the following:
 
         >>> json_output = pandoc.write(doc)
 
-    and maybe, generate some HTML:
+    and maybe, generate its HTML version:
 
         >>> import json, os     
         >>> json.dump(json_output, open("doc.json", "w"))
