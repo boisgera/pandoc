@@ -53,15 +53,17 @@ the typical workflow is the following:
 
         >>> from pandoc.types import Space, Str
         >>> doc[1].extend([Space(), Str(u"World!")])
+        Pandoc(Meta(map()), [Para([Str(u'Hello')]), Space(), Str(u'World!')])
 
  4. Export the resulting document to JSON
 
         >>> json_output = pandoc.write(doc)
 
     and maybe, print the JSON string to your terminal with
-     
-        >>> import json
+
+        >>> import json     
         >>> print json.dumps(json_output)
+        [{"unMeta": {}}, [{"t": "Para", "c": [{"t": "Str", "c": "Hello"}]}, {"t": "Space", "c": []}, {"t": "Str", "c": "World!"}]]
 
 To get a better feel of the Python document model
 (an automated translation of [the Haskell one][Text.Pandoc.Definition])
