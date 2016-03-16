@@ -73,22 +73,27 @@ Source: [Pandoc's User Guide](http://pandoc.org/README.html)
 Paragraphs
 --------------------------------------------------------------------------------
 
-    >>> show("""\
+    >>> """
     ... a paragraph
     ...
-    ... another paragraph""")
+    ... another paragraph
+    ... """ 
+    ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'a'), Space(), Str(u'paragraph')]), Para([St
     r(u'another'), Space(), Str(u'paragraph')])])
 
-    >>> show("a paragraph  \nanother paragraph""")
+    >>> "a paragraph  \nanother paragraph" # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'a'), Space(), Str(u'paragraph'), LineBreak(
     ), Str(u'another'), Space(), Str(u'paragraph')])])
 
 
 #### Extension: `escaped_line_breaks`
 
-    >>> show(r"""a paragraph\
-    ... another paragraph""")
+    >>> r"""
+    ... a paragraph\
+    ... another paragraph
+    ... """
+    ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'a'), Space(), Str(u'paragraph'), LineBreak(
     ), Str(u'another'), Space(), Str(u'paragraph')])])
 
@@ -98,13 +103,14 @@ Headers
 
 ### Setext-style headers
 
-    >>> show("""\
+    >>> """
     ... A level-one header
     ... ==================
     ... 
     ... A level-two header
     ... ------------------
-    ... """)
+    ... """
+    ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Header(1, (u'a-level-one-header', [], []), [Str(u'A'), 
     Space(), Str(u'level-one'), Space(), Str(u'header')]), Header(2, (u'a-level-
     two-header', [], []), [Str(u'A'), Space(), Str(u'level-two'), Space(), Str(u
@@ -112,17 +118,19 @@ Headers
 
 ### ATX-style headers
 
-    >>> show("""\
+    >>> """
     ... ## A level-two header
     ... 
     ... ### A level-three header ###
-    ... """)
+    ... """
+    ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Header(2, (u'a-level-two-header', [], []), [Str(u'A'), 
     Space(), Str(u'level-two'), Space(), Str(u'header')]), Header(3, (u'a-level-
     three-header', [], []), [Str(u'A'), Space(), Str(u'level-three'), Space(), S
     tr(u'header')])])
 
-    >>> show("# A level-one header with a [link](/url) and *emphasis*")
+    >>> "# A level-one header with a [link](/url) and *emphasis*"
+    ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Header(1, (u'a-level-one-header-with-a-link-and-emphasi
     s', [], []), [Str(u'A'), Space(), Str(u'level-one'), Space(), Str(u'header')
     , Space(), Str(u'with'), Space(), Str(u'a'), Space(), Link((u'', [], []), [S
@@ -131,9 +139,11 @@ Headers
 
 #### Extension: `blank_before_header`
 
-    >>> show("""\
+    >>> """
     ... I like several of their flavors of ice cream:
-    ... #22, for example, and #5.""")
+    ... #22, for example, and #5.
+    ... """
+    ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'I'), Space(), Str(u'like'), Space(), Str(u'
     several'), Space(), Str(u'of'), Space(), Str(u'their'), Space(), Str(u'flavo
     rs'), Space(), Str(u'of'), Space(), Str(u'ice'), Space(), Str(u'cream:'), So
