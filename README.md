@@ -38,8 +38,7 @@ the typical workflow is the following:
 
     To be honest, I got this one with the commands:
 
-        >>> import json
-        >>> import os
+        >>> import json, os
         >>> file = os.popen('echo "Hello" | pandoc -t json')
         >>> json_input = json.load(file)
 
