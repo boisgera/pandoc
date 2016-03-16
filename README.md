@@ -36,6 +36,8 @@ the typical workflow is the following:
 
         >>> json_input = [{"unMeta":{}},[{"t":"Para","c":[{"t":"Str","c":"Hello"}]}]]
 
+    (I produced this one with the `echo "Hello" | pandoc -t json` command).
+
  2. Read it as a Python document
 
         >>> import pandoc
