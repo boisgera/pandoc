@@ -79,6 +79,9 @@ info.update(contents)
 info.update(requirements)
 info.update(tests)
 
+# Pypi fails to render the ReStructuredText content, override the README.
+info["long_description"] = "GitHub: https://github.com/boisgera/pandoc"
+
 if __name__ == "__main__":
     setuptools.setup(**info)
 
