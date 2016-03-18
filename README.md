@@ -31,7 +31,7 @@ pandoc JSON format and a Python document model.
 If you need to manage other formats (html, latex, etc.) use the 
 pandoc command-line tool to convert to/from the JSON format.
 
-This library is still in the alpha stage and not documented.
+This library is still in the beta stage and not documented.
 To get a better feel of the Python document model
 (an automated translation of [the Haskell one][Text.Pandoc.Definition]),
 have a look at the [test suite][].
