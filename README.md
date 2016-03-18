@@ -3,8 +3,8 @@
 Pandoc (Python Library)
 ================================================================================
 
-![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
 [![PyPi](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
+![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
 ![Status](https://img.shields.io/pypi/status/pandoc.svg)
  [![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 
