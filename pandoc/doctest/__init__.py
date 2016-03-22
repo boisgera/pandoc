@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 # Python 2.7 Standard Library
+import ast
 import doctest
 import json
 from subprocess import Popen, PIPE
@@ -28,7 +29,10 @@ if "pandoc 1.16" not in p.communicate()[0]:
 
 # ------------------------------------------------------------------------------
 
-# Declare a new doctest directive: PANDOC 
+# Global Variables
+check_round_trip = True
+
+# New Doctest Directive: PANDOC 
 PANDOC = doctest.register_optionflag("PANDOC")
 doctest.PANDOC = PANDOC
 doctest.__all__.append("PANDOC")
@@ -58,42 +62,64 @@ class PandocOutputChecker(_doctest_OutputChecker):
         try:
             doc = pandoc.read(json_doc)
             json_doc_2 = pandoc.write(doc)
-        except:
-            pass
-        return json_doc == json_doc_2   
+        except Exception as error:
+            jsond_doc_2 = error
+        if json_doc == json_doc_2 :
+            return True
+        else:
+            return json_doc, json_doc_2
 
-    # TODO: manage the pandoc reads that may go wrong.
+    def text_repr_to_docs(self, text_repr):
+        text = ast.literal_eval(text_repr)
+        if not isinstance(text, str):
+            raise TypeError("{0!r} is not a string".format(text))
+        json_doc = to_json(text)
+        doc = pandoc.read(json_doc)
+        return doc, json_doc
+
+    def str_error(self, error):
+        return "Traceback (most recent call last)\n" + \
+               "    ...\n"                           + \
+               "{0}: {1}\n".format(type(error).__name__, error.message) 
 
     def check_output(self, want, got, optionflags):
         if optionflags & PANDOC:
             want = want.replace("\n", "")
-            json_got = to_json(eval(got)) # brittle. got may not be 
-                                          # the representation of a string ...
-            doc_got = pandoc.read(json_got) # may go wrong.
-            got = repr(doc_got)
+            try:
+                doc, json_doc = self.text_repr_to_docs(got)
+                got  = repr(doc)
+            except Exception as error:
+                got = self.str_error(error)
         super_check_output = _doctest_OutputChecker.check_output
         check = super_check_output(self, want, got, optionflags)
-        if optionflags & PANDOC:
-            check = check and self.round_trip_check(json_got)
+        if optionflags & PANDOC & check_round_trip:
+            check = check and (self.round_trip_check(json_got) is True)
         return check
 
     def output_difference(self, example, got, optionflags):
         if optionflags & PANDOC:
-            json_got = to_json(eval(got)) # brittle (see above)
-            if not self.round_trip_check(json_got):
-                error = "Pandoc JSON Read+Write Error:"
-                output_1 = json.dumps(json_got)
-                output_2 = None
-                try:
-                    json_got_2 = pandoc.write(pandoc.read(json_got))
-                    output_2 = json.dumps(json_got_2)
-                except Exception as e:
-                    return error + " " + e.message
-                error += "\n\n{0}\ndiffers from:\n\n{1}\n"
-                return error.format(linebreak(output_1), linebreak(output_2))
-            else:
-                example.want = linebreak(example.want, 76)
-                got = linebreak(repr(pandoc.read(json_got)), 76)
+            example.want = linebreak(example.want, 76)
+            doc, json_doc = None, None
+            try:
+                doc, json_doc = self.text_repr_to_docs(got)
+                got  = linebreak(repr(doc), 76)
+                if check_round_trip:
+                    check = self.round_trip_check(json_doc)
+                    if check is not True:
+                        json_doc, json_doc_2 = check
+                        json_doc = linebreak(repr(json_doc), 72).strip()
+                        if isinstance(json_doc_2, Exception):
+                            json_doc_2 = self.str_error(json_doc_2)
+                            json_doc_2 = "\n".join([4*" " + line for line in json_doc2.split("\n")])
+                        else:
+                            json_doc_2 = linebreak(repr(json_doc_2), 72).strip()
+                        got = ("Traceback (most recent call last)\n" +\
+                               "    ....\n"                          +\
+                               "ValueError: failed JSON read+write round-trip:\n" +\
+                               "    {0}\n" +\
+                               "vs:\n    {1}\n").format(json_doc, json_doc_2)
+            except Exception as error:
+                got = self.str_error(error)
         super_output_difference = _doctest_OutputChecker.output_difference
         return super_output_difference(self, example, got, optionflags)
 
