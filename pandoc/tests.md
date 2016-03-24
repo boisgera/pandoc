@@ -1335,3 +1335,188 @@ Images
     e.jpg', u'fig:'))])])
 
 
+Footnotes
+--------------------------------------------------------------------------------
+
+#### Extension: `footnotes`
+
+Pandoc’s Markdown allows footnotes, using the following syntax:
+
+    >>> """
+    ... Here is a footnote reference,[^1] and another.[^longnote]
+    ... 
+    ... [^1]: Here is the footnote.
+    ... 
+    ... [^longnote]: Here's one with multiple blocks.
+    ... 
+    ...     Subsequent paragraphs are indented to show that they
+    ... belong to the previous footnote.
+    ... 
+    ...         { some.code }
+    ... 
+    ...     The whole paragraph can be indented, or just the first
+    ...     line.  In this way, multi-paragraph footnotes work like
+    ...     multi-paragraph list items.
+    ... 
+    ... This paragraph won't be part of the note, because it
+    ... isn't indented.
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'Here'), Space(), Str(u'is'), Space(), Str(u
+    'a'), Space(), Str(u'footnote'), Space(), Str(u'reference,'), Note([Para([St
+    r(u'Here'), Space(), Str(u'is'), Space(), Str(u'the'), Space(), Str(u'footno
+    te.')])]), Space(), Str(u'and'), Space(), Str(u'another.'), Note([Para([Str(
+    u"Here's"), Space(), Str(u'one'), Space(), Str(u'with'), Space(), Str(u'mult
+    iple'), Space(), Str(u'blocks.')]), Para([Str(u'Subsequent'), Space(), Str(u
+    'paragraphs'), Space(), Str(u'are'), Space(), Str(u'indented'), Space(), Str
+    (u'to'), Space(), Str(u'show'), Space(), Str(u'that'), Space(), Str(u'they')
+    , SoftBreak(), Str(u'belong'), Space(), Str(u'to'), Space(), Str(u'the'), Sp
+    ace(), Str(u'previous'), Space(), Str(u'footnote.')]), CodeBlock((u'', [], [
+    ]), u'{ some.code }'), Para([Str(u'The'), Space(), Str(u'whole'), Space(), S
+    tr(u'paragraph'), Space(), Str(u'can'), Space(), Str(u'be'), Space(), Str(u'
+    indented,'), Space(), Str(u'or'), Space(), Str(u'just'), Space(), Str(u'the'
+    ), Space(), Str(u'first'), SoftBreak(), Str(u'line.'), Space(), Str(u'In'), 
+    Space(), Str(u'this'), Space(), Str(u'way,'), Space(), Str(u'multi-paragraph
+    '), Space(), Str(u'footnotes'), Space(), Str(u'work'), Space(), Str(u'like')
+    , SoftBreak(), Str(u'multi-paragraph'), Space(), Str(u'list'), Space(), Str(
+    u'items.')])])]), Para([Str(u'This'), Space(), Str(u'paragraph'), Space(), S
+    tr(u"won't"), Space(), Str(u'be'), Space(), Str(u'part'), Space(), Str(u'of'
+    ), Space(), Str(u'the'), Space(), Str(u'note,'), Space(), Str(u'because'), S
+    pace(), Str(u'it'), SoftBreak(), Str(u"isn't"), Space(), Str(u'indented.')])
+    ])
+
+#### Extension: `inline_notes`
+
+Inline footnotes are also allowed (though, unlike regular notes, they cannot contain multiple paragraphs). The syntax is as follows:
+
+    >>> """
+    ... Here is an inline note.^[Inlines notes are easier to write, since
+    ... you don't have to pick an identifier and move down to type the
+    ... note.]
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'Here'), Space(), Str(u'is'), Space(), Str(u
+    'an'), Space(), Str(u'inline'), Space(), Str(u'note.'), Note([Para([Str(u'In
+    lines'), Space(), Str(u'notes'), Space(), Str(u'are'), Space(), Str(u'easier
+    '), Space(), Str(u'to'), Space(), Str(u'write,'), Space(), Str(u'since'), So
+    ftBreak(), Str(u'you'), Space(), Str(u"don't"), Space(), Str(u'have'), Space
+    (), Str(u'to'), Space(), Str(u'pick'), Space(), Str(u'an'), Space(), Str(u'i
+    dentifier'), Space(), Str(u'and'), Space(), Str(u'move'), Space(), Str(u'dow
+    n'), Space(), Str(u'to'), Space(), Str(u'type'), Space(), Str(u'the'), SoftB
+    reak(), Str(u'note.')])])])])
+
+
+Citations
+--------------------------------------------------------------------------------
+
+#### Extension: `citations`
+
+    >>> """
+    ... ---
+    ... references:
+    ... - type: article-journal
+    ...   id: WatsonCrick1953
+    ...   author:
+    ...   - family: Watson
+    ...     given: J. D.
+    ...   - family: Crick
+    ...     given: F. H. C.
+    ...   issued:
+    ...     date-parts:
+    ...     - - 1953
+    ...       - 4
+    ...       - 25
+    ...   title: 'Molecular structure of nucleic acids: a structure for deoxyribose
+    ...     nucleic acid'
+    ...   title-short: Molecular structure of nucleic acids
+    ...   container-title: Nature
+    ...   volume: 171
+    ...   issue: 4356
+    ...   page: 737-738
+    ...   DOI: 10.1038/171737a0
+    ...   URL: http://www.nature.com/nature/journal/v171/n4356/abs/171737a0.html
+    ...   language: en-GB
+    ... ---
+    ... 
+    ... [@WatsonCrick1953]
+    ... """ 
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'references', MetaList([MetaMap(map([(u'DOI', MetaInlines
+    ([Str(u'10.1038/171737a0')])), (u'language', MetaInlines([Str(u'en-GB')])), 
+    (u'author', MetaList([MetaMap(map([(u'given', MetaInlines([Str(u'J.'), Space
+    (), Str(u'D.')])), (u'family', MetaInlines([Str(u'Watson')]))])), MetaMap(ma
+    p([(u'given', MetaInlines([Str(u'F.'), Space(), Str(u'H.'), Space(), Str(u'C
+    .')])), (u'family', MetaInlines([Str(u'Crick')]))]))])), (u'URL', MetaInline
+    s([Str(u'http://www.nature.com/nature/journal/v171/n4356/abs/171737a0.html')
+    ])), (u'issued', MetaMap(map([(u'date-parts', MetaList([MetaList([MetaString
+    (u'1953'), MetaString(u'4'), MetaString(u'25')])]))]))), (u'title', MetaInli
+    nes([Str(u'Molecular'), Space(), Str(u'structure'), Space(), Str(u'of'), Spa
+    ce(), Str(u'nucleic'), Space(), Str(u'acids:'), Space(), Str(u'a'), Space(),
+     Str(u'structure'), Space(), Str(u'for'), Space(), Str(u'deoxyribose'), Spac
+    e(), Str(u'nucleic'), Space(), Str(u'acid')])), (u'id', MetaInlines([Str(u'W
+    atsonCrick1953')])), (u'volume', MetaString(u'171')), (u'issue', MetaString(
+    u'4356')), (u'container-title', MetaInlines([Str(u'Nature')])), (u'title-sho
+    rt', MetaInlines([Str(u'Molecular'), Space(), Str(u'structure'), Space(), St
+    r(u'of'), Space(), Str(u'nucleic'), Space(), Str(u'acids')])), (u'type', Met
+    aInlines([Str(u'article-journal')])), (u'page', MetaInlines([Str(u'737-738')
+    ]))]))]))])), [Para([Cite([Citation(u'WatsonCrick1953', [], [], NormalCitati
+    on(), 0, 0)], [Str(u'[@WatsonCrick1953]')])])])
+
+    >>> """
+    ... Blah blah [see @doe99, pp. 33-35; also @smith04, chap. 1].
+    ... 
+    ... Blah blah [@doe99, pp. 33-35, 38-39 and *passim*].
+    ... 
+    ... Blah blah [@smith04; @doe99].
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'Blah'), Space(), Str(u'blah'), Space(), Cit
+    e([Citation(u'doe99', [Str(u'see')], [Str(u','), Space(), Str(u'pp.'), Space
+    (), Str(u'33-35')], NormalCitation(), 0, 0), Citation(u'smith04', [Str(u'als
+    o')], [Str(u','), Space(), Str(u'chap.'), Space(), Str(u'1')], NormalCitatio
+    n(), 0, 0)], [Str(u'[see'), Space(), Str(u'@doe99,'), Space(), Str(u'pp.'), 
+    Space(), Str(u'33-35;'), Space(), Str(u'also'), Space(), Str(u'@smith04,'), 
+    Space(), Str(u'chap.'), Space(), Str(u'1]')]), Str(u'.')]), Para([Str(u'Blah
+    '), Space(), Str(u'blah'), Space(), Cite([Citation(u'doe99', [], [Str(u','),
+     Space(), Str(u'pp.'), Space(), Str(u'33-35,'), Space(), Str(u'38-39'), Spac
+    e(), Str(u'and'), Space(), Emph([Str(u'passim')])], NormalCitation(), 0, 0)]
+    , [Str(u'[@doe99,'), Space(), Str(u'pp.'), Space(), Str(u'33-35,'), Space(),
+     Str(u'38-39'), Space(), Str(u'and'), Space(), Str(u'*passim*]')]), Str(u'.'
+    )]), Para([Str(u'Blah'), Space(), Str(u'blah'), Space(), Cite([Citation(u'sm
+    ith04', [], [], NormalCitation(), 0, 0), Citation(u'doe99', [], [], NormalCi
+    tation(), 0, 0)], [Str(u'[@smith04;'), Space(), Str(u'@doe99]')]), Str(u'.')
+    ])])
+
+    >>> "Smith says blah [-@smith04]." # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'Smith'), Space(), Str(u'says'), Space(), St
+    r(u'blah'), Space(), Cite([Citation(u'smith04', [], [], SuppressAuthor(), 0,
+     0)], [Str(u'[-@smith04]')]), Str(u'.')])])
+
+    >>> """
+    ... @smith04 says blah.
+    ... 
+    ... @smith04 [p. 33] says blah.
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Cite([Citation(u'smith04', [], [], AuthorInText()
+    , 0, 0)], [Str(u'@smith04')]), Space(), Str(u'says'), Space(), Str(u'blah.')
+    ]), Para([Cite([Citation(u'smith04', [], [Str(u'p.'), Space(), Str(u'33')], 
+    AuthorInText(), 0, 0)], [Str(u'@smith04'), Space(), Str(u'[p.'), Space(), St
+    r(u'33]')]), Space(), Str(u'says'), Space(), Str(u'blah.')])])
+
+    >>> """
+    ... ---
+    ... nocite: |
+    ...   @item1, @item2
+    ... ---
+    ... 
+    ... @item3
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'nocite', MetaBlocks([Para([Cite([Citation(u'item1', [], 
+    [], AuthorInText(), 0, 0)], [Str(u'@item1')]), Str(u','), Space(), Cite([Cit
+    ation(u'item2', [], [], AuthorInText(), 0, 0)], [Str(u'@item2')])])]))])), [
+    Para([Cite([Citation(u'item3', [], [], AuthorInText(), 0, 0)], [Str(u'@item3
+    ')])])])
+
+
