@@ -15,5 +15,5 @@ metadata = dict(
 )
 
 globals().update(metadata)
-__all__ = metadata.keys()
+__all__ = list(metadata.keys())
 

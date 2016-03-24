@@ -1,6 +1,7 @@
 
 # Python 2.7 Standard Library
-pass
+from __future__ import absolute_import
+from __future__ import print_function
 
 # PLY
 import ply.lex as lex
@@ -53,7 +54,7 @@ t_RBRACE     = r"\}"
 t_ignore     = " \t\n"
 
 def t_error(t):
-    print "Illegal character '%s'" % t.value[0]
+    print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
 lexer = lex.lex()
@@ -164,7 +165,7 @@ def p_newtypedecl(p):
  
 # Error rule for syntax errors
 def p_error(p):
-    print "Syntax error in input."
+    print("Syntax error in input.")
 
 parser = yacc.yacc(debug=0, write_tables=0)
 

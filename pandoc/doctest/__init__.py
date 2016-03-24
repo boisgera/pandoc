@@ -11,11 +11,12 @@ import sys
 
 # Local Library
 import pandoc
+from pandoc.types import *
 
 # This doctest extension require pandoc 1.16
 from subprocess import Popen, PIPE
 p = Popen(["pandoc", "-v"], stdout=PIPE)
-if "pandoc 1.16" not in p.communicate()[0]:
+if b"pandoc 1.16" not in p.communicate()[0]:
     raise RuntimeError("pandoc 1.16 not found")
 
 # TODO: 
@@ -44,7 +45,7 @@ import json
 def to_json(txt):
     p = Popen(["pandoc", "-tjson"], 
               stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    json_string = p.communicate(input=txt.encode("utf-8"))[0]
+    json_string = p.communicate(input=txt.encode("utf-8"))[0].decode("utf-8")
     json_doc = json.loads(json_string)
     return json_doc
 
@@ -78,18 +79,24 @@ class PandocOutputChecker(_doctest_OutputChecker):
         return doc, json_doc
 
     def str_error(self, error):
+        message = ""
+        if len(error.args):
+            message = error.args[0]
         return "Traceback (most recent call last)\n" + \
                "    ...\n"                           + \
-               "{0}: {1}\n".format(type(error).__name__, error.message) 
+               "{0}: {1}\n".format(type(error).__name__, message) 
 
+    # TODO: need an eval-based checker for Python2/3 compatibility.
     def check_output(self, want, got, optionflags):
         if optionflags & PANDOC:
-            want = want.replace("\n", "")
             try:
+                want = eval(want.replace("\n", ""))
                 doc, json_doc = self.text_repr_to_docs(got)
-                got  = repr(doc)
+                got  = doc
+                return got == want
             except Exception as error:
                 got = self.str_error(error)
+                return False
         super_check_output = _doctest_OutputChecker.check_output
         check = super_check_output(self, want, got, optionflags)
         if optionflags & PANDOC & check_round_trip:

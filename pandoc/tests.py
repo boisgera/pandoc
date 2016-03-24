@@ -6,6 +6,8 @@ from __future__ import absolute_import
 import pandoc.doctest
 import doctest
 import unittest
+import sys
+import tempfile
 
 # Third-Party Libraries
 import pkg_resources

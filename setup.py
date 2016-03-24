@@ -2,6 +2,7 @@
 # coding: utf-8
 
 # Python 2.7 Standard Library
+from __future__ import absolute_import
 import os
 import shutil
 import sys

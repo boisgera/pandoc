@@ -1,5 +1,6 @@
 
 # Python 2.7 Standard Library
+from __future__ import absolute_import
 import collections
 
 # Third-Party Libraries
@@ -14,10 +15,13 @@ import pandoc.utils
 Bool = bool
 Double = float
 Int = int
-String = unicode
+try:
+    String = unicode
+except NameError:
+    String = str
 list = list
 tuple = tuple
-map = type("map", (collections.OrderedDict,), {})
+map = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
 
 
 # Haskell Type Constructs
@@ -67,6 +71,8 @@ def make_types(defs=None):
     types_dict = globals()
     if defs is None:
         defs_src = pkg_resources.resource_string("pandoc", "Definition.hs")
+        if not isinstance(defs_src, str):
+            defs_src = defs_src.decode("utf-8")
         defs = pandoc.utils.parse(defs_src)
     for decl in defs:
         decl_type = decl[0]

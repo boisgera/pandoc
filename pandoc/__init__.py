@@ -1,7 +1,7 @@
 
 # Python 2.7 Standard Library
+from __future__ import absolute_import
 import argparse
-import __builtin__
 import collections
 import inspect
 import json

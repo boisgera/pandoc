@@ -9,7 +9,7 @@ This test suite requires pandoc 1.16:
 
     >>> from subprocess import Popen, PIPE
     >>> p = Popen(["pandoc", "-v"], stdout=PIPE)
-    >>> if "pandoc 1.16" not in p.communicate()[0]:
+    >>> if b"pandoc 1.16" not in p.communicate()[0]:
     ...     raise RuntimeError("pandoc 1.16 not found")
 
 
@@ -1386,8 +1386,6 @@ Pandoc’s Markdown allows footnotes, using the following syntax:
     ])
 
 #### Extension: `inline_notes`
-
-Inline footnotes are also allowed (though, unlike regular notes, they cannot contain multiple paragraphs). The syntax is as follows:
 
     >>> """
     ... Here is an inline note.^[Inlines notes are easier to write, since
