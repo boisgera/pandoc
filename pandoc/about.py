@@ -8,7 +8,7 @@ metadata = dict(
   __url__      = "https://github.com/boisgera/pandoc",
   __summary__  = "Pandoc Documents for Python",
   __keywords__ = """
-                 software development, topic/text processing, 
+                 software development, topic / text processing, 
                  python / 2, python / 3,
                  beta
                  """
