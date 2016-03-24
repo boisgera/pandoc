@@ -1128,6 +1128,11 @@ Raw TeX
     line\nAge & Frequency \\\\ \\hline\n18--25  & 15 \\\\\n26--35  & 33 \\\\\n36
     --45  & 22 \\\\ \\hline\n\\end{tabular}')])
 
+LaTeX macros
+--------------------------------------------------------------------------------
+
+#### Extension: `latex_macros`
+
     >>> r"""
     ... \newcommand{\tuple}[1]{\langle #1 \rangle}
     ...
@@ -1137,5 +1142,196 @@ Raw TeX
     Pandoc(Meta(map()), [Para([Math(InlineMath(), u'{\\langle a, b, c \\rangle}'
     )])])
 
+
+Links
+--------------------------------------------------------------------------------
+
+### Automatic Links
+
+    >>> "<http://google.com>" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Link((u'', [], []), [Str(u'http://google.com')], 
+    (u'http://google.com', u''))])])
+    
+    >>> "<sam@green.eggs.ham>" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Link((u'', [], []), [Str(u'sam@green.eggs.ham')],
+     (u'mailto:sam@green.eggs.ham', u''))])])
+
+### Inline links
+
+    >>> """
+    ... This is an [inline link](/url), and here's [one with
+    ... a title](http://fsf.org "click here for a good time!
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Str(u
+    'an'), Space(), Link((u'', [], []), [Str(u'inline'), Space(), Str(u'link')],
+     (u'/url', u'')), Str(u','), Space(), Str(u'and'), Space(), Str(u"here's"), 
+    Space(), Str(u'[one'), Space(), Str(u'with'), SoftBreak(), Str(u'a'), Space(
+    ), Str(u'title](http://fsf.org'), Space(), Str(u'"click'), Space(), Str(u'he
+    re'), Space(), Str(u'for'), Space(), Str(u'a'), Space(), Str(u'good'), Space
+    (), Str(u'time!')])])
+
+    >>> "[Write me!](mailto:sam@green.eggs.ham)" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Link((u'', [], []), [Str(u'Write'), Space(), Str(
+    u'me!')], (u'mailto:sam@green.eggs.ham', u''))])])
+
+
+### Reference links
+
+    >>> """
+    ... [my label 1], [my label 2], [my label 3], [my label 4]. 
+    ...
+    ... [my label 1]: /foo/bar.html  "My title, optional"
+    ... [my label 2]: /foo
+    ... [my label 3]: http://fsf.org (The free software foundation)
+    ... [my label 4]: /bar#special  'A title in single quotes'
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Link((u'', [], []), [Str(u'my'), Space(), Str(u'l
+    abel'), Space(), Str(u'1')], (u'/foo/bar.html', u'My title, optional')), Str
+    (u','), Space(), Link((u'', [], []), [Str(u'my'), Space(), Str(u'label'), Sp
+    ace(), Str(u'2')], (u'/foo', u'')), Str(u','), Space(), Link((u'', [], []), 
+    [Str(u'my'), Space(), Str(u'label'), Space(), Str(u'3')], (u'http://fsf.org'
+    , u'The free software foundation')), Str(u','), Space(), Link((u'', [], []),
+     [Str(u'my'), Space(), Str(u'label'), Space(), Str(u'4')], (u'/bar#special',
+     u'A title in single quotes')), Str(u'.')])])
+
+    >>> """
+    ... [my label 5].
+    ...
+    ... [my label 5]: <http://foo.bar.baz>
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Link((u'', [], []), [Str(u'my'), Space(), Str(u'l
+    abel'), Space(), Str(u'5')], (u'http://foo.bar.baz', u'')), Str(u'.')])])
+
+    >>> """
+    ... [my label 3].
+    ... 
+    ... [my label 3]: http://fsf.org "The free software foundation"
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Link((u'', [], []), [Str(u'my'), Space(), Str(u'l
+    abel'), Space(), Str(u'3')], (u'http://fsf.org', u'The free software foundat
+    ion')), Str(u'.')])])
+
+    >>> """
+    ... Here is [my link][FOO]
+    ...
+    ... [Foo]: /bar/baz
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'Here'), Space(), Str(u'is'), Space(), Link(
+    (u'', [], []), [Str(u'my'), Space(), Str(u'link')], (u'/bar/baz', u''))])])
+
+    >>> """
+    ... See [my website][].
+    ...
+    ... [my website]: http://foo.bar.baz
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'See'), Space(), Link((u'', [], []), [Str(u'
+    my'), Space(), Str(u'website')], (u'http://foo.bar.baz', u'')), Str(u'.')])]
+    )
+    
+    >>> """
+    ... > My block [quote].
+    ... >
+    ... > [quote]: /foo
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [BlockQuote([Para([Str(u'My'), Space(), Str(u'block'), S
+    pace(), Link((u'', [], []), [Str(u'quote')], (u'/foo', u'')), Str(u'.')])])]
+    )
+
+#### Extension: `shortcut_reference_links`
+
+    >>> """
+    ... See [my website].
+    ...
+    ... [my website]: http://foo.bar.baz
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'See'), Space(), Link((u'', [], []), [Str(u'
+    my'), Space(), Str(u'website')], (u'http://foo.bar.baz', u'')), Str(u'.')])]
+    )
+
+### Internal links
+
+    >>> "See the [Introduction](#introduction)." # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'See'), Space(), Str(u'the'), Space(), Link(
+    (u'', [], []), [Str(u'Introduction')], (u'#introduction', u'')), Str(u'.')])
+    ])
+
+
+    >>> """
+    ... See the [Introduction].
+    ...
+    ... [Introduction]: #introduction
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'See'), Space(), Str(u'the'), Space(), Link(
+    (u'', [], []), [Str(u'Introduction')], (u'#introduction', u'')), Str(u'.')])
+    ])
+
+
+Images
+--------------------------------------------------------------------------------
+
+    >>> """
+    ... ![la lune](lalune.jpg "Voyage to the moon")
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Image((u'', [], []), [Str(u'la'), Space(), Str(u'
+    lune')], (u'lalune.jpg', u'fig:Voyage to the moon'))])])
+
+    >>> """
+    ... ![movie reel]
+    ...
+    ... [movie reel]: movie.gif
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Image((u'', [], []), [Str(u'movie'), Space(), Str
+    (u'reel')], (u'movie.gif', u'fig:'))])])
+
+#### Extension: `implicit_figures`
+
+    >>> """
+    ... ![This is the caption](/url/of/image.png)
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Image((u'', [], []), [Str(u'This'), Space(), Str(
+    u'is'), Space(), Str(u'the'), Space(), Str(u'caption')], (u'/url/of/image.pn
+    g', u'fig:'))])])
+
+    ISSUE HERE.
+
+    >>> r"""
+    ... ![This image won't be a figure](/url/of/image.png)\ 
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Image((u'', [], []), [Str(u'This'), Space(), Str(
+    u'image'), Space(), Str(u"won't"), Space(), Str(u'be'), Space(), Str(u'a'), 
+    Space(), Str(u'figure')], (u'/url/of/image.png', u'')), Str(u'\xa0')])])
+
+### Extension: link_attributes
+
+    >>> """
+    ... An inline ![image](foo.jpg){#id .class width=30 height=20px}
+    ... and a reference ![image][ref] with attributes.
+    ...
+    ... [ref]: foo.jpg "optional title" {#id .class key=val key2="val 2"}
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Str(u'An'), Space(), Str(u'inline'), Space(), Ima
+    ge((u'id', [u'class'], [(u'width', u'30'), (u'height', u'20px')]), [Str(u'im
+    age')], (u'foo.jpg', u'')), SoftBreak(), Str(u'and'), Space(), Str(u'a'), Sp
+    ace(), Str(u'reference'), Space(), Image((u'id', [u'class'], [(u'key', u'val
+    '), (u'key2', u'val 2')]), [Str(u'image')], (u'foo.jpg', u'optional title'))
+    , Space(), Str(u'with'), Space(), Str(u'attributes.')])])
+
+    >>> "![](file.jpg){ width=50% }" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Image((u'', [], [(u'width', u'50%')]), [], (u'fil
+    e.jpg', u'fig:'))])])
 
 
