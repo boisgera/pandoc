@@ -858,18 +858,113 @@ Tables
     [Plain([Str(u'table')])]], [[Plain([Str(u'is')])], [Plain([Str(u'nice')])]]]
     )])
 
-
-
-
-
-
-
-
-
-
-
-Emphasis
+Metadata blocks
 --------------------------------------------------------------------------------
+
+#### Extension: `pandoc_title_block`
+
+    >>> """\
+    ... % title
+    ... % author(s) (separated by semicolons)
+    ... % date
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'date', MetaInlines([Str(u'date')])), (u'title', MetaInli
+    nes([Str(u'title')])), (u'author', MetaList([MetaInlines([Str(u'author(s)'),
+     Space(), Str(u'(separated'), Space(), Str(u'by'), Space(), Str(u'semicolons
+    )')])]))])), [])
+
+    >>> """\
+    ... %
+    ... % Author
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'author', MetaList([MetaInlines([Str(u'Author')])]))])), 
+    [])
+
+    >>> """\
+    ... % My title
+    ... %
+    ... % June 15, 2006
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'date', MetaInlines([Str(u'June'), Space(), Str(u'15,'), 
+    Space(), Str(u'2006')])), (u'title', MetaInlines([Str(u'My'), Space(), Str(u
+    'title')]))])), [])
+
+    >>> """\
+    ... % Title
+    ... % Author One; Author Two
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'title', MetaInlines([Str(u'Title')])), (u'author', MetaL
+    ist([MetaInlines([Str(u'Author'), Space(), Str(u'One')]), MetaInlines([Str(u
+    'Author'), Space(), Str(u'Two')])]))])), [])
+
+Pandoc does not conform to its documentation when title blocks use multiple 
+lines with leading space. The corresponding examples have been removed.
+
+#### Extension: `yaml_metadata_block`
+
+The order of key-value pairs in maps are the same than in the json
+representation, but this initial order is not specified by pandoc. 
+Hence, the following test is too strict and may fail.
+
+    >>> """
+    ... ---
+    ... title:  'This is the title: it contains a colon'
+    ... author:
+    ... - name: Author One
+    ...   affiliation: University of Somewhere
+    ... - name: Author Two
+    ...   affiliation: University of Nowhere
+    ... tags: [nothing, nothingness]
+    ... abstract: |
+    ...   This is the abstract.
+    ... 
+    ...   It consists of two paragraphs.
+    ... ...
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map([(u'abstract', MetaBlocks([Para([Str(u'This'), Space(), Str(
+    u'is'), Space(), Str(u'the'), Space(), Str(u'abstract.')]), Para([Str(u'It')
+    , Space(), Str(u'consists'), Space(), Str(u'of'), Space(), Str(u'two'), Spac
+    e(), Str(u'paragraphs.')])])), (u'title', MetaInlines([Str(u'This'), Space()
+    , Str(u'is'), Space(), Str(u'the'), Space(), Str(u'title:'), Space(), Str(u'
+    it'), Space(), Str(u'contains'), Space(), Str(u'a'), Space(), Str(u'colon')]
+    )), (u'tags', MetaList([MetaInlines([Str(u'nothing')]), MetaInlines([Str(u'n
+    othingness')])])), (u'author', MetaList([MetaMap(map([(u'affiliation', MetaI
+    nlines([Str(u'University'), Space(), Str(u'of'), Space(), Str(u'Somewhere')]
+    )), (u'name', MetaInlines([Str(u'Author'), Space(), Str(u'One')]))])), MetaM
+    ap(map([(u'affiliation', MetaInlines([Str(u'University'), Space(), Str(u'of'
+    ), Space(), Str(u'Nowhere')])), (u'name', MetaInlines([Str(u'Author'), Space
+    (), Str(u'Two')]))]))]))])), [])
+
+
+Backslash escapes
+--------------------------------------------------------------------------------
+
+#### Extension: `all_symbols_escapable`
+
+    >>> """
+    ... *\*hello\**
+    ... """
+    ... # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Emph([Str(u'*hello*')])])])
+
+
+Smart punctuation
+--------------------------------------------------------------------------------
+
+#### Extension
+
+Not tested, disabled by default.
+
+
+Inline Formatting
+--------------------------------------------------------------------------------
+
+### Emphasis
 
     >>> """
     ... This text is _emphasized with underscores_, and this
@@ -882,36 +977,41 @@ Emphasis
     ), SoftBreak(), Str(u'is'), Space(), Emph([Str(u'emphasized'), Space(), Str(
     u'with'), Space(), Str(u'asterisks')]), Str(u'.')])])
 
-    >>> "This is **strong emphasis** and __with underscores__."
+    >>> """
+    ... This is **strong emphasis** and __with underscores__.
+    ... """
     ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Stron
     g([Str(u'strong'), Space(), Str(u'emphasis')]), Space(), Str(u'and'), Space(
     ), Strong([Str(u'with'), Space(), Str(u'underscores')]), Str(u'.')])])
 
-    >>> "This is * not emphasized *, and \*neither is this\*."
+    >>> """
+    ... This is * not emphasized *, and \*neither is this\*.
+    ... """
     ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Str(u'is'), Space(), Str(u
     '*'), Space(), Str(u'not'), Space(), Str(u'emphasized'), Space(), Str(u'*,')
     , Space(), Str(u'and'), Space(), Str(u'*neither'), Space(), Str(u'is'), Spac
     e(), Str(u'this*.')])])
 
-    >>> "feas*ible*, not feas*able*."
-    ... # doctest: +PANDOC
+#### Extension: `intraword_underscores`
+
+    >>> "feas*ible*, not feas*able*." # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'feas'), Emph([Str(u'ible')]), Str(u','), Sp
     ace(), Str(u'not'), Space(), Str(u'feas'), Emph([Str(u'able')]), Str(u'.')])
     ])
 
+### Strikeout
 
-Strikeout
---------------------------------------------------------------------------------
+#### Extension: `strikeout`
 
     >>> "This ~~is deleted text.~~" # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'This'), Space(), Strikeout([Str(u'is'), Spa
     ce(), Str(u'deleted'), Space(), Str(u'text.')])])])
 
+### Superscripts and Subscripts
 
-Superscripts and Subscripts
---------------------------------------------------------------------------------
+#### Extension: `superscript`, `subscript`
 
     >>> "H~2~O is a liquid.  2^10^ is 1024." # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'H'), Subscript([Str(u'2')]), Str(u'O'), Spa
@@ -919,9 +1019,7 @@ Superscripts and Subscripts
     (u'2'), Superscript([Str(u'10')]), Space(), Str(u'is'), Space(), Str(u'1024.
     ')])])
 
-
-Verbatim
---------------------------------------------------------------------------------
+### Verbatim
 
     >>> "What is the difference between `>>=` and `>>`?" # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Str(u'What'), Space(), Str(u'is'), Space(), Str(u
@@ -943,9 +1041,12 @@ Verbatim
     >>> "`<$>`{.haskell}" # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Code((u'', [u'haskell'], []), u'<$>')])])
 
+#### Extension: `inline_code_attributes`
 
-Small Caps
---------------------------------------------------------------------------------
+    >>> "`<$>`{.haskell}" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Code((u'', [u'haskell'], []), u'<$>')])])
+
+### Small Caps
 
     >>> "<span style='font-variant:small-caps;'>Small caps</span>"
     ... # doctest: +PANDOC
@@ -955,6 +1056,8 @@ Small Caps
 
 Math
 --------------------------------------------------------------------------------
+
+#### Extension: `tex_math_dollars`
 
     >>> "$a=1$" # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Math(InlineMath(), u'a=1')])])
@@ -966,9 +1069,13 @@ Math
 Raw HTML
 --------------------------------------------------------------------------------
 
+#### Extension: `raw_html`
+
     >>> "<html></html>" # doctest: +PANDOC
     Pandoc(Meta(map()), [RawBlock(Format(u'html'), u'<html>'), RawBlock(Format(u
     'html'), u'</html>')])
+
+#### Extension: `markdown_in_html_blocks`
 
     >>> """
     ... <table>
@@ -986,9 +1093,21 @@ Raw HTML
     p://google.com', u''))]), RawBlock(Format(u'html'), u'</td>'), RawBlock(Form
     at(u'html'), u'</tr>'), RawBlock(Format(u'html'), u'</table>')])
 
+#### Extension: `native_divs`
+
+    >>> "<div></div>" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Div((u'', [], []), [])])
+
+#### Extension: `native_spans`
+
+    >>> "<span></span>" # doctest: +PANDOC
+    Pandoc(Meta(map()), [Para([Span((u'', [], []), [])])])
+
 
 Raw TeX
 --------------------------------------------------------------------------------
+
+#### Extension: `raw_tex`
 
     >>> "This result was proved in \cite{jones.1967}."
     ... # doctest: +PANDOC
@@ -1017,4 +1136,6 @@ Raw TeX
     ... # doctest: +PANDOC
     Pandoc(Meta(map()), [Para([Math(InlineMath(), u'{\\langle a, b, c \\rangle}'
     )])])
+
+
 
