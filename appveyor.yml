@@ -19,7 +19,7 @@ environment:
 #    - PYTHON: "C:\\Python35-x64"
 
 install:
-  - %PYTHON%\\python.exe -c "print 'python ok'"
+  - "%PYTHON%\\python.exe -c \"print 'python ok'\""
   - "%PYTHON%\\python.exe -m pip install --target=.lib --ignore-installed 'about>=5.1,<6'"
   - "%PYTHON%\\python.exe -m pip install ."
 
