@@ -153,10 +153,19 @@ def main():
     prog = "python -m pandoc"
     description = "Read/write pandoc JSON documents with Python"
     parser = argparse.ArgumentParser(prog=prog, description=description)
+
+    try:
+        stdin = sys.stdin.buffer
+    except:
+        stdin = sys.stdin
     parser.add_argument("input", 
                         nargs="?", metavar="INPUT",
-                        type=argparse.FileType("rb"), default=sys.stdin,
+                        type=argparse.FileType("rb"), default=stdin,
                         help="input file")
+    try:
+        stdout = sys.stdout.buffer
+    except:
+        stdout = sys.stdout
     parser.add_argument("-o", "--output", 
                         nargs="?", 
                         type=argparse.FileType("wb"), default=sys.stdout,
