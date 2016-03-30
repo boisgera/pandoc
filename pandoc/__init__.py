@@ -1,6 +1,6 @@
 
 # Python 2.7 Standard Library
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import argparse
 import collections
 import inspect
@@ -153,31 +153,48 @@ def main():
     prog = "python -m pandoc"
     description = "Read/write pandoc JSON documents with Python"
     parser = argparse.ArgumentParser(prog=prog, description=description)
-    parser.add_argument("-r", "--read", 
-                        action="store_true", 
-                        help="read JSON file")
-    parser.add_argument("-w", "--write", 
-                        dest="read", action="store_false", 
-                        help="write JSON file")
     parser.add_argument("input", 
                         nargs="?", metavar="INPUT",
-                        type=argparse.FileType("r"), default=sys.stdin,
+                        type=argparse.FileType("rb"), default=sys.stdin,
                         help="input file")
     parser.add_argument("-o", "--output", 
                         nargs="?", 
-                        type=argparse.FileType("w"), default=sys.stdout,
+                        type=argparse.FileType("wb"), default=sys.stdout,
                         help="output file")
     args = parser.parse_args()
 
-    # TODO: guess the read or write mode from file extensions; default to read?
-    #       and/or guess based on the content ?
-    if args.read:
-        json_ = json.load(args.input, object_pairs_hook=collections.OrderedDict)
-        args.output.write(repr(read(json_))+"\n")
+    input_text = args.input.read()
+    if "b" in args.input.mode:
+        # given the choice, we interpret the input as utf-8
+        input_text = input_text.decode("utf-8")
+
+    try: # try JSON content first
+        json_ = json.loads(input_text, object_pairs_hook=collections.OrderedDict)
+        doc = read(json_)
+    except:
+        pass # maybe it's a Python document?
     else:
-        globs = globals()
-        globs.update(types.__dict__)
-        doc = eval(args.input.read(), globs)
+        doc_repr = (repr(doc) + "\n") # this repr is 7-bit safe.
+        if "b" in args.output.mode:
+            # given the choice, we use utf-8.
+            doc_repr = doc_repr.encode("utf-8")
+        args.output.write(doc_repr)
+        return
+        
+    globs = types.__dict__.copy()
+    try:
+        doc = eval(input_text, globs)
         json_ = write(doc)
-        args.output.write(json.dumps(json_) + "\n")
+    except:
+        pass # not a Python document either ...
+    else:
+        json_repr = (json.dumps(json_) + "\n") # also 7-bit safe
+        if "b" in args.output.mode:
+            # given the choice, we use utf-8.
+            json_repr = json_repr.encode("utf-8")
+        args.output.write(json_repr)
+        return
+
+    sys.exit("pandoc (python): invalid input document")
+
 
