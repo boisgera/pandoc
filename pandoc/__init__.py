@@ -115,6 +115,38 @@ def write(object_):
     return json_
 
 
+# Iteration
+# ------------------------------------------------------------------------------
+def iter(elt, enter=None, exit=None):
+    if enter is not None:
+        enter(elt)
+    yield elt
+    if isinstance(elt, dict):
+        elt = elt.items()
+    if hasattr(elt, "__iter__") and not isinstance(elt, types.String):
+        for child in elt:
+             for subelt in iter(child, enter, exit):
+                 yield subelt
+    if exit is not None:
+        exit(elt)
+
+def iter_path(elt):
+    path = []
+    def enter(elt_):
+        path.append(elt_)
+    def exit(elt_):
+        path.pop()
+    for elt_ in iter(elt, enter, exit):
+        yield path
+
+def get_parent(doc, elt):
+    for path in iter_path(doc):
+        elt_ = path[-1]
+        if elt is elt_:
+             parent = path[-2] if len(path) >= 2 else None
+             return parent
+
+
 # Main Entry Point
 # ------------------------------------------------------------------------------
 def main():
