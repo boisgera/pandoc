@@ -70,7 +70,7 @@ class TypeDef(Type):
 def make_types(defs=None):
     types_dict = globals()
     if defs is None:
-        defs_src = pkg_resources.resource_string("pandoc", "Definition.hs")
+        defs_src = pkg_resources.resource_string("pandoc", "definitions/1.16.hs")
         if not isinstance(defs_src, str):
             defs_src = defs_src.decode("utf-8")
         defs = pandoc.utils.parse(defs_src)
