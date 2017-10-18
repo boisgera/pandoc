@@ -73,6 +73,7 @@ _types_dict = {}
 def make_types(defs="1.16"):
     """Create Pandoc Types"""
 
+    global _types_dict
     globs = globals()
 
     # Uninstall the types from the previous call
