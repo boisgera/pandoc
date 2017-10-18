@@ -123,6 +123,11 @@ def v2(): # TODO: find a better name
     read = read2
     write = write2
 
+# TODO: make a script that takes some markdown, then runs
+#       the "old" pandoc and the "old" python pandcoc,
+#       prints the JSON and the Python, and then do the
+#       same for the new one.
+
 def read2(json_, type_=types.Pandoc):
     # TODO: special top-level stuff for Pandoc instance
     # TODO: need to access & check version in pandoc.types
