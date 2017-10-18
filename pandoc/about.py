@@ -10,7 +10,7 @@ metadata = dict(
   __keywords__ = """
                  software development, topic / text processing, 
                  python / 2, python / 3,
-                 beta
+                 stable
                  """
 )
 

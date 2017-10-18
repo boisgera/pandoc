@@ -44,7 +44,7 @@ class Constructor(Data):
         else:
             self._args = list(args)
     def __iter__(self):
-       return iter(self._args)
+        return iter(self._args)
     def __getitem__(self, key):
         return self._args[key]
     def __setitem__(self, key, value):
@@ -67,19 +67,34 @@ class TypeDef(Type):
 
 # Pandoc Types
 # ------------------------------------------------------------------------------
-def make_types(defs=None):
-    types_dict = globals()
-    if defs is None:
-        defs_src = pkg_resources.resource_string("pandoc", "definitions/1.16.hs")
+
+_types_dict = {}
+
+def make_types(defs="1.16"):
+    """Create Pandoc Types"""
+
+    globs = globals()
+
+    # Uninstall the types from the previous call
+    for type_name in _types_dict:
+      del globs[type_name]
+    _types_dict = {}
+
+    # Load & parse the types definition
+    if isinstance(defs, str):
+        defs_path = "definitions/{0}.hs".format(defs)
+        defs_src = pkg_resources.resource_string("pandoc", defs_path)
         if not isinstance(defs_src, str):
             defs_src = defs_src.decode("utf-8")
         defs = pandoc.utils.parse(defs_src)
+
+    # Create the types
     for decl in defs:
         decl_type = decl[0]
         type_name = decl[1][0]
         if decl_type in ("data", "newtype"):
             data_type = type(type_name, (Data,), {"_def": decl})
-            types_dict[type_name] = data_type
+            _types_dict[type_name] = data_type
             # Remark: when there is a constructor with the same name as its
             #         data type, the data type is shadowed. 
             #         This is intentional, but it's only consistent because 
@@ -89,10 +104,13 @@ def make_types(defs=None):
                 constructor_name = constructor[0]
                 bases = (Constructor, data_type)
                 type_ = type(constructor_name, bases, {"_def": constructor})
-                types_dict[constructor_name] = type_
+                _types_dict[constructor_name] = type_
         elif decl_type == "type":
             type_ = type(type_name, (TypeDef,), {"_def": decl})
-            types_dict[type_name] =type_
-        
+            _types_dict[type_name] = type_
+
+    # Install the types
+    globs.update(_types_dict)
+    
 make_types()
 
