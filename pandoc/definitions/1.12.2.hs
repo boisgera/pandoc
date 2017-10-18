@@ -58,12 +58,11 @@ data Inline
   | Cite [Citation] [Inline]
   | Code Attr String
   | Space
-  | SoftBreak
   | LineBreak
   | Math MathType String
   | RawInline Format String
-  | Link Attr [Inline] Target
-  | Image Attr [Inline] Target
+  | Link [Inline] Target
+  | Image [Inline] Target
   | Note [Block]
   | Span Attr [Inline]
 data Citation

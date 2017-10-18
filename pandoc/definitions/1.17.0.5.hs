@@ -32,6 +32,7 @@ newtype Format = Format String
 data Block
   = Plain [Inline]
   | Para [Inline]
+  | LineBlock [[Inline]]
   | CodeBlock Attr String
   | RawBlock Format String
   | BlockQuote [Block]
@@ -74,3 +75,4 @@ data Citation
               citationNoteNum :: Int,
               citationHash :: Int}
 data CitationMode = AuthorInText | SuppressAuthor | NormalCitation
+pandocTypesVersion :: Version

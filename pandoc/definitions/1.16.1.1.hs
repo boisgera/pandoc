@@ -74,3 +74,4 @@ data Citation
               citationNoteNum :: Int,
               citationHash :: Int}
 data CitationMode = AuthorInText | SuppressAuthor | NormalCitation
+pandocTypesVersion :: Version

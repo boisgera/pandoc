@@ -1,18 +1,8 @@
 data Pandoc = Pandoc Meta [Block]
-newtype Meta = Meta {unMeta :: Map String MetaValue}
-data MetaValue
-  = MetaMap (Map String MetaValue)
-  | MetaList [MetaValue]
-  | MetaBool Bool
-  | MetaString String
-  | MetaInlines [Inline]
-  | MetaBlocks [Block]
-nullMeta :: Meta
-isNullMeta :: Meta -> Bool
-lookupMeta :: String -> Meta -> Maybe MetaValue
-docTitle :: Meta -> [Inline]
-docAuthors :: Meta -> [[Inline]]
-docDate :: Meta -> [Inline]
+data Meta
+  = Meta {docTitle :: [Inline],
+          docAuthors :: [[Inline]],
+          docDate :: [Inline]}
 data Alignment
   = AlignLeft | AlignRight | AlignCenter | AlignDefault
 type ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
@@ -26,22 +16,19 @@ data ListNumberStyle
   | UpperAlpha
 data ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens
 type Attr = (String, [String], [(String, String)])
-nullAttr :: Attr
 type TableCell = [Block]
-newtype Format = Format String
 data Block
   = Plain [Inline]
   | Para [Inline]
   | CodeBlock Attr String
-  | RawBlock Format String
+  | RawHtml String
   | BlockQuote [Block]
   | OrderedList ListAttributes [[Block]]
   | BulletList [[Block]]
   | DefinitionList [([Inline], [[Block]])]
-  | Header Int Attr [Inline]
+  | Header Int [Inline]
   | HorizontalRule
   | Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]
-  | Div Attr [Block]
   | Null
 data QuoteType = SingleQuote | DoubleQuote
 type Target = (String, String)
@@ -56,16 +43,19 @@ data Inline
   | SmallCaps [Inline]
   | Quoted QuoteType [Inline]
   | Cite [Citation] [Inline]
-  | Code Attr String
+  | Code String
   | Space
-  | SoftBreak
+  | EmDash
+  | EnDash
+  | Apostrophe
+  | Ellipses
   | LineBreak
   | Math MathType String
-  | RawInline Format String
-  | Link Attr [Inline] Target
-  | Image Attr [Inline] Target
+  | TeX String
+  | HtmlInline String
+  | Link [Inline] Target
+  | Image [Inline] Target
   | Note [Block]
-  | Span Attr [Inline]
 data Citation
   = Citation {citationId :: String,
               citationPrefix :: [Inline],
