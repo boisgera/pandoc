@@ -115,6 +115,27 @@ def write(object_):
     return json_
 
 
+# Serialization v2
+# ------------------------------------------------------------------------------
+
+def v2(): # TODO: find a better name
+    global read, write
+    read = read2
+    write = write2
+
+def read2(json_, type_=types.Pandoc):
+    # TODO: special top-level stuff for Pandoc instance
+    # TODO: need to access & check version in pandoc.types
+    #       have a look at compat policies used by pandoc 
+    #       and do the same?
+    # TODO: use the old logic, start with empty metadata,
+    #       go through every construct one by one?
+    pass
+
+def write2(object_):
+    pass
+    
+
 # Iteration
 # ------------------------------------------------------------------------------
 def iter(elt, enter=None, exit=None):
