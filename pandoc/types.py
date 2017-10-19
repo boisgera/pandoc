@@ -9,6 +9,9 @@ import pkg_resources
 # Pandoc
 import pandoc.utils
 
+# Metadata
+# ------------------------------------------------------------------------------
+version = "1.16"
 
 # Haskell Primitives & Containers
 # ------------------------------------------------------------------------------
@@ -70,11 +73,14 @@ class TypeDef(Type):
 
 _types_dict = {}
 
-def make_types(defs="1.16"):
+def make_types(version=version):
     """Create Pandoc Types"""
 
     global _types_dict
     globs = globals()
+
+    # Update the module version
+    globs["version"] = version
 
     # Uninstall the types from the previous call
     for type_name in _types_dict:
@@ -82,12 +88,9 @@ def make_types(defs="1.16"):
     _types_dict = {}
 
     # Load & parse the types definition
-    if isinstance(defs, str):
-        defs_path = "definitions/{0}.hs".format(defs)
-        defs_src = pkg_resources.resource_string("pandoc", defs_path)
-        if not isinstance(defs_src, str):
-            defs_src = defs_src.decode("utf-8")
-        defs = pandoc.utils.parse(defs_src)
+    defs_path = "definitions/{0}.hs".format(version)
+    defs_src = pkg_resources.resource_string("pandoc", defs_path)
+    defs = pandoc.utils.parse(defs_src)
 
     # Create the types
     for decl in defs:
