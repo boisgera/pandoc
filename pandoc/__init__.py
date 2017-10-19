@@ -135,7 +135,85 @@ def read2(json_, type_=types.Pandoc):
     #       and do the same?
     # TODO: use the old logic, start with empty metadata,
     #       go through every construct one by one?
-    pass
+
+#    print("\n")
+#    print(">>> READ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+    if isinstance(type_, str):
+        type_ = getattr(types, type_)
+    if not isinstance(type_, list): # not a type def (yet).
+        if issubclass(type_, types.Type):
+            type_ = type_._def
+        else: # primitive type
+            return type_(json_)
+
+#    print("typedef:", type_)
+#    print("json:", json_)
+
+    if type_[0] == "type": # type alias
+        type_ = type_[1][1]
+        return read2(json_, type_)
+    if type_[0] == "list":
+        item_type = type_[1][0]
+        return [read2(item, item_type) for item in json_]
+    if type_[0] == "tuple":
+        tuple_types = type_[1]
+        return tuple(read2(item, item_type) for (item, item_type) in zip(json_, tuple_types))
+    if type_[0] == "map":
+        key_type, value_type = type_[1]
+        return types.map([(read2(k, key_type), read2(v, value_type)) for (k, v) in json_.items()])
+
+    data_type = None
+    constructor = None
+    if type_[0] in ("data", "newtype"):
+        data_type = type_
+        constructors = data_type[1][1]
+        if len(constructors) == 1:
+            constructor = constructors[0]
+        else:
+            constructor = getattr(types, json_["t"])._def
+    elif type_[0][0] == type_[0][0].upper():
+        constructor = type_
+        constructor_type = getattr(types, constructor[0])
+        data_type = constructor_type.__mro__[2]._def
+
+#    print("Constructor:", constructor)
+#    print("Data Type:", data_type)
+
+    single_type_constructor = (len(data_type[1][1]) == 1)
+    single_constructor_argument = (len(constructor[1][1]) == 1)
+    is_record = (constructor[1][0] == "map")
+
+#    print("Single Type Constructor:", single_type_constructor)
+#    print("Single Constructor Argument:", single_constructor_argument)
+#    print("Record:", is_record)
+
+    json_args = None
+    args = None
+    if constructor[0] == "Pandoc":
+        # TODO; check API version compat
+        meta = read2(json_["meta"], types.Meta)
+        blocks = read2(json_["blocks"], ["list", ["Block"]])
+        return types.Pandoc(meta, blocks)
+    elif constructor[0] == "Meta":
+        type_ = ['map', ['String', 'MetaValue']]
+        return types.Meta(read2(json_, type_)) 
+    elif not is_record:
+        if single_type_constructor:
+            json_args = json_
+        else:
+            json_args = json_.get("c", [])
+        if single_constructor_argument:
+            json_args = [json_args]
+        args = [read2(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
+    else:
+        keys = [k for k,t in constructor[1][1]]
+        types_= [t for k, t in constructor[1][1]]
+        json_args = [json_[k] for k in keys]
+        args = [read2(jarg, t) for jarg, t in zip(json_args, types_)]
+    C = getattr(types, constructor[0])
+    return C(*args)
+
 
 def write2(object_):
     pass
