@@ -123,22 +123,7 @@ def v2(): # TODO: find a better name
     read = read2
     write = write2
 
-# TODO: make a script that takes some markdown, then runs
-#       the "old" pandoc and the "old" python pandcoc,
-#       prints the JSON and the Python, and then do the
-#       same for the new one.
-
 def read2(json_, type_=types.Pandoc):
-    # TODO: special top-level stuff for Pandoc instance
-    # TODO: need to access & check version in pandoc.types
-    #       have a look at compat policies used by pandoc 
-    #       and do the same?
-    # TODO: use the old logic, start with empty metadata,
-    #       go through every construct one by one?
-
-#    print("\n")
-#    print(">>> READ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
     if isinstance(type_, str):
         type_ = getattr(types, type_)
     if not isinstance(type_, list): # not a type def (yet).
@@ -146,9 +131,6 @@ def read2(json_, type_=types.Pandoc):
             type_ = type_._def
         else: # primitive type
             return type_(json_)
-
-#    print("typedef:", type_)
-#    print("json:", json_)
 
     if type_[0] == "type": # type alias
         type_ = type_[1][1]
@@ -177,16 +159,9 @@ def read2(json_, type_=types.Pandoc):
         constructor_type = getattr(types, constructor[0])
         data_type = constructor_type.__mro__[2]._def
 
-#    print("Constructor:", constructor)
-#    print("Data Type:", data_type)
-
     single_type_constructor = (len(data_type[1][1]) == 1)
     single_constructor_argument = (len(constructor[1][1]) == 1)
     is_record = (constructor[1][0] == "map")
-
-#    print("Single Type Constructor:", single_type_constructor)
-#    print("Single Constructor Argument:", single_constructor_argument)
-#    print("Record:", is_record)
 
     json_args = None
     args = None
@@ -214,9 +189,50 @@ def read2(json_, type_=types.Pandoc):
     C = getattr(types, constructor[0])
     return C(*args)
 
-
 def write2(object_):
-    pass
+    odict = collections.OrderedDict
+    type_ = type(object_)
+    if not isinstance(object_, types.Type):
+        if isinstance(object_, (list, tuple)):
+            json_ = [write2(item) for item in object_]
+        elif isinstance(object_, dict):
+            json_ = odict((k, write2(v)) for k, v in object_.items())
+        else: # primitive type
+            json_ = object_
+    elif isinstance(object_, types.Pandoc):
+        # actually, the version should be read in types.Type?
+        version = [int(part) for part in types.version.split(".")]
+        metadata = object_[0]
+        blocks = object_[1]
+        json_ = odict()
+        json_["pandoc-api-version"] = version
+        json_["meta"] = write2(object_[0][0])
+        json_["blocks"] = write2(object_[1])
+    else:
+        constructor = type(object_)._def
+        data_type = type(object_).__mro__[2]._def
+        single_type_constructor = (len(data_type[1][1]) == 1)
+        single_constructor_argument = (len(constructor[1][1]) == 1)
+        is_record = (constructor[1][0] == "map")
+
+        json_ = odict()
+        if not single_type_constructor:
+            json_["t"] = type(object_).__name__
+
+        if not is_record:
+            c = [write2(arg) for arg in object_]
+            if single_constructor_argument:
+                c = c[0]
+            if single_type_constructor:
+                json_ = c
+            else:
+                if len(c) != []:
+                    json_["c"] = c
+        else:
+            keys = [kt[0] for kt in constructor[1][1]]
+            for key, arg in zip(keys, object_):
+                json_[key] = write2(arg)
+    return json_
     
 
 # Iteration
