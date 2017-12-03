@@ -90,6 +90,8 @@ def make_types(version=version):
     # Load & parse the types definition
     defs_path = "definitions/{0}.hs".format(version)
     defs_src = pkg_resources.resource_string("pandoc", defs_path)
+    if not isinstance(defs_src, str): # resource loaded as bytes in Python 3
+        defs_src = defs_src.decode("utf-8")
     defs = pandoc.utils.parse(defs_src)
 
     # Create the types
