@@ -60,7 +60,7 @@ class TypeDef(Type):
 
 _types_dict = {}
 
-def _make_builtin_types()
+def _make_builtin_types():
     "Create Builtin Types"
     td = _types_dict
     td["Bool"] = bool
