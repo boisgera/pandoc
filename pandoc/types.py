@@ -1,6 +1,6 @@
 
 # Python 2.7 Standard Library
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import collections
 
 # Third-Party Libraries
@@ -98,8 +98,9 @@ def make_types(version=version):
     for decl in defs:
         decl_type = decl[0]
         type_name = decl[1][0]
+        _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
         if decl_type in ("data", "newtype"):
-            data_type = type(type_name, (Data,), {"_def": decl})
+            data_type = type(type_name, (Data,), _dict)
             _types_dict[type_name] = data_type
             # Remark: when there is a constructor with the same name as its
             #         data type, the data type is shadowed. 
@@ -109,10 +110,12 @@ def make_types(version=version):
             for constructor in decl[1][1]:
                 constructor_name = constructor[0]
                 bases = (Constructor, data_type)
-                type_ = type(constructor_name, bases, {"_def": constructor})
+                _dict = {"_def": constructor, 
+                         "__doc__": pandoc.utils.docstring(constructor)}
+                type_ = type(constructor_name, bases, _dict)
                 _types_dict[constructor_name] = type_
-        elif decl_type == "type":
-            type_ = type(type_name, (TypeDef,), {"_def": decl})
+        elif decl_type == "type": 
+            type_ = type(type_name, (TypeDef,), _dict)
             _types_dict[type_name] = type_
 
     # Install the types

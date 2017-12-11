@@ -187,3 +187,44 @@ def split(src):
 def parse(src):
     return [parser.parse(type_decl) for type_decl in split(src)]
 
+def docstring(decl):
+    if isinstance(decl, str):
+        return decl
+    else:
+        assert isinstance(decl, list)
+        if decl[0] == "data" or decl[0] == "newtype":
+            type_name = decl[1][0]
+            constructors = decl[1][1]
+            _docstring = ""
+            for i, constructor in enumerate(constructors):
+                if i == 0:
+                    prefix = type_name + " = "
+                else:
+                    prefix = " " * len(type_name) + " | "
+                if i > 0:
+                    _docstring += "\n"
+                _docstring += prefix + docstring(constructor)
+            return _docstring 
+        elif decl[0] == "type":
+            return "{0} = {1}".format(decl[1][0], docstring(decl[1][1]))
+        elif decl[0] == "list":
+            return "[{0}]".format(docstring(decl[1][0]))
+        elif decl[0] == "tuple":
+            _types = [docstring(_type) for _type in decl[1]]
+            _types = ", ".join(_types)
+            return "({0})".format(_types)
+        elif decl[0] == "map":
+            #print(">>>", decl)
+            key_type, value_type = decl[1]
+            return "{{{0}: {1}}}".format(docstring(key_type), docstring(value_type))
+        else: # constructor, distinguish normal and record types
+            type_name = decl[0]
+            args_type = decl[1][0]
+            args = decl[1][1]
+            if args_type == "list":
+                return "{0}({1})".format(type_name, ", ".join(docstring(t) for t in args))
+            else: 
+                assert args_type == "map"
+                args = [item for _, item in args]
+                return "{0}({1})".format(type_name, ", ".join(docstring(t) for t in args))    
+
