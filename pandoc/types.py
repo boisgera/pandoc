@@ -1,6 +1,7 @@
 
 # Python 2.7 Standard Library
 from __future__ import absolute_import, print_function
+import builtins
 import collections
 
 # Third-Party Libraries
@@ -13,22 +14,55 @@ import pandoc.utils
 # ------------------------------------------------------------------------------
 version = "1.16"
 
-# Haskell Primitives & Containers
+# Typechecking & Error Reporting
 # ------------------------------------------------------------------------------
-Bool = bool
-Double = float
-Int = int
-try:
-    String = unicode
-except NameError:
-    String = str
-list = list
-tuple = tuple
-map = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
 
+# Typecheck method on Data stuff. Won't work with native typedefs or Typedefs.
+# So we also offer a typecheck FUNCTION with the type as a first argument.
+# Both the method and the function can be recursive or not (and this is no
+# by default)?
+# Nota: error message MATTERS here. And in recursive mode, 
+# we should be smart and display some information in context of the 
+# original call/check.
+# Usage: (recursively) check before write.
+
+def check(instance, type):
+    # TODO: type is either:
+    #
+    #  1. a Data type (abstract) 
+    #  2. a Constructor type
+    #  3. a TypeDef type
+    #  4. a Primitive type 
+    #  
+    # To check 4, we rely on isinstance.
+    # To check 1, we check that we have an instance
+    # that is derived from the abstract data type, 
+    # then we call typecheck again with the same instance 
+    # but the constructor type.
+    # To check 2, we check with instance, check every
+    # argument vs the part of the signature for it.
+    # The check for 3 is similar, we have a single argument
+    # and a signature.
+    # So the crux of this is to check and arguments vs
+    # a signature made of lists, maps, tuples and names that
+    # refer to types. For these names, we get the type
+    # and perform a shallow (isinstance-based) check if not
+    # recursive or ... nothing for typedefs? Or ... what?
+    # Deep for typedefs? Dunno. Well it's probably easier
+    # to recurse everything but Pandoc types.
+
+    # So, start with signatures (lists or strings), and build
+    # your way up!
+    pass
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
+
+# TODO: support position parameters for record types?
+#       First have a look at the use cases: Meta (see deconstructor in Haskell
+#       literature) and Citation. Also, drop the prefix when it's the
+#       type name and go from CamelCase to kebab-case?
+
 def _fail_init(self, *args, **kwargs):
     type_name = type(self).__name__
     error = "cannot instantiate abstract type {type}"
@@ -73,12 +107,25 @@ class TypeDef(Type):
 
 _types_dict = {}
 
+def _make_builtin_types()
+    "Create Builtin Types"
+    td = _types_dict
+    td["Bool"] = bool
+    td["Double"] = float
+    td["Int"] = int
+    try:
+        td["String"] = unicode
+    except NameError:
+        td["String"] = str
+    td["list"] = list
+    td["tuple"] = tuple
+    td["map"] = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
+
 def make_types(version=version):
     """Create Pandoc Types"""
 
     global _types_dict
     globs = globals()
-
     # Update the module version
     globs["version"] = version
 
@@ -86,6 +133,9 @@ def make_types(version=version):
     for type_name in _types_dict:
       del globs[type_name]
     _types_dict = {}
+
+    # Create builtin types
+    _make_builtin_types()
 
     # Load & parse the types definition
     defs_path = "definitions/{0}.hs".format(version)
