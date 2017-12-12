@@ -24,9 +24,36 @@ version = "1.16"
 # Nota: error message MATTERS here. And in recursive mode, 
 # we should be smart and display some information in context of the 
 # original call/check.
-# Usage: (recursively) check before write.
+#
+# Usage: 
+#   - Automatic deep check before JSON write
+#   - (shallow) check on instance creation, to get the errors asap
+#   - Manual thorough check whenever the user feels like it
 
-def check(instance, type):
+# NOTA: strings or signature type argument should stay internal/private.
+#       That makes a smaller surface for errors (and error checking).
+
+# TODO: error formatting. Use a stack for errors? Stack errors at
+#       different levels? Does Python exception already do that?
+#       or shall we replicate this stuff?
+
+def check(instance, type, deep=True): 
+
+    # WRT the default: deep=True is simpler. The user could live without
+    # deep=False, not without deep=True ...
+
+    # 'recursive' or 'deep' ? Accept True/Number/False?
+    # 'depth' instead?
+
+    # accept "no type" ? Would make SOME sense to check a pandoc type ...
+    # But then maybe that's what the method would be for ? And then
+    # what would be the interaction with deep? If the check is totally
+    # shallow, this is stupid (equivalent to isinstance). So in this
+    # case, shallow would be "one depth level" and deep the usual?
+    # Beuah, dunno, then the difference of behavior between the function
+    # and the method would be hard to explain. UNLESS we only advertise
+    # the method?
+
     # TODO: type is either:
     #
     #  1. a Data type (abstract) 
@@ -51,9 +78,71 @@ def check(instance, type):
     # Deep for typedefs? Dunno. Well it's probably easier
     # to recurse everything but Pandoc types.
 
-    # So, start with signatures (lists or strings), and build
-    # your way up!
-    pass
+
+
+    if isinstance(type, str): # simple type signature
+        type = _types_dict[type]
+        check(instance, type)
+    elif isinstance(type, list): # complex type signature
+        decl_type = type[0]
+        if decl_type in ["data", "newtype"]:
+           type_name = type[1][0]
+           constructors = type[1][1]
+           if not isinstance(instance, _types_dict[type_name]):
+               raise TypeError()
+           actual_type = builtins.type(instance)
+           check(instance, actual_type)
+        elif decl_type == "typedef":
+           decl = type[1][1]
+           check(instance, decl)
+        elif decl_type == "list": 
+            item_type = type[1][0]
+            if not isinstance(instance, list):
+                raise TypeError()
+            for item in instance:
+                check(item, item_type)
+        elif decl_type == "tuple":
+            item_types = type[1]
+            if not isinstance(instance, list):
+                raise TypeError()
+            if not len(item_type) == len(instance):
+                raise TypeError()
+            for item, item_type in zip(instance, item_types):
+                check(item, item_types)
+        elif decl_type == "map":
+            key_type, value_type = type[1][0], type[1][1]            
+            if not isinstance(instance, dict):
+                raise TypeError()
+            for key, value in instance.items():
+                check(key, key_type)
+                check(value, value_type)
+        else: # constructor
+            constructor_type = _types_dict[type[0]]
+            if builtins.type(instance) != constructor_type:
+                 raise TypeError
+            if deep:
+                if type[1][0] == "list": # classic type
+                    sub_types = type[1][1]
+                    if len(instance) != len(sub_types):
+                        raise TypeError()
+                    for item, sub_type in zip(instance, sub_types):
+                        check(item, sub_type)
+                elif type[1][0] == "map": # record type
+                    key_value_types = type[1][1]
+                    if len(instance) != len(key_value_types):
+                        error = "** {0} {1}".format(instance, key_value_types) 
+                        raise TypeError(error)
+                    sub_types = [key_value[1] for key_value in key_value_types]
+                    for item, sub_type in zip(instance, sub_types):
+                        check(item, sub_type)
+    else: # check vs actual type, not signature.
+        if builtins.type(type) is builtins.type and issubclass(type, Type):
+            # Pandoc types, use signature
+            check(instance, type._def)
+        elif not isinstance(instance, type):
+            # Primitive types
+            raise TypeError()
+
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
@@ -156,6 +245,8 @@ def make_types(version=version):
             #         data type, the data type is shadowed. 
             #         This is intentional, but it's only consistent because 
             #         it happens when there is a single constructor. 
+            #         That's merely a happy accident from the pandoc types
+            #         definition, not something enforced by Haskell.
             # TODO: add an assert / check for this condition.
             for constructor in decl[1][1]:
                 constructor_name = constructor[0]

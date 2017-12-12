@@ -187,6 +187,8 @@ def split(src):
 def parse(src):
     return [parser.parse(type_decl) for type_decl in split(src)]
 
+# find a better name: docstring is how we USE this stuff,
+# but not what it IS and there are other uses (ex: error reporting)
 def docstring(decl):
     if isinstance(decl, str):
         return decl
