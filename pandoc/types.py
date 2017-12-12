@@ -1,7 +1,10 @@
 
 # Python 2.7 Standard Library
 from __future__ import absolute_import, print_function
-import builtins
+try:
+    import builtins
+except ImportError:
+    import __builtin__ as builtins
 import collections
 
 # Third-Party Libraries
