@@ -140,12 +140,12 @@ def check(instance, type, deep=True):
                 raise TypeError(error)
             if not len(item_types) == len(instance):
                 error  = "expecting a tuple of {0} items (found {1})\n"
-                error  = error.format(len(item_type), len(instance)) 
-                error += "expected: " + repr(item_types)
-                error += "got:      " + repr(instance)
+                error  = error.format(len(item_types), len(instance)) 
+                error += "expected: {0!r}\n".format(item_types)
+                error += "got:      {0!r}".format(instance)
                 raise TypeError(error)
             for item, item_type in zip(instance, item_types):
-                check(item, item_types)
+                check(item, item_type)
         elif decl_type == "map":
             key_type, value_type = type_signature[1]           
             if not isinstance(instance, dict):
