@@ -135,11 +135,11 @@ def check(instance, type, deep=True):
                 check(item, item_type)
         elif decl_type == "tuple":
             item_types = type_signature[1]
-            if not isinstance(instance, list):
-                error = "{0!r} is not a list".format(instance)
+            if not isinstance(instance, (tuple, list)):
+                error = "{0!r} is not a tuple (or list)".format(instance)
                 raise TypeError(error)
             if not len(item_types) == len(instance):
-                error  = "expecting a list of {0} items (found {1})\n"
+                error  = "expecting a tuple of {0} items (found {1})\n"
                 error  = error.format(len(item_type), len(instance)) 
                 error += "expected: " + repr(item_types)
                 error += "got:      " + repr(instance)
