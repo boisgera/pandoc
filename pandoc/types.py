@@ -40,13 +40,39 @@ version = "1.16"
 #       different levels? Does Python exception already do that?
 #       or shall we replicate this stuff?
 
+# NOTA: the constructor info is missing for a proper error message :(
+# TODO: use a str repr of the types in error checking.
+def check_args(args, type_signature, deep=True):
+    kind, sub_types = type_signature
+    if kind == "list": # classic type
+        if len(args) != len(sub_types):
+            error = "expected {0} argument(s) ({1} given)\n"
+            error = error.format(len(sub_types), len(args))
+            error += "arguments: {0!r}\n".format(args)
+            error += "should be: {0!r}".format(sub_types)
+            raise TypeError(error)
+        for arg, sub_type in zip(args, sub_types):
+            check(arg, sub_type, deep=deep)
+    elif kind == "map": # record type
+        key_value_types = sub_types
+        sub_types = [key_value[1] for key_value in key_value_types]
+        if len(args) != len(key_value_types):
+            error = "expected {0} argument(s) ({1} given)\n"
+            error = error.format(len(sub_types), len(args))
+            error += "arguments: {0!r}\n".format(args)
+            error += "should be: {0!r}".format(sub_types)
+            raise TypeError(error)
+            raise TypeError(error)
+        for arg, sub_type in zip(args, sub_types):
+            check(arg, sub_type, deep=deep)
+
 def check(instance, type, deep=True): 
 
     # WRT the default: deep=True is simpler. The user could live without
     # deep=False, not without deep=True ...
 
     # 'recursive' or 'deep' ? Accept True/Number/False?
-    # 'depth' instead?
+    # 'depth' instead? Use "total" (vs partial ?)
 
     # accept "no type" ? Would make SOME sense to check a pandoc type ...
     # But then maybe that's what the method would be for ? And then
@@ -81,71 +107,77 @@ def check(instance, type, deep=True):
     # Deep for typedefs? Dunno. Well it's probably easier
     # to recurse everything but Pandoc types.
 
-
-
     if isinstance(type, str): # simple type signature
-        type = _types_dict[type]
+        type_name = type
+        type = _types_dict[type_name]
         check(instance, type)
     elif isinstance(type, list): # complex type signature
-        decl_type = type[0]
+        type_signature = type
+        decl_type = type_signature[0]
         if decl_type in ["data", "newtype"]:
-           type_name = type[1][0]
-           constructors = type[1][1]
-           if not isinstance(instance, _types_dict[type_name]):
-               raise TypeError()
-           actual_type = builtins.type(instance)
-           check(instance, actual_type)
-        elif decl_type == "typedef":
-           decl = type[1][1]
+           type_name, constructors = type_signature[1]
+           abstract_type = _types_dict[type_name]
+           if not isinstance(instance, abstract_type):
+                error = "{0!r} is not an instance of {1!r}"
+                error = error.format(instance, abstract_type.__name__)
+                raise TypeError(error)
+           concrete_type = builtins.type(instance)
+           check(instance, concrete_type)
+        elif decl_type == "type":
+           decl = type_signature[1][1]
            check(instance, decl)
         elif decl_type == "list": 
-            item_type = type[1][0]
+            item_type = type_signature[1][0]
             if not isinstance(instance, list):
-                raise TypeError()
+                error = "{0!r} is not a list".format(instance)
+                raise TypeError(error)
             for item in instance:
                 check(item, item_type)
         elif decl_type == "tuple":
-            item_types = type[1]
+            item_types = type_signature[1]
             if not isinstance(instance, list):
-                raise TypeError()
-            if not len(item_type) == len(instance):
-                raise TypeError()
+                error = "{0!r} is not a list".format(instance)
+                raise TypeError(error)
+            if not len(item_types) == len(instance):
+                error  = "expecting a list of {0} items (found {1})\n"
+                error  = error.format(len(item_type), len(instance)) 
+                error += "expected: " + repr(item_types)
+                error += "got:      " + repr(instance)
+                raise TypeError(error)
             for item, item_type in zip(instance, item_types):
                 check(item, item_types)
         elif decl_type == "map":
-            key_type, value_type = type[1][0], type[1][1]            
+            key_type, value_type = type_signature[1]           
             if not isinstance(instance, dict):
-                raise TypeError()
+                error = "expected a dict (got a {0!r})\n"
+                error = error.format(builtins.type(instance))
+                error += "got: " + repr(instance)
+                raise TypeError(error)
             for key, value in instance.items():
                 check(key, key_type)
                 check(value, value_type)
         else: # constructor
-            constructor_type = _types_dict[type[0]]
-            if builtins.type(instance) != constructor_type:
-                 raise TypeError
-            if deep:
-                if type[1][0] == "list": # classic type
-                    sub_types = type[1][1]
-                    if len(instance) != len(sub_types):
-                        raise TypeError()
-                    for item, sub_type in zip(instance, sub_types):
-                        check(item, sub_type)
-                elif type[1][0] == "map": # record type
-                    key_value_types = type[1][1]
-                    if len(instance) != len(key_value_types):
-                        error = "** {0} {1}".format(instance, key_value_types) 
-                        raise TypeError(error)
-                    sub_types = [key_value[1] for key_value in key_value_types]
-                    for item, sub_type in zip(instance, sub_types):
-                        check(item, sub_type)
-    else: # check vs actual type, not signature.
-        if builtins.type(type) is builtins.type and issubclass(type, Type):
-            # Pandoc types, use signature
-            check(instance, type._def)
-        elif not isinstance(instance, type):
-            # Primitive types
-            raise TypeError()
+            constructor_type = _types_dict[type_signature[0]]
+            if not isinstance(instance, constructor_type):
+                error = "{0!r} is not an instance of {1}"
+                error = error.format(instance, constructor_type.__name__)
+                raise TypeError(error)
+            check_args(instance[:], type_signature[1], deep=deep)
+    elif builtins.type(type) is builtins.type: # type, not type signature
+        if issubclass(type, Type): # Pandoc type
+            check(instance, type._def) # check against type signature
+        else: # Primitive type
+          if not isinstance(instance, type):
+            error = "{0!r} is not an instance of {1}"
+            error = error.format(instance, type.__name__)
+            raise TypeError(error)
 
+    else:
+       pass
+       # should not happen ... but do we raise a TypeError?
+       # That would conflate a user mistake and a negative check ...
+       # Or we can return ValueErrors for check (urk!) or a specific
+       # pandoc.Typeerror derived stuff ...
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
@@ -171,6 +203,7 @@ class Constructor(Data):
         if type(self) is Constructor:
             _fail_init(self, *args)
         else:
+            check_args(args, self._def[1])
             self._args = list(args)
     def __iter__(self):
         return iter(self._args)
