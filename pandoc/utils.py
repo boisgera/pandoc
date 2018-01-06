@@ -189,44 +189,128 @@ def parse(src):
 
 # find a better name: docstring is how we USE this stuff,
 # but not what it IS and there are other uses (ex: error reporting)
-def docstring(decl):
+# TODO: define signature_repr and docstring on top of that
+#       (think of one-liner vs multiline issues, indentation, etc.)
+
+# Nota: with the path option, the name of the function gets a little muddy.
+# Q: do we need this for multi-line ? How could that help us? And it makes
+#    things more complex.
+
+# TODO: think the "nodes" stuff. Remember & study the use case:
+#       The goal is to be able to pinpoint fragments in complex
+#       types such as (String, [String], [(String, String)]).
+#       So study how these types are checked and what API would
+#       be appropriate (some info has to be conveyed by the exception
+#       upwards).
+#
+#       One idea with the node stuff is to have a list of list ... etc.
+#       such that we can locate the children, or the children children,
+#       etc buy having says nodes[0][1] = (0,10) (start, past_the_end)
+#       The root, well, it's (0, len(string)) ... Arf won't work:
+#       we also need nodes[0] to return a value, not merely the children.
+
+# TODO: at the very list, custom repr to see the attributes? 
+#       Dunno how to represent this (yet)
+
+
+# NOTA: alternate approach, probably much simpler:
+#       build a list of strings or list (of the same kind)
+#       whose flattening produces the signature.
+#       The issue: with the separators & such, the indexing
+#       would not be the one we think off.
+#       But here the code is a pain in the ass.
+#       Rework the stuff has a hierarchy of construct node with
+#       children that know how to format themselves ?
+#       Yeah why not but how do we handle the locations then?
+#       This would be maybe a minor improvement of the initial
+#       code (and even then i am not sure: that would be less 
+#       compact)
+#
+#       Well, end the initial, BRUTAL and PAINFUL version first,
+#       look for the patterns afterwards.
+#
+#       Maybe build the strings in a string-like with the option
+#       to flag the node for insertion as a boundary effect.
+
+# TODO: create "(Signature)Node" with before, after, separator fields and children;
+#       some str() method, some getitem/iter/len and some locate method to
+#       get the location of child i. Don't call the stuff signature_repr
+#       but signature and let the use call str.
+#       UPDATE: accept path as keys: lists of integers instead of integers.
+
+class Node(object):
+    def __init__(self, children, before, between, after):
+        self.children = list(children)
+        self.before = before
+        self.between = between
+        self.after = after
+    def __str__(self):
+        return self.before + \
+               self.between.join(str(child) for child in self) + \
+               self.after
+    def __iter__(self):
+        return iter(self.children)
+    def __len__(self): # slightly misleading since we are also string-like ...
+        return len(self.children)
+    def __getitem__(self, index):
+        return self.children[index]
+    def locate(self, *indices):
+        if len(indices) == 0:
+            return (0, len(str(self)))
+        elif len(indices) == 1:
+            index = indices[0]
+            start = len(self.before) + \
+                    sum(len(str(child)) for child in self[0:index]) + \
+                    index * len(self.between)
+            end = start + len(str(self[index])) 
+        else:
+            inner = self
+            for index in indices[:-1]:
+                inner = inner[index]
+            index = indices[-1]
+            start, end = inner.locate(index)
+            offset, _ = self.locate(*indices[:-1])
+            start = offset + start
+            end = offset + end
+        return start, end
+
+def signature(decl):
     if isinstance(decl, str):
-        return decl
+        node = Node([decl], before="", between="", after="")
     else:
         assert isinstance(decl, list)
         if decl[0] == "data" or decl[0] == "newtype":
             type_name = decl[1][0]
             constructors = decl[1][1]
-            _docstring = ""
-            for i, constructor in enumerate(constructors):
-                if i == 0:
-                    prefix = type_name + " = "
-                else:
-                    prefix = " " * len(type_name) + " | "
-                if i > 0:
-                    _docstring += "\n"
-                _docstring += prefix + docstring(constructor)
-            return _docstring 
+            children = [signature(constructor) for constructor in constructors]
+            before = type_name + " = "
+            between = "\n" + len(type_name) * " " + " | "
+            after = "" # "\n" ?
+            node = Node(children, before=before, between=between, after=after)
         elif decl[0] == "type":
-            return "{0} = {1}".format(decl[1][0], docstring(decl[1][1]))
+            child = signature(decl[1][1])
+            before = decl[1][0] + " = "
+            node = Node([child], before=before, between="", after="")
         elif decl[0] == "list":
-            return "[{0}]".format(docstring(decl[1][0]))
+            child = signature(decl[1][0])
+            node = Node(child, before="[", between="", after="]")
         elif decl[0] == "tuple":
-            _types = [docstring(_type) for _type in decl[1]]
-            _types = ", ".join(_types)
-            return "({0})".format(_types)
+            children = [signature(_decl) for _decl in decl[1]]
+            node = Node(children, before="(", between=", ", after=")")
         elif decl[0] == "map":
-            #print(">>>", decl)
-            key_type, value_type = decl[1]
-            return "{{{0}: {1}}}".format(docstring(key_type), docstring(value_type))
+            children = [signature(_decl) for _decl in decl[1]] # key, value decl
+            node = Node(children, before="{", between=": ", after="}")
         else: # constructor, distinguish normal and record types
             type_name = decl[0]
             args_type = decl[1][0]
             args = decl[1][1]
             if args_type == "list":
-                return "{0}({1})".format(type_name, ", ".join(docstring(t) for t in args))
+                children = [signature(arg) for arg in args]
+                node = Node(children, before=type_name + "(", between=", ", after=")")
             else: 
                 assert args_type == "map"
-                args = [item for _, item in args]
-                return "{0}({1})".format(type_name, ", ".join(docstring(t) for t in args))    
+                children = [signature(arg) for _, arg in args]
+                node = Node(children, before=type_name + "(", between=", ", after=")")
+    return node
+
 
