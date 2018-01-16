@@ -6,12 +6,16 @@ try:
 except ImportError:
     import __builtin__ as builtins
 import collections
+import inspect
+import pydoc
+
 
 # Third-Party Libraries
 import pkg_resources
 
 # Pandoc
 import pandoc.utils
+from pandoc.utils import signature
 
 # Metadata
 # ------------------------------------------------------------------------------
