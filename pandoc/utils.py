@@ -293,24 +293,23 @@ def signature(decl):
             node = Node([child], before=before, between="", after="")
         elif decl[0] == "list":
             child = signature(decl[1][0])
-            node = Node(child, before="[", between="", after="]")
+            node = Node([child], before="[", between="", after="]")
         elif decl[0] == "tuple":
             children = [signature(_decl) for _decl in decl[1]]
             node = Node(children, before="(", between=", ", after=")")
         elif decl[0] == "map":
             children = [signature(_decl) for _decl in decl[1]] # key, value decl
             node = Node(children, before="{", between=": ", after="}")
-        else: # constructor, distinguish normal and record types
+        else: # constructor
             type_name = decl[0]
             args_type = decl[1][0]
             args = decl[1][1]
             if args_type == "list":
                 children = [signature(arg) for arg in args]
-                node = Node(children, before=type_name + "(", between=", ", after=")")
             else: 
                 assert args_type == "map"
                 children = [signature(arg) for _, arg in args]
-                node = Node(children, before=type_name + "(", between=", ", after=")")
+            node = Node(children, before=type_name + "(", between=", ", after=")")
     return node
 
 

@@ -7,12 +7,14 @@ except ImportError:
     import __builtin__ as builtins
 import collections
 import inspect
+import pydoc
 
 # Third-Party Libraries
 import pkg_resources
 
 # Pandoc
 import pandoc.utils
+from pandoc.utils import signature
 
 # Metadata
 # ------------------------------------------------------------------------------
@@ -52,17 +54,18 @@ def annotate(exception, message):
     args[0] = message + args[0]
     return exception_type(*args)     
 
-# TODO: custom pandoc.TypeError with messages listed simply internally
-#       and a special repr that does the formatting?
-
+# TODO: recognize summary / details in messages & format accordingly?
+#       Like, i don't know, *indent* the details?
+#       recognize them like pydoc would do it? 
 class TypeError(builtins.TypeError):
     def __init__(self, message):
         self.messages = []
         self.log(message)
     def log(self, message):
         message = inspect.cleandoc(message)
-        if not message.endswith("\n"):
-            message += "\n"
+        summary, details = pydoc.splitdoc(message)
+        message = summary.strip() + "\n" + \
+                  "\n".join(4*" " +  line for line in details.splitlines())
         self.messages = [message] + self.messages
         self.args = ("\n".join(self.messages),)
 
@@ -75,135 +78,63 @@ def place(i):
     else:
         return "{0}th".format(i + 1)
 
-# Note: split "location" feature and production of the output?
-#       the location should belong to utils probably.
-#       Make signature_repr keep track of the locations when
-#       it builds stuff? But how do we indicate the item we
-#       are interested with? It's always a direct children?
-#       Mmmm no it isn't when primitive types are nested ...
-#       So, are we dealing with "paths", sequences of numbers
-#       to be interpreted in a given signature context?
-def invalid_argument(type_signature, i):
-    # TODO: manage tuples and maps (list we can't do? :()
-    # TODO: manage record types
-    type_name = type_signature[0]
-    kind, sub_types = type_signature[1]
-    sig_repr = type_name + "("
-    j = i
-    while j < i:
-       sig_repr += sr(sub_types[j]) + ", "
-       j += 1
-    start = len(sig_repr)
-    output = sr(type_signature) + "\n" + \
-    start * " " + len(sr(sub_types[i])) * "^"
-    return output
+def invalid_argument(type_decl, i):
+    sig = signature(type_decl)
+    start, end = sig.locate(i)
+    return str(sig) + "\n" + " " * start + "^" * (end - start) 
 
 def check_args(args, type, full=True):
     type_signature = type._def
     type_signature_repr = sr(type_signature)
     type_name = type_signature[0]
-    kind, sub_types = type_signature[1]
-    if kind == "list": # classic type
-        if len(args) != len(sub_types):
-            if len(sub_types) == 0:
-                message = "{type_name}(...) takes no argument".format(**locals())
-            elif len(sub_types) == 1:
-                message = "{type_name}(...) takes exactly 1 argument".format(**locals())
-            else:
-                message = "{type_name}(...) takes exactly {0} arguments".format(len(sub_types), **locals())
-            message += " ({0} given)".format(len(args))
-            message += "\n\n"
-            message += "signature: " + type_signature_repr
-            raise TypeError(message)
-        for i, (arg, sub_type) in enumerate(zip(args, sub_types)):
-            try:
-                check(arg, sub_type, full=full)
-            except TypeError as error:
-                # NOTA: the "instead of" is a bit strong in some cases:
-                # for example it may state that "the 1st argument is
-                # a tuple instead of a Attr" ... which is misleading.
-                # We should probably generally delegate the type error
-                # message to the low-level and only insist on signature
-                # and place here ? Could we print the signature and
-                # HIGHLIGHT the argument that sucks only?
-                summary = "invalid argument in {type_name}(...) ({0} place)."
-                summary = summary.format(place(i), type_name=type_name)
-#                details  = "In {0}, "
-#                details += "the {1} argument is a {2} instead of a {3}."
-                details = invalid_argument(type_signature, i)
-#                details  = details.format(type_signature_repr, place(i), builtins.type(arg).__name__, sr(sub_type))                 
-                error.log(summary + "\n\n" + details)                
-                raise
-    elif kind == "map": # record type
-        key_value_types = sub_types
-        sub_types = [key_value[1] for key_value in key_value_types]
-        if len(args) != len(key_value_types):
-            message  = "\n"
-            message += "  - error in {0}:\n"
-            message += "    {1} argument(s) ({2} expected)\n"
-            message  = message.format(sr(type_signature), len(args), len(sub_types))
-            message += "    arguments: {0!r}\n".format(args)
-            message += "    should be: {0!r}".format(tuple(sr(x) for x in sub_types))
-            raise TypeError(message)
-        for i, (arg, sub_type) in enumerate(zip(args, sub_types)):
-            try:
-                check(arg, sub_type, full=full)
-            except TypeError as error:
-                message  = "\n"
-                message += "  - error in {0}:\n".format(sr(type_signature)) 
-                message += "    invalid argument #{0}\n".format(i+1)
-                message += "    argument: {0!r}\n".format(arg)
-                message += "    should be: {0!r}".format(sub_type)                
-                error.log(message)
-                raise
+    kind, type_args = type_signature[1]
+    if kind == "map": # record type, get rid of the type arguments name
+        type_args = [type_arg for key, type_arg in type_args]
 
-def check(instance, type, full=True): 
-    
-    # type is either a type or a type signature.
+    # Check the number of arguments
+    if len(args) != len(type_args):
+        if len(type_args) == 0:
+            summary = "{type_name}(...) takes no argument"
+            summary = summary.format(type_name=type_name)
+        elif len(type_args) == 1:
+            summary = "{type_name}(...) takes exactly 1 argument"
+            summary = summary.format(type_name=type_name)
+        else:
+            summary = "{type_name}(...) takes exactly {0} arguments"
+            summary = summary.format(len(type_args), type_name=type_name)
+        summary += " ({0} given).".format(len(args))
+        details = "signature: " + type_signature_repr
+        message = summary + "\n\n" + details
+        raise TypeError(message)
 
-    # WRT the default: full=True is simpler. The user could live without
-    # full=False, not without full=True ...
+    # Check the arguments type
+    for i, (arg, type_arg) in enumerate(zip(args, type_args)):
+        try:
+            check(arg, type_arg, full=full)
+        except TypeError as error:
+            summary = "invalid argument in {type_name}(...) ({0} place)."
+            summary = summary.format(place(i), type_name=type_name)
+            details = invalid_argument(type_signature, i)
+            message = summary + "\n\n" + details               
+            error.log(message)                
+            raise
 
-    # 'recursive' or 'full' ? Accept True/Number/False?
-    # 'depth' instead? Use "total" (vs partial ?)
-
-    # accept "no type" ? Would make SOME sense to check a pandoc type ...
-    # But then maybe that's what the method would be for ? And then
-    # what would be the interaction with full? If the check is totally
-    # shallow, this is stupid (equivalent to isinstance). So in this
-    # case, shallow would be "one depth level" and full the usual?
-    # Beuah, dunno, then the difference of behavior between the function
-    # and the method would be hard to explain. UNLESS we only advertise
-    # the method?
-
-    # TODO: type is either:
-    #
-    #  1. a Data type (abstract) 
-    #  2. a Constructor type
-    #  3. a TypeDef type
-    #  4. a Primitive type 
-    #  
-    # To check 4, we rely on isinstance.
-    # To check 1, we check that we have an instance
-    # that is derived from the abstract data type, 
-    # then we call typecheck again with the same instance 
-    # but the constructor type.
-    # To check 2, we check with instance, check every
-    # argument vs the part of the signature for it.
-    # The check for 3 is similar, we have a single argument
-    # and a signature.
-    # So the crux of this is to check and arguments vs
-    # a signature made of lists, maps, tuples and names that
-    # refer to types. For these names, we get the type
-    # and perform a shallow (isinstance-based) check if not
-    # recursive or ... nothing for typedefs? Or ... what?
-    # full for typedefs? Dunno. Well it's probably easier
-    # to recurse everything but Pandoc types.
-
+def check(instance, type, full=True):
+    # TODO: for all recursive check, try/catch & augment the error message
     if isinstance(type, str): # simple type signature
         type_name = type
         type = _types_dict[type_name]
-        check(instance, type)
+        try:
+            check(instance, type)
+        except TypeError as error:
+            message = "{0!r} is not an instance of {1}"
+            message = message.format(instance, type_name)
+            if type_name != type.__name__:
+              details = "Pandoc {0!r} type is Python {1!r} type"
+              details = details.format(type_name, type.__name__)
+              message += "\n\n" + details
+            error.log(message)
+            raise
     elif isinstance(type, list): # complex type signature
         type_signature = type
         decl_type = type_signature[0]
@@ -232,45 +163,52 @@ def check(instance, type, full=True):
                 error = "{0!r} is not a tuple".format(instance)
                 raise TypeError(error)
             if not len(item_types) == len(instance):
-                error  = "expecting a tuple of {0} items (found {1})\n"
-                error  = error.format(len(item_types), len(instance)) 
-                error += "expected: {0!r}\n".format(item_types)
-                error += "got:      {0!r}".format(instance)
-                raise TypeError(error)
+                summary = "expecting a tuple of {0} items (found {1})"
+                summary = summary.format(len(item_types), len(instance)) 
+                details = "expected: {0!r}\n".format(item_types)
+                details += "got:      {0!r}".format(instance)
+                raise TypeError(summary + "\n\n" + details)
             for item, item_type in zip(instance, item_types):
                 check(item, item_type)
         elif decl_type == "map":
             key_type, value_type = type_signature[1]           
             if not isinstance(instance, dict):
-                error = "expected a dict (got a {0!r})\n"
-                error = error.format(builtins.type(instance))
-                error += "got: " + repr(instance)
-                raise TypeError(error)
-            for key, value in instance.items():
-                check(key, key_type)
-                check(value, value_type)
-        else: # constructor
+                summary = "expected a dict (got a {0!r})"
+                summary = summary.format(builtins.type(instance).__name__)
+                details = "got: " + repr(instance)
+                raise TypeError(summary + "\n\n" + details)
+            for i, (key, value) in enumerate(instance.items()):
+                try:
+                    check(key, key_type)
+                except TypeError as error:
+                  summary = "invalid key in {map} ({0} place)."
+                  summary = summary.format(place(i), map=signature(type_signature))
+                  error.log(summary)
+                  raise
+                try:
+                    check(value, value_type)
+                except TypeError as error:
+                  summary = "invalid value in {map} ({0} place)."
+                  summary = summary.format(place(i), map=signature(type_signature))
+                  error.log(summary)
+                  raise
+        else: # constructor 
             constructor_type = _types_dict[type_signature[0]]
             if not isinstance(instance, constructor_type):
-                error = "\n  - {0!r} is not an instance of {1}"
+                error = "{0!r} is not an instance of {1}"
                 error = error.format(instance, constructor_type.__name__)
                 raise TypeError(error)
             check_args(instance[:], constructor_type, full=full)
-    elif builtins.type(type) is builtins.type: # type, not type signature
+    elif builtins.type(type) is builtins.type: # type, not type decl
         if issubclass(type, Type): # Pandoc type
-            check(instance, type._def) # check against type signature
+            check(instance, type._def) # check against type decl
         else: # Primitive type
           if not isinstance(instance, type):
-            error = "\n  - {0!r} is not an instance of {1}"
+            error = "{0!r} is not an instance of {1}"
             error = error.format(instance, type.__name__)
             raise TypeError(error)
-
     else:
-       pass
-       # should not happen ... but do we raise a TypeError?
-       # That would conflate a user mistake and a negative check ...
-       # Or we can return ValueErrors for check (urk!) or a specific
-       # pandoc.Typeerror derived stuff ...
+       raise builtins.TypeError() # TODO: details here.
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------

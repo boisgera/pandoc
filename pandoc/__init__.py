@@ -16,6 +16,30 @@ from . import utils
 from . import types
 
 
+# TODO: target 2.0 milestone, that supports up to pandoc 2.0
+#
+#  - pandoc / pandoc-types version API (connected to type creation
+#    and serialization scheme). How do I find the pandoc-types version
+#    given a version of pandoc? Need to get the cabal files from the
+#    sources and make a script similar to what I did for the type decls?
+#
+#  - pandoc executable API (connect with version API)
+#
+#  - reader and writer for more than JSON (Markdown, HTML, etc.)
+#
+#  - test new JSON scheme completely (need a harness with arbitrary 
+#    pandoc executable version)
+#
+#  - error management/messages in type checking. MAYBE ROLLBACK THIS
+#    ATM (needs a great effort) and make a branch that will land in
+#    3.0 ? Or 2.1 whatever ...
+#
+#  - documentation (mkdocs): START ! Will make the public API design
+#    issues easier (maybe)
+#
+#  - reconsider "main".
+
+
 # JSON Reader
 # ------------------------------------------------------------------------------
 def read(json_, type_=types.Pandoc):
