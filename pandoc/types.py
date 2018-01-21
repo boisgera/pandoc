@@ -1,6 +1,7 @@
 
 # Python 2.7 Standard Library
 from __future__ import absolute_import, print_function
+import builtins
 import collections
 
 # Third-Party Libraries
@@ -12,20 +13,6 @@ import pandoc.utils
 # Metadata
 # ------------------------------------------------------------------------------
 version = "1.16"
-
-# Haskell Primitives & Containers
-# ------------------------------------------------------------------------------
-Bool = bool
-Double = float
-Int = int
-try:
-    String = unicode
-except NameError:
-    String = str
-list = list
-tuple = tuple
-map = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
-
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
@@ -73,6 +60,20 @@ class TypeDef(Type):
 
 _types_dict = {}
 
+def _make_builtin_types()
+    "Create Builtin Types"
+    td = _types_dict
+    td["Bool"] = bool
+    td["Double"] = float
+    td["Int"] = int
+    try:
+        td["String"] = unicode
+    except NameError:
+        td["String"] = str
+    td["list"] = list
+    td["tuple"] = tuple
+    td["map"] = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
+
 def make_types(version=version):
     """Create Pandoc Types"""
 
@@ -86,6 +87,9 @@ def make_types(version=version):
     for type_name in _types_dict:
       del globs[type_name]
     _types_dict = {}
+
+    # Create builtin types
+    _make_builtin_types()
 
     # Load & parse the types definition
     defs_path = "definitions/{0}.hs".format(version)
