@@ -15,7 +15,6 @@ import pkg_resources
 
 # Pandoc
 import pandoc.utils
-from pandoc.utils import signature
 
 # Metadata
 # ------------------------------------------------------------------------------
