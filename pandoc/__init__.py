@@ -50,7 +50,10 @@ from . import types
 #     this version since the new JSON stuff is introduced in pandoc 1.18
 #     which corresponds EXACTLY to the intriduction of pandoc-types 1.17.
 #     Nice ...
-
+#
+#   - Q: do we allow "version configuration via read" in the case of an
+#     input json that has a API version? Mmm dunno, I don't like this
+#     idea very much.
 
 # TODO: target 2.0 milestone, that supports up to pandoc 2.0
 #
