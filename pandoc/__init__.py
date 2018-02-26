@@ -16,6 +16,42 @@ from . import utils
 from . import types
 
 
+# TODO: Versions / Configuration
+# ------------------------------------------------------------------------------
+#
+#   - Here, in the __init__ file: make a configure function so that we can
+#       - find the pandoc in the path (see e.g. plumbum) (if it's available)
+#       - set explicitely the pandoc path (if installed)
+#       - specify a version (then pandoc is presumed not installed).
+#     returns the conf: a dict with "auto", "path", "version" keys
+#     (version is always set -- computed if needed, auto is True/False
+#     and path is a string or None if not installed)
+#     configure without arguments doesn't change a thing, just returns
+#     the current config.
+#     Mmmm what's happening if configure is not called explicitly?
+#     We default to the "auto" strategy ?
+#     Or we don't do shit until read and/or write is called and then
+#     we try auto (if nothing is done yet) and fail loudly if needed.
+#
+#   - Sort the different scripts to generate a unique JSON package data with:
+#      - a "pandoc-version-to-pandoc-types-version-requirements" mapping
+#      - a "pandoc-types-version-to-definitions" mapping
+#
+#   - delegate the current pkg_version stuff to utils (more consistent).
+#     Extend utils with a "requirement solver" that find a version of
+#     pandoc.types that matches the pandoc version requirement.
+#
+#   - configure just uses this stuff (the resolvent) to find the pandoc-types
+#     version and calls the pandoc.types module to configure it appropriately.
+#     Do we store the pandoc-types version somewhere? Not sure the user
+#     wants to know anything about it, but we need it if we generate some
+#     json for a recent pandoc anyway ... So yeah, ADD A FOURTH ELEMENT TO
+#     THE CONFIGURATION DICT! Yeah, right. And we could get away with only
+#     this version since the new JSON stuff is introduced in pandoc 1.18
+#     which corresponds EXACTLY to the intriduction of pandoc-types 1.17.
+#     Nice ...
+
+
 # TODO: target 2.0 milestone, that supports up to pandoc 2.0
 #
 #  - pandoc / pandoc-types version API (connected to type creation
@@ -37,7 +73,7 @@ from . import types
 #  - documentation (mkdocs): START ! Will make the public API design
 #    issues easier (maybe)
 #
-#  - reconsider "main".
+#  - reconsider "main"?
 
 
 # JSON Reader
