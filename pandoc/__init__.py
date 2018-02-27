@@ -123,7 +123,7 @@ def write(*args, **kwargs):
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         return write1(*args, **kwargs)
     else:
-        return write1(*args, **kwargs)
+        return write2(*args, **kwargs)
 
 # JSON Reader v1
 # ------------------------------------------------------------------------------
