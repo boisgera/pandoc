@@ -2,11 +2,62 @@
 # Python 2.7 Standard Library
 from __future__ import absolute_import
 from __future__ import print_function
+import json
 
-# PLY
+# Third-Party Libraries
+import pkg_resources
 import ply.lex as lex
 import ply.yacc as yacc
 
+
+# Pandoc-Types Version Mapping and Type Info
+# ------------------------------------------------------------------------------
+_json_data = pkg_resources.resource_string("pandoc", "pandoc-types.js")
+if not isinstance(_json_data, str): # resource loaded as bytes in Python 3
+    _json_data = _json_data.decode("utf-8")
+_data = json.loads(_json_data)
+version_mapping = _data["version_mapping"]
+definitions = _data["definitions"]
+ 
+
+# Pandoc-Types Version Resolver
+# ------------------------------------------------------------------------------
+def version_key(string):
+    return [int(s) for s in string.split(".")]
+
+def match(spec, version):
+    if len(spec) == 0 or (len(spec) >= 1 and isinstance(spec[0], list)):
+        return all(match(s, version) for s in spec)
+    elif spec[0] == '==':
+        if "*" in spec[1]:
+            vk_low = version_key(spec[1][:-2])
+            vk_high = vk_low.copy()
+            vk_high[-1] += 1
+            return match([['>=', '.'.join(p for p in vk_low )], 
+                          ['<' , '.'.join(p for p in vk_high)]],
+                         version)
+        else:
+            return spec[1] == version
+    elif spec[0] == '>=':
+        return version_key(version) >= version_key(spec[1])
+    elif spec[0] == '<':
+        return version_key(version) < version_key(spec[1])
+    else:
+        raise ValueError("invalid version spec {0}".format(spec))
+
+def resolve(version):
+    try:
+        pt_spec = version_mapping[version]
+    except KeyError:
+        error = "pandoc {0} is not registered"
+        raise ValueError(error.format(version))
+    pandoc_types_versions = sorted(definitions.keys(), key=version_key)
+
+    matches = []
+    for pt_version in pandoc_types_versions:
+        if match(pt_spec, pt_version):
+            matches.append(pt_version)
+    return matches
 
 # Lexer
 # ------------------------------------------------------------------------------
@@ -169,6 +220,7 @@ def p_error(p):
 
 parser = yacc.yacc(debug=0, write_tables=0)
 
+
 # Type Declarations
 # ------------------------------------------------------------------------------
 def split(src):
@@ -185,6 +237,8 @@ def split(src):
     return type_decls
 
 def parse(src):
+    if not isinstance(src, str): # unicode in Python 2
+        src = str(src)
     return [parser.parse(type_decl) for type_decl in split(src)]
 
 def docstring(decl):
