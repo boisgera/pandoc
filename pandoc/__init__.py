@@ -178,7 +178,18 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       And then the bytes vs unicode policy is clear.
 #       And I don't need to tweak encoding settings in plumbum since I
 #       will use files for input and output anyway.
+#
+#       OK, so it's probaly safe to consider a shortlist of "binary" formats
+#       that are "doc*", "epub*", "ppt*", "odt" and to return bytes only
+#       for these formats.
+#
+#       And yes, working directly with filenames/files should work out
+#       of the box, and yes, NOT using files should be ok too (and is
+#       still my preferences: it should be simpler; if you need files,
+#       use a proper keyword argument).
 
+
+# TODO: add optional input parameter (for filenames or files?) 
 def read(source, format=None, *options):
     if _configuration is None:
         configure()
@@ -198,6 +209,7 @@ def read(source, format=None, *options):
     else:
         return read_json_v2(json_)
 
+# TODO: add optional output parameter (for filenames or files?) 
 def write(doc, format=None, *options):
     if _configuration is None:
         configure()
