@@ -201,11 +201,13 @@ def read(source=None, input=None, format=None, *options):
         if not hasattr(input, 'read'):
             input = open(input, 'rb')
         source = input.read()
+    else:
+        if input is not None:
+            raise ValueError("source or input should be defined, not both.")
 
     tmp_dir = tempfile.mkdtemp()
     output_path = os.path.join(tmp_dir, 'output.js')          
 
-    # TODO: ATM if source is defined, input is silently ignored.
     if not isinstance(source, str):
         source = source.encode('utf-8')
     input_path = os.path.join(tmp_dir, 'input')
