@@ -146,6 +146,8 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       markdown: to get it properly processed, pandoc REQUIRES utf-8.
 #       So, distinguish, markdown, latex and html as "source formats" and
 #       use unicode for them? And bytes for the others?
+#       What is the list? There is also ReST? How to get it automatically?
+#       Try to trap the error? (Assuming the error message are stable?)
 #       UPDATE: OK, I have configured plumbum to always use utf-8 when
 #       there is some conversion to be made between unicode and bytes.
 #       BUT how can I deal with stuff (in or out) that are BYTES that
