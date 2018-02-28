@@ -148,6 +148,18 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       use unicode for them? And bytes for the others?
 #       What is the list? There is also ReST? How to get it automatically?
 #       Try to trap the error? (Assuming the error message are stable?)
+#       Nota: from the pandoc source code, ATM, "non-text formats" are
+#        ["odt","docx","epub2","epub3","epub","pptx"]
+#       But the non-text format categorization is used for OUTPUTS only,
+#       what about inputs? OK, there is a classification into StringReader
+#       (text sources) and ByteStringReader. For the latter, piping is not
+#       accepted. So where is the list of the types of readers?
+#       Grepping the sources leads to "docx", "odt" and "epub". OK then.
+#       Am I really willing to hardcode all this stuff, or shall I return
+#       bytes and let the user decide what to do with it? For INPUTS,
+#       I can still accept unicode and convert to utf-8 seemlessly, the
+#       question is: what to do for outputs? Only return unicode for markdown?
+#       (that has no encoding metadata)? Dunno ...
 #       UPDATE: OK, I have configured plumbum to always use utf-8 when
 #       there is some conversion to be made between unicode and bytes.
 #       BUT how can I deal with stuff (in or out) that are BYTES that
