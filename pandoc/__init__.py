@@ -21,6 +21,15 @@ from . import types
 #
 # TODO: target 2.0 milestone, that supports up to pandoc 2.0
 #
+#  - rethink the UX when configure is NOT called explictly, 
+#    I may import types, but there is nothing in it.
+#    It's only when I do some read/write that the default configure
+#    is called ... Shall I plug a configure() hook into the types
+#    modules, to be called at import time?
+#    (so that you can still import pandoc, configure if needed,
+#    then import types). But then read and write would have to
+#    import types lazily (OK, why not?).
+#
 #  - switch readers/writers (lazily) depending of pandoc_api_version >= 1.17
 #    or not
 #
@@ -60,7 +69,7 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
         try:
             pandoc = plumbum.local['pandoc'] # Encoding issue? pandoc works
             # with utf-8 in and out by construction, but maybe plumbum infers
-            # something different.
+            # something different with the locale?
             found_path = str(pandoc.executable)
         except plumbum.CommandNotFound as error:
             message  = 'cannot find the pandoc program.\n'
@@ -75,8 +84,8 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
             raise ValueError(error.format(found_path, path))
 
     if path is not None:
-        # if the path invalid, will fails with OSError *when called*
-        pandoc = plumbum.machines.LocalCommand(path)
+        # TODO: manage invalid path
+        pandoc = plumbum.local[path]
         found_version = pandoc('--version').splitlines()[0].split(' ')[1]
         if version is None:
             version = found_version
@@ -89,7 +98,8 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
         found_pandoc_types_versions = utils.resolve(version)
         if pandoc_types_version is None:
             if len(found_pandoc_types_versions) >= 1:
-                pandoc_types_version = found_pandoc_types_versions[0]
+                # pick latest (ignore the real one that may be unknown)
+                pandoc_types_version = found_pandoc_types_versions[-1]
             else:
                 error  = 'cannot find a version of pandoc-types '
                 error += 'matching pandoc {0}' 
@@ -113,21 +123,64 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 
 # JSON Reader / Writer
 # ------------------------------------------------------------------------------
-def read(*args, **kwargs):
-    if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
-        return read1(*args, **kwargs)
-    else:
-        return read2(*args, **kwargs)
 
-def write(*args, **kwargs):
+# Break compat? Read consumes markdown only? Bump major version number then.
+# Yay, worth it.
+# 
+# TODO: optional input or output FILES or FILENAMES in read/write? Dunno.
+#       Think about it. The NAMES read and write seem to imply it ...
+#       But the filesystem stuff is orthogonal really ...
+#       However, for a ".doc" output for example, writing it as a string
+#       is *probably* useless. 
+# TODO: Study also the str vs bytes stuff: we don't want encoding stuff 
+#       mixed in when we produce a word document, just BYTES. 
+#       For Markdown OTOH, unicode repr is the right abstraction.
+#       What to do for latex, html docs? Bytes or Unicode?
+#       FYI, Pandoc is using DECLARING utf-8 encoding for both in standalone
+#       mode, so if you write these standalone outputs, you SHALL use utf-8 ...
+#       Otherwise, well, I don't know ... but it's pretty much the same for
+#       markdown: to get it properly processed, pandoc REQUIRES utf-8.
+#       So, distinguish, markdown, latex and html as "source formats" and
+#       use unicode for them? And bytes for the others?
+def read(source, format=None, *options):
+    if _configuration is None:
+        configure()
+    if format is None:
+        format = 'markdown'
+    if format != 'json' and _configuration['path'] is None:
+        error = "reading the {0!r} format requires the pandoc program"
+        raise RuntimeError(error.format(format))
+    pandoc = plumbum.local[_configuration['path']]
+    if not isinstance(source, str):
+        source = source.encode('utf-8')
+    options = ['-f', format, '-t', 'json'] + list(options)
+    json_string = ((plumbum.cmd.cat << source) | (pandoc[options]))()
+    json_ = json.loads(json_string)
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
-        return write1(*args, **kwargs)
+        return read_json_v1(json_)
     else:
-        return write2(*args, **kwargs)
+        return read_json_v2(json_)
+
+def write(doc, format=None, *options):
+    if _configuration is None:
+        configure()
+    if format is None:
+        format = 'markdown'
+    if format != 'json' and _configuration['path'] is None:
+        error = "writing the {0!r} format requires the pandoc program"
+    pandoc = plumbum.local[_configuration['path']]
+    if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
+        json_ = write_json_v1(doc)
+    else:
+        json_ = write_json_v2(doc)
+    json_str = json.dumps(json_)
+    options = ['-t', format, '-f', 'json'] + list(options)
+    output = ((plumbum.cmd.cat << json_str) | (pandoc[options]))()
+    return output
 
 # JSON Reader v1
 # ------------------------------------------------------------------------------
-def read1(json_, type_=None):
+def read_json_v1(json_, type_=None):
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
@@ -140,16 +193,16 @@ def read1(json_, type_=None):
 
     if type_[0] == "type": # type alias
         type_ = type_[1][1]
-        return read1(json_, type_)
+        return read_json_v1(json_, type_)
     if type_[0] == "list":
         item_type = type_[1][0]
-        return [read1(item, item_type) for item in json_]
+        return [read_json_v1(item, item_type) for item in json_]
     if type_[0] == "tuple":
         tuple_types = type_[1]
-        return tuple(read1(item, item_type) for (item, item_type) in zip(json_, tuple_types))
+        return tuple(read_json_v1(item, item_type) for (item, item_type) in zip(json_, tuple_types))
     if type_[0] == "map":
         key_type, value_type = type_[1]
-        return types.map([(read1(k, key_type), read1(v, value_type)) for (k, v) in json_.items()])
+        return types.map([(read_json_v1(k, key_type), read_json_v1(v, value_type)) for (k, v) in json_.items()])
 
     data_type = None
     constructor = None
@@ -178,26 +231,26 @@ def read1(json_, type_=None):
             json_args = json_["c"]
         if single_constructor_argument:
             json_args = [json_args]
-        args = [read1(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
+        args = [read_json_v1(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
     else:
         keys = [k for k,t in constructor[1][1]]
         types_= [t for k, t in constructor[1][1]]
         json_args = [json_[k] for k in keys]
-        args = [read1(jarg, t) for jarg, t in zip(json_args, types_)]
+        args = [read_json_v1(jarg, t) for jarg, t in zip(json_args, types_)]
     C = getattr(types, constructor[0])
     return C(*args)
 
 
 # JSON Writer v1
 # ------------------------------------------------------------------------------
-def write1(object_):
+def write_json_v1(object_):
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):
         if isinstance(object_, (list, tuple)):
-            json_ = [write1(item) for item in object_]
+            json_ = [write_json_v1(item) for item in object_]
         elif isinstance(object_, dict):
-            json_ = odict((k, write1(v)) for k, v in object_.items())
+            json_ = odict((k, write_json_v1(v)) for k, v in object_.items())
         else: # primitive type
             json_ = object_
     else:
@@ -212,7 +265,7 @@ def write1(object_):
             json_["t"] = type(object_).__name__
 
         if not is_record:
-            c = [write1(arg) for arg in object_]
+            c = [write_json_v1(arg) for arg in object_]
             if single_constructor_argument:
                 c = c[0]
             if single_type_constructor:
@@ -222,13 +275,13 @@ def write1(object_):
         else:
             keys = [kt[0] for kt in constructor[1][1]]
             for key, arg in zip(keys, object_):
-                json_[key] = write1(arg)
+                json_[key] = write_json_v1(arg)
     return json_
 
 
 # JSON Reader v2
 # ------------------------------------------------------------------------------
-def read2(json_, type_=None):
+def read_json_v2(json_, type_=None):
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
@@ -241,16 +294,16 @@ def read2(json_, type_=None):
 
     if type_[0] == "type": # type alias
         type_ = type_[1][1]
-        return read2(json_, type_)
+        return read_json_v2(json_, type_)
     if type_[0] == "list":
         item_type = type_[1][0]
-        return [read2(item, item_type) for item in json_]
+        return [read_json_v2(item, item_type) for item in json_]
     if type_[0] == "tuple":
         tuple_types = type_[1]
-        return tuple(read2(item, item_type) for (item, item_type) in zip(json_, tuple_types))
+        return tuple(read_json_v2(item, item_type) for (item, item_type) in zip(json_, tuple_types))
     if type_[0] == "map":
         key_type, value_type = type_[1]
-        return types.map([(read2(k, key_type), read2(v, value_type)) for (k, v) in json_.items()])
+        return types.map([(read_json_v2(k, key_type), read_json_v2(v, value_type)) for (k, v) in json_.items()])
 
     data_type = None
     constructor = None
@@ -274,12 +327,12 @@ def read2(json_, type_=None):
     args = None
     if constructor[0] == "Pandoc":
         # TODO; check API version compat
-        meta = read2(json_["meta"], types.Meta)
-        blocks = read2(json_["blocks"], ["list", ["Block"]])
+        meta = read_json_v2(json_["meta"], types.Meta)
+        blocks = read_json_v2(json_["blocks"], ["list", ["Block"]])
         return types.Pandoc(meta, blocks)
     elif constructor[0] == "Meta":
         type_ = ['map', ['String', 'MetaValue']]
-        return types.Meta(read2(json_, type_)) 
+        return types.Meta(read_json_v2(json_, type_)) 
     elif not is_record:
         if single_type_constructor:
             json_args = json_
@@ -287,26 +340,26 @@ def read2(json_, type_=None):
             json_args = json_.get("c", [])
         if single_constructor_argument:
             json_args = [json_args]
-        args = [read2(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
+        args = [read_json_v2(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
     else:
         keys = [k for k,t in constructor[1][1]]
         types_= [t for k, t in constructor[1][1]]
         json_args = [json_[k] for k in keys]
-        args = [read2(jarg, t) for jarg, t in zip(json_args, types_)]
+        args = [read_json_v2(jarg, t) for jarg, t in zip(json_args, types_)]
     C = getattr(types, constructor[0])
     return C(*args)
 
 
 # JSON Writer v2
 # ------------------------------------------------------------------------------
-def write2(object_):
+def write_json_v2(object_):
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):
         if isinstance(object_, (list, tuple)):
-            json_ = [write2(item) for item in object_]
+            json_ = [write_json_v2(item) for item in object_]
         elif isinstance(object_, dict):
-            json_ = odict((k, write2(v)) for k, v in object_.items())
+            json_ = odict((k, write_json_v2(v)) for k, v in object_.items())
         else: # primitive type
             json_ = object_
     elif isinstance(object_, types.Pandoc):
@@ -315,8 +368,8 @@ def write2(object_):
         blocks = object_[1]
         json_ = odict()
         json_["pandoc-api-version"] = version
-        json_["meta"] = write2(object_[0][0])
-        json_["blocks"] = write2(object_[1])
+        json_["meta"] = write_json_v2(object_[0][0])
+        json_["blocks"] = write_json_v2(object_[1])
     else:
         constructor = type(object_)._def
         data_type = type(object_).__mro__[2]._def
@@ -329,7 +382,7 @@ def write2(object_):
             json_["t"] = type(object_).__name__
 
         if not is_record:
-            c = [write2(arg) for arg in object_]
+            c = [write_json_v2(arg) for arg in object_]
             if single_constructor_argument:
                 c = c[0]
             if single_type_constructor:
@@ -340,7 +393,7 @@ def write2(object_):
         else:
             keys = [kt[0] for kt in constructor[1][1]]
             for key, arg in zip(keys, object_):
-                json_[key] = write2(arg)
+                json_[key] = write_json_v2(arg)
     return json_
     
 
@@ -378,6 +431,8 @@ def get_parent(doc, elt):
 
 # Main Entry Point
 # ------------------------------------------------------------------------------
+
+# TODO: adapt to the new API or remove (?)
 def main():
     prog = "python -m pandoc"
     description = "Read/write pandoc JSON documents with Python"
