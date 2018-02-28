@@ -5,7 +5,10 @@ import argparse
 import collections
 import inspect
 import json
+import os.path
+import shutil
 import sys
+import tempfile
 
 # Third-Party Libraries
 import plumbum
@@ -188,29 +191,49 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       still my preferences: it should be simpler; if you need files,
 #       use a proper keyword argument).
 
-
-# TODO: add optional input parameter (for filenames or files?) 
-def read(source, format=None, *options):
+def read(source=None, input=None, format=None, *options):
     if _configuration is None:
         configure()
+
+    if source is None:
+        if input is None:
+            raise ValueError("source or input should be defined.")
+        if not hasattr(input, 'read'):
+            input = open(input, 'rb')
+        source = input.read()
+
+    tmp_dir = tempfile.mkdtemp()
+    output_path = os.path.join(tmp_dir, 'output.js')          
+
+    # TODO: ATM if source is defined, input is silently ignored.
+    if not isinstance(source, str):
+        source = source.encode('utf-8')
+    input_path = os.path.join(tmp_dir, 'input')
+    input = open(input_path, 'wb')
+    input.write(source)
+    input.close()
+
     if format is None:
         format = 'markdown'
     if format != 'json' and _configuration['path'] is None:
         error = "reading the {0!r} format requires the pandoc program"
         raise RuntimeError(error.format(format))
-    pandoc = plumbum.machines.LocalCommand(_configuration['path'], "utf-8")
-    if not isinstance(source, str):
-        source = source.encode('utf-8')
-    options = ['-f', format, '-t', 'json'] + list(options)
-    json_string = ((plumbum.cmd.cat << source) | (pandoc[options]))()
-    json_ = json.loads(json_string)
+    pandoc = plumbum.machines.LocalCommand(_configuration['path'])
+
+    options  = ['-f', format, '-t', 'json', '-o', output_path] 
+    options += list(options)
+    options += [input_path]
+    json_string = pandoc(options)
+    json_file = open(output_path, "r")
+    json_ = json.load(json_file)
+    shutil.rmtree(tmp_dir)
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         return read_json_v1(json_)
     else:
         return read_json_v2(json_)
 
-# TODO: add optional output parameter (for filenames or files?) 
-def write(doc, format=None, *options):
+# TODO: add optional output parameter (for filenames or files) 
+def write(doc, output=None, format=None, *options):
     if _configuration is None:
         configure()
     if format is None:
