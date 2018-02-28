@@ -30,6 +30,9 @@ from . import types
 #    then import types). But then read and write would have to
 #    import types lazily (OK, why not?).
 #
+#  - study encoding issues and bytes vs unicode representation.
+#
+#
 #  - switch readers/writers (lazily) depending of pandoc_api_version >= 1.17
 #    or not
 #
@@ -85,7 +88,7 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 
     if path is not None:
         # TODO: manage invalid path
-        pandoc = plumbum.local[path]
+        pandoc = plumbum.machines.LocalCommand(path, "utf-8")
         found_version = pandoc('--version').splitlines()[0].split(' ')[1]
         if version is None:
             version = found_version
@@ -132,6 +135,7 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       But the filesystem stuff is orthogonal really ...
 #       However, for a ".doc" output for example, writing it as a string
 #       is *probably* useless. 
+#
 # TODO: Study also the str vs bytes stuff: we don't want encoding stuff 
 #       mixed in when we produce a word document, just BYTES. 
 #       For Markdown OTOH, unicode repr is the right abstraction.
@@ -142,6 +146,25 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       markdown: to get it properly processed, pandoc REQUIRES utf-8.
 #       So, distinguish, markdown, latex and html as "source formats" and
 #       use unicode for them? And bytes for the others?
+#       UPDATE: OK, I have configured plumbum to always use utf-8 when
+#       there is some conversion to be made between unicode and bytes.
+#       BUT how can I deal with stuff (in or out) that are BYTES that
+#       may not be utf-8 stuff?
+#       Also, I forgot to configure cat for utf-8 ... and is cat available
+#       on windows? Use temp files instead, that will solve two issues at
+#       the same time (bytes as input and car availability).
+#       Arf for the output, this is funny: for docx for example,
+#       pandoc (haskell) WONT LET ME USE STDOUT! Which is nice :)
+#       Nota: it won't read it either; so basically it manages differently
+#       the binary formats. Same thing for epub for examples.
+#       The messages are typically "pandoc: Cannot read archive from stdin"
+#       and "Specify an output file using the -o option".
+#       So I have to find a list in pandoc of binary vs text/utf-8 formats.
+#       OR detect the appropriate error at runtime?
+#       And then the bytes vs unicode policy is clear.
+#       And I don't need to tweak encoding settings in plumbum since I
+#       will use files for input and output anyway.
+
 def read(source, format=None, *options):
     if _configuration is None:
         configure()
@@ -150,7 +173,7 @@ def read(source, format=None, *options):
     if format != 'json' and _configuration['path'] is None:
         error = "reading the {0!r} format requires the pandoc program"
         raise RuntimeError(error.format(format))
-    pandoc = plumbum.local[_configuration['path']]
+    pandoc = plumbum.machines.LocalCommand(_configuration['path'], "utf-8")
     if not isinstance(source, str):
         source = source.encode('utf-8')
     options = ['-f', format, '-t', 'json'] + list(options)
@@ -168,7 +191,7 @@ def write(doc, format=None, *options):
         format = 'markdown'
     if format != 'json' and _configuration['path'] is None:
         error = "writing the {0!r} format requires the pandoc program"
-    pandoc = plumbum.local[_configuration['path']]
+    pandoc = plumbum.machines.LocalCommand(_configuration['path'], "utf-8")
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         json_ = write_json_v1(doc)
     else:
