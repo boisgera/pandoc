@@ -12,17 +12,17 @@ A Pythonic Version of Pandoc
 
 [Pandoc] is the "document swiss army knife" made by [John MacFarlane]:
 
-  - a (command-line) tool to convert from one format into another,
+  - a (command-line) tool,
 
-  - a (Haskell) library, used to analyze, create, transform documents,
+  - a (Haskell) library, 
 
-  - a document (meta-)model: a formal specification of what a document *is*.
+  - a document (meta-)model.
 
 If you need to convert some documents from one format into another, 
-the original command-line tool pandoc is probably what you need.
-But if instead you need the more advanced features you may find this 
-library useful (especially if you're proficient in Python but don't 
-know Haskell).
+pandoc-the-command-line tool is what you need.
+But if additionally you need to analyze, create or transform documents,
+you may find this library useful,
+especially if you're proficient in Python but don't know Haskell.
 
 [Pandoc]: http://pandoc.org/
 [John MacFarlane]: http://johnmacfarlane.net/
