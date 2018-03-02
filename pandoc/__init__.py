@@ -191,23 +191,57 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       still my preferences: it should be simpler; if you need files,
 #       use a proper keyword argument).
 
-def read(source=None, input=None, format=None, *options):
+_readers = {
+  ".xhtml"    : "html",
+  ".html"     : "html",
+  ".htm"      : "html",
+  ".md"       : "markdown",
+  ".markdown" : "markdown",
+  ".muse"     : "muse",
+  ".tex"      : "latex",
+  ".latex"    : "latex",
+  ".ltx"      : "latex",
+  ".rst"      : "rst",
+  ".org"      : "org",
+  ".lhs"      : "markdown+lhs",
+  ".db"       : "docbook",
+  ".opml"     : "opml",
+  ".wiki"     : "mediawiki",
+  ".dokuwiki" : "dokuwiki",
+  ".textile"  : "textile",
+  ".native"   : "native",
+  ".json"     : "json",
+  ".docx"     : "docx",
+  ".t2t"      : "t2t",
+  ".epub"     : "epub",
+  ".odt"      : "odt",
+  ".pdf"      : "pdf",
+  ".doc"      : "doc",
+}
+
+def default_reader_name(filename):
+    _, ext = os.path.splitext(filename)
+    return _readers.get(ext)
+
+def read(source=None, file=None, format=None, options=None):
     if _configuration is None:
         configure()
+    if options is None:
+        options = []
 
+    filename = None
     if source is None:
-        if input is None:
-            raise ValueError("source or input should be defined.")
-        if not hasattr(input, 'read'):
-            input = open(input, 'rb')
-        source = input.read()
+        if file is None:
+            raise ValueError("source or file should be defined.")
+        if not hasattr(file, 'read'):
+            filename = file
+            file = open(filename, 'rb')
+        source = file.read()
     else:
-        if input is not None:
-            raise ValueError("source or input should be defined, not both.")
+        if file is not None:
+            raise ValueError("source or file should be defined, not both.")
 
     tmp_dir = tempfile.mkdtemp()
-    output_path = os.path.join(tmp_dir, 'output.js')          
-
     if not isinstance(source, str):
         source = source.encode('utf-8')
     input_path = os.path.join(tmp_dir, 'input')
@@ -215,18 +249,26 @@ def read(source=None, input=None, format=None, *options):
     input.write(source)
     input.close()
 
+    if format is None and filename is not None:
+        format = default_reader_name(filename)
     if format is None:
         format = 'markdown'
     if format != 'json' and _configuration['path'] is None:
         error = "reading the {0!r} format requires the pandoc program"
         raise RuntimeError(error.format(format))
-    pandoc = plumbum.machines.LocalCommand(_configuration['path'])
 
-    options  = ['-f', format, '-t', 'json', '-o', output_path] 
-    options += list(options)
-    options += [input_path]
-    json_string = pandoc(options)
-    json_file = open(output_path, "r")
+    if format == 'json':
+        json_file = open(input_path, "r")
+    else:
+        if _configuration['path'] is None:
+            error = "reading the {0!r} format requires the pandoc program"
+            raise RuntimeError(error.format(format))
+        pandoc = plumbum.machines.LocalCommand(_configuration['path'])
+        output_path = os.path.join(tmp_dir, 'output.js')          
+        options = ['-t', 'json', '-o', output_path] + \
+                  list(options) + ['-f', format, input_path]
+        pandoc(options)
+        json_file = open(output_path, "r")
     json_ = json.load(json_file)
     shutil.rmtree(tmp_dir)
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
@@ -234,23 +276,106 @@ def read(source=None, input=None, format=None, *options):
     else:
         return read_json_v2(json_)
 
-# TODO: add optional output parameter (for filenames or files) 
-def write(doc, output=None, format=None, *options):
+_writers = {    
+  ""          : "markdown",
+  ".tex"      : "latex",
+  ".latex"    : "latex",
+  ".ltx"      : "latex",
+  ".context"  : "context",
+  ".ctx"      : "context",
+  ".rtf"      : "rtf",
+  ".rst"      : "rst",
+  ".s5"       : "s5",
+  ".native"   : "native",
+  ".json"     : "json",
+  ".txt"      : "markdown",
+  ".text"     : "markdown",
+  ".md"       : "markdown",
+  ".muse"     : "muse",
+  ".markdown" : "markdown",
+  ".textile"  : "textile",
+  ".lhs"      : "markdown+lhs",
+  ".texi"     : "texinfo",
+  ".texinfo"  : "texinfo",
+  ".db"       : "docbook",
+  ".odt"      : "odt",
+  ".docx"     : "docx",
+  ".epub"     : "epub",
+  ".org"      : "org",
+  ".asciidoc" : "asciidoc",
+  ".adoc"     : "asciidoc",
+  ".fb2"      : "fb2",
+  ".opml"     : "opml",
+  ".icml"     : "icml",
+  ".tei.xml"  : "tei",
+  ".tei"      : "tei",
+  ".ms"       : "ms",
+  ".roff"     : "ms",
+  ".pptx"     : "pptx",
+  ".xhtml"    : "html",
+  ".html"     : "html",
+  ".htm"      : "html",
+}
+
+def default_writer_name(filename):
+    if filename.endswith(".tei.xml"):
+        filename = filename[:-4]
+    _, ext = os.path.splitext(filename)
+    if len(ext) == 2 and ext[1] in "0123456789":
+        return "man"
+    else:
+        return _writers.get(ext)
+
+def write(doc, file=None, format=None, options=None):
     if _configuration is None:
         configure()
+    if options is None:
+        options = []
+
+    tmp_dir = tempfile.mkdtemp()
+    filename = None
+    if file is not None and not hasattr(file, 'write'):
+        filename = file
+        file = open(filename, 'wb')
+
+    if format is None and filename is not None:
+        format = default_writer_name(filename)
     if format is None:
-        format = 'markdown'
+        format = 'markdown' # instead of html, yep.
     if format != 'json' and _configuration['path'] is None:
         error = "writing the {0!r} format requires the pandoc program"
-    pandoc = plumbum.machines.LocalCommand(_configuration['path'], "utf-8")
+
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         json_ = write_json_v1(doc)
     else:
         json_ = write_json_v2(doc)
     json_str = json.dumps(json_)
-    options = ['-t', format, '-f', 'json'] + list(options)
-    output = ((plumbum.cmd.cat << json_str) | (pandoc[options]))()
+    input_path = os.path.join(tmp_dir, 'input.js')  
+    input = open(input_path, 'wb')
+    input.write(json_str.encode('utf-8'))
+    input.close()
+
+    if format == 'json':
+        output_path = input_path
+    else:
+        pandoc = plumbum.machines.LocalCommand(_configuration['path'])
+        output_path = os.path.join(tmp_dir, 'output')
+        options = ['-t', format, '-o', output_path] + \
+                  list(options) + ['-f', 'json', input_path]
+        pandoc(options)
+
+    output_bytes = open(output_path, 'rb').read()
+    binary_formats = ["doc", "epub", "ppt", "odt"]
+    if any(tag in format for tag in binary_formats):
+        output = output_bytes
+    else: # text format
+        output = output_bytes.decode('utf-8')
+    shutil.rmtree(tmp_dir)
+
+    if file is not None:
+        file.write(output_bytes)
     return output
+
 
 # JSON Reader v1
 # ------------------------------------------------------------------------------
