@@ -12,16 +12,17 @@ A Pythonic Version of Pandoc
 
 [Pandoc] is the "document swiss army knife" made by [John MacFarlane]:
 
-  - a (command-line) tool,
+  - a command-line tool,
 
-  - a (Haskell) library, 
+  - a Haskell library, 
 
   - a document (meta-)model.
 
-If you need to convert some documents from one format into another, 
-pandoc-the-command-line tool is what you need.
+If you only need to convert some documents from one format into another
+(say Markdown to HTML or Markdown to PDF), 
+the command line tool is what you need.
 But if additionally you need to analyze, create or transform documents,
-you may find this library useful,
+you may find this Python library useful,
 especially if you're proficient in Python but don't know Haskell.
 
 [Pandoc]: http://pandoc.org/
@@ -29,7 +30,9 @@ especially if you're proficient in Python but don't know Haskell.
 [Haskell]: https://www.haskell.org/
 [Python]: https://www.python.org/
 
- 1. Create a document. For example, start read a markdown text
+The basic process is the following:
+
+ 1. First, create a document; for example, read a Markdown text
 
         >>> import pandoc
         >>> markdown = "Hello"
@@ -37,7 +40,7 @@ especially if you're proficient in Python but don't know Haskell.
         >>> doc
         Pandoc(Meta(map()), [Para([Str(u'Hello!')])])
 
- 2. Analyze and/or transform the document as you like
+ 2. Then, analyze and/or transform the document as you like
 
         >>> from pandoc.types import *
         >>> para = doc[1][0]
@@ -50,12 +53,12 @@ especially if you're proficient in Python but don't know Haskell.
         >>> doc
         Pandoc(Meta(map()), [Para([Str(u'Hello'), Space(), Str('World')])])
 
- 3. Write the resulting document to markdown
+ 3. Finally, output the new document as Markdown
 
         >>> pandoc.write(doc)
         u'Hello World\n'
 
-    and maybe, generate its HTML version:
+    and optionally, generate its HTML version
 
         >>> pandoc.write(doc, file="doc.html")
         u'<p>Hello World</p>\n'
