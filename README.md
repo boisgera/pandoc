@@ -10,7 +10,8 @@ Pandoc (Python Library)
 A Pythonic Version of Pandoc
 --------------------------------------------------------------------------------
 
-[Pandoc] is the "document swiss army knife" made by [John MacFarlane]:
+[Pandoc] is the "document swiss army knife" made by [John MacFarlane].
+It brings:
 
   - a command-line tool,
 
