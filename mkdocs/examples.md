@@ -67,14 +67,14 @@ And now
     ...         if isinstance(elt, list): 
     ...             if len(elt) > 0 and isinstance(elt[0], Block):
     ...                 children = []
-    ...                 incomment = False
+    ...                 in_comment = False
     ...                 for child in elt[:]:
     ...                     if begin_comment(child):
-    ...                         incomment = True
+    ...                         in_comment = True
     ...                     elif end_comment(child):
-    ...                         incomment = False
+    ...                         in_comment = False
     ...                     else:
-    ...                         if not incomment:
+    ...                         if not in_comment:
     ...                             children.append(child)
     ...                 elt[:] = children
 
