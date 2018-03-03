@@ -1,0 +1,24 @@
+site_name: Pandoc
+
+docs_dir: mkdocs
+
+site_dir: docs
+
+pages:
+  - Overview: index.md
+  - Examples: examples.md
+
+theme: "material" 
+
+markdown_extensions:
+  - admonition
+  - toc(permalink=true)
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+
+repo_name: "pandoc"
+repo_url: "https://github.com/boisgera/pandoc"
+edit_uri: edit/master/mkdocs/
+
+
