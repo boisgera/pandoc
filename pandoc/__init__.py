@@ -244,7 +244,7 @@ def read(source=None, file=None, format=None, options=None):
             raise ValueError("source or file should be defined, not both.")
 
     tmp_dir = tempfile.mkdtemp()
-    if not isinstance(source, str):
+    if not isinstance(source, bytes):
         source = source.encode('utf-8')
     input_path = os.path.join(tmp_dir, 'input')
     input = open(input_path, 'wb')

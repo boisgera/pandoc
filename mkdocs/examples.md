@@ -60,19 +60,20 @@ And now
 
     >>> def ignore_comments(doc):
     ...     for elt in pandoc.iter(doc):
-    ...         if isinstance(elt, list): 
-    ...             if len(elt) > 0 and isinstance(elt[0], Block):
-    ...                 children = []
-    ...                 in_comment = False
-    ...                 for child in elt[:]:
-    ...                     if begin_comment(child):
-    ...                         in_comment = True
-    ...                     elif end_comment(child):
-    ...                         in_comment = False
-    ...                     else:
-    ...                         if not in_comment:
-    ...                             children.append(child)
-    ...                 elt[:] = children
+    ...         if isinstance(elt, list) and len(elt) > 0 and isinstance(elt[0], Block):            
+    ...             children = []
+    ...             in_comment = False
+    ...             for child in elt[:]:
+    ...                 if begin_comment(child):
+    ...                     in_comment = True
+    ...                 elif end_comment(child):
+    ...                     in_comment = False
+    ...                 else:
+    ...                     if not in_comment:
+    ...                         children.append(child)
+    ...             elt[:] = children
+
+Leads to
 
     >>> markdown = """\
     ... Regular text
