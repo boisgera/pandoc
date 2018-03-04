@@ -122,9 +122,9 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
     }
 
     if "pandoc.types" not in sys.modules:
-        import pandoc.types # triggers make_types()
+        from .types import make_types # enough to trigger make_types()
     else:
-        import pandoc.types; pandoc.types.make_types()
+        from .types import make_types; make_types()
 
     return _configuration
 

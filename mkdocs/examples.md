@@ -5,13 +5,13 @@ Examples
     >>> import pandoc
     >>> from pandoc.types import *
 
-    >>> def F(function):
+    >>> def T(function):
     ...     def _f(markdown):
     ...         doc = pandoc.read(markdown)
     ...         _doc = function(doc)
     ...         if _doc is not None:
     ...             doc = _doc
-    ...         return pandoc.write(doc)
+    ...         print(pandoc.write(doc))
     ...     return _f
 
 Uppercase
@@ -23,7 +23,7 @@ Uppercase
     ...             elt[0] = elt[0].upper()
  
 
-    >>> print(F(capitalize)("I can't feel my legs"))
+    >>> T(capitalize)("I can't feel my legs")
     I CAN'T FEEL MY LEGS
     <BLANKLINE>
 
@@ -83,7 +83,7 @@ And now
     ... <!-- END COMMENT -->
     ... Moar regular text
     ... """
-    >>> print(F(ignore_comments)(markdown))
+    >>> T(ignore_comments)(markdown)
     Regular text
     <BLANKLINE>
     Moar regular text
