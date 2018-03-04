@@ -9,7 +9,7 @@ metadata = dict(
   __summary__  = "Pandoc Documents for Python",
   __keywords__ = """
                  software development, topic / text processing, 
-                 python / 2, python / 3,
+                 python / 2.7, python / 3.6,
                  stable
                  """
 )
