@@ -16,7 +16,6 @@ import plumbum
 # Pandoc
 from .about import *
 from . import utils
-from . import types
 
 
 # TODO / Roadmap
@@ -59,12 +58,12 @@ from . import types
 
 # Configuration
 # ------------------------------------------------------------------------------
-_configuration = None
+_configuration = None # TODO: public API for this?
 
 def configure(auto=None, path=None, version=None, pandoc_types_version=None):
     global _configuration
 
-    # Default configuration: set auto to `True`.
+    # In the default configuration, we set auto to `True`.
     if auto is None and \
        path is None and \
        version is None and \
@@ -115,14 +114,17 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
             error += 'but it doesn\'t match pandoc_types_version={1!r}.'
             raise ValueError(error.format(version, pandoc_types_version))
 
-    types.make_types(pandoc_types_version)
-
     _configuration = {
       'auto': auto, 
       'path': path, 
       'version': version, 
       'pandoc_types_version': pandoc_types_version
     }
+
+    if "pandoc.types" not in sys.modules:
+        import pandoc.types # triggers make_types()
+    else:
+        import pandoc.types; pandoc.types.make_types()
 
     return _configuration
 
@@ -191,6 +193,8 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
 #       still my preferences: it should be simpler; if you need files,
 #       use a proper keyword argument).
 
+# TODO: add ".py" / Python support
+
 _readers = {
   ".xhtml"    : "html",
   ".html"     : "html",
@@ -224,8 +228,6 @@ def default_reader_name(filename):
     return _readers.get(ext)
 
 def read(source=None, file=None, format=None, options=None):
-    if _configuration is None:
-        configure()
     if options is None:
         options = []
 
@@ -275,6 +277,8 @@ def read(source=None, file=None, format=None, options=None):
         return read_json_v1(json_)
     else:
         return read_json_v2(json_)
+
+# TODO: add ".py" / Python support
 
 _writers = {    
   ""          : "markdown",
@@ -380,6 +384,7 @@ def write(doc, file=None, format=None, options=None):
 # JSON Reader v1
 # ------------------------------------------------------------------------------
 def read_json_v1(json_, type_=None):
+    import pandoc.types as types
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
@@ -443,6 +448,7 @@ def read_json_v1(json_, type_=None):
 # JSON Writer v1
 # ------------------------------------------------------------------------------
 def write_json_v1(object_):
+    import pandoc.types as types
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):
@@ -481,6 +487,7 @@ def write_json_v1(object_):
 # JSON Reader v2
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
+    import pandoc.types as types
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
@@ -552,6 +559,7 @@ def read_json_v2(json_, type_=None):
 # JSON Writer v2
 # ------------------------------------------------------------------------------
 def write_json_v2(object_):
+    import pandoc.types as types
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):

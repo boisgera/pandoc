@@ -14,11 +14,9 @@ import pydoc
 import pkg_resources
 
 # Pandoc
+import pandoc
 import pandoc.utils
 
-# Metadata
-# ------------------------------------------------------------------------------
-version = "1.16"
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
@@ -80,13 +78,18 @@ def _make_builtin_types():
     td["tuple"] = tuple
     td["map"] = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
 
-def make_types(version=version):
+def make_types():
     """Create Pandoc Types"""
 
     global _types_dict
     globs = globals()
 
-    # Update the module version
+    # Get the pandoc types version
+    if pandoc._configuration is None:
+        pandoc.configure()
+    version = pandoc._configuration['pandoc_types_version']
+
+    # Update the module version # Q: Keep this? Redundant and not in sync?
     globs["version"] = version
 
     # Uninstall the types from the previous call
@@ -130,4 +133,4 @@ def make_types(version=version):
     # Install the types
     globs.update(_types_dict)
 
-
+make_types()
