@@ -8,6 +8,7 @@ pages:
   - Overview: index.md
   - Examples: examples.md
   - Configuration: configuration.md
+  - API Reference: api.md
 
 theme: "material" 
 
