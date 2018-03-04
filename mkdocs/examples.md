@@ -124,6 +124,9 @@ Theorems
 Convert divs with class="theorem" to LaTeX theorem environments in LaTeX output,
 and to numbered theorems in HTML output.
 
+**TODO:** to HTML version. Also export to LaTeX and HTML to see the outputs?
+Can it be done with an option to the `T` function?
+
 **TODO:** think of some support for visitor patterns? 
 We see a lot of "do this in-place if this condition is met". 
 Or can we use the basic pandoc map/filter? Dunno. Think of it.
