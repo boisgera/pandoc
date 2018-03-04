@@ -2,11 +2,7 @@
 Examples
 ================================================================================
 
-**TODO:** there is an issue here with the pandoc.types import *:
-the configure stuff has NOT been called yet, so the types just ain't there ...
-Im solving the stuff manually here, but the process should be addressed
-
-    >>> import pandoc; _ = pandoc.configure()
+    >>> import pandoc
     >>> from pandoc.types import *
 
     >>> def F(function):
