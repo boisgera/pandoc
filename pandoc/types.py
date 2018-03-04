@@ -17,6 +17,14 @@ import pkg_resources
 import pandoc
 import pandoc.utils
 
+# TODO
+# ------------------------------------------------------------------------------
+# Study a metaclass that would display the type definition with __repr__?
+# Would avoid the call for help which is noisy, or needing to search for
+# an attribute inside the type. Maybe that would be an issue for abstract
+# types (the definition may be long), but at least it would be nice for
+# the other types.
+
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
