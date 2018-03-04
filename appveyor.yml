@@ -10,7 +10,7 @@ install:
   - cmd: cd c:\projects\pandoc
         
 build_script:
-  - cmd: pip install --target=.lib --ignore-installed 'about>=5.1,<6'
+  - cmd: pip install --target=".lib" --ignore-installed 'about>=5.1,<6'
   - cmd: pip install pyyaml
   - cmd: python setup.py install
   - cmd: python test.py
