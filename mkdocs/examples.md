@@ -32,6 +32,33 @@ OR maybe this is to be expected? A doc DOES END with a newline?
 See what pandoc does about this.
 
 
+De-emphasize
+--------------------------------------------------------------------------------
+
+**TODO:** think of the pattern: if something matches a condition, 
+          replace it with something (and stop the iteration in this
+          branch? Or iterate on the new object?). 
+          Pandoc-filters has the ability to let the 
+          "atomic transformation" control the rest of the iteration
+          by calling walk. See how this is done, study walk.
+         
+
+
+    >>> def capitalize(doc):
+    ...     for elt in pandoc.iter(doc):
+    ...         if isinstance(elt, Str):
+    ...             elt[0] = elt[0].upper()
+ 
+
+    >>> T(capitalize)("I can't feel my legs")
+    I CAN'T FEEL MY LEGS
+    <BLANKLINE>
+
+**TODO:** extra NEWLINE in the output, solve this.
+OR maybe this is to be expected? A doc DOES END with a newline?
+See what pandoc does about this.
+
+
 
 Comments
 --------------------------------------------------------------------------------

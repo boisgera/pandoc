@@ -17,14 +17,6 @@ import pkg_resources
 import pandoc
 import pandoc.utils
 
-# TODO
-# ------------------------------------------------------------------------------
-# Study a metaclass that would display the type definition with __repr__?
-# Would avoid the call for help which is noisy, or needing to search for
-# an attribute inside the type. Maybe that would be an issue for abstract
-# types (the definition may be long), but at least it would be nice for
-# the other types.
-
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
@@ -33,7 +25,12 @@ def _fail_init(self, *args, **kwargs):
     error = "cannot instantiate abstract type {type}"
     raise NotImplementedError(error.format(type=type_name))
 
+class MetaType(type):
+    def __repr__(cls):
+        return cls.__doc__
+
 class Type(object):
+    __metaclass__ = MetaType 
     __init__ = _fail_init
 
 class Data(Type):
