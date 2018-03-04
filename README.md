@@ -5,7 +5,8 @@ Pandoc (Python Library)
 [![PyPi](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
 ![Status](https://img.shields.io/pypi/status/pandoc.svg)
- [![Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
+[![Travis CI Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/usube01hmjcl1m0t?svg=true)](https://ci.appveyor.com/project/boisgera/pandoc)
 
 A Pythonic Version of Pandoc
 --------------------------------------------------------------------------------
