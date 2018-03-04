@@ -10,7 +10,7 @@ before_install:
   - sudo apt-get install -y libgmp10
   - curl -L https://github.com/jgm/pandoc/releases/download/1.16.0.2/pandoc-1.16.0.2-1-amd64.deb > pandoc.deb
   - sudo dpkg --install pandoc.deb
-  - sudo pip install coverage codecov
+#  - sudo pip install coverage codecov
   - pip install --target=.lib --ignore-installed 'about>=5.1,<6'
   - pip install pyyaml
 install: "pip install ."

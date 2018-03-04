@@ -1,0 +1,16 @@
+clone_folder: c:\projects\pandoc
+
+environment:
+  matrix:
+    - CONDA: C:\Miniconda-x64
+    - CONDA: C:\Miniconda36-x64
+
+install:
+  - cmd: set PATH=%PATH%;%CONDA%;%CONDA%\Scripts
+  - cmd: cd c:\projects\pandoc
+        
+build_script:
+  - cmd: pip install --target=.lib --ignore-installed 'about>=5.1,<6'
+  - cmd: pip install pyyaml
+  - cmd: python setup.py install
+  - cmd: python test.py
