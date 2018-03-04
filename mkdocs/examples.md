@@ -117,3 +117,61 @@ Leads to
     Moar regular text
     <BLANKLINE>
 
+
+Theorems
+--------------------------------------------------------------------------------
+
+Convert divs with class="theorem" to LaTeX theorem environments in LaTeX output,
+and to numbered theorems in HTML output.
+
+**TODO:** think of some support for visitor patterns? 
+We see a lot of "do this in-place if this condition is met". 
+Or can we use the basic pandoc map/filter? Dunno. Think of it.
+Arf with filter or map we have to deal with linearized data types?
+We can linearize but can we reassemble. How are filter and map used
+for hierarchial structures in functional programming? Have a look at
+Haskell.
+
+    >>> def is_theorem(elt):
+    ...     if isinstance(elt, Div):
+    ...         attrs = elt[0]
+    ...         _, classes, _ = attrs
+    ...         if "theorem" in classes:
+    ...             return True
+    ...     return False
+
+    >>> def LaTeX(text):
+    ...     return RawBlock(Format('latex'), text)
+
+    >>> def theorem_latex(doc):
+    ...     for elt in pandoc.iter(doc):
+    ...         if is_theorem(elt):
+    ...             id_ = elt[0][0]
+    ...             label = ""
+    ...             if id_:
+    ...                 label = r'\label{' + id_ + '}'
+    ...             start_theorem = LaTeX(r'\begin{theorem}' + label)
+    ...             end_theorem   = LaTeX(r'\end{theorem}')
+    ...             elt[1][:] = [start_theorem] + elt[1] + [end_theorem]
+    
+    >>> markdown = r"""
+    ... I'd like to introduce the following theorem:
+    ... <div id='cauchy-formula' class='theorem'>
+    ... $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
+    ... </div>
+    ... Right?
+    ... """
+    
+    >>> T(theorem_latex)(markdown)
+    I'd like to introduce the following theorem:
+    <div id="cauchy-formula" class="theorem">
+    <BLANKLINE>
+    \begin{theorem}\label{cauchy-formula}
+    $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
+    <BLANKLINE>
+    \end{theorem}
+    <BLANKLINE>
+    </div>
+    <BLANKLINE>
+    Right?
+    <BLANKLINE>
