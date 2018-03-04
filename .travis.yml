@@ -12,7 +12,7 @@ before_install:
   - pip install --target=.lib --ignore-installed 'about>=5.1,<6'
 install: "pip install ."
 # command to run tests
-script: "python setup.py test"
-after_success:
-  - coverage run --branch --source=pandoc setup.py test
-  - codecov
+script: "python test.py"  #"python setup.py test"
+#after_success:
+#  - coverage run --branch --source=pandoc setup.py test
+#  - codecov
