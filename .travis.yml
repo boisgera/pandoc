@@ -12,6 +12,7 @@ before_install:
   - sudo dpkg --install pandoc.deb
   - sudo pip install coverage codecov
   - pip install --target=.lib --ignore-installed 'about>=5.1,<6'
+  - pip install pyyaml
 install: "pip install ."
 # command to run tests
 script: "python test.py"  #"python setup.py test"
