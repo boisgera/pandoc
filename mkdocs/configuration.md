@@ -9,7 +9,7 @@ Auto-magically with
 is equivalent to the longer sequence
 
     >>> import pandoc
-    >>> pandoc.configure()
+    >>> _  = pandoc.configure()
     >>> import pandoc.types
 
 the `configure` function can take arguments. Explain this
