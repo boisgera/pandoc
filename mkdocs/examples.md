@@ -133,7 +133,8 @@ Or can we use the basic pandoc map/filter? Dunno. Think of it.
 Arf with filter or map we have to deal with linearized data types?
 We can linearize but can we reassemble. How are filter and map used
 for hierarchial structures in functional programming? Have a look at
-Haskell.
+Haskell (e.g. <https://stackoverflow.com/questions/7624774/haskell-map-for-trees>).
+So, define a `pandoc.map` helper?
 
     >>> def is_theorem(elt):
     ...     if isinstance(elt, Div):
@@ -178,3 +179,106 @@ Haskell.
     <BLANKLINE>
     Right?
     <BLANKLINE>
+
+
+Notebooks
+--------------------------------------------------------------------------------
+
+<http://nbformat.readthedocs.io/en/latest/format_description.html#the-notebook-file-format>
+
+
+    #!/usr/bin/env python
+
+    # Python Standard Library
+    import copy
+    import json
+    import os.path
+    import sys
+
+    # Pandoc
+    import pandoc
+
+
+    def Notebook():
+        return copy.deepcopy(
+          {
+            "cells": [],
+            "metadata": {
+              "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+              },
+              "language_info": {
+                "codemirror_mode": {
+                  "name": "ipython",
+                  "version": 3
+                },
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.6.4"
+               }
+            },
+            "nbformat": 4,
+            "nbformat_minor": 2
+          }
+        )
+
+    def CodeCell():
+        return copy.deepcopy(
+          {
+            "cell_type": "code",
+            "execution_count": 1,
+            "metadata": {},
+            "outputs": [],
+            "source": []
+          }
+        )
+
+    def MarkdownCell(): 
+        return copy.deepcopy(
+          {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": []
+          }
+        )
+
+    def notebookify(doc):
+        from pandoc.types import Pandoc, Meta, CodeBlock
+        notebook = Notebook()
+        cells = notebook['cells']
+        blocks = doc[1]
+        #print(blocks)
+        execution_count = 1
+        for block in blocks:
+            if isinstance(block, CodeBlock):
+                source = block[1]
+                code_cell = CodeCell()
+                code_cell['source'] = source
+                code_cell['execution_count'] = execution_count
+                execution_count += 1
+                cells.append(code_cell)
+            else:
+                wrapper = Pandoc(Meta({}), [block])
+                #print(wrapper)
+                source = pandoc.write(wrapper)
+                markdown_cell = MarkdownCell()
+                markdown_cell['source'] = source
+                cells.append(markdown_cell)
+        return notebook
+
+    if __name__ == '__main__':
+        filename = sys.argv[1]
+        doc = pandoc.read(file=filename)
+        notebook = notebookify(doc)
+        base, _ = os.path.splitext(filename)
+        output = open(base + '.ipynb', 'w')
+        output.write(json.dumps(notebook, indent=2))
+        output.close()
+
+
+

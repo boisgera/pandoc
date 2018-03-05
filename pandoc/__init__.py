@@ -228,6 +228,8 @@ def default_reader_name(filename):
     return _readers.get(ext)
 
 def read(source=None, file=None, format=None, options=None):
+    if _configuration is None:
+        configure()
     if options is None:
         options = []
 
