@@ -83,24 +83,27 @@ def _make_builtin_types():
     td["tuple"] = tuple
     td["map"] = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
 
+def clear_types():
+    """Uninstall Pandoc Types"""
+    global _types_dict
+    globs = globals()
+
+    # Uninstall registered types
+    for type_name in _types_dict:
+        del globs[type_name]
+    _types_dict = {}
+
 def make_types():
     """Create Pandoc Types"""
 
     global _types_dict
     globs = globals()
 
+    # Uninstall existing types (if any)
+    clear_types()
+
     # Get the pandoc types version
-    if pandoc._configuration is None:
-        pandoc.configure()
     version = pandoc._configuration['pandoc_types_version']
-
-    # Update the module version # Q: Keep this? Redundant and not in sync?
-    globs["version"] = version
-
-    # Uninstall the types from the previous call
-    for type_name in _types_dict:
-      del globs[type_name]
-    _types_dict = {}
 
     # Create builtin types
     _make_builtin_types()
@@ -138,4 +141,11 @@ def make_types():
     # Install the types
     globs.update(_types_dict)
 
-make_types()
+
+# Create Types 
+# ------------------------------------------------------------------------------
+_configuration = pandoc.configure(read=True)
+if _configuration is None:
+    pandoc.configure(auto=True)
+else:
+    pandoc.configure(**_configuration)

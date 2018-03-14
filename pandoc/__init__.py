@@ -58,23 +58,29 @@ from . import utils
 
 # Configuration
 # ------------------------------------------------------------------------------
-_configuration = None # TODO: public API for this?
+_configuration = None
 
-def configure(auto=None, path=None, version=None, pandoc_types_version=None):
+def configure(auto=None, path=None, version=None, pandoc_types_version=None,
+              read=False, reset=False):
     global _configuration
 
-    # In the default configuration, we set auto to `True`.
-    if auto is None and \
-       path is None and \
-       version is None and \
-       pandoc_types_version is None:
-       auto = True
+    default = auto is None and path is None and \
+              version is None and pandoc_types_version is None and \
+              read is False and reset is False
+    if default:
+       raise ValueError("configure(...) expects at least one argument.")
 
-    if auto is True: 
+    if reset is True:
+        _configuration = None
+        return
+
+    read_only = read and \
+                auto is None and path is None and \
+                version is None and pandoc_types_version is None
+
+    if auto: 
         try:
-            pandoc = plumbum.local['pandoc'] # Encoding issue? pandoc works
-            # with utf-8 in and out by construction, but maybe plumbum infers
-            # something different with the locale?
+            pandoc = plumbum.local['pandoc']
             found_path = str(pandoc.executable)
         except plumbum.CommandNotFound as error:
             message  = 'cannot find the pandoc program.\n'
@@ -114,19 +120,26 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None):
             error += 'but it doesn\'t match pandoc_types_version={1!r}.'
             raise ValueError(error.format(version, pandoc_types_version))
 
-    _configuration = {
-      'auto': auto, 
-      'path': path, 
-      'version': version, 
-      'pandoc_types_version': pandoc_types_version
-    }
+    if not read_only: # set the configuration, update pandoc.types
 
-    if "pandoc.types" not in sys.modules:
-        from .types import make_types # enough to trigger make_types()
-    else:
-        from .types import make_types; make_types()
+        try:
+             from . import types
+        except ImportError: # only sensible explanation:
+             # the types module is actually being imported (interpreted)
+             # and is calling configure.
+             types = sys.modules['pandoc.types']
 
-    return _configuration
+        _configuration = {
+          'auto': auto, 
+          'path': path, 
+          'version': version, 
+          'pandoc_types_version': pandoc_types_version
+        }
+
+        types.make_types()
+
+    if read:
+        return _configuration
 
 
 # JSON Reader / Writer
