@@ -68,7 +68,8 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
               version is None and pandoc_types_version is None and \
               read is False and reset is False
     if default:
-       raise ValueError("configure(...) expects at least one argument.")
+       error  = "configure expects at least one argument."
+       raise ValueError(error)
 
     if reset is True:
         _configuration = None
