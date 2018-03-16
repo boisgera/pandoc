@@ -3,6 +3,7 @@
 from __future__ import absolute_import, print_function
 import argparse
 import collections
+import copy
 import inspect
 import json
 import os.path
@@ -72,7 +73,7 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
        raise ValueError(error)
 
     if reset is True:
-        _configuration = None
+        _configuration = None # TODO: clean the types
         return
 
     read_only = read and \
@@ -140,7 +141,7 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
         types.make_types()
 
     if read:
-        return _configuration.copy()
+        return copy.copy(configuration)
 
 
 # JSON Reader / Writer
