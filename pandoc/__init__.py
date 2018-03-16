@@ -141,7 +141,7 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
         types.make_types()
 
     if read:
-        return copy.copy(configuration)
+        return copy.copy(_configuration)
 
 
 # JSON Reader / Writer
