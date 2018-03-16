@@ -243,8 +243,8 @@ def default_reader_name(filename):
     return _readers.get(ext)
 
 def read(source=None, file=None, format=None, options=None):
-    if _configuration is None:
-        configure()
+    if configure(read=True) is None:
+        configure(auto=True)
     if options is None:
         options = []
 
@@ -348,8 +348,8 @@ def default_writer_name(filename):
         return _writers.get(ext)
 
 def write(doc, file=None, format=None, options=None):
-    if _configuration is None:
-        configure()
+    if configure(read=True) is None:
+        configure(auto=True)
     if options is None:
         options = []
 
