@@ -366,7 +366,8 @@ def write(doc, file=None, format=None, options=None):
     if format != 'json' and _configuration['path'] is None:
         error = "writing the {0!r} format requires the pandoc program"
 
-    if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
+    configuration = configure(read=True)
+    if utils.version_key(configuration["pandoc_types_version"]) < [1, 17]:
         json_ = write_json_v1(doc)
     else:
         json_ = write_json_v2(doc)
@@ -575,10 +576,6 @@ def read_json_v2(json_, type_=None):
 
 # JSON Writer v2
 # ------------------------------------------------------------------------------
-
-# BUG: pandoc-api-version is a list of integers, not a string
-# BUG: class with no children (such as Space) do not use the 'c' key
-
 def write_json_v2(object_):
     import pandoc.types as types
     odict = collections.OrderedDict
@@ -591,11 +588,11 @@ def write_json_v2(object_):
         else: # primitive type
             json_ = object_
     elif isinstance(object_, types.Pandoc):
-        version = _configuration["pandoc_types_version"]
+        version = configure(read=True)["pandoc_types_version"]
         metadata = object_[0]
         blocks = object_[1]
         json_ = odict()
-        json_["pandoc-api-version"] = version
+        json_["pandoc-api-version"] = [int(n) for n in version.split('.')]
         json_["meta"] = write_json_v2(object_[0][0])
         json_["blocks"] = write_json_v2(object_[1])
     else:
@@ -616,7 +613,7 @@ def write_json_v2(object_):
             if single_type_constructor:
                 json_ = c
             else:
-                if len(c) != []:
+                if len(c) != 0:
                     json_["c"] = c
         else:
             keys = [kt[0] for kt in constructor[1][1]]
