@@ -27,12 +27,19 @@ def _fail_init(self, *args, **kwargs):
 
 class MetaType(type):
     def __repr__(cls):
-        return cls.__doc__
+        doc = getattr(cls, '__doc__', None)
+        if doc is not None:
+            return doc
+        else:
+            return type.__repr__(cls)
 
 if sys.version_info >= (3,):
-    class Type(metaclass=MetaType):
-            __metaclass__ = MetaType 
-            __init__ = _fail_init
+    exec(\
+"""
+class Type(metaclass=MetaType):
+    __metaclass__ = MetaType 
+    __init__ = _fail_init
+""")
 else:
     class Type(object):
         __metaclass__ = MetaType 
