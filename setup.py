@@ -52,7 +52,7 @@ import about
 # Pandoc Metadata
 # ------------------------------------------------------------------------------
 tmp_dir = tempfile.mkdtemp()
-source = local("pandoc/about.py")
+source = local("src/pandoc/about.py")
 target = os.path.join(tmp_dir, "about_pandoc.py")
 shutil.copyfile(source, target)
 sys.path.insert(0, tmp_dir)
