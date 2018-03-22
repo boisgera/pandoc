@@ -575,6 +575,10 @@ def read_json_v2(json_, type_=None):
 
 # JSON Writer v2
 # ------------------------------------------------------------------------------
+
+# BUG: pandoc-api-version is a list of integers, not a string
+# BUG: class with no children (such as Space) do not use the 'c' key
+
 def write_json_v2(object_):
     import pandoc.types as types
     odict = collections.OrderedDict
