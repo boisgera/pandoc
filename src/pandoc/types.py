@@ -33,17 +33,7 @@ class MetaType(type):
         else:
             return type.__repr__(cls)
 
-if sys.version_info >= (3,):
-    exec(\
-"""
-class Type(metaclass=MetaType):
-    __metaclass__ = MetaType 
-    __init__ = _fail_init
-""")
-else:
-    class Type(object):
-        __metaclass__ = MetaType 
-        __init__ = _fail_init
+Type = MetaType("Type", (object,), {'__init__': _fail_init})
 
 class Data(Type):
     pass
