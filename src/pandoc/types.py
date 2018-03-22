@@ -8,7 +8,7 @@ except ImportError:
 import collections
 import inspect
 import pydoc
-
+import sys
 
 # Third-Party Libraries
 import pkg_resources
@@ -29,9 +29,14 @@ class MetaType(type):
     def __repr__(cls):
         return cls.__doc__
 
-class Type(object):
-    __metaclass__ = MetaType 
-    __init__ = _fail_init
+if sys.version_info >= (3,):
+    class Type(metaclass=MetaType):
+            __metaclass__ = MetaType 
+            __init__ = _fail_init
+else:
+    class Type(object):
+        __metaclass__ = MetaType 
+        __init__ = _fail_init
 
 class Data(Type):
     pass

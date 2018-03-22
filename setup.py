@@ -64,7 +64,8 @@ shutil.rmtree(tmp_dir)
 # ------------------------------------------------------------------------------
 metadata = about.get_metadata(about_pandoc)
 contents = {
-  "packages": setuptools.find_packages(),
+  "packages": setuptools.find_packages("src"),
+  "package_dir": {"": "src"},
   "package_data": {"pandoc": ["pandoc-types.js", "tests.md"]},
 }
 requirements = {
