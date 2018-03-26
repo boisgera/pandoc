@@ -18,5 +18,5 @@ install:
   - pip install .
 
 script: 
-  - python test.py
+  - python test.py -v
 
