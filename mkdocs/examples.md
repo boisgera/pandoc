@@ -168,17 +168,17 @@ So, define a `pandoc.map` helper?
     
     >>> T(theorem_latex)(markdown)
     I'd like to introduce the following theorem:
-    <div id="cauchy-formula" class="theorem">
     <BLANKLINE>
+    ::: {#cauchy-formula .theorem}
     \begin{theorem}\label{cauchy-formula}
     $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
     <BLANKLINE>
     \end{theorem}
-    <BLANKLINE>
-    </div>
+    :::
     <BLANKLINE>
     Right?
     <BLANKLINE>
+
 
 
 Notebooks
