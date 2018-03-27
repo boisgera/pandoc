@@ -1,4 +1,12 @@
 
+**TODO:** plain text (no image, no link, no div, not attribute, etc.). 
+Now that attributes & divs are captured from HTML, it can become VERY
+noisy, a filter like that could alleviate the problem. Test it on
+pandoc's web site for example? This is interesting, we will have
+to 'flatten' the divs. At least get rid of everything that smells
+too much HTML (link *may* be ok?), like raw html & divs.
+Wait there is no raw html in this case right? Get rid of it anyway.
+
 Examples
 ================================================================================
 
