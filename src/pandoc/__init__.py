@@ -624,6 +624,34 @@ def write_json_v2(object_):
 
 # Iteration
 # ------------------------------------------------------------------------------
+
+# Thoughts:
+#
+#   - maybe 'iter_path' is not the right naming:
+#     I would envision for iter_path something that returns roughly speaking
+#     a list of indices that would allow us to find the element from doc.
+#     What would be the right new name for the old concept of path then?
+#     Have the list of ancestors named "context"? for example?
+#     And have it as supplementary data (also return elt as usual?)
+#     So consider a "mega-iter-named-whataver-with-options" ?
+#     And keep "iter" for the building block? Or use 'iter' for that?
+#     Wrt path as list of indices: have [] (or another function) support
+#     these list of path directly? Yeah would need some support anyway.
+#
+#   - Nota: does it make sense to also use string keys in path for maps?
+#     Several issues: have a look in the complete chain to see if pandoc
+#     map-like structure have their ordered preserved (I think not),
+#     then think "tree/structural" vs value stuff (maps have a varying
+#     number of items for example ...), and finally think of the consistency
+#     of the interface of named keys wrt to "iter" that is 100% integer based.
+#     Nota wrt "non-structural iteration": we are already doing it with lists,
+#     so nothing new here.
+#
+#  - TODO: explore visitor-style stuff (have a look at ANTLR for example)
+#
+#  - TODO: explore functional programming style (e.g. fmap for trees, etc.)
+#
+
 def iter(elt, enter=None, exit=None):
     if enter is not None:
         enter(elt)

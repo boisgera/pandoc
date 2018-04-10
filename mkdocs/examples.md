@@ -289,4 +289,88 @@ Notebooks
         output.close()
 
 
+Simplify
+--------------------------------------------------------------------------------
+
+Markdown documents converted from HTML may be "noisy" with some constructs that
+don't make much sense for a plain text document. For example, if you convert
+the ["Getting started"](https://pandoc.org/getting-started.html) section of
+the pandoc documentation to markdown
+
+    $ curl https://pandoc.org/getting-started.html > getting-started.html
+    $ pandoc -o getting-started.md getting-started.html
+
+you end up with a text file that starts with
+
+    ::: {#doc .container-fluid}
+    ::: {#flattr}
+    [](https://pandoc.org){.FlattrButton}
+
+    [![Flattr
+    this](https://api.flattr.com/button/flattr-badge-large.png "Flattr this")](https://flattr.com/thing/936364/Pandoc)
+    :::
+
+    ::: {#paypal}
+    ![](https://www.paypalobjects.com/en_US/i/scr/pixel.gif){width="1"
+    height="1"}
+    :::
+
+    [Pandoc]{.big}   [a universal document converter]{.small}
+
+    ::: {#bd}
+    ::: {.navbar-header}
+    [Toggle navigation]{.sr-only} []{.icon-bar} []{.icon-bar} []{.icon-bar}
+    :::
+
+    ::: {.navbar-collapse .collapse}
+    -   [About](index.html)
+    -   [Installing](installing.html)
+    -   [Getting started](getting-started.html)
+    -   [Demos]{.tree-toggle .nav-header}
+        -   [Try pandoc online](try)
+        -   [Examples](demos.html)
+    -   [Documentation]{.tree-toggle .nav-header}
+        -   [User\'s Guide](MANUAL.html)
+        -   [User\'s Guide (PDF)](MANUAL.pdf)
+        -   [Making an ebook](epub.html)
+        -   [Filters](filters.html)
+        -   [Lua filters](lua-filters.html)
+        -   [Contributing](CONTRIBUTING.html)
+        -   [FAQ](faqs.html)
+        -   [Press](press.html)
+        -   [Using the Pandoc API](using-the-pandoc-api.html)
+        -   [API documentation](http://hackage.haskell.org/package/pandoc)
+    -   [Help](help.html)
+    -   [Extras](https://github.com/jgm/pandoc/wiki/Pandoc-Extras)
+    -   [Releases](releases.html)
+    :::
+
+    ::: {.col-md-9 .col-sm-8 role="main"}
+    ::: {.row}
+    ::: {#toc}
+    -   [Step 1: Install pandoc](#step-1-install-pandoc)
+    -   [Step 2: Open a terminal](#step-2-open-a-terminal)
+    -   [Step 3: Changing directories](#step-3-changing-directories)
+    -   [Step 4: Using pandoc as a filter](#step-4-using-pandoc-as-a-filter)
+    -   [Step 5: Text editor basics](#step-5-text-editor-basics)
+    -   [Step 6: Converting a file](#step-6-converting-a-file)
+    -   [Step 7: Command-line options](#step-7-command-line-options)
+    :::
+
+    This document is for people who are unfamiliar with command line tools.
+    Command-line experts can go straight to the [User's Guide](README.html)
+    or the pandoc man page.
+
+    Step 1: Install pandoc
+    ======================
+
+    First, install pandoc, following the [instructions for your
+    platform](installing.html).
+
+This is probably not what you want. To simplify this document, we are going
+to remove all the hierarchy of divs (`:::` in markdown) and spans, 
+get rid of the images and of the attributes (id, classes, key-value pairs) 
+of every element (is it worth it?).
+
+
 
