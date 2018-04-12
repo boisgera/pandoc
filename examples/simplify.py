@@ -93,17 +93,17 @@ def unpack_divs(doc):
     matches = []
     for elt, path in pandoc.iter(doc, path=True):
         if isinstance(elt, Div):
+            div = elt
             parent, index = path[-1]
-            div_contents = elt[1]
+            contents = div[1]
             # Blocks are always held in lists (cf. the document model).
             assert isinstance(parent, list)
-            matches.append((parent, index, div_contents))
+            matches.append((parent, index, contents))
 
     # We iterate the div matches in reverse order. 
     # Like this we can mutate the document in the for loop 
     # and have the remaining matches remain valid.
-    for div, parent, i in reversed(div_matches):
-        blocks = div[1]
+    for parent, index, contents in reversed(matches):
         del parent[index]
         parent[index:index] = contents
 
@@ -127,7 +127,7 @@ def unpack_divs(doc):
 def is_blocks(elt): # (non-empty) list of blocks
     return isinstance(elt, list) and \
            len(elt)!=0 and \
-           isinstance(elt[0], Block):
+           isinstance(elt[0], Block)
 
 def unpack_divs_2(elt):
     # find list of blocks, look out for divs and unpack them
@@ -137,19 +137,25 @@ def unpack_divs_2(elt):
         for block in blocks:
             if isinstance(block, Div):
                 div = block
-                new_blocks.extend(unpack_divs_2(div[1]))
+                contents = div[1]
+                new_blocks.extend(unpack_divs_2(contents))
             else:
                 new_blocks.append(unpack_divs_2(block))
-         return new_blocks
+        assert not any([isinstance(block, Div) for block in new_blocks])
+        return new_blocks
     # list, tuple, map and (non-primitive) Pandoc types
-    elif hasattr(elt, "__iter__") and not isinstance(elt, types.String):
+    elif hasattr(elt, "__iter__") and not isinstance(elt, String):
         type_ = type(elt)
         if type_ is map:
             args = list(elt.items())
         else:
             args = elt[:]
-        return type_(*[unpack_divs_2(arg) for arg in args])
-    else: # Python atomic (immutable) type
+        new_args = [unpack_divs_2(arg) for arg in args]
+        if issubclass(type_, (list, tuple, map)):
+            return type_(new_args)
+        else: # Pandoc type
+            return type_(*new_args)
+    else: # Python atomic (immutable) types
         return elt 
 
  
@@ -168,17 +174,39 @@ def add_title(doc):
     metadata = pandoc.read("%" + title)[0]
     doc[0] = metadata
 
+# focus mainly on the unpack divs and add a minor cleanup: 
+# is getting rid of everything before the first paragraph 
+# is good enough? Do something with the span sub-title here?
+# Arf the subtitle is common to all pages, it has to go
+# 
+# The cleanup is actually easier BEFORE the div purge since
+# we have more data then.
+# The easiest thing to do is probably to locate the table of
+# contents and get rid of everything before it?
+# Well this is slightly messy since we are already nested
+# in divs, so how do we do that? Ouch, this is a MASSIVE pain ...
+# The toc (and the rest of the document) is at a level 4 nesting.
+# It would be VERY suspicious to have some code getting rid of
+# everything BUT THE DIVS, just to have another one get rid of
+# the divs afterwards ...
+# The easiest way to go would be to insert a marker (header?)
+# in the document to locate our first paragraph once the stuff
+# is flattened, but this is slightly hackish and requires a 
+# pre and post step. Mmmm.
+
 def prettify(doc):
-    remove_navbar(doc)
-    add_toc_header(doc)
-    unpack_divs(doc)
-    cleanup_header(doc)
-    add_title(doc)
+    #remove_navbar(doc)
+    #add_toc_header(doc)
+    #unpack_divs(doc)
+    doc = unpack_divs_2(doc)
+    #cleanup_header(doc)
+    #add_title(doc)
+    return doc
 
 if __name__ == "__main__":
     url = 'https://pandoc.org/getting-started.html'
     src = urllib.request.urlopen(url).read()
     doc = pandoc.read(src, format="html")
-    prettify(doc)
+    doc = prettify(doc)
     print(pandoc.write(doc, format="markdown", options=["-s"]))
 
