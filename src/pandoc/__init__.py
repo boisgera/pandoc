@@ -638,6 +638,24 @@ def write_json_v2(object_):
 #     Wrt path as list of indices: have [] (or another function) support
 #     these list of path directly? Yeah would need some support anyway.
 #
+#   - Nota: I have at least 3 different "context" structures that may
+#     be handy:
+#
+#       - the list of parents (say without the elt, aka "context" or "parents"?)
+#
+#       - the list of indices (aka "path")
+#
+#       - a hybrid parent + index tuple list.
+#
+#     And these lists *may* (or may not) be reversed for convenience.
+#     Actually we may keep the top to bottom order and name "path"
+#     the list of pairs. This is a redundant structure (all you need
+#     for example is the root and the indices), but we don't care,
+#     the redundancy is actually convenient.
+#
+#     And add a "path" option to iter to return the (elt, path) pair. 
+#     Does it fly? Name ? "path" or "context"? Nah, path ...
+#
 #   - Nota: does it make sense to also use string keys in path for maps?
 #     Several issues: have a look in the complete chain to see if pandoc
 #     map-like structure have their ordered preserved (I think not),
@@ -652,18 +670,36 @@ def write_json_v2(object_):
 #  - TODO: explore functional programming style (e.g. fmap for trees, etc.)
 #
 
-def iter(elt, enter=None, exit=None):
+def iter(elt, path=False, enter=None, exit=None):
+    if path is not False:
+        if not isinstance(path, list): # e.g. path = True
+            path = []
+
+    args = [elt]
+    if path is not False:
+        args.append(path)
+
     if enter is not None:
-        enter(elt)
-    yield elt
+        enter(*args)
+
+    if path is False:
+        yield elt
+    else:
+        yield elt, path
+
     if isinstance(elt, dict):
         elt = elt.items()
     if hasattr(elt, "__iter__") and not isinstance(elt, types.String):
-        for child in elt:
-             for subelt in iter(child, enter, exit):
+        for i, child in enumerate(elt):
+             if path is False:
+                 child_path = False
+             else:
+                 child_path = path.copy() + [(elt, i)]
+             for subelt in iter(child, path=child_path, enter=enter, exit=exit):
                  yield subelt
+
     if exit is not None:
-        exit(elt)
+        exit(*args)
 
 def iter_path(elt):
     path = []
@@ -671,7 +707,7 @@ def iter_path(elt):
         path.append(elt_)
     def exit(elt_):
         path.pop()
-    for elt_ in iter(elt, enter, exit):
+    for elt_ in iter(elt, enter=enter, exit=exit):
         yield path
 
 def get_parent(doc, elt):
