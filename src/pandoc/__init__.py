@@ -721,7 +721,11 @@ def get_parent(doc, elt):
 # Main Entry Point
 # ------------------------------------------------------------------------------
 
-# TODO: adapt to the new API or remove (?)
+# TODO: adapt to the new API (not json-centered) or remove (?)
+#
+# Could still be useful to see the architecture of the document
+# (more readable than JSON, ESPECIALLY IF WE SUPPORT CUSTOM INDENTATION!)
+#
 def main():
     prog = "python -m pandoc"
     description = "Read/write pandoc JSON documents with Python"

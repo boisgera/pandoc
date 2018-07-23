@@ -289,18 +289,32 @@ Notebooks
         output.close()
 
 
-Simplify
+Save Web Documents
 --------------------------------------------------------------------------------
 
-Markdown documents converted from HTML may be "noisy" with some constructs that
-don't make much sense for a plain text document. For example, if you convert
-the ["Getting started"](https://pandoc.org/getting-started.html) section of
-the pandoc documentation to markdown
+When you find an interesting piece of content on the Web,
+you may want to archive it on your computer.
+Since you are only interested in the content 
+and not the full web page, 
+there are things in the HTML document 
+that you want probably want to remove in the process
+(ads, social media, etc.). 
+And while you're at it, 
+why not store the result as Markdown, 
+which is a simpler document description language?
+We know that thanks to pandoc, we can convert it 
+to something fancy like PDF if the need arises.
+
+Consider for example the ["Getting started"](https://pandoc.org/getting-started.html) 
+section of the the pandoc documentation. This is a useful document,
+I want to keep a copy of it in my hard drive.
+Downloading it and converting it to Markdown is easy:
 
     $ curl https://pandoc.org/getting-started.html > getting-started.html
     $ pandoc -o getting-started.md getting-started.html
 
-you end up with a text file that starts with
+However, when you look at the result, this is very "noisy".
+Its starts with
 
     ::: {#doc .container-fluid}
     ::: {#flattr}
@@ -325,24 +339,7 @@ you end up with a text file that starts with
     ::: {.navbar-collapse .collapse}
     -   [About](index.html)
     -   [Installing](installing.html)
-    -   [Getting started](getting-started.html)
-    -   [Demos]{.tree-toggle .nav-header}
-        -   [Try pandoc online](try)
-        -   [Examples](demos.html)
-    -   [Documentation]{.tree-toggle .nav-header}
-        -   [User\'s Guide](MANUAL.html)
-        -   [User\'s Guide (PDF)](MANUAL.pdf)
-        -   [Making an ebook](epub.html)
-        -   [Filters](filters.html)
-        -   [Lua filters](lua-filters.html)
-        -   [Contributing](CONTRIBUTING.html)
-        -   [FAQ](faqs.html)
-        -   [Press](press.html)
-        -   [Using the Pandoc API](using-the-pandoc-api.html)
-        -   [API documentation](http://hackage.haskell.org/package/pandoc)
-    -   [Help](help.html)
-    -   [Extras](https://github.com/jgm/pandoc/wiki/Pandoc-Extras)
-    -   [Releases](releases.html)
+    -   ...
     :::
 
     ::: {.col-md-9 .col-sm-8 role="main"}
@@ -350,12 +347,26 @@ you end up with a text file that starts with
     ::: {#toc}
     -   [Step 1: Install pandoc](#step-1-install-pandoc)
     -   [Step 2: Open a terminal](#step-2-open-a-terminal)
-    -   [Step 3: Changing directories](#step-3-changing-directories)
-    -   [Step 4: Using pandoc as a filter](#step-4-using-pandoc-as-a-filter)
-    -   [Step 5: Text editor basics](#step-5-text-editor-basics)
-    -   [Step 6: Converting a file](#step-6-converting-a-file)
-    -   [Step 7: Command-line options](#step-7-command-line-options)
+    -   ...
     :::
+
+[^1]: We could also disable the `native_divs` option in pandoc to get rid 
+of the div soup, but where would be the fun then?
+
+
+There are two different kind of things here:
+
+  - a "div soup", characterized by the sheer number of `:::` symbols[^1].
+    In pandoc-flavored Markdown, the `:::` syntax corresponds to
+    the `<div>` tag in HTML.
+    Div hierarchies are often used to style HTML elements, 
+    so this is something that we don't need anymore.
+
+  - components that don't make sense out of the web page: 
+    some buttons, a navigation bar, etc.
+
+It's only after this long and noisy preamble that you find the real content.
+It looks like this:
 
     This document is for people who are unfamiliar with command line tools.
     Command-line experts can go straight to the [User's Guide](README.html)
@@ -367,10 +378,254 @@ you end up with a text file that starts with
     First, install pandoc, following the [instructions for your
     platform](installing.html).
 
-This is probably not what you want. To simplify this document, we are going
-to remove all the hierarchy of divs (`:::` in markdown) and spans, 
-get rid of the images and of the attributes (id, classes, key-value pairs) 
-of every element (is it worth it?).
+    Step 2: Open a terminal
+    =======================
+
+    ...
+
+And finally, you close the four divs in which the content is nested:
+
+    :::
+    :::
+    :::
+    :::
+
+This is probably not the document that you want to store. 
+To simplify it, we are going to remove all the hierarchy 
+of divs and get rid of the preamble.
 
 
+
+### Unpack Divs
+
+    def unpack_divs(doc):
+        "Unpack Divs - Two-pass, In-Place Algorithm"
+
+        # Locate the divs and extract the relevant data
+        matches = []
+        for elt, path in pandoc.iter(doc, path=True):
+            if isinstance(elt, Div):
+                div = elt
+                parent, index = path[-1]
+                contents = div[1]
+                # Blocks are always held in lists (cf. the document model).
+                assert isinstance(parent, list)
+                matches.append((parent, index, contents))
+
+        # We need to unpack the divs in reverse document order 
+        # not to invalidate the remaining matches.
+        for parent, index, contents in reversed(matches):
+            del parent[index]
+            parent[index:index] = contents
+
+        return doc
+
+
+
+### Unpack Divs (Variant)
+
+You may find that the approach above is convoluted. 
+It's actually perfectly possible to achieve the same transformation 
+in one pass if we build a new document 
+instead of modifying the original.
+
+This is best achieved using recursion. To get a feeling how recursion
+can be used to create modified copies of a document, we can first 
+implement a copy without modification:
+
+    def copy(elt):
+        "Copy the document (or document fragment) recursively"
+        # List, tuple, map and (non-primitive) Pandoc types
+        if hasattr(elt, "__iter__") and not isinstance(elt, String):
+            type_ = type(elt)
+            if type_ is map:
+                args = list(elt.items())
+            else:
+                args = elt[:]
+            new_args = [copy(arg) for arg in args]
+            if issubclass(type_, (list, tuple, map)):
+                return type_(new_args)
+            else: # Pandoc types
+                return type_(*new_args)
+        else: # Python atomic (immutable) types
+            return elt 
+
+Note that the name of the function argument is not `doc` but `elt` since the 
+`copy` function may be used with any document fragment, not merely with a
+document.
+
+Let's go back to our original problem, which is div unpacking. 
+Since divs are held in lists of blocks, 
+we define a predicate that identifies lists of blocks:
+
+    def is_blocks(elt): 
+        "Identify (non-empty) lists of blocks"
+        return isinstance(elt, list) and \
+               len(elt)!=0 and \
+               isinstance(elt[0], Block)
+
+
+And now we are ready to define the alternate implementation of `unpack_div`.
+First, we detect when `elt` is a list of blocks and 
+in this case, if some of these blocks are divs, 
+we expand them:
+
+    def unpack_divs(elt):
+        "Unpack Divs - One-Pass, Recursive, Non-Destructive Algorithm"
+
+        # Find the list of blocks and their div children and unpack them
+        if is_blocks(elt):
+            blocks = elt
+            new_blocks = []
+            for block in blocks:
+                if isinstance(block, Div):
+                    div = block
+                    contents = div[1]
+                    new_blocks.extend(unpack_divs(contents))
+                else:
+                    new_blocks.append(unpack_divs(block))
+            assert not any([isinstance(block, Div) for block in new_blocks])
+            return new_blocks
+
+We also need to handle the remaining cases, but this is easy
+since this is similar to what the recursive `copy` is doing:
+
+        # List, tuple, map and (non-primitive) Pandoc types
+        elif hasattr(elt, "__iter__") and not isinstance(elt, String):
+            type_ = type(elt)
+            if type_ is map:
+                args = list(elt.items())
+            else:
+                args = elt[:]
+            new_args = [unpack_divs(arg) for arg in args]
+            if issubclass(type_, (list, tuple, map)):
+                return type_(new_args)
+            else: # Pandoc types
+                return type_(*new_args)
+        else: # Python atomic (immutable) types
+            return elt 
+
+### Remove The Preamble
+
+At this stage, if you wrap any of the `unpack_divs` into
+
+    # file: simplify.py
+    if __name__ == "__main__":
+        url = 'https://pandoc.org/getting-started.html'
+        src = urllib.request.urlopen(url).read()
+        doc = pandoc.read(src, format="html")
+        doc = unpack_divs(doc)
+        print(pandoc.write(doc, format="markdown", options=["-s"]))
+
+This is what you get when you execute the script:
+
+    $ python simplify.py 
+    ---
+    lang: en
+    title: 'Pandoc - Getting started with pandoc'
+    viewport: 'width=device-width, initial-scale=1.0'
+    ---
+
+    [](https://pandoc.org){.FlattrButton}
+
+    [![Flattr
+    this](https://api.flattr.com/button/flattr-badge-large.png "Flattr this")](https://flattr.com/thing/936364/Pandoc)
+
+    ![](https://www.paypalobjects.com/en_US/i/scr/pixel.gif){width="1"
+    height="1"}
+
+    [Pandoc]{.big}   [a universal document converter]{.small}
+
+    [Toggle navigation]{.sr-only} []{.icon-bar} []{.icon-bar} []{.icon-bar}
+
+    -   [About](index.html)
+    -   [Installing](installing.html)
+    -   ...
+
+    -   [Step 1: Install pandoc](#step-1-install-pandoc)
+    -   [Step 2: Open a terminal](#step-2-open-a-terminal)
+    -   ...
+
+    This document is for people who are unfamiliar with command line tools.
+    Command-line experts can go straight to the [User's Guide](README.html)
+    or the pandoc man page.
+
+    Step 1: Install pandoc
+    ======================
+
+    First, install pandoc, following the [instructions for your
+    platform](installing.html).
+
+    Step 2: Open a terminal
+    =======================
+
+    ...
+
+    If you get stuck, you can always ask questions on the
+    [pandoc-discuss](http://groups.google.com/group/pandoc-discuss) mailing
+    list. But be sure to check the [FAQs](faqs.html) first, and search
+    through the mailing list to see if your question has been answered
+    before.
+
+This is better, since there is no more div, but we still need to get rid 
+of everything before the first real paragraph, 
+the one that starts with some plain text: "This document ...".
+So we can detect this first paragraph 
+– for example because it starts with an instance of `Str` – 
+and remove everything before it from the document:
+
+    def remove_preamble(doc):
+        "Remove everything before the first real paragraph"
+        blocks = doc[1]
+        for i, block in enumerate(blocks):
+            if isinstance(block, Para):
+                para = block
+                inlines = para[0]
+                if len(inlines) > 0 and isinstance(inlines[0], Str):
+                    break
+        doc[1] = blocks[i:]
+        return doc
+
+Now, change the main entry point accordingly:
+
+    # file: simplify.py
+    if __name__ == "__main__":
+        url = 'https://pandoc.org/getting-started.html'
+        src = urllib.request.urlopen(url).read()
+        doc = pandoc.read(src, format="html")
+        doc = unpack_divs(doc)
+        doc = remove_preamble(doc)
+        print(pandoc.write(doc, format="markdown", options=["-s"]))
+
+and this is what you get:
+
+    $ python simplify.py
+    ---
+    lang: en
+    title: 'Pandoc - Getting started with pandoc'
+    viewport: 'width=device-width, initial-scale=1.0'
+    ---
+
+    This document is for people who are unfamiliar with command line tools.
+    Command-line experts can go straight to the [User's Guide](README.html)
+    or the pandoc man page.
+
+    Step 1: Install pandoc
+    ======================
+
+    First, install pandoc, following the [instructions for your
+    platform](installing.html).
+
+    Step 2: Open a terminal
+    =======================
+
+    ...
+
+    If you get stuck, you can always ask questions on the
+    [pandoc-discuss](http://groups.google.com/group/pandoc-discuss) mailing
+    list. But be sure to check the [FAQs](faqs.html) first, and search
+    through the mailing list to see if your question has been answered
+    before.
+
+Mission accomplished!
 
