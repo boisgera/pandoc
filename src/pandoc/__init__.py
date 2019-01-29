@@ -340,7 +340,7 @@ _writers = {
 
 def default_writer_name(filename):
     if filename.endswith(".tei.xml"):
-        filename = filename[:-4]
+        filename = filename[:-4] # uhu ? test this.
     _, ext = os.path.splitext(filename)
     if len(ext) == 2 and ext[1] in "0123456789":
         return "man"
@@ -381,7 +381,7 @@ def write(doc, file=None, format=None, options=None):
         output_path = input_path
     else:
         pandoc = plumbum.machines.LocalCommand(_configuration['path'])
-        output_path = os.path.join(tmp_dir, 'output')
+        output_path = os.path.join(tmp_dir, 'output') # need .pdf for pdfs
         options = ['-t', format, '-o', output_path] + \
                   list(options) + ['-f', 'json', input_path]
         pandoc(options)
