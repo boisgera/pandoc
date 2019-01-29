@@ -3,5 +3,4 @@ build
 dist
 setup.cfg
 *.pyc
-*.lib
 *.egg-info
