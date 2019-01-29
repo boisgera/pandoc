@@ -10,7 +10,6 @@ install:
   - cmd: cd c:\projects\pandoc
         
 build_script:
-  - cmd: mkdir ".lib"
   - cmd: pip install pyyaml
   - cmd: python setup.py install
   - cmd: python test.py
