@@ -452,7 +452,7 @@ options (e.g. stylesheets, EPUB metadata, bibliography, etc.)
 
     >>> doc = pandoc.read(text)
     >>> doc
-    Pandoc(Meta(map([('date', MetaInlines([Str('Date')])), ('author', MetaList([MetaInlines([Str('Author'), Space(), Str('1,'), Space(), Str('Author'), Space(), Str('2')])])), ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))])), [])
+    Pandoc(Meta(map([('date', MetaInlines([Str('Date')])), ('author', MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))])), [])
 
 ...
 
@@ -460,7 +460,7 @@ options (e.g. stylesheets, EPUB metadata, bibliography, etc.)
     >>> metadata["title"]
     MetaInlines([Str('Document'), Space(), Str('Title')])
     >>> metadata["author"]
-    MetaList([MetaInlines([Str('Author'), Space(), Str('1,'), Space(), Str('Author'), Space(), Str('2')])])
+    MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])
     >>> metadata["date"]
     MetaInlines([Str('Date')])
 
