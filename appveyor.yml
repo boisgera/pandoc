@@ -2,7 +2,7 @@ clone_folder: c:\projects\pandoc
 
 environment:
   matrix:
-    - CONDA: C:\Miniconda-x64
+#    - CONDA: C:\Miniconda-x64
     - CONDA: C:\Miniconda36-x64
 
 install:
