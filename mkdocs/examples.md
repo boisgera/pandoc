@@ -179,6 +179,7 @@ So, define a `pandoc.map` helper?
     <BLANKLINE>
     ::: {#cauchy-formula .theorem}
     \begin{theorem}\label{cauchy-formula}
+    <BLANKLINE>
     $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
     <BLANKLINE>
     \end{theorem}

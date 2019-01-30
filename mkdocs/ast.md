@@ -310,7 +310,7 @@ For this multiline table, the table parser computes the relative column widths:
     >>> table = pandoc.read(text).find(Table)
     >>> _, _, widths, _, _ = table[:]
     >>> widths
-    [0.16666666666666666, 0.1111111111111111, 0.2222222222222222, 0.3472222222222222]
+    [0.16666666666666666, 0.1111111111111111, 0.2222222222222222, 0.3611111111111111]
 
 Now, since the last column has a lot of content and the third one 
 has plenty of empty space, we could select relative widths to narrow 
