@@ -8,8 +8,8 @@ environment:
 install:
   - cmd: set PATH=%PATH%;%CONDA%;%CONDA%\Scripts
   - cmd: cd c:\projects\pandoc
-        
-build_script:
-  - cmd: pip install pyyaml
+  - cmd: conda env update -n base -f environment.yml
   - cmd: python setup.py install
+        
+test_script:
   - cmd: python test.py
