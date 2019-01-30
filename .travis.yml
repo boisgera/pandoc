@@ -10,8 +10,7 @@ before_install:
   - curl $CONDA > conda.sh
   - bash conda.sh -b -p $HOME/conda
   - export PATH=$HOME/conda/bin:$PATH
-  - conda install --yes -c conda-forge pandoc=2.5
-  - conda install --yes pyyaml
+  - conda env update -f environment.yml
 install:
   - pip install .
 
