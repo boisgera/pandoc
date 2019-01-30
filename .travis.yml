@@ -10,7 +10,7 @@ before_install:
   - curl $CONDA > conda.sh
   - bash conda.sh -b -p $HOME/conda
   - export PATH=$HOME/conda/bin:$PATH
-  - conda env update -f environment.yml
+  - conda env update -n base -f environment.yml
 install:
   - pip install .
 
