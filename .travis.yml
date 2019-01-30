@@ -3,14 +3,14 @@ dist: trusty
 language: bash
 
 env:
-#- CONDA=https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
-- CONDA=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+- CONDA=https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh CONDA_ENV=environment-py2.yml
+- CONDA=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh CONDA_ENV=environment-py3.yml
 
 before_install:
   - curl $CONDA > conda.sh
   - bash conda.sh -b -p $HOME/conda
   - export PATH=$HOME/conda/bin:$PATH
-  - conda env update -n base -f environment.yml
+  - conda env update -n base -f $CONDA_ENV
 install:
   - pip install .
 
