@@ -15,7 +15,8 @@ theme: "material"
 
 markdown_extensions:
   - admonition
-  - toc(permalink=true)
+  - toc:
+      permalink: true
   - footnotes
   - pymdownx.details
   - pymdownx.superfences
