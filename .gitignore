@@ -4,3 +4,4 @@ dist
 setup.cfg
 *.pyc
 *.egg-info
+sandbox
