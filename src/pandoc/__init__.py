@@ -299,6 +299,7 @@ def read(source=None, file=None, format=None, options=None):
 
 _writers = {    
   ""          : "markdown",
+  ".pdf"      : "latex",
   ".tex"      : "latex",
   ".latex"    : "latex",
   ".ltx"      : "latex",
@@ -347,6 +348,10 @@ def default_writer_name(filename):
     else:
         return _writers.get(ext)
 
+# TODO: better management for pdf "format" which is not a format according
+#       to pandoc ... ("latex" or "beamer" are, pdf is hidden in the filename
+#       extension)
+
 def write(doc, file=None, format=None, options=None):
     if configure(read=True) is None:
         configure(auto=True)
@@ -380,15 +385,20 @@ def write(doc, file=None, format=None, options=None):
     if format == 'json':
         output_path = input_path
     else:
+        if filename is not None:
+            # preserve extensions (pandoc need to see a .pdf extension)
+            tmp_filename =  os.path.basename(filename) 
+        else:
+            tmp_filename = "output"
         pandoc = plumbum.machines.LocalCommand(_configuration['path'])
-        output_path = os.path.join(tmp_dir, 'output') # need .pdf for pdfs
+        output_path = os.path.join(tmp_dir, tmp_filename) 
         options = ['-t', format, '-o', output_path] + \
                   list(options) + ['-f', 'json', input_path]
         pandoc(options)
 
     output_bytes = open(output_path, 'rb').read()
     binary_formats = ["doc", "epub", "ppt", "odt"]
-    if any(tag in format for tag in binary_formats):
+    if any(tag in format for tag in binary_formats) or tmp_filename.endswith(".pdf"):
         output = output_bytes
     else: # text format
         output = output_bytes.decode('utf-8')

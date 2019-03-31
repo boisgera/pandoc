@@ -112,8 +112,8 @@ contain a text string
     Space()
     >>> Str
     Str(String)
-    >>> String
-    <class 'str'>
+    >>> String == type(u"")
+    True
 
 Finally
 
@@ -451,8 +451,17 @@ options (e.g. stylesheets, EPUB metadata, bibliography, etc.)
 
 
     >>> doc = pandoc.read(text)
-    >>> doc
-    Pandoc(Meta(map([('date', MetaInlines([Str('Date')])), ('author', MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))])), [])
+    >>> doc == \
+    ... Pandoc(
+    ...   Meta(map([
+    ...     ('date', MetaInlines([Str('Date')])), 
+    ...     ('author', MetaList([MetaInlines(
+    ...       [Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), 
+    ...     ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))
+    ...   ])), 
+    ...   []
+    ... )
+    True
 
 ...
 

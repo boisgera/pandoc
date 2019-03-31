@@ -4,6 +4,7 @@
 from __future__ import print_function
 import doctest
 import sys
+import re
 
 # Third-Party Libraries
 import yaml
@@ -33,6 +34,28 @@ class BytesOutputChecker(_doctest_OutputChecker):
 # monkey-patching
 doctest.OutputChecker = BytesOutputChecker
 
+# Single-quoted unicode string (but not bytes) capture
+# See e.g. <http://www.rexegg.com/regex-best-trick.html>
+_string_pattern = "(?:b'(?:\\'|[^'])*?')|('(?:\\'|[^'])*?')"
+
+class Python3OutputChecker(_doctest_OutputChecker):
+    def check_output(self, want, got, optionflags):
+        if sys.version_info[0] < 3:
+            # if running on py2, attempt to prefix all the strings
+            # with "u" to signify that they're unicode literals
+            def replace(match_object):
+                content = match_object.groups()[0]
+                #print("content:", content, file=sys.stderr)
+
+                if content is not None:
+                    return 'u' + content
+            #print("want before", want, file=sys.stderr)
+            want = re.sub(_string_pattern, replace, want)
+            #print("want after:", want, file=sys.stderr)
+        return _doctest_OutputChecker.check_output(self, want, got, optionflags)
+
+# monkey-patching
+doctest.OutputChecker = Python3OutputChecker
 
 # Test Files
 # ------------------------------------------------------------------------------
