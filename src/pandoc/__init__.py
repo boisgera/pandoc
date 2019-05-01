@@ -610,13 +610,13 @@ def write_json_v2(object_):
         constructor = type(object_)._def
         data_type = type(object_).__mro__[2]._def
         single_type_constructor = (len(data_type[1][1]) == 1)
+        has_constructor_arguments = (len(constructor[1][1]) >= 1)
         single_constructor_argument = (len(constructor[1][1]) == 1)
         is_record = (constructor[1][0] == "map")
 
         json_ = odict()
         if not single_type_constructor:
             json_["t"] = type(object_).__name__
-
         if not is_record:
             c = [write_json_v2(arg) for arg in object_]
             if single_constructor_argument:
@@ -624,7 +624,7 @@ def write_json_v2(object_):
             if single_type_constructor:
                 json_ = c
             else:
-                if len(c) != 0:
+                if has_constructor_arguments:
                     json_["c"] = c
         else:
             keys = [kt[0] for kt in constructor[1][1]]
