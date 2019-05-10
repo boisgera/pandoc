@@ -289,6 +289,7 @@ def read(source=None, file=None, format=None, options=None):
         pandoc(options)
         json_file = open(output_path, "r")
     json_ = json.load(json_file)
+    json_file.close()
     shutil.rmtree(tmp_dir)
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         return read_json_v1(json_)
