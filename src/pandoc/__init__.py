@@ -277,7 +277,7 @@ def read(source=None, file=None, format=None, options=None):
         raise RuntimeError(error.format(format))
 
     if format == 'json':
-        json_file = open(input_path, "r")
+        json_file = open(input_path, "r", encoding="utf-8")
     else:
         if _configuration['path'] is None:
             error = "reading the {0!r} format requires the pandoc program"
@@ -287,7 +287,7 @@ def read(source=None, file=None, format=None, options=None):
         options = ['-t', 'json', '-o', output_path] + \
                   list(options) + ['-f', format, input_path]
         pandoc(options)
-        json_file = open(output_path, "r")
+        json_file = open(output_path, "r", encoding="utf-8")
     json_ = json.load(json_file)
     json_file.close()
     shutil.rmtree(tmp_dir)
