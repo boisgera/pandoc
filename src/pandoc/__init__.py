@@ -67,6 +67,7 @@ def rmtree(path):
     for i in range(retries - 1):
         try:
             shutil.rmtree(path)
+            return
         except OSError:
             time.sleep(0.1)
     shutil.rmtree(path)
