@@ -9,6 +9,7 @@ import json
 import os.path
 import shutil
 import sys
+import time
 import tempfile
 
 # Third-Party Libraries
@@ -56,6 +57,19 @@ from . import utils
 #  - reconsider "main"?
 #
 
+# Filesystem Helper
+# ------------------------------------------------------------------------------
+def rmtree(path):
+    """Deal with Windows 
+    (see e.g <https://www.gitmemory.com/issue/sdispater/poetry/1031/488759621>
+    """
+    retries = 10
+    for i in range(retries - 1):
+        try:
+            shutil.rmtree(path)
+        except OSError:
+            time.sleep(0.1)
+    shutil.rmtree(path)
 
 # Configuration
 # ------------------------------------------------------------------------------
@@ -290,7 +304,7 @@ def read(source=None, file=None, format=None, options=None):
         json_file = open(output_path, "r", encoding="utf-8")
     json_ = json.load(json_file)
     json_file.close()
-    shutil.rmtree(tmp_dir)
+    rmtree(tmp_dir)
     if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         return read_json_v1(json_)
     else:
@@ -404,7 +418,7 @@ def write(doc, file=None, format=None, options=None):
         output = output_bytes
     else: # text format
         output = output_bytes.decode('utf-8')
-    shutil.rmtree(tmp_dir)
+    rmtree(tmp_dir)
 
     if file is not None:
         file.write(output_bytes)
