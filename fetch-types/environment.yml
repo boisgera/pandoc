@@ -1,0 +1,5 @@
+name: fetch-types
+dependencies:
+  - beautifulsoup4
+  - requests
+  - sh

@@ -5,3 +5,4 @@ setup.cfg
 *.pyc
 *.egg-info
 sandbox
+env
