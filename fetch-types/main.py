@@ -153,10 +153,13 @@ def write_type_definitions(output):
         except:
             stack_not_found = True
             print("{0}: no stack.yaml file found".format(version))
-            sh.stack("init", "--solver")
+            try:
+                sh.stack("init", "--solver")
     #        stack_file = open("stack.yaml", "w")
     #        stack_file.write(STACK_YAML)
     #        stack_file.close()
+            except sh.ErrorReturnCode as error:
+                print(error.stderr)
 
         builder_src = str(sh.cat("Text/Pandoc/Builder.hs"))
         builder_src = """
@@ -203,7 +206,11 @@ def write_type_definitions(output):
             #message = "".join(char for char in message if isprint(char))
             #open("../definitions/{0}.error".format(version), "w").write(message)
             #continue
-            raise RuntimeError(message.decode("utf-8"))
+
+            print("FAIL:", message.decode("utf-8"))
+            output.write(message.decode("utf-8"))
+            continue
+            #raise RuntimeError(message.decode("utf-8"))
 
         print("running GHCI script ...")
         collect = False
