@@ -1,28 +1,20 @@
 #!/usr/bin/env python
 
-# Python 2.7 Standard Library
+# Python 3.7 Standard Library
 import json
 import io
+import pathlib
 import re
 import sys
 
 # Third-Party Libraries
-from bs4 import BeautifulSoup
+import bs4
 import requests
 import sh
 
 
-# Constants & Helpers
+# Helpers
 # ------------------------------------------------------------------------------
-GHCI_SCRIPT = """
-import Data.Map (Map)
-:load Text.Pandoc.Definition
-putStrLn ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-:browse Text.Pandoc.Definition
-putStrLn "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-"""
-
-
 def version_key(string):
     return [int(s) for s in string.split(".")]
 
@@ -36,10 +28,11 @@ def version_key(string):
 # "grep" the pandoc-types line inside them, get the dependency spec,
 # and write the stuff as JSON.
 
+
 def version_info():
     pandoc_url = "http://hackage.haskell.org/package/pandoc"
     html = requests.get(pandoc_url).content
-    soup = BeautifulSoup(html, "html.parser")
+    soup = bs4.BeautifulSoup(html, "html.parser")
     contents = soup.find(id="properties").table.tbody.tr.td.contents
     strings = []
     for content in contents:
@@ -71,8 +64,19 @@ def version_info():
                 break
     return info
 
+
 # Type Definitions Fetcher
 # ------------------------------------------------------------------------------
+
+GHCI_SCRIPT = """
+import Data.Map (Map)
+:load Text.Pandoc.Definition
+putStrLn ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+:browse Text.Pandoc.Definition
+putStrLn "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+"""
+
+
 def setup():
     # clone the pandoc-types repository
     sh.rm("-rf", "pandoc-types")
@@ -91,239 +95,203 @@ def setup():
     sh.cd("..")
 
 
+def collect_ghci_script_output():
+    print("running GHCI script ...")
+    collect = False
+    lines = []
+    for line in sh.stack("ghci", _iter=True):
+        if line.startswith(">>>>>>>>>>"):
+            collect = True
+        elif line.startswith("<<<<<<<<<<"):
+            collect = False
+            break
+        elif collect == True:
+            lines.append(line)
+    definitions = "".join(lines)
+    return definitions
+
 def type_definitions():
-    # Create/enter the pandoc-types project directory
-    setup()
-    sh.cd("pandoc-types")
-
-    # get the version tags, write the (ordered) list down
-    versions = str(sh.git("tag")).split()
-    versions.sort(key=version_key)
-
-    # start with 1.8 (no pandoc JSON support before)
-    versions = [v for v in versions if version_key(v) >= [1, 8]]
-
-    stack_not_found = False
-
-    sh.rm("-rf", "stack.yaml")
-    sh.git("checkout", ".")
-
-    typedefs = {}
-    log = open("log.txt", "w")
-
-    for i, version in enumerate(versions):
-        # cleanup
-        if stack_not_found:
-            sh.rm("-rf", "stack.yaml")
-            stack_not_found = False
-        sh.git("checkout", ".")
-
-        print(80 * "-")
-
-        sh.git("checkout", version)
-
-        try:
-            stack_not_found = False
-            sh.ls("stack.yaml")
-            print("{0}: found stack.yaml file".format(version))
-        except:
-            stack_not_found = True
-            print("{0}: no stack.yaml file found".format(version))
-            try:
-                sh.stack("init", "--solver")
-            #        stack_file = open("stack.yaml", "w")
-            #        stack_file.write(STACK_YAML)
-            #        stack_file.close()
-            except sh.ErrorReturnCode as error:
-                print(error.stderr)
-
-        builder_src = str(sh.cat("Text/Pandoc/Builder.hs"))
-        builder_src = (
-            """
-          {-# LANGUAGE TypeSynonymInstances, FlexibleInstances,  
-          MultiParamTypeClasses,
-          DeriveDataTypeable, GeneralizedNewtypeDeriving, CPP, StandaloneDeriving,
-          DeriveGeneric, DeriveTraversable, AllowAmbiguousTypes #-}
-          """
-            + builder_src
-        )
-
-        #    if "FlexibleInstances" not in builder_src:
-        #        print "didn't find flexible instances"
-        #        lines = builder_src.split("\n")
-        #        lines[0] = "{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}"
-        #        builder_src = "\n".join(lines)
-
-        fragment = "(<>) :: Monoid a => a -> a -> a\n(<>) = mappend"
-        builder_src = builder_src.replace(fragment, "")
-
-        #    builder_src = "{-# LANGUAGE AllowAmbiguousTypes #-}\n" + builder_src
-
-        b = open("Text/Pandoc/Builder.hs", "w")
-        b.write(builder_src)
-        b.close()
-
-        try:
-            print("setting up stack ...")
-            for line in sh.stack("setup", _iter=True, _err_to_out=True):
-                print("   ", line, end="")
-            print("building ...")
-            for line in sh.stack("build", _iter=True, _err_to_out=True):
-                print("   ", line, end="")
-        except Exception as error:
-            message = error.stdout
-            for line in message.splitlines():
-                print("    ", line, file=sys.stderr)
-            # TODO: print error to file (.error instead of .hs)
-            # this filter here is not good enough
-
+    # create the error log and logger function
+    sh.rm("-rf", "log.txt")
+    logfile = open("log.txt", "w", encoding="utf-8")
+    def log(message):
+        if isinstance(message, bytes):
             ansi_escape = re.compile(rb"\x1b[^m]*m")
             message = ansi_escape.sub(b"", message)
+            message = message.decode("utf-8")
+        print(message)
+        logfile.write(message+"\n")
 
-            # message = "".join(char for char in message if isprint(char))
-            # open("../definitions/{0}.error".format(version), "w").write(message)
-            # continue
-
-            print("FAIL:", message.decode("utf-8"))
-            log.write(message.decode("utf-8"))
-            continue
-            # raise RuntimeError(message.decode("utf-8"))
-
-        print("running GHCI script ...")
-        collect = False
-        lines = []
-        for line in sh.stack("ghci", _iter=True):
-            if line.startswith(">>>>>>>>>>"):
-                collect = True
-            elif line.startswith("<<<<<<<<<<"):
-                collect = False
-                break
-            elif collect == True:
-                lines.append(line)
-        definition = "".join(lines)
-        typedefs[version] = definition
-
-    sh.cd("..")
-    return typedefs
-
-
-def _type_definitions():
-    # Create/enter the pandoc-types project directory
+    # fetch the pandoc git repo and get into it 
     setup()
     sh.cd("pandoc-types")
 
     # get the version tags, write the (ordered) list down
     versions = str(sh.git("tag")).split()
     versions.sort(key=version_key)
-
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]
 
     typedefs = {}
-    log = open("log.txt", "w")
-
     for i, version in enumerate(versions):
-        print(80 * "-")
-        # cleanup from the previous round
-        sh.rm("-rf", "stack.yaml")
-        stack_enabled = False
-        sh.git("checkout", version)
+        log(80*"-")
+        log(f"version: {version}")
+        log("")
 
         try:
-            stack_enabled = True
-            sh.ls("stack.yaml")
-            print("{0}: found stack.yaml file".format(version))
-        except:
-            stack_not_found = True
-            print("{0}: no stack.yaml file found".format(version))
+            sh.git("checkout", "-f", version)
+            if pathlib.Path("stack.yaml").exists():
+                log("found stack.yaml file")
+            else:
+                log("no stack.yaml file found")
             try:
                 sh.stack("init", "--solver")
-            #        stack_file = open("stack.yaml", "w")
-            #        stack_file.write(STACK_YAML)
-            #        stack_file.close()
             except sh.ErrorReturnCode as error:
-                print(error.stderr)
-                log.write(80*"-")
-                log.write(version + "\n")
-                log.write(error.stderr)
+                log(error.stderr)
+                log("ABORT")
                 continue
 
-        builder_src = str(sh.cat("Text/Pandoc/Builder.hs"))
-        builder_src = (
-            """
-          {-# LANGUAGE TypeSynonymInstances, FlexibleInstances,  
-          MultiParamTypeClasses,
-          DeriveDataTypeable, GeneralizedNewtypeDeriving, CPP, StandaloneDeriving,
-          DeriveGeneric, DeriveTraversable, AllowAmbiguousTypes #-}
-          """
-            + builder_src
-        )
+            try:
+                print("setting up stack ...")
+                for line in sh.stack("setup", _iter=True, _err_to_out=True):
+                    print("   ", line, end="")
+                print("building ...")
+                for line in sh.stack("build", _iter=True, _err_to_out=True):
+                    print("   ", line, end="")
+            except Exception as error:
+                log(error.stdout)
+                log("ABORT")
+                continue
 
-        #    if "FlexibleInstances" not in builder_src:
-        #        print "didn't find flexible instances"
-        #        lines = builder_src.split("\n")
-        #        lines[0] = "{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}"
-        #        builder_src = "\n".join(lines)
-
-        fragment = "(<>) :: Monoid a => a -> a -> a\n(<>) = mappend"
-        builder_src = builder_src.replace(fragment, "")
-
-        #    builder_src = "{-# LANGUAGE AllowAmbiguousTypes #-}\n" + builder_src
-
-        b = open("Text/Pandoc/Builder.hs", "w")
-        b.write(builder_src)
-        b.close()
-
-        try:
-            print("setting up stack ...")
-            for line in sh.stack("setup", _iter=True, _err_to_out=True):
-                print("   ", line, end="")
-            print("building ...")
-            for line in sh.stack("build", _iter=True, _err_to_out=True):
-                print("   ", line, end="")
-        except Exception as error:
-            message = error.stdout
-            for line in message.splitlines():
-                print("    ", line, file=sys.stderr)
-            # TODO: print error to file (.error instead of .hs)
-            # this filter here is not good enough
-
-            ansi_escape = re.compile(rb"\x1b[^m]*m")
-            message = ansi_escape.sub(b"", message)
-
-            # message = "".join(char for char in message if isprint(char))
-            # open("../definitions/{0}.error".format(version), "w").write(message)
-            # continue
-
-            print("FAIL:", message.decode("utf-8"))
-
-            log.write(80*"-")
-            log.write(version + "\n")
-            log.write(message.decode("utf-8"))
-            continue
-            # raise RuntimeError(message.decode("utf-8"))
-
-        print("running GHCI script ...")
-        collect = False
-        lines = []
-        try:
-            for line in sh.stack("ghci", _iter=True):
-                if line.startswith(">>>>>>>>>>"):
-                    collect = True
-                elif line.startswith("<<<<<<<<<<"):
-                    collect = False
-                    break
-                elif collect == True:
-                    lines.append(line)
-            definition = "".join(lines)
-            typedefs[version] = definition
-        except sh.ErrorReturnCode as error:
-            log.write(80*"-")
-            log.write(version + "\n")
-            log.write(error.stdout)
-
+            # if we've gone so far
+            log("OK")
+            definitions = collect_ghci_script_output()
+            typedefs[version] = definitions
+        finally:
+            sh.rm("-rf", "stack.yaml")
+        
     sh.cd("..")
+
     return typedefs
+
+
+# def _type_definitions():
+#     # Create/enter the pandoc-types project directory
+#     setup()
+#     sh.cd("pandoc-types")
+
+#     # get the version tags, write the (ordered) list down
+#     versions = str(sh.git("tag")).split()
+#     versions.sort(key=version_key)
+
+#     # start with 1.8 (no pandoc JSON support before)
+#     versions = [v for v in versions if version_key(v) >= [1, 8]]
+
+#     typedefs = {}
+#     log = open("log.txt", "w")
+
+#     for i, version in enumerate(versions):
+#         print(80 * "-")
+#         # cleanup from the previous round
+#         sh.rm("-rf", "stack.yaml")
+#         stack_enabled = False
+#         sh.git("checkout", version)
+
+#         try:
+#             stack_enabled = True
+#             sh.ls("stack.yaml")
+#             print("{0}: found stack.yaml file".format(version))
+#         except:
+#             stack_not_found = True
+#             print("{0}: no stack.yaml file found".format(version))
+#             try:
+#                 sh.stack("init", "--solver")
+#             #        stack_file = open("stack.yaml", "w")
+#             #        stack_file.write(STACK_YAML)
+#             #        stack_file.close()
+#             except sh.ErrorReturnCode as error:
+#                 print(error.stderr)
+#                 log.write(80 * "-")
+#                 log.write(version + "\n")
+#                 log.write(error.stderr)
+#                 continue
+
+#         builder_src = str(sh.cat("Text/Pandoc/Builder.hs"))
+#         builder_src = (
+#             """
+#           {-# LANGUAGE TypeSynonymInstances, FlexibleInstances,  
+#           MultiParamTypeClasses,
+#           DeriveDataTypeable, GeneralizedNewtypeDeriving, CPP, StandaloneDeriving,
+#           DeriveGeneric, DeriveTraversable, AllowAmbiguousTypes #-}
+#           """
+#             + builder_src
+#         )
+
+#         #    if "FlexibleInstances" not in builder_src:
+#         #        print "didn't find flexible instances"
+#         #        lines = builder_src.split("\n")
+#         #        lines[0] = "{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}"
+#         #        builder_src = "\n".join(lines)
+
+#         fragment = "(<>) :: Monoid a => a -> a -> a\n(<>) = mappend"
+#         builder_src = builder_src.replace(fragment, "")
+
+#         #    builder_src = "{-# LANGUAGE AllowAmbiguousTypes #-}\n" + builder_src
+
+#         b = open("Text/Pandoc/Builder.hs", "w")
+#         b.write(builder_src)
+#         b.close()
+
+#         try:
+#             print("setting up stack ...")
+#             for line in sh.stack("setup", _iter=True, _err_to_out=True):
+#                 print("   ", line, end="")
+#             print("building ...")
+#             for line in sh.stack("build", _iter=True, _err_to_out=True):
+#                 print("   ", line, end="")
+#         except Exception as error:
+#             message = error.stdout
+#             for line in message.splitlines():
+#                 print("    ", line, file=sys.stderr)
+#             # TODO: print error to file (.error instead of .hs)
+#             # this filter here is not good enough
+
+#             ansi_escape = re.compile(rb"\x1b[^m]*m")
+#             message = ansi_escape.sub(b"", message)
+
+#             # message = "".join(char for char in message if isprint(char))
+#             # open("../definitions/{0}.error".format(version), "w").write(message)
+#             # continue
+
+#             print("FAIL:", message.decode("utf-8"))
+
+#             log.write(80 * "-")
+#             log.write(version + "\n")
+#             log.write(message.decode("utf-8"))
+#             continue
+#             # raise RuntimeError(message.decode("utf-8"))
+
+#         print("running GHCI script ...")
+#         collect = False
+#         lines = []
+#         try:
+#             for line in sh.stack("ghci", _iter=True):
+#                 if line.startswith(">>>>>>>>>>"):
+#                     collect = True
+#                 elif line.startswith("<<<<<<<<<<"):
+#                     collect = False
+#                     break
+#                 elif collect == True:
+#                     lines.append(line)
+#             definition = "".join(lines)
+#             typedefs[version] = definition
+#         except sh.ErrorReturnCode as error:
+#             log.write(80 * "-")
+#             log.write(version + "\n")
+#             log.write(error.stdout)
+
+#     sh.cd("..")
+#     return typedefs
 
 
 # Main
@@ -331,8 +299,7 @@ def _type_definitions():
 
 if __name__ == "__main__":
     js = {}
-    # temporary outcomment
-    js["version_mapping"] = version_info()
     js["definitions"] = type_definitions()
+    js["version_mapping"] = version_info()
     output = open("pandoc-types.js", "w")
     json.dump(js, output)
