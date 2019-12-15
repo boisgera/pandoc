@@ -5,4 +5,9 @@ setup.cfg
 *.pyc
 *.egg-info
 sandbox
+
+# VS code
+.vscode
+
+# Conda
 env
