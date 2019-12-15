@@ -79,8 +79,10 @@ def _make_builtin_types():
     td["Int"] = int
     try:
         td["String"] = unicode
+        td["Text"] = unicode
     except NameError:
         td["String"] = str
+        td["Text"] = str
     td["list"] = list
     td["tuple"] = tuple
     td["map"] = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
