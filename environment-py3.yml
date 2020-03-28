@@ -3,9 +3,11 @@ channels:
   - conda-forge
 dependencies:
   - python=3.7
-  - pandoc=2.5
+  - pip
+  - pandoc=2.9.2
   - plumbum
   - ply
+  - black
   - pip:
     - mkdocs
     - mkdocs-material
