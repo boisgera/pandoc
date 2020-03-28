@@ -2,7 +2,7 @@
 
 metadata = dict(
   __name__     = "pandoc",
-  __version__  = "2.0-a1", 
+  __version__  = "2.0a2", 
   __license__  = "MIT License",
   __author__   = "Sébastien Boisgérault <Sebastien.Boisgerault@mines-paristech.fr>",
   __url__      = "https://github.com/boisgera/pandoc",
@@ -10,7 +10,7 @@ metadata = dict(
   __keywords__ = """
                  software development, topic / text processing, 
                  python / 3,
-                 stable
+                 alpha
                  """
 )
 

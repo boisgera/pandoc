@@ -3,10 +3,13 @@ channels:
   - conda-forge
 dependencies:
   - python=3.7
-  - pip
   - pandoc=2.9.2
   - plumbum
   - ply
+  - pip
+  - setuptools
+  - wheel
+  - twine
   - black
   - pip:
     - mkdocs
