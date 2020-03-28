@@ -178,11 +178,14 @@ So, define a `pandoc.map` helper?
     I'd like to introduce the following theorem:
     <BLANKLINE>
     ::: {#cauchy-formula .theorem}
+    ```{=latex}
     \begin{theorem}\label{cauchy-formula}
-    <BLANKLINE>
+    ```
     $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
     <BLANKLINE>
+    ```{=latex}
     \end{theorem}
+    ```
     :::
     <BLANKLINE>
     Right?

@@ -49,8 +49,8 @@ There are several possible types of blocks: headers, paragraphs, lists, etc.
     Block = Plain([Inline])
           | Para([Inline])
           | LineBlock([[Inline]])
-          | CodeBlock(Attr, String)
-          | RawBlock(Format, String)
+          | CodeBlock(Attr, Text)
+          | RawBlock(Format, Text)
           | BlockQuote([Block])
           | OrderedList(ListAttributes, [[Block]])
           | BulletList([[Block]])
@@ -79,7 +79,7 @@ Inlines can be several things: ordinary text, emphasized text,
 strong text, etc.
 
     >>> Inline
-    Inline = Str(String)
+    Inline = Str(Text)
            | Emph([Inline])
            | Strong([Inline])
            | Strikeout([Inline])
@@ -88,12 +88,12 @@ strong text, etc.
            | SmallCaps([Inline])
            | Quoted(QuoteType, [Inline])
            | Cite([Citation], [Inline])
-           | Code(Attr, String)
+           | Code(Attr, Text)
            | Space()
            | SoftBreak()
            | LineBreak()
-           | Math(MathType, String)
-           | RawInline(Format, String)
+           | Math(MathType, Text)
+           | RawInline(Format, Text)
            | Link(Attr, [Inline], Target)
            | Image(Attr, [Inline], Target)
            | Note([Block])
@@ -106,13 +106,13 @@ Here we simply have a mixture of ordinary text and space.
     [Str('Hello,'), Space(), Str('World!')]
 
 Instances of `Space` have no argument while instances of `Str` 
-contain a text string
+contain a text Text
 
     >>> Space
     Space()
     >>> Str
-    Str(String)
-    >>> String == type(u"")
+    Str(Text)
+    >>> Text == type(u"")
     True
 
 Finally
@@ -427,15 +427,15 @@ then more advanced metadata ... and finally YAML blocks?
 options (e.g. stylesheets, EPUB metadata, bibliography, etc.)
 
     >>> Meta
-    Meta({String: MetaValue})
+    Meta({Text: MetaValue})
 
 ...
 
     >>> MetaValue
-    MetaValue = MetaMap({String: MetaValue})
+    MetaValue = MetaMap({Text: MetaValue})
               | MetaList([MetaValue])
               | MetaBool(Bool)
-              | MetaString(String)
+              | MetaString(Text)
               | MetaInlines([Inline])
               | MetaBlocks([Block])
 
