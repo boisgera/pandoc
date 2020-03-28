@@ -382,6 +382,7 @@ def write(doc, file=None, format=None, options=None):
         block = doc
         doc = types.Pandoc(types.Meta({}), [block])
     if not isinstance(doc, types.Pandoc):
+        # TODO: support lists of inlines and blocks ?
         raise TypeError(f"{doc!r} is not a Pandoc, Block or Inline instance.")
 
     tmp_dir = tempfile.mkdtemp()
