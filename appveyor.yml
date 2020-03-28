@@ -4,7 +4,9 @@ environment:
   matrix:
     - CONDA: C:\Miniconda37-x64
 
-build:
+build: off
+
+install:
   - cmd: set PATH=%PATH%;%CONDA%;%CONDA%\Scripts
   - cmd: cd c:\projects\pandoc
   - cmd: conda env create -n pandoc -f environment.yml
