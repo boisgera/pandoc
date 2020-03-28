@@ -3,7 +3,9 @@ dist: trusty
 language: bash
 
 env:
-- CONDA=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh CONDA_ENV=environment.yml
+  global:
+    - CONDA=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh 
+    - CONDA_ENV=environment.yml
 
 before_install:
   - curl $CONDA > conda.sh
