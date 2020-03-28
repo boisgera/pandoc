@@ -83,6 +83,7 @@ def setup():
     sh.rm("-rf", "pandoc-types")
     sh.git("clone", "https://github.com/jgm/pandoc-types.git")
     sh.cd("pandoc-types")
+    sh.rm("-rf", ".git") # don't want to see the folder as a git submodule
 
     # install the GHCI script
     script = open(".ghci", "w")
