@@ -7,8 +7,9 @@ environment:
 install:
   - cmd: set PATH=%PATH%;%CONDA%;%CONDA%\Scripts
   - cmd: cd c:\projects\pandoc
-  - cmd: conda env update -n base -f environment.yml
-  - cmd: python setup.py install
+  - cmd: conda env create -n pandoc -f environment.yml
+  - cmd: activate pandoc
+  - cmd: pip install .
         
 test_script:
   - cmd: python test.py
