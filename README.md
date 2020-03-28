@@ -19,16 +19,14 @@ It brings:
 
   - a command-line tool,
 
-  - a Haskell library, 
+  - a [Haskell] library, 
 
   - a document (meta-)model.
 
-If you only need to convert some documents from one format into another
-(say Markdown to HTML or Markdown to PDF), 
-the command line tool is what you need.
-But if additionally you need to analyze, create or transform documents,
-you may find this Python library useful,
-especially if you're proficient in Python but don't know Haskell.
+The command line tool is what you need to convert documents from one format 
+to another, for example Markdown to HTML or Markdown to PDF.
+But to analyze, create or transform documents, 
+you may find this Python library useful.
 
 [Pandoc]: http://pandoc.org/
 [John MacFarlane]: http://johnmacfarlane.net/
