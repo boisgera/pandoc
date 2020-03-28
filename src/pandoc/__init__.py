@@ -374,6 +374,16 @@ def write(doc, file=None, format=None, options=None):
     if options is None:
         options = []
 
+    import pandoc.types as types
+    if isinstance(doc, types.Inline):
+        inline = doc
+        doc = types.Plain([inline])
+    if isinstance(doc, types.Block):
+        block = doc
+        doc = types.Pandoc(types.Meta({}), [block])
+    if not isinstance(doc, types.Pandoc):
+        raise TypeError(f"{doc!r} is not a Pandoc, Block or Inline instance.")
+
     tmp_dir = tempfile.mkdtemp()
     filename = None
     if file is not None and not hasattr(file, 'write'):
