@@ -129,7 +129,7 @@ fragment (inline or block) as markdown:
     >>> def show(elt):
     ...     if isinstance(elt, Pandoc):
     ...         doc = elt
-    ...         print(pandoc.write(doc, format="markdown")
+    ...         print(pandoc.write(doc, format="markdown"))
     ...     elif isinstance(elt, list):
     ...         elts = elt
     ...         if len(elts) > 0:
