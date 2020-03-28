@@ -73,7 +73,7 @@ fails = 0
 tests = 0
 for filename in test_files:
     # TODO enable verbose mode in each testfile call if appropriate
-    options = {"module_relative": False, "verbose": verbose, "optionflags": [doctest.REPORT_NDIFF, doctest.doctest.NORMALIZE_WHITESPACE]}
+    options = {"module_relative": False, "verbose": verbose, "optionflags": doctest.REPORT_NDIFF | doctest.NORMALIZE_WHITESPACE}
     _fails, _tests = doctest.testfile(filename, **options)
     fails += _fails
     tests += _tests
