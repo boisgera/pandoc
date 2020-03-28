@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Python 2.7 Standard Library
-from __future__ import absolute_import
+# Python 3 Standard Library
 import os
 import shutil
 import sys
@@ -60,8 +59,8 @@ info.update(contents)
 info.update(requirements)
 info.update(tests)
 
-# Pypi fails to render the ReStructuredText content, override the README.
-info["long_description"] = "GitHub: https://github.com/boisgera/pandoc"
+info["long_description"] = open("README.md", encoding="utf-8").read()
+info["long_description_content_type"] = 'text/markdown'
 
 if __name__ == "__main__":
     setuptools.setup(**info)
