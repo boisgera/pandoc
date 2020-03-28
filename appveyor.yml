@@ -2,7 +2,7 @@ clone_folder: c:\projects\pandoc
 
 environment:
   matrix:
-    - CONDA: C:\Miniconda38-x64
+    - CONDA: C:\Miniconda37-x64
 
 install:
   - cmd: set PATH=%PATH%;%CONDA%;%CONDA%\Scripts
