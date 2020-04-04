@@ -10,9 +10,7 @@ Pandoc (Python Library)
 [![Travis CI Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/usube01hmjcl1m0t?svg=true)](https://ci.appveyor.com/project/boisgera/pandoc)
 
-Documentation for the 2.x branch of the library (alpha version !).
-
-Install with:
+*This README is about the 2.x branch of the library (still alpha !). Install with:*
 
     $ pip install --upgrade git+https://github.com/boisgera/pandoc.git
 
