@@ -832,8 +832,7 @@ def main():
         "file",
         nargs="?",
         metavar="FILE",
-        type=argparse.FileType("rb"),
-        default=sys.stdin,
+        default=None,
         help="input file",
     )
     read_parser.add_argument(
@@ -843,8 +842,7 @@ def main():
         "-o",
         "--output",
         nargs="?",
-        type=argparse.FileType("wb"),
-        default=sys.stdout,
+        default=None,
         help="output file",
     )
     write_parser = subparsers.add_parser("write")
@@ -853,8 +851,7 @@ def main():
         "file",
         nargs="?",
         metavar="FILE",
-        type=argparse.FileType("rb"),
-        default=sys.stdin,
+        default=None,
         help="input file",
     )
     write_parser.add_argument(
@@ -864,18 +861,27 @@ def main():
         "-o",
         "--output",
         nargs="?",
-        type=argparse.FileType("wb"),
-        default=sys.stdout.buffer,
+        default=None,
         help="output file",
     )
     args = parser.parse_args()
     if args.command == "read":
-        doc = read(file=args.file, format=args.format)
-        output = str(doc) + "\n"
-        if "b" in args.output.mode:
-            output = output.encode("utf-8")
-        args.output.write(output)
+        if args.file is None:
+            file = sys.stdin.buffer
+        else:
+            file = open(args.file, "rb")
+        doc = read(file=file, format=args.format)
+        content = str(doc) + "\n"
+
+        if args.output is None:
+            output = sys.stdout.buffer
+        else:
+            output = open(args.output, "wb")
+        if "b" in output.mode: # assert instead ?
+             content = content.encode("utf-8")
+        output.write(content)
     elif args.command == "write":
+        # TODO: adapt to filetype -> filename transition
         doc_string = args.file.read()
         if isinstance(doc_string, bytes):
             doc_string = doc_string.decode("utf-8")
