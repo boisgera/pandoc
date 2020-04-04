@@ -1,6 +1,6 @@
+# coding: utf-8
 
-# Python 2.7 Standard Library
-from __future__ import absolute_import, print_function
+# Python 3 Standard Library
 import argparse
 import collections
 import copy
@@ -25,7 +25,7 @@ from . import utils
 #
 # TODO: target 2.0 milestone, that supports up to pandoc 2.0
 #
-#  - rethink the UX when configure is NOT called explictly, 
+#  - rethink the UX when configure is NOT called explictly,
 #    I may import types, but there is nothing in it.
 #    It's only when I do some read/write that the default configure
 #    is called ... Shall I plug a configure() hook into the types
@@ -44,7 +44,7 @@ from . import utils
 #
 #  - reader and writer for more than JSON (Markdown, HTML, etc.)
 #
-#  - test new JSON scheme completely (need a harness with arbitrary 
+#  - test new JSON scheme completely (need a harness with arbitrary
 #    pandoc executable version)
 #
 #  - error management/messages in type checking. MAYBE ROLLBACK THIS
@@ -72,54 +72,71 @@ def rmtree(path):
             time.sleep(0.1)
     shutil.rmtree(path)
 
+
 # Configuration
 # ------------------------------------------------------------------------------
 _configuration = None
 
-def configure(auto=None, path=None, version=None, pandoc_types_version=None,
-              read=False, reset=False):
+
+def configure(
+    auto=None,
+    path=None,
+    version=None,
+    pandoc_types_version=None,
+    read=False,
+    reset=False,
+):
     global _configuration
 
-    default = auto is None and path is None and \
-              version is None and pandoc_types_version is None and \
-              read is False and reset is False
+    default = (
+        auto is None
+        and path is None
+        and version is None
+        and pandoc_types_version is None
+        and read is False
+        and reset is False
+    )
     if default:
-       error  = "configure expects at least one argument."
-       raise ValueError(error)
+        error = "configure expects at least one argument."
+        raise ValueError(error)
 
     if reset is True:
-        _configuration = None # TODO: clean the types
+        _configuration = None  # TODO: clean the types
         return
 
-    read_only = read and \
-                auto is None and path is None and \
-                version is None and pandoc_types_version is None
+    read_only = (
+        read
+        and auto is None
+        and path is None
+        and version is None
+        and pandoc_types_version is None
+    )
 
-    if auto: 
+    if auto:
         try:
-            pandoc = plumbum.local['pandoc']
+            pandoc = plumbum.local["pandoc"]
             found_path = str(pandoc.executable)
         except plumbum.CommandNotFound as error:
-            message  = 'cannot find the pandoc program.\n'
+            message = "cannot find the pandoc program.\n"
             paths = [str(p) for p in error.path]
-            message += 'paths:' + str(paths)
+            message += "paths:" + str(paths)
             raise RuntimeError(message)
         if path is None:
             path = found_path
         elif path != found_path:
-            error  = 'found path {0!r} with auto=True '
-            error += 'but it doesn\'t match path={1!r}.'
+            error = "found path {0!r} with auto=True "
+            error += "but it doesn't match path={1!r}."
             raise ValueError(error.format(found_path, path))
 
     if path is not None:
         # TODO: manage invalid path
         pandoc = plumbum.machines.LocalCommand(path, "utf-8")
-        found_version = pandoc('--version').splitlines()[0].split(' ')[1]
+        found_version = pandoc("--version").splitlines()[0].split(" ")[1]
         if version is None:
             version = found_version
         elif version != found_version:
-            error  = 'the version of the pandoc program is {0!r}'
-            error += 'but it doesn\'t match version={1!r}.'
+            error = "the version of the pandoc program is {0!r}"
+            error += "but it doesn't match version={1!r}."
             raise ValueError(error.format(found_version, version))
 
     if version is not None:
@@ -129,28 +146,28 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
                 # pick latest (ignore the real one that may be unknown)
                 pandoc_types_version = found_pandoc_types_versions[-1]
             else:
-                error  = 'cannot find a version of pandoc-types '
-                error += 'matching pandoc {0}' 
+                error = "cannot find a version of pandoc-types "
+                error += "matching pandoc {0}"
                 raise ValueError(error.format(version))
         elif pandoc_types_version not in found_pandoc_types_versions:
-            error  = 'the version of pandoc is {0!r}'
-            error += 'but it doesn\'t match pandoc_types_version={1!r}.'
+            error = "the version of pandoc is {0!r}"
+            error += "but it doesn't match pandoc_types_version={1!r}."
             raise ValueError(error.format(version, pandoc_types_version))
 
-    if not read_only: # set the configuration, update pandoc.types
+    if not read_only:  # set the configuration, update pandoc.types
 
         try:
-             from . import types
-        except ImportError: # only sensible explanation:
-             # the types module is actually being imported (interpreted)
-             # and is calling configure.
-             types = sys.modules['pandoc.types']
+            from . import types
+        except ImportError:  # only sensible explanation:
+            # the types module is actually being imported (interpreted)
+            # and is calling configure.
+            types = sys.modules["pandoc.types"]
 
         _configuration = {
-          'auto': auto, 
-          'path': path, 
-          'version': version, 
-          'pandoc_types_version': pandoc_types_version
+            "auto": auto,
+            "path": path,
+            "version": version,
+            "pandoc_types_version": pandoc_types_version,
         }
 
         types.make_types()
@@ -164,15 +181,15 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
 
 # Break compat? Read consumes markdown only? Bump major version number then.
 # Yay, worth it.
-# 
+#
 # TODO: optional input or output FILES or FILENAMES in read/write? Dunno.
 #       Think about it. The NAMES read and write seem to imply it ...
 #       But the filesystem stuff is orthogonal really ...
 #       However, for a ".doc" output for example, writing it as a string
-#       is *probably* useless. 
+#       is *probably* useless.
 #
-# TODO: Study also the str vs bytes stuff: we don't want encoding stuff 
-#       mixed in when we produce a word document, just BYTES. 
+# TODO: Study also the str vs bytes stuff: we don't want encoding stuff
+#       mixed in when we produce a word document, just BYTES.
 #       For Markdown OTOH, unicode repr is the right abstraction.
 #       What to do for latex, html docs? Bytes or Unicode?
 #       FYI, Pandoc is using DECLARING utf-8 encoding for both in standalone
@@ -226,36 +243,38 @@ def configure(auto=None, path=None, version=None, pandoc_types_version=None,
 # TODO: add ".py" / Python support
 
 _readers = {
-  ".xhtml"    : "html",
-  ".html"     : "html",
-  ".htm"      : "html",
-  ".md"       : "markdown",
-  ".markdown" : "markdown",
-  ".muse"     : "muse",
-  ".tex"      : "latex",
-  ".latex"    : "latex",
-  ".ltx"      : "latex",
-  ".rst"      : "rst",
-  ".org"      : "org",
-  ".lhs"      : "markdown+lhs",
-  ".db"       : "docbook",
-  ".opml"     : "opml",
-  ".wiki"     : "mediawiki",
-  ".dokuwiki" : "dokuwiki",
-  ".textile"  : "textile",
-  ".native"   : "native",
-  ".json"     : "json",
-  ".docx"     : "docx",
-  ".t2t"      : "t2t",
-  ".epub"     : "epub",
-  ".odt"      : "odt",
-  ".pdf"      : "pdf",
-  ".doc"      : "doc",
+    ".xhtml": "html",
+    ".html": "html",
+    ".htm": "html",
+    ".md": "markdown",
+    ".markdown": "markdown",
+    ".muse": "muse",
+    ".tex": "latex",
+    ".latex": "latex",
+    ".ltx": "latex",
+    ".rst": "rst",
+    ".org": "org",
+    ".lhs": "markdown+lhs",
+    ".db": "docbook",
+    ".opml": "opml",
+    ".wiki": "mediawiki",
+    ".dokuwiki": "dokuwiki",
+    ".textile": "textile",
+    ".native": "native",
+    ".json": "json",
+    ".docx": "docx",
+    ".t2t": "t2t",
+    ".epub": "epub",
+    ".odt": "odt",
+    ".pdf": "pdf",
+    ".doc": "doc",
 }
+
 
 def default_reader_name(filename):
     _, ext = os.path.splitext(filename)
     return _readers.get(ext)
+
 
 def read(source=None, file=None, format=None, options=None):
     if configure(read=True) is None:
@@ -267,9 +286,9 @@ def read(source=None, file=None, format=None, options=None):
     if source is None:
         if file is None:
             raise ValueError("source or file should be defined.")
-        if not hasattr(file, 'read'):
+        if not hasattr(file, "read"):
             filename = file
-            file = open(filename, 'rb')
+            file = open(filename, "rb")
         source = file.read()
     else:
         if file is not None:
@@ -277,30 +296,33 @@ def read(source=None, file=None, format=None, options=None):
 
     tmp_dir = tempfile.mkdtemp()
     if not isinstance(source, bytes):
-        source = source.encode('utf-8')
-    input_path = os.path.join(tmp_dir, 'input')
-    input = open(input_path, 'wb')
+        source = source.encode("utf-8")
+    input_path = os.path.join(tmp_dir, "input")
+    input = open(input_path, "wb")
     input.write(source)
     input.close()
 
     if format is None and filename is not None:
         format = default_reader_name(filename)
     if format is None:
-        format = 'markdown'
-    if format != 'json' and _configuration['path'] is None:
+        format = "markdown"
+    if format != "json" and _configuration["path"] is None:
         error = "reading the {0!r} format requires the pandoc program"
         raise RuntimeError(error.format(format))
 
-    if format == 'json':
+    if format == "json":
         json_file = open(input_path, "r", encoding="utf-8")
     else:
-        if _configuration['path'] is None:
+        if _configuration["path"] is None:
             error = "reading the {0!r} format requires the pandoc program"
             raise RuntimeError(error.format(format))
-        pandoc = plumbum.machines.LocalCommand(_configuration['path'])
-        output_path = os.path.join(tmp_dir, 'output.js')          
-        options = ['-t', 'json', '-o', output_path] + \
-                  list(options) + ['-f', format, input_path]
+        pandoc = plumbum.machines.LocalCommand(_configuration["path"])
+        output_path = os.path.join(tmp_dir, "output.js")
+        options = (
+            ["-t", "json", "-o", output_path]
+            + list(options)
+            + ["-f", format, input_path]
+        )
         pandoc(options)
         json_file = open(output_path, "r", encoding="utf-8")
     json_ = json.load(json_file)
@@ -311,62 +333,66 @@ def read(source=None, file=None, format=None, options=None):
     else:
         return read_json_v2(json_)
 
+
 # TODO: add ".py" / Python support
 
-_writers = {    
-  ""          : "markdown",
-  ".pdf"      : "latex",
-  ".tex"      : "latex",
-  ".latex"    : "latex",
-  ".ltx"      : "latex",
-  ".context"  : "context",
-  ".ctx"      : "context",
-  ".rtf"      : "rtf",
-  ".rst"      : "rst",
-  ".s5"       : "s5",
-  ".native"   : "native",
-  ".json"     : "json",
-  ".txt"      : "markdown",
-  ".text"     : "markdown",
-  ".md"       : "markdown",
-  ".muse"     : "muse",
-  ".markdown" : "markdown",
-  ".textile"  : "textile",
-  ".lhs"      : "markdown+lhs",
-  ".texi"     : "texinfo",
-  ".texinfo"  : "texinfo",
-  ".db"       : "docbook",
-  ".odt"      : "odt",
-  ".docx"     : "docx",
-  ".epub"     : "epub",
-  ".org"      : "org",
-  ".asciidoc" : "asciidoc",
-  ".adoc"     : "asciidoc",
-  ".fb2"      : "fb2",
-  ".opml"     : "opml",
-  ".icml"     : "icml",
-  ".tei.xml"  : "tei",
-  ".tei"      : "tei",
-  ".ms"       : "ms",
-  ".roff"     : "ms",
-  ".pptx"     : "pptx",
-  ".xhtml"    : "html",
-  ".html"     : "html",
-  ".htm"      : "html",
+_writers = {
+    "": "markdown",
+    ".pdf": "latex",
+    ".tex": "latex",
+    ".latex": "latex",
+    ".ltx": "latex",
+    ".context": "context",
+    ".ctx": "context",
+    ".rtf": "rtf",
+    ".rst": "rst",
+    ".s5": "s5",
+    ".native": "native",
+    ".json": "json",
+    ".txt": "markdown",
+    ".text": "markdown",
+    ".md": "markdown",
+    ".muse": "muse",
+    ".markdown": "markdown",
+    ".textile": "textile",
+    ".lhs": "markdown+lhs",
+    ".texi": "texinfo",
+    ".texinfo": "texinfo",
+    ".db": "docbook",
+    ".odt": "odt",
+    ".docx": "docx",
+    ".epub": "epub",
+    ".org": "org",
+    ".asciidoc": "asciidoc",
+    ".adoc": "asciidoc",
+    ".fb2": "fb2",
+    ".opml": "opml",
+    ".icml": "icml",
+    ".tei.xml": "tei",
+    ".tei": "tei",
+    ".ms": "ms",
+    ".roff": "ms",
+    ".pptx": "pptx",
+    ".xhtml": "html",
+    ".html": "html",
+    ".htm": "html",
 }
+
 
 def default_writer_name(filename):
     if filename.endswith(".tei.xml"):
-        filename = filename[:-4] # uhu ? test this.
+        filename = filename[:-4]  # uhu ? test this.
     _, ext = os.path.splitext(filename)
     if len(ext) == 2 and ext[1] in "0123456789":
         return "man"
     else:
         return _writers.get(ext)
 
+
 # TODO: better management for pdf "format" which is not a format according
 #       to pandoc ... ("latex" or "beamer" are, pdf is hidden in the filename
 #       extension)
+
 
 def write(doc, file=None, format=None, options=None):
     if configure(read=True) is None:
@@ -375,6 +401,7 @@ def write(doc, file=None, format=None, options=None):
         options = []
 
     import pandoc.types as types
+
     if isinstance(doc, types.Inline):
         inline = doc
         doc = types.Plain([inline])
@@ -387,15 +414,15 @@ def write(doc, file=None, format=None, options=None):
 
     tmp_dir = tempfile.mkdtemp()
     filename = None
-    if file is not None and not hasattr(file, 'write'):
+    if file is not None and not hasattr(file, "write"):
         filename = file
-        file = open(filename, 'wb')
+        file = open(filename, "wb")
 
     if format is None and filename is not None:
         format = default_writer_name(filename)
     if format is None:
-        format = 'markdown' # instead of html, yep.
-    if format != 'json' and _configuration['path'] is None:
+        format = "markdown"  # instead of html, yep.
+    if format != "json" and _configuration["path"] is None:
         error = "writing the {0!r} format requires the pandoc program"
 
     configuration = configure(read=True)
@@ -404,32 +431,35 @@ def write(doc, file=None, format=None, options=None):
     else:
         json_ = write_json_v2(doc)
     json_str = json.dumps(json_)
-    input_path = os.path.join(tmp_dir, 'input.js')  
-    input = open(input_path, 'wb')
-    input.write(json_str.encode('utf-8'))
+    input_path = os.path.join(tmp_dir, "input.js")
+    input = open(input_path, "wb")
+    input.write(json_str.encode("utf-8"))
     input.close()
 
-    if format == 'json':
+    if format == "json":
         output_path = input_path
     else:
         if filename is not None:
             # preserve extensions (sometimes pandoc looks for the extension,
             # e.g. for pdf files)
-            tmp_filename =  os.path.basename(filename) 
+            tmp_filename = os.path.basename(filename)
         else:
             tmp_filename = "output"
-        pandoc = plumbum.machines.LocalCommand(_configuration['path'])
-        output_path = os.path.join(tmp_dir, tmp_filename) 
-        options = ['-t', format, '-o', output_path] + \
-                  list(options) + ['-f', 'json', input_path]
+        pandoc = plumbum.machines.LocalCommand(_configuration["path"])
+        output_path = os.path.join(tmp_dir, tmp_filename)
+        options = (
+            ["-t", format, "-o", output_path]
+            + list(options)
+            + ["-f", "json", input_path]
+        )
         pandoc(options)
 
-    output_bytes = open(output_path, 'rb').read()
+    output_bytes = open(output_path, "rb").read()
     binary_formats = ["doc", "epub", "ppt", "odt"]
     if any(tag in format for tag in binary_formats) or output_path.endswith(".pdf"):
         output = output_bytes
-    else: # text format
-        output = output_bytes.decode('utf-8')
+    else:  # text format
+        output = output_bytes.decode("utf-8")
     rmtree(tmp_dir)
 
     if file is not None:
@@ -441,17 +471,18 @@ def write(doc, file=None, format=None, options=None):
 # ------------------------------------------------------------------------------
 def read_json_v1(json_, type_=None):
     import pandoc.types as types
+
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
         type_ = getattr(types, type_)
-    if not isinstance(type_, list): # not a type def (yet).
+    if not isinstance(type_, list):  # not a type def (yet).
         if issubclass(type_, types.Type):
             type_ = type_._def
-        else: # primitive type
+        else:  # primitive type
             return type_(json_)
 
-    if type_[0] == "type": # type alias
+    if type_[0] == "type":  # type alias
         type_ = type_[1][1]
         return read_json_v1(json_, type_)
     if type_[0] == "list":
@@ -459,10 +490,18 @@ def read_json_v1(json_, type_=None):
         return [read_json_v1(item, item_type) for item in json_]
     if type_[0] == "tuple":
         tuple_types = type_[1]
-        return tuple(read_json_v1(item, item_type) for (item, item_type) in zip(json_, tuple_types))
+        return tuple(
+            read_json_v1(item, item_type)
+            for (item, item_type) in zip(json_, tuple_types)
+        )
     if type_[0] == "map":
         key_type, value_type = type_[1]
-        return types.map([(read_json_v1(k, key_type), read_json_v1(v, value_type)) for (k, v) in json_.items()])
+        return types.map(
+            [
+                (read_json_v1(k, key_type), read_json_v1(v, value_type))
+                for (k, v) in json_.items()
+            ]
+        )
 
     data_type = None
     constructor = None
@@ -478,9 +517,9 @@ def read_json_v1(json_, type_=None):
         constructor_type = getattr(types, constructor[0])
         data_type = constructor_type.__mro__[2]._def
 
-    single_type_constructor = (len(data_type[1][1]) == 1)
-    single_constructor_argument = (len(constructor[1][1]) == 1)
-    is_record = (constructor[1][0] == "map")
+    single_type_constructor = len(data_type[1][1]) == 1
+    single_constructor_argument = len(constructor[1][1]) == 1
+    is_record = constructor[1][0] == "map"
 
     json_args = None
     args = None
@@ -493,8 +532,8 @@ def read_json_v1(json_, type_=None):
             json_args = [json_args]
         args = [read_json_v1(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
     else:
-        keys = [k for k,t in constructor[1][1]]
-        types_= [t for k, t in constructor[1][1]]
+        keys = [k for k, t in constructor[1][1]]
+        types_ = [t for k, t in constructor[1][1]]
         json_args = [json_[k] for k in keys]
         args = [read_json_v1(jarg, t) for jarg, t in zip(json_args, types_)]
     C = getattr(types, constructor[0])
@@ -505,6 +544,7 @@ def read_json_v1(json_, type_=None):
 # ------------------------------------------------------------------------------
 def write_json_v1(object_):
     import pandoc.types as types
+
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):
@@ -512,14 +552,14 @@ def write_json_v1(object_):
             json_ = [write_json_v1(item) for item in object_]
         elif isinstance(object_, dict):
             json_ = odict((k, write_json_v1(v)) for k, v in object_.items())
-        else: # primitive type
+        else:  # primitive type
             json_ = object_
     else:
         constructor = type(object_)._def
         data_type = type(object_).__mro__[2]._def
-        single_type_constructor = (len(data_type[1][1]) == 1)
-        single_constructor_argument = (len(constructor[1][1]) == 1)
-        is_record = (constructor[1][0] == "map")
+        single_type_constructor = len(data_type[1][1]) == 1
+        single_constructor_argument = len(constructor[1][1]) == 1
+        is_record = constructor[1][0] == "map"
 
         json_ = odict()
         if not single_type_constructor:
@@ -544,17 +584,18 @@ def write_json_v1(object_):
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
     import pandoc.types as types
+
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
         type_ = getattr(types, type_)
-    if not isinstance(type_, list): # not a type def (yet).
+    if not isinstance(type_, list):  # not a type def (yet).
         if issubclass(type_, types.Type):
             type_ = type_._def
-        else: # primitive type
+        else:  # primitive type
             return type_(json_)
 
-    if type_[0] == "type": # type alias
+    if type_[0] == "type":  # type alias
         type_ = type_[1][1]
         return read_json_v2(json_, type_)
     if type_[0] == "list":
@@ -562,10 +603,18 @@ def read_json_v2(json_, type_=None):
         return [read_json_v2(item, item_type) for item in json_]
     if type_[0] == "tuple":
         tuple_types = type_[1]
-        return tuple(read_json_v2(item, item_type) for (item, item_type) in zip(json_, tuple_types))
+        return tuple(
+            read_json_v2(item, item_type)
+            for (item, item_type) in zip(json_, tuple_types)
+        )
     if type_[0] == "map":
         key_type, value_type = type_[1]
-        return types.map([(read_json_v2(k, key_type), read_json_v2(v, value_type)) for (k, v) in json_.items()])
+        return types.map(
+            [
+                (read_json_v2(k, key_type), read_json_v2(v, value_type))
+                for (k, v) in json_.items()
+            ]
+        )
 
     data_type = None
     constructor = None
@@ -581,9 +630,9 @@ def read_json_v2(json_, type_=None):
         constructor_type = getattr(types, constructor[0])
         data_type = constructor_type.__mro__[2]._def
 
-    single_type_constructor = (len(data_type[1][1]) == 1)
-    single_constructor_argument = (len(constructor[1][1]) == 1)
-    is_record = (constructor[1][0] == "map")
+    single_type_constructor = len(data_type[1][1]) == 1
+    single_constructor_argument = len(constructor[1][1]) == 1
+    is_record = constructor[1][0] == "map"
 
     json_args = None
     args = None
@@ -593,8 +642,8 @@ def read_json_v2(json_, type_=None):
         blocks = read_json_v2(json_["blocks"], ["list", ["Block"]])
         return types.Pandoc(meta, blocks)
     elif constructor[0] == "Meta":
-        type_ = ['map', ['String', 'MetaValue']]
-        return types.Meta(read_json_v2(json_, type_)) 
+        type_ = ["map", ["String", "MetaValue"]]
+        return types.Meta(read_json_v2(json_, type_))
     elif not is_record:
         if single_type_constructor:
             json_args = json_
@@ -604,8 +653,8 @@ def read_json_v2(json_, type_=None):
             json_args = [json_args]
         args = [read_json_v2(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
     else:
-        keys = [k for k,t in constructor[1][1]]
-        types_= [t for k, t in constructor[1][1]]
+        keys = [k for k, t in constructor[1][1]]
+        types_ = [t for k, t in constructor[1][1]]
         json_args = [json_[k] for k in keys]
         args = [read_json_v2(jarg, t) for jarg, t in zip(json_args, types_)]
     C = getattr(types, constructor[0])
@@ -616,6 +665,7 @@ def read_json_v2(json_, type_=None):
 # ------------------------------------------------------------------------------
 def write_json_v2(object_):
     import pandoc.types as types
+
     odict = collections.OrderedDict
     type_ = type(object_)
     if not isinstance(object_, types.Type):
@@ -623,23 +673,23 @@ def write_json_v2(object_):
             json_ = [write_json_v2(item) for item in object_]
         elif isinstance(object_, dict):
             json_ = odict((k, write_json_v2(v)) for k, v in object_.items())
-        else: # primitive type
+        else:  # primitive type
             json_ = object_
     elif isinstance(object_, types.Pandoc):
         version = configure(read=True)["pandoc_types_version"]
         metadata = object_[0]
         blocks = object_[1]
         json_ = odict()
-        json_["pandoc-api-version"] = [int(n) for n in version.split('.')]
+        json_["pandoc-api-version"] = [int(n) for n in version.split(".")]
         json_["meta"] = write_json_v2(object_[0][0])
         json_["blocks"] = write_json_v2(object_[1])
     else:
         constructor = type(object_)._def
         data_type = type(object_).__mro__[2]._def
-        single_type_constructor = (len(data_type[1][1]) == 1)
-        has_constructor_arguments = (len(constructor[1][1]) >= 1)
-        single_constructor_argument = (len(constructor[1][1]) == 1)
-        is_record = (constructor[1][0] == "map")
+        single_type_constructor = len(data_type[1][1]) == 1
+        has_constructor_arguments = len(constructor[1][1]) >= 1
+        single_constructor_argument = len(constructor[1][1]) == 1
+        is_record = constructor[1][0] == "map"
 
         json_ = odict()
         if not single_type_constructor:
@@ -658,7 +708,7 @@ def write_json_v2(object_):
             for key, arg in zip(keys, object_):
                 json_[key] = write_json_v2(arg)
     return json_
-    
+
 
 # Iteration
 # ------------------------------------------------------------------------------
@@ -691,7 +741,7 @@ def write_json_v2(object_):
 #     for example is the root and the indices), but we don't care,
 #     the redundancy is actually convenient.
 #
-#     And add a "path" option to iter to return the (elt, path) pair. 
+#     And add a "path" option to iter to return the (elt, path) pair.
 #     Does it fly? Name ? "path" or "context"? Nah, path ...
 #
 #   - Nota: does it make sense to also use string keys in path for maps?
@@ -708,9 +758,10 @@ def write_json_v2(object_):
 #  - TODO: explore functional programming style (e.g. fmap for trees, etc.)
 #
 
+
 def iter(elt, path=False, enter=None, exit=None):
     if path is not False:
-        if not isinstance(path, list): # e.g. path = True
+        if not isinstance(path, list):  # e.g. path = True
             path = []
 
     args = [elt]
@@ -729,96 +780,106 @@ def iter(elt, path=False, enter=None, exit=None):
         elt = elt.items()
     if hasattr(elt, "__iter__") and not isinstance(elt, types.String):
         for i, child in enumerate(elt):
-             if path is False:
-                 child_path = False
-             else:
-                 child_path = path.copy() + [(elt, i)]
-             for subelt in iter(child, path=child_path, enter=enter, exit=exit):
-                 yield subelt
+            if path is False:
+                child_path = False
+            else:
+                child_path = path.copy() + [(elt, i)]
+            for subelt in iter(child, path=child_path, enter=enter, exit=exit):
+                yield subelt
 
     if exit is not None:
         exit(*args)
 
+
 def iter_path(elt):
     path = []
+
     def enter(elt_):
         path.append(elt_)
+
     def exit(elt_):
         path.pop()
+
     for elt_ in iter(elt, enter=enter, exit=exit):
         yield path
+
 
 def get_parent(doc, elt):
     for path in iter_path(doc):
         elt_ = path[-1]
         if elt is elt_:
-             parent = path[-2] if len(path) >= 2 else None
-             return parent
+            parent = path[-2] if len(path) >= 2 else None
+            return parent
 
 
 # Main Entry Point
 # ------------------------------------------------------------------------------
-
-# TODO: adapt to the new API (not json-centered) or remove (?)
-#
-# Could still be useful to see the architecture of the document
-# (more readable than JSON, ESPECIALLY IF WE SUPPORT CUSTOM INDENTATION!)
-#
+# TODO : support custom indendation for Python output.
+# BUG : by using files instead of filenames in argparse types,
+#       we are losing the extension info and cannot select the proper format.
+#       This is an issue in itself ; but since we use the pandoc convention
+#       not to have "pdf" as an output format per se, that means that we 
+#       cannot output pdf at all.
 def main():
     prog = "python -m pandoc"
-    description = "Read/write pandoc JSON documents with Python"
+    description = "Read/write pandoc documents with Python"
     parser = argparse.ArgumentParser(prog=prog, description=description)
-
-    try:
-        stdin = sys.stdin.buffer
-    except:
-        stdin = sys.stdin
-    parser.add_argument("input", 
-                        nargs="?", metavar="INPUT",
-                        type=argparse.FileType("rb"), default=stdin,
-                        help="input file")
-    try:
-        stdout = sys.stdout.buffer
-    except:
-        stdout = sys.stdout
-    parser.add_argument("-o", "--output", 
-                        nargs="?", 
-                        type=argparse.FileType("wb"), default=sys.stdout,
-                        help="output file")
+    parser.set_defaults(command=None)
+    subparsers = parser.add_subparsers()
+    read_parser = subparsers.add_parser("read")
+    read_parser.set_defaults(command="read")
+    read_parser.add_argument(
+        "file",
+        nargs="?",
+        metavar="FILE",
+        type=argparse.FileType("rb"),
+        default=sys.stdin,
+        help="input file",
+    )
+    read_parser.add_argument(
+        "-f", "--format", nargs="?", default=None, help="input format",
+    )
+    read_parser.add_argument(  # YAGNI?
+        "-o",
+        "--output",
+        nargs="?",
+        type=argparse.FileType("wb"),
+        default=sys.stdout,
+        help="output file",
+    )
+    write_parser = subparsers.add_parser("write")
+    write_parser.set_defaults(command="write")
+    write_parser.add_argument(
+        "file",
+        nargs="?",
+        metavar="FILE",
+        type=argparse.FileType("rb"),
+        default=sys.stdin,
+        help="input file",
+    )
+    write_parser.add_argument(
+        "-f", "--format", nargs="?", default=None, help="output format",
+    )
+    write_parser.add_argument(
+        "-o",
+        "--output",
+        nargs="?",
+        type=argparse.FileType("wb"),
+        default=sys.stdout.buffer,
+        help="output file",
+    )
     args = parser.parse_args()
-
-    input_text = args.input.read()
-    if "b" in args.input.mode:
-        # given the choice, we interpret the input as utf-8
-        input_text = input_text.decode("utf-8")
-
-    try: # try JSON content first
-        json_ = json.loads(input_text, object_pairs_hook=collections.OrderedDict)
-        doc = read(json_)
-    except:
-        pass # maybe it's a Python document?
-    else:
-        doc_repr = (repr(doc) + "\n") # this repr is 7-bit safe.
+    if args.command == "read":
+        doc = read(file=args.file, format=args.format)
+        output = str(doc) + "\n"
         if "b" in args.output.mode:
-            # given the choice, we use utf-8.
-            doc_repr = doc_repr.encode("utf-8")
-        args.output.write(doc_repr)
-        return
-        
-    globs = types.__dict__.copy()
-    try:
-        doc = eval(input_text, globs)
-        json_ = write(doc)
-    except:
-        pass # not a Python document either ...
-    else:
-        json_repr = (json.dumps(json_) + "\n") # also 7-bit safe
-        if "b" in args.output.mode:
-            # given the choice, we use utf-8.
-            json_repr = json_repr.encode("utf-8")
-        args.output.write(json_repr)
-        return
-
-    sys.exit("pandoc (python): invalid input document")
-
-
+            output = output.encode("utf-8")
+        args.output.write(output)
+    elif args.command == "write":
+        doc_string = args.file.read()
+        if isinstance(doc_string, bytes):
+            doc_string = doc_string.decode("utf-8")
+        from . import types
+        globs = types.__dict__.copy()
+        doc = eval(doc_string, globs)
+        write(doc, file=args.output, format=args.format)
