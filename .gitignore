@@ -6,6 +6,9 @@ setup.cfg
 *.egg-info
 sandbox
 
+# mkdocs
+docs
+
 # VS code
 .vscode
 

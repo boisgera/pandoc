@@ -12,9 +12,19 @@ before_install:
   - bash conda.sh -b -p $HOME/conda
   - export PATH=$HOME/conda/bin:$PATH
   - conda env update -n base -f $CONDA_ENV
+
 install:
   - pip install .
+  - mkdocs build
+  - mv .gitignore .gitignore.bak # prepare gh-pages upload
 
 script: 
   - python test.py
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN  
+  on:
+    branch: master
 
