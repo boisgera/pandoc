@@ -23,6 +23,7 @@ script:
 
 deploy:
   provider: pages
+  local_dir: docs
   skip-cleanup: true
   github-token: $GITHUB_TOKEN  
   on:
