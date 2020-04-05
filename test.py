@@ -7,7 +7,7 @@ import sys
 import re
 
 # Third-Party Libraries
-import yaml
+import strictyaml
 
 
 # Doctest Helper
@@ -59,7 +59,7 @@ doctest.OutputChecker = Python3OutputChecker
 
 # Test Files
 # ------------------------------------------------------------------------------
-mkdocs_pages = yaml.load(open("mkdocs.yml"))["pages"]
+mkdocs_pages = strictyaml.load(open("mkdocs.yml").read())["pages"].data
 mkdocs_files = ["mkdocs/" + list(item.values())[0] for item in mkdocs_pages]
 extra_testfiles = []
 test_files = mkdocs_files + extra_testfiles
