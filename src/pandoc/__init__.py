@@ -7,6 +7,7 @@ import copy
 import inspect
 import json
 import os.path
+import shlex
 import shutil
 import sys
 import time
@@ -19,41 +20,10 @@ import plumbum
 import pandoc.about
 from . import utils
 
-# TODO / Roadmap
+# TODO
 # ------------------------------------------------------------------------------
-#
-# TODO: target 2.0 milestone, that supports up to pandoc 2.0
-#
-#  - rethink the UX when configure is NOT called explictly,
-#    I may import types, but there is nothing in it.
-#    It's only when I do some read/write that the default configure
-#    is called ... Shall I plug a configure() hook into the types
-#    modules, to be called at import time?
-#    (so that you can still import pandoc, configure if needed,
-#    then import types). But then read and write would have to
-#    import types lazily (OK, why not?).
-#
-#  - study encoding issues and bytes vs unicode representation.
-#
-#
-#  - switch readers/writers (lazily) depending of pandoc_api_version >= 1.17
-#    or not
-#
-#  - pandoc executable API (connect with version API)
-#
-#  - reader and writer for more than JSON (Markdown, HTML, etc.)
-#
-#  - test new JSON scheme completely (need a harness with arbitrary
-#    pandoc executable version)
-#
-#  - error management/messages in type checking. MAYBE ROLLBACK THIS
-#    ATM (needs a great effort) and make a branch that will land in
-#    3.0 ? Or 2.1 whatever ...
-#
-#  - documentation (mkdocs): START ! Will make the public API design
-#    issues easier (maybe)
-#
-#  - reconsider "main"?
+# 
+#   - Add pandoc options to the CLI (use shlex)
 #
 
 # Filesystem Helper
@@ -281,7 +251,6 @@ _readers = {
 def default_reader_name(filename):
     _, ext = os.path.splitext(filename)
     return _readers.get(ext)
-
 
 def read(source=None, file=None, format=None, options=None):
     if configure(read=True) is None:
