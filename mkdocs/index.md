@@ -23,8 +23,9 @@ It can be used to analyze, create and transform documents, in Python :
     Para([Str('Hello'), Space(), Str('world!')])
     >>> from pandoc.types import Str
     >>> paragraph[0][2] = Str('Python!')
-    >>> pandoc.write(doc)
-    'Hello Python!\n'
+    >>> text = pandoc.write(doc)
+    >>> print(text) # doctest: +NORMALIZE_WHITESPACE
+    Hello Python!
 
 [Pandoc] is the general markup converter (and Haskell library) written by [John MacFarlane].
 
