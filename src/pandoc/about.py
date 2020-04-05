@@ -1,19 +1,14 @@
 # coding: utf-8
 
-metadata = dict(
-  __name__     = "pandoc",
-  __version__  = "2.0a3", 
-  __license__  = "MIT License",
-  __author__   = "Sébastien Boisgérault <Sebastien.Boisgerault@mines-paristech.fr>",
-  __url__      = "https://github.com/boisgera/pandoc",
-  __summary__  = "Pandoc Documents for Python",
-  __keywords__ = """
-                 software development, topic / text processing, 
-                 python / 3,
-                 alpha
-                 """
-)
-
-globals().update(metadata)
-__all__ = list(metadata.keys())
+name = "pandoc"
+version = "2.0a4"
+license = "MIT License"
+description = "Pandoc Documents for Python"
+author = "Sébastien Boisgérault"
+author_email = "Sebastien.Boisgerault@mines-paristech.fr"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Topic :: Software Development",
+  "Topic :: Text Editors :: Text Processing"
+]
 

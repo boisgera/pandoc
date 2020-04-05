@@ -16,9 +16,8 @@ import tempfile
 import plumbum
 
 # Pandoc
-from .about import *
+import pandoc.about
 from . import utils
-
 
 # TODO / Roadmap
 # ------------------------------------------------------------------------------
