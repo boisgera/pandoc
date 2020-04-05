@@ -27,7 +27,7 @@ you may install it with :
 Overview
 --------------------------------------------------------------------------------
 
-This project brings a data model for markdown documents to Python:
+This project brings [Pandoc]'s data model for markdown documents to Python:
 
     $ echo "Hello world!" | python -m pandoc read 
     Pandoc(Meta(map()), [Para([Str('Hello'), Space(), Str('world!')])])
@@ -48,9 +48,7 @@ It can be used to analyze, create and transform documents, in Python :
     >>> pandoc.write(doc)
     'Hello Python!'
 
-This data model is the same as [Pandoc], 
-the general markup converter (and Haskell library) written by [John MacFarlane].
-Except that it's now available in Python [instead of Haskell][TPD].
+[Pandoc] is the general markup converter (and Haskell library) written by [John MacFarlane].
 
 
 [Pandoc]: http://pandoc.org/
