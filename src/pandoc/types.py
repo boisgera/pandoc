@@ -1,10 +1,7 @@
-# Python 2.7 Standard Library
-from __future__ import absolute_import, print_function
+# coding: utf-8
 
-try:
-    import builtins
-except ImportError:
-    import __builtin__ as builtins
+# Python 3 Standard Library
+import builtins
 import collections
 import inspect
 import pydoc
@@ -99,7 +96,7 @@ def _make_builtin_types():
         td["Text"] = str
     td["list"] = list
     td["tuple"] = tuple
-    td["map"] = type("map", (collections.OrderedDict,), {"__eq__": dict.__eq__})
+    td["map"] = dict
 
 
 def clear_types():

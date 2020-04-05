@@ -21,7 +21,7 @@ And that it's what we try to do here?
     >>> text = "Hello, World!"
     >>> doc = pandoc.read(text)
     >>> doc
-    Pandoc(Meta(map()), [Para([Str('Hello,'), Space(), Str('World!')])])
+    Pandoc(Meta({}), [Para([Str('Hello,'), Space(), Str('World!')])])
 
 A document is an instance of the `Pandoc` class; it has two arguments
 
