@@ -12,8 +12,10 @@ Pandoc (Python Library)
 
 *This README is about the 2.x branch of the library (alpha stage!).*
 
-# Getting started
-Install the latest version with:*
+Getting started
+--------------------------------------------------------------------------------
+
+Install the latest version with:
 
     $ pip install --upgrade git+https://github.com/boisgera/pandoc.git
 
@@ -22,9 +24,10 @@ you may install it with :
 
     $ conda install -c conda-forge pandoc 
 
-# Getting started
+Overview
+--------------------------------------------------------------------------------
 
-This project brings a data model for markdown documents in Python:
+This project brings a data model for markdown documents to Python:
 
     $ echo "Hello world!" | python -m pandoc read 
     Pandoc(Meta(map()), [Para([Str('Hello'), Space(), Str('world!')])])
@@ -45,13 +48,13 @@ It can be used to analyze, create and transform documents, in Python :
     >>> pandoc.write(doc)
     'Hello Python!'
 
-This data model is also used by [Pandoc], the general markup converter 
-(and Haskell library) written by [John MacFarlane].
+This data model is the same as [Pandoc], 
+the general markup converter (and Haskell library) written by [John MacFarlane].
+Except that it's now available in Python [instead of Haskell][TPD].
 
 
 [Pandoc]: http://pandoc.org/
 [John MacFarlane]: http://johnmacfarlane.net/
 [Haskell]: https://www.haskell.org/
 [Python]: https://www.python.org/
-[text-pandoc-definition]: https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html
-
+[TPD]: https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html
