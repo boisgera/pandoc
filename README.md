@@ -38,7 +38,7 @@ It can be used to analyze, create and transform documents, in Python :
     >>> text = "Hello world!"
     >>> doc = pandoc.read(text)
     >>> doc
-    Pandoc(Meta({}, [Para([Str('Hello'), Space(), Str('world!')])])
+    Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 
     >>> paragraph = doc[1][0]
     >>> paragraph
