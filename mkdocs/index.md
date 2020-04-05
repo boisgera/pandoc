@@ -8,7 +8,7 @@ Overview
 This project brings [Pandoc]'s data model for markdown documents to Python:
 
     $ echo "Hello world!" | python -m pandoc read 
-    Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+    Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])ZZZ
 
 It can be used to analyze, create and transform documents, in Python :
 
