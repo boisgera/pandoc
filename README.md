@@ -15,64 +15,40 @@ Install the latest version with:*
 
     $ pip install --upgrade git+https://github.com/boisgera/pandoc.git
 
-This project provides a Pythonic data model for [Pandoc] documents :
+and if needed, install the [Pandoc] command-line tool:
 
-    $ echo "Markdown text" | python -m pandoc read 
-    Pandoc(Meta(map()), [Para([Str('Markdown'), Space(), Str('text')])])
+    $ conda install -c conda-forge pandoc 
 
-A Pythonic Version of Pandoc
---------------------------------------------------------------------------------
+-----
 
-[Pandoc] is the "document swiss army knife" made by [John MacFarlane].
-It brings:
+This project brings a data model for markdown documents in Python:
 
-  - a command-line tool,
+    $ echo "Hello world!" | python -m pandoc read 
+    Pandoc(Meta(map()), [Para([Str('Hello'), Space(), Str('world!')])])
 
-  - a [Haskell] library, 
+It can be used to analyze, create and transform documents, in Python :
 
-  - a document (meta-)model.
+    >>> import pandoc
+    >>> text = "Hello world!"
+    >>> doc = pandoc.read(text)
+    >>> doc
+    Pandoc(Meta(map()), [Para([Str('Hello'), Space(), Str('world!')])])
 
-The command line tool is what you need to convert documents from one format 
-to another, for example Markdown to HTML or Markdown to PDF.
-But to analyze, create or transform documents, 
-you may find this Python library useful.
+    >>> paragraph = doc[1][0]
+    >>> paragraph
+    Para([Str('Hello'), Space(), Str('world!')])
+    >>> from pandoc.types import Str
+    >>> paragraph[0][2] = Str('Python!')
+    >>> pandoc.write(doc)
+    'Hello Python!'
+
+This data model is also used by [Pandoc], the general markup converter 
+(and Haskell library) written by [John MacFarlane].
+
 
 [Pandoc]: http://pandoc.org/
 [John MacFarlane]: http://johnmacfarlane.net/
 [Haskell]: https://www.haskell.org/
 [Python]: https://www.python.org/
-
-The basic process is the following:
-
- 1. First, create a document; for example, read a Markdown text
-
-        >>> import pandoc
-        >>> markdown = "Hello"
-        >>> doc = pandoc.read(markdown)
-        >>> doc
-        Pandoc(Meta(map()), [Para([Str(u'Hello!')])])
-
- 2. Then, analyze and/or transform the document as you like
-
-        >>> from pandoc.types import *
-        >>> para = doc[1][0]
-        >>> para
-        Para([Str(u'Hello')])
-        >>> contents = para[0]
-        >>> contents
-        [Str(u'Hello')]
-        >>> contents.extend([Space(), Str("World!")])
-        >>> doc
-        Pandoc(Meta(map()), [Para([Str(u'Hello'), Space(), Str('World')])])
-
- 3. Finally, output the new document as Markdown
-
-        >>> pandoc.write(doc)
-        u'Hello World\n'
-
-    and optionally, generate its HTML version
-
-        >>> pandoc.write(doc, file="doc.html")
-        u'<p>Hello World</p>\n'
-
+[text-pandoc-definition]: https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html
 
