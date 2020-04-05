@@ -12,7 +12,7 @@ This project brings [Pandoc]'s data model for markdown documents to Python:
 
 It can be used to analyze, create and transform documents, in Python :
 
-    >>> import pandocZZZ
+    >>> import pandoc
     >>> text = "Hello world!"
     >>> doc = pandoc.read(text)
     >>> doc
