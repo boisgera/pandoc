@@ -15,6 +15,10 @@ Install the latest version with:*
 
     $ pip install --upgrade git+https://github.com/boisgera/pandoc.git
 
+This project provides a Pythonic data model for [Pandoc] documents :
+
+    $ echo "Markdown text" | python -m pandoc read 
+    Pandoc(Meta(map()), [Para([Str('Markdown'), Space(), Str('text')])])
 
 A Pythonic Version of Pandoc
 --------------------------------------------------------------------------------
