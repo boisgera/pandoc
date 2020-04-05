@@ -77,6 +77,11 @@ def rmtree(path):
 # ------------------------------------------------------------------------------
 _configuration = None
 
+def import_types():
+    if configure(read=True) is None:
+        configure(auto=True)
+    import pandoc.types as types
+    return types
 
 def configure(
     auto=None,
@@ -395,12 +400,10 @@ def default_writer_name(filename):
 
 
 def write(doc, file=None, format=None, options=None):
-    if configure(read=True) is None:
-        configure(auto=True)
     if options is None:
         options = []
 
-    import pandoc.types as types
+    types = import_types()
 
     if isinstance(doc, types.Inline):
         inline = doc
@@ -470,7 +473,7 @@ def write(doc, file=None, format=None, options=None):
 # JSON Reader v1
 # ------------------------------------------------------------------------------
 def read_json_v1(json_, type_=None):
-    import pandoc.types as types
+    types = import_types
 
     if type_ is None:
         type_ = types.Pandoc
@@ -543,7 +546,7 @@ def read_json_v1(json_, type_=None):
 # JSON Writer v1
 # ------------------------------------------------------------------------------
 def write_json_v1(object_):
-    import pandoc.types as types
+    types = import_types()
 
     odict = collections.OrderedDict
     type_ = type(object_)
@@ -583,7 +586,7 @@ def write_json_v1(object_):
 # JSON Reader v2
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
-    import pandoc.types as types
+    types = import_types()
 
     if type_ is None:
         type_ = types.Pandoc
@@ -664,7 +667,7 @@ def read_json_v2(json_, type_=None):
 # JSON Writer v2
 # ------------------------------------------------------------------------------
 def write_json_v2(object_):
-    import pandoc.types as types
+    types = import_types()
 
     odict = collections.OrderedDict
     type_ = type(object_)
@@ -838,7 +841,7 @@ def main():
     read_parser.add_argument(
         "-f", "--format", nargs="?", default=None, help="input format",
     )
-    read_parser.add_argument(  # YAGNI?
+    read_parser.add_argument(
         "-o",
         "--output",
         nargs="?",
@@ -865,27 +868,36 @@ def main():
         help="output file",
     )
     args = parser.parse_args()
-    if args.command == "read":
+    if args.command == 'read':
         if args.file is None:
-            file = sys.stdin.buffer
+            file = sys.stdin
         else:
-            file = open(args.file, "rb")
+            file = args.file
         doc = read(file=file, format=args.format)
         content = str(doc) + "\n"
-
         if args.output is None:
             output = sys.stdout.buffer
         else:
-            output = open(args.output, "wb")
-        if "b" in output.mode: # assert instead ?
-             content = content.encode("utf-8")
+            output = open(args.output, 'wb')
+        assert 'b' in output.mode
+        content = content.encode('utf-8')
         output.write(content)
-    elif args.command == "write":
-        # TODO: adapt to filetype -> filename transition
-        doc_string = args.file.read()
-        if isinstance(doc_string, bytes):
-            doc_string = doc_string.decode("utf-8")
-        from . import types
+    elif args.command == 'write':
+        if args.file is None:
+            # We always interpret the standard input stream as utf-8 ; 
+            # see <https://pandoc.org/MANUAL.html#character-encoding>
+            file = sys.stdin.buffer # sys.stdin may not be utf-8.
+            assert 'b' in file.mode 
+            doc_bytes = file.read()
+            doc_string = doc_bytes.decode("utf-8")
+        else:
+            file = open(args.file, mode='r', encoding='utf-8') 
+            doc_string = file.read()
+        types = import_types()
         globs = types.__dict__.copy()
         doc = eval(doc_string, globs)
-        write(doc, file=args.output, format=args.format)
+        if args.output is None:
+            output = sys.stdout.buffer
+        else:
+            output = args.output
+        write(doc, file=output, format=args.format)
