@@ -76,11 +76,14 @@ def rmtree(path):
 # ------------------------------------------------------------------------------
 _configuration = None
 
+
 def import_types():
     if configure(read=True) is None:
         configure(auto=True)
     import pandoc.types as types
+
     return types
+
 
 def configure(
     auto=None,
@@ -820,7 +823,7 @@ def get_parent(doc, elt):
 # BUG : by using files instead of filenames in argparse types,
 #       we are losing the extension info and cannot select the proper format.
 #       This is an issue in itself ; but since we use the pandoc convention
-#       not to have "pdf" as an output format per se, that means that we 
+#       not to have "pdf" as an output format per se, that means that we
 #       cannot output pdf at all.
 def main():
     prog = "python -m pandoc"
@@ -831,43 +834,27 @@ def main():
     read_parser = subparsers.add_parser("read")
     read_parser.set_defaults(command="read")
     read_parser.add_argument(
-        "file",
-        nargs="?",
-        metavar="FILE",
-        default=None,
-        help="input file",
+        "file", nargs="?", metavar="FILE", default=None, help="input file",
     )
     read_parser.add_argument(
         "-f", "--format", nargs="?", default=None, help="input format",
     )
     read_parser.add_argument(
-        "-o",
-        "--output",
-        nargs="?",
-        default=None,
-        help="output file",
+        "-o", "--output", nargs="?", default=None, help="output file",
     )
     write_parser = subparsers.add_parser("write")
     write_parser.set_defaults(command="write")
     write_parser.add_argument(
-        "file",
-        nargs="?",
-        metavar="FILE",
-        default=None,
-        help="input file",
+        "file", nargs="?", metavar="FILE", default=None, help="input file",
     )
     write_parser.add_argument(
         "-f", "--format", nargs="?", default=None, help="output format",
     )
     write_parser.add_argument(
-        "-o",
-        "--output",
-        nargs="?",
-        default=None,
-        help="output file",
+        "-o", "--output", nargs="?", default=None, help="output file",
     )
     args = parser.parse_args()
-    if args.command == 'read':
+    if args.command == "read":
         if args.file is None:
             file = sys.stdin
         else:
@@ -877,20 +864,20 @@ def main():
         if args.output is None:
             output = sys.stdout.buffer
         else:
-            output = open(args.output, 'wb')
-        assert 'b' in output.mode
-        content = content.encode('utf-8')
+            output = open(args.output, "wb")
+        assert "b" in output.mode
+        content = content.encode("utf-8")
         output.write(content)
-    elif args.command == 'write':
+    elif args.command == "write":
         if args.file is None:
-            # We always interpret the standard input stream as utf-8 ; 
+            # We always interpret the standard input stream as utf-8 ;
             # see <https://pandoc.org/MANUAL.html#character-encoding>
-            file = sys.stdin.buffer # sys.stdin may not be utf-8.
-            assert 'b' in file.mode 
+            file = sys.stdin.buffer  # sys.stdin may not be utf-8.
+            assert "b" in file.mode
             doc_bytes = file.read()
             doc_string = doc_bytes.decode("utf-8")
         else:
-            file = open(args.file, mode='r', encoding='utf-8') 
+            file = open(args.file, mode="r", encoding="utf-8")
             doc_string = file.read()
         types = import_types()
         globs = types.__dict__.copy()

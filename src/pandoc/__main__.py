@@ -4,4 +4,3 @@
 import pandoc
 
 pandoc.main()
-

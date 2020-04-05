@@ -7,9 +7,8 @@ description = "Pandoc Documents for Python"
 author = "Sébastien Boisgérault"
 author_email = "Sebastien.Boisgerault@mines-paristech.fr"
 classifiers = [
-  "Programming Language :: Python :: 3",
-  "Development Status :: 3 - Alpha",
-  "Topic :: Software Development",
-  "Topic :: Text Editors :: Text Processing"
+    "Programming Language :: Python :: 3",
+    "Development Status :: 3 - Alpha",
+    "Topic :: Software Development",
+    "Topic :: Text Editors :: Text Processing",
 ]
-
