@@ -23,7 +23,7 @@ from . import utils
 # TODO
 # ------------------------------------------------------------------------------
 # 
-#   - Add pandoc options to the CLI (use shlex)
+#   - Add pandoc options to the CLI (use shlex or partial parsing in argparse ?)
 #
 
 # Filesystem Helper
