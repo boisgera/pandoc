@@ -10,16 +10,19 @@ Pandoc (Python Library)
 [![Travis CI Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/usube01hmjcl1m0t?svg=true)](https://ci.appveyor.com/project/boisgera/pandoc)
 
-*This README is about the 2.x branch of the library (alpha stage!). 
+*This README is about the 2.x branch of the library (alpha stage!).*
+
+# Getting started
 Install the latest version with:*
 
     $ pip install --upgrade git+https://github.com/boisgera/pandoc.git
 
-and if needed, install the [Pandoc] command-line tool:
+The [Pandoc] command-line tool is a also required dependency ;
+you may install it with :
 
     $ conda install -c conda-forge pandoc 
 
------
+# Getting started
 
 This project brings a data model for markdown documents in Python:
 
