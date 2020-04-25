@@ -7,8 +7,8 @@ site_dir: docs
 pages:
   - Overview: index.md
   - Examples: examples.md
-  - Document: ast.md
-  - Elements: markdown.md
+  - Document: document.md
+  - Elements: elements.md
   - Configuration: configuration.md
   - API Reference: api.md
 
