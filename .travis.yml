@@ -4,7 +4,7 @@ language: bash
 
 env:
   global:
-    - CONDA=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh 
+    - CONDA=https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     - CONDA_ENV=environment.yml
 
 before_install:
