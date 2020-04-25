@@ -22,7 +22,7 @@ from . import utils
 
 # TODO
 # ------------------------------------------------------------------------------
-# 
+#
 #   - Add pandoc options to the CLI (use shlex or partial parsing in argparse ?)
 #
 
@@ -252,6 +252,7 @@ def default_reader_name(filename):
     _, ext = os.path.splitext(filename)
     return _readers.get(ext)
 
+
 def read(source=None, file=None, format=None, options=None):
     if configure(read=True) is None:
         configure(auto=True)
@@ -378,12 +379,17 @@ def write(doc, file=None, format=None, options=None):
 
     if isinstance(doc, types.Inline):
         inline = doc
-        doc = types.Plain([inline])
+        doc = [inline]
+    if isinstance(doc, list) and all(isinstance(elt, types.Inline) for elt in doc):
+        inlines = doc
+        doc = types.Plain(inlines)
     if isinstance(doc, types.Block):
         block = doc
-        doc = types.Pandoc(types.Meta({}), [block])
+        doc = [block]
+    if isinstance(doc, list) and all(isinstance(elt, types.Block) for elt in doc):
+        blocks = doc
+        doc = types.Pandoc(types.Meta({}), blocks)
     if not isinstance(doc, types.Pandoc):
-        # TODO: support lists of inlines and blocks ?
         raise TypeError(f"{doc!r} is not a Pandoc, Block or Inline instance.")
 
     tmp_dir = tempfile.mkdtemp()
