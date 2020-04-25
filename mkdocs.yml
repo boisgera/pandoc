@@ -8,6 +8,7 @@ pages:
   - Overview: index.md
   - Examples: examples.md
   - Document: ast.md
+  - Elements: markdown.md
   - Configuration: configuration.md
   - API Reference: api.md
 
