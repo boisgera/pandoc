@@ -1,41 +1,30 @@
 Elements
 ================================================================================
 
+
+    >>> import pandoc
+    >>> from pandoc.types import *
+
 Helpers
 --------------------------------------------------------------------------------
 
-We introduce the helper function `show` to display a document or document 
-fragment (inline or block) as markdown:
+We introduce a simple function to display pandoc elements in markdown:
 
-    >>> def show(elt):
-    ...     if isinstance(elt, Pandoc):
-    ...         doc = elt
-    ...         print(pandoc.write(doc, format="markdown"))
-    ...     elif isinstance(elt, list):
-    ...         elts = elt
-    ...         if len(elts) > 0:
-    ...             if isinstance(elts[0], Block):
-    ...                 blocks = elts
-    ...                 show(Pandoc(Meta({}), blocks))
-    ...             elif isinstance(elts[0], Inline):
-    ...                 inlines = elts
-    ...                 block = Plain(elts)
-    ...                 show([block])
-    ...     elif isinstance(elt, (Inline, Block)):
-    ...         show([elt])
+    >>> def display(elt):
+    ...     print(pandoc.write(elt))
 
-We also introduce a function `find` to get the first element of a given type
-in a document or document fragment:
+We also define a `to` function `to` to get a specific type of element inside
+a document:
 
-    >>> def find(elt, type):
+    >>> def to(elt, type):
     ...     for _elt in pandoc.iter(elt):
     ...         if isinstance(_elt, type):
     ...             return _elt
 
-We monkey-patch the base class for pandoc types to be able to call `find` 
-as a method:
+Since we're a bit reckless, we monkey-patch the pandoc type base class 
+to use `to` as a method:
 
-    >>> pandoc.types.Type.find = find
+    >>> Type.to = to
 
 Paragraphs
 --------------------------------------------------------------------------------
@@ -99,7 +88,7 @@ Actually, `TableCell` is not a new type, but an alias for "list of blocks":
 Let's have a look at the attributes of the table above:
 
     >>> doc = pandoc.read(text)
-    >>> table = doc.find(Table)
+    >>> table = doc.to(Table)
     >>> caption, alignments, widths, headers, rows = table[:] 
 
 Here are the column headers:
@@ -107,7 +96,7 @@ Here are the column headers:
     >>> headers
     [[Plain([Str('Right')])], [Plain([Str('Left')])], [Plain([Str('Center')])], [Plain([Str('Default')])]]
     >>> for cell in headers:
-    ...     show(cell)
+    ...     display(cell)
     Right
     <BLANKLINE>
     Left
@@ -124,7 +113,7 @@ For example, we can display the contents of the first row:
     [[[Plain([Str('12')])], [Plain([Str('12')])], [Plain([Str('12')])], [Plain([Str('12')])]], [[Plain([Str('123')])], [Plain([Str('123')])], [Plain([Str('123')])], [Plain([Str('123')])]], [[Plain([Str('1')])], [Plain([Str('1')])], [Plain([Str('1')])], [Plain([Str('1')])]]]
     >>> first_row = rows[0]
     >>> for cell in first_row:
-    ...     show(cell)
+    ...     display(cell)
     12
     <BLANKLINE>
     12
@@ -187,7 +176,7 @@ that look like this:
 
 For this multiline table, the table parser computes the relative column widths:
 
-    >>> table = pandoc.read(text).find(Table)
+    >>> table = pandoc.read(text).to(Table)
     >>> _, _, widths, _, _ = table[:]
     >>> widths
     [0.16666666666666666, 0.1111111111111111, 0.2222222222222222, 0.3611111111111111]
@@ -197,7 +186,7 @@ has plenty of empty space, we could select relative widths to narrow
 the third column and enlarge the last one. Here is how that looks:
 
     >>> table[2] = [1/6, 1/9, 1/9, 5/12] # the sum is 1.0
-    >>> show(table)
+    >>> display(table)
       -------------------------------------------------------------
        Centered   Default       Right Left Aligned
         Header    Aligned     Aligned 
@@ -259,7 +248,7 @@ Of course, it is possible to create tables programmatically:
     The final table is:
 
         >>> table = Table(caption, alignments, widths, headers, rows)
-        >>> show(table)
+        >>> display(table)
           x   1   2    3    4    5
           --- --- ---- ---- ---- ----
           1   1   2    3    4    5
