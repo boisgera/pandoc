@@ -792,6 +792,40 @@ def get_parent(doc, elt):
             return parent
 
 
+# Functional Patterns (Scrap-Your-Boilerplate-ish)
+def _apply_children(f, elt):
+    types = import_types()
+    children = None
+    if isinstance(elt, types.Type):
+        children = elt[:]
+        new_children = [f(child) for child in children]
+        return type(elt)(*new_children)
+    elif isinstance(elt, dict):
+        children = elt.items()
+        return dict([f(child) for child in children])
+    elif hasattr(elt, "__iter__") and not isinstance(elt, types.String):  # list, tuple
+        assert isinstance(elt, list) or isinstance(elt, tuple)
+        new_children = [f(child) for child in elt]
+        return type(elt)(new_children)
+    else:  # bool, int, float, str
+        assert type(elt) in [bool, int, float, str]
+        return elt
+
+
+# TODO: when used as a decorator, the name `apply` seems a bit weird.
+#       dissociate the name of this pattern ? Use `map` ? In the context,
+#       `pandoc.map` that's not so bad. But then, take care of the collision
+#       with types.map (get rid of the latter).
+def apply(f, elt=None):  # bottom-up
+    if elt is None:  # functional style / decorator
+        return lambda elt: apply(f, elt)
+
+    def apply_descendants(elt):
+        return _apply_children(apply(f), elt)
+
+    return f(apply_descendants(elt))
+
+
 # Main Entry Point
 # ------------------------------------------------------------------------------
 # TODO : support custom indendation for Python output.
