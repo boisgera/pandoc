@@ -792,7 +792,8 @@ def get_parent(doc, elt):
             return parent
 
 
-# Functional Patterns (Scrap-Your-Boilerplate-ish)
+# Functional Transformation Patterns (Scrap-Your-Boilerplate-ish)
+# ------------------------------------------------------------------------------
 def _apply_children(f, elt):
     types = import_types()
     children = None
@@ -803,27 +804,34 @@ def _apply_children(f, elt):
     elif isinstance(elt, dict):
         children = elt.items()
         return dict([f(child) for child in children])
-    elif hasattr(elt, "__iter__") and not isinstance(elt, types.String):  # list, tuple
+    elif hasattr(elt, "__iter__") and not isinstance(elt, types.String):
         assert isinstance(elt, list) or isinstance(elt, tuple)
         new_children = [f(child) for child in elt]
         return type(elt)(new_children)
-    else:  # bool, int, float, str
+    else:
         assert type(elt) in [bool, int, float, str]
         return elt
 
+def fmap(f, elt=None): # apply the transform f bottom-up
+    f_ = f
 
-# TODO: when used as a decorator, the name `apply` seems a bit weird.
-#       dissociate the name of this pattern ? Use `map` ? In the context,
-#       `pandoc.map` that's not so bad. But then, take care of the collision
-#       with types.map (get rid of the latter).
-def apply(f, elt=None):  # bottom-up
-    if elt is None:  # functional style / decorator
-        return lambda elt: apply(f, elt)
+    def f(elt): # sugar : no return means no change 
+        new_elt = f_(elt)
+        if new_elt is not None:
+            return new_elt
+        else:
+            return elt
 
-    def apply_descendants(elt):
-        return _apply_children(apply(f), elt)
+    def fmap_(f, elt=None):
+        if elt is None:  # functional style / decorator
+            return lambda elt: fmap_(f, elt)
 
-    return f(apply_descendants(elt))
+        def apply_descendants(elt):
+            return _apply_children(fmap_(f), elt)
+
+        return f(apply_descendants(elt))
+
+    return fmap_(f, elt)
 
 
 # Main Entry Point
@@ -843,24 +851,24 @@ def main():
     read_parser = subparsers.add_parser("read")
     read_parser.set_defaults(command="read")
     read_parser.add_argument(
-        "file", nargs="?", metavar="FILE", default=None, help="input file",
+        "file", nargs="?", metavar="FILE", default=None, help="input file"
     )
     read_parser.add_argument(
-        "-f", "--format", nargs="?", default=None, help="input format",
+        "-f", "--format", nargs="?", default=None, help="input format"
     )
     read_parser.add_argument(
-        "-o", "--output", nargs="?", default=None, help="output file",
+        "-o", "--output", nargs="?", default=None, help="output file"
     )
     write_parser = subparsers.add_parser("write")
     write_parser.set_defaults(command="write")
     write_parser.add_argument(
-        "file", nargs="?", metavar="FILE", default=None, help="input file",
+        "file", nargs="?", metavar="FILE", default=None, help="input file"
     )
     write_parser.add_argument(
-        "-f", "--format", nargs="?", default=None, help="output format",
+        "-f", "--format", nargs="?", default=None, help="output format"
     )
     write_parser.add_argument(
-        "-o", "--output", nargs="?", default=None, help="output file",
+        "-o", "--output", nargs="?", default=None, help="output file"
     )
     args = parser.parse_args()
     if args.command == "read":
