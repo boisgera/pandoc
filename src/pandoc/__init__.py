@@ -815,7 +815,7 @@ def _apply_children(f, elt):
 def fmap(f, elt=None): # apply the transform f bottom-up
     f_ = f
 
-    def f(elt): # sugar : no return means no change 
+    def f(elt): # sugar : no return value means no change 
         new_elt = f_(elt)
         if new_elt is not None:
             return new_elt
