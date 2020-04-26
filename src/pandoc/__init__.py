@@ -735,7 +735,7 @@ def write_json_v2(object_):
 #
 #  - TODO: explore visitor-style stuff (have a look at ANTLR for example)
 #
-#  - TODO: explore functional programming style (e.g. fmap for trees, etc.)
+#  - TODO: explore functional programming style (e.g. apply for trees, etc.)
 #
 
 
@@ -812,7 +812,7 @@ def _apply_children(f, elt):
         assert type(elt) in [bool, int, float, str]
         return elt
 
-def fmap(f, elt=None): # apply the transform f bottom-up
+def apply(f, elt=None): # apply the transform f bottom-up
     f_ = f
 
     def f(elt): # sugar : no return value means no change 
@@ -822,16 +822,16 @@ def fmap(f, elt=None): # apply the transform f bottom-up
         else:
             return elt
 
-    def fmap_(f, elt=None):
+    def apply_(f, elt=None):
         if elt is None:  # functional style / decorator
-            return lambda elt: fmap_(f, elt)
+            return lambda elt: apply_(f, elt)
 
         def apply_descendants(elt):
-            return _apply_children(fmap_(f), elt)
+            return _apply_children(apply_(f), elt)
 
         return f(apply_descendants(elt))
 
-    return fmap_(f, elt)
+    return apply_(f, elt)
 
 
 # Main Entry Point
