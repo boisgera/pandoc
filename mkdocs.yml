@@ -9,6 +9,7 @@ pages:
   - Examples: examples.md
   - Document: document.md
   - Elements: elements.md
+  - Iteration: iteration.md
   - Configuration: configuration.md
   - API Reference: api.md
 
