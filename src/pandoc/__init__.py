@@ -793,39 +793,38 @@ ENTER = Symbol("ENTER")
 EXIT = Symbol("EXIT")
 
 
-# Think about it, this is not obvious.
 
-class Iter2:
-    def __init__(root, path=None, way=None):
-        if path is None:
-            path = []
-        if way is None:
-            way = ENTER
-        self.root = root
-        self.path = path
-        self.way = way
-    def __iter__(self):
-        return self
-    def __next__(self):
-        if self.way == ENTER:
-            if self.path == []:
-                return self.root, ENTER
-            else:
-                parent, index = self.path[-1]
-                return parent[index], ENTER
+# class Iter2:
+#     def __init__(root, path=None, way=None):
+#         if path is None:
+#             path = []
+#         if way is None:
+#             way = ENTER
+#         self.root = root
+#         self.path = path
+#         self.way = way
+#     def __iter__(self):
+#         return self
+#     def __next__(self):
+#         if self.way == ENTER:
+#             if self.path == []:
+#                 return self.root, ENTER
+#             else:
+#                 parent, index = self.path[-1]
+#                 return parent[index], ENTER
             
-            else:
-                parent, index = self.path[-1]
-                if not hasattr(parent, "__getitem__") or isinstance(parent, str):
-                    return self.elt, EXIT
-                if isinstance(parent, dict):
-                    parent = list(parent.items())
-                try:
-                    elt = parent[index]
-                    self.path.append((elt, 0))
-                except IndexError:
-                    self.way = EXIT
-                    return parent, EXIT
+#             else:
+#                 parent, index = self.path[-1]
+#                 if not hasattr(parent, "__getitem__") or isinstance(parent, str):
+#                     return self.elt, EXIT
+#                 if isinstance(parent, dict):
+#                     parent = list(parent.items())
+#                 try:
+#                     elt = parent[index]
+#                     self.path.append((elt, 0))
+#                 except IndexError:
+#                     self.way = EXIT
+#                     return parent, EXIT
 
                 
 
