@@ -126,7 +126,7 @@ def make_types():
     if not isinstance(defs_src, str):  # resource loaded as bytes in Python 3
         defs_src = defs_src.decode("utf-8")
 
-    print(defs_src) # Issue with Caption that uses a Maybe. Shall I just add
+    #print(defs_src) # Issue with Caption that uses a Maybe. Shall I just add
     # the definition to defs_src ? 
     #     # data Maybe a = Just a | Nothing
     # Would it make it work ? Arf, fuck, not a chance, we have generics, 
@@ -149,11 +149,12 @@ def make_types():
     # like "Stuff?" or "Stuff or None", whatever. But now this "optional" stuff
     # also has to be taken care of in the types generation, like the map stuff
     # is. OK, study what i have been doing for MetaMap first then. 
+    #
+    # OK, ATM I have use the "'Type' or None" syntax.
     defs = pandoc.utils.parse(defs_src)
 
     # Create the types
     for decl in defs:
-        print("*", decl)
         decl_type = decl[0]
         type_name = decl[1][0]
         _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}

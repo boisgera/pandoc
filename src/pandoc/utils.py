@@ -86,6 +86,7 @@ keywords = {
     "type": "TYPE",
     "newtype": "NEWTYPE",
     "Map": "MAP",
+    "Maybe": "MAYBE",
 }
 tokens = tokens + list(keywords.values())
 
@@ -171,6 +172,9 @@ def p_type_map(p):
     "type : MAP type type"
     p[0] = ["map", [p[2], p[3]]]
 
+def p_type_maybe(p):
+    "type : MAYBE type"
+    p[0] = ["maybe", [p[2]]]
 
 def p_assignment(p):
     """
@@ -302,9 +306,11 @@ def docstring(decl):
             _types = ", ".join(_types)
             return "({0})".format(_types)
         elif decl[0] == "map":
-            # print(">>>", decl)
             key_type, value_type = decl[1]
             return "{{{0}: {1}}}".format(docstring(key_type), docstring(value_type))
+        elif decl[0] == "maybe":
+            maybe_type = decl[1][0]
+            return f"{maybe_type} or None"
         else:  # constructor, distinguish normal and record types
             type_name = decl[0]
             args_type = decl[1][0]
