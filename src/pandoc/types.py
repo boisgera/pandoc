@@ -151,6 +151,10 @@ def make_types():
     # is. OK, study what i have been doing for MetaMap first then. 
     #
     # OK, ATM I have use the "'Type' or None" syntax.
+    #
+    # Caption is the new type that uses that.
+    # --------------------------------------------------------------------------
+    # TODO: Now, I still have to adapt the serialization.
     defs = pandoc.utils.parse(defs_src)
 
     # Create the types
