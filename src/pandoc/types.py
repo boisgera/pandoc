@@ -125,10 +125,35 @@ def make_types():
     defs_src = pandoc.utils.definitions[version]
     if not isinstance(defs_src, str):  # resource loaded as bytes in Python 3
         defs_src = defs_src.decode("utf-8")
+
+    print(defs_src) # Issue with Caption that uses a Maybe. Shall I just add
+    # the definition to defs_src ? 
+    #     # data Maybe a = Just a | Nothing
+    # Would it make it work ? Arf, fuck, not a chance, we have generics, 
+    # my parser AND type factory would choke on this.
+    # 
+    # There is another issue that the Maybe pattern is extremely unpythonic ...
+    # Shall I map (Maybe Stuff) to just Stuff ? Arf we would break the Haskell
+    # types that we have followed to the letter so far. Or define Maybe manually
+    # (as a builtin) ? But then we have a generic type ? How do we deal with
+    # this in Python. Issues here, on the principles, that should be solved
+    # before the implementation issue.
+    # 
+    # May advice so far would be to adapt the type like I have been doing
+    # for MetaMap where
+    #     MetaMap (Map Text MetaValue)
+    # has been replaced with
+    #     MetaValue = MetaMap({Text: MetaValue})
+    # 
+    # Here, add a notation in the parsed defs that says optional and render it
+    # like "Stuff?" or "Stuff or None", whatever. But now this "optional" stuff
+    # also has to be taken care of in the types generation, like the map stuff
+    # is. OK, study what i have been doing for MetaMap first then. 
     defs = pandoc.utils.parse(defs_src)
 
     # Create the types
     for decl in defs:
+        print("*", decl)
         decl_type = decl[0]
         type_name = decl[1][0]
         _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
