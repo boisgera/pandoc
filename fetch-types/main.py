@@ -83,7 +83,7 @@ def setup():
     sh.rm("-rf", "pandoc-types")
     sh.git("clone", "https://github.com/jgm/pandoc-types.git")
     sh.cd("pandoc-types")
-    sh.rm("-rf", ".git") # don't want to see the folder as a git submodule
+    #sh.rm("-rf", ".git") # don't want to see the folder as a git submodule
 
     # install the GHCI script
     script = open(".ghci", "w")
@@ -112,6 +112,11 @@ def collect_ghci_script_output():
     definitions = "".join(lines)
     return definitions
 
+# def ansi_escape(string):
+#     ansi_escape_8bit = re.compile(
+#       r'(?:\x1B[@-Z\\-_]|[\x80-\x9A\x9C-\x9F]|(?:\x1B\[|\x9B)[0-?]*[ -/]*[@-~])'
+#     )
+#     return re.compile(ansi_escape_8bit).sub("", string)
 
 def update_type_definitions(pandoc_types):
     # registered definitions
@@ -134,7 +139,9 @@ def update_type_definitions(pandoc_types):
     sh.cd("pandoc-types")
 
     # get the version tags, write the (ordered) list down
-    versions = str(sh.git("tag")).split()
+    version_string = str(sh.git("--no-pager", "tag")) # no ANSI escape codes
+    versions = version_string.split()
+    #print("****", versions)
     versions.sort(key=version_key)
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]
@@ -148,7 +155,7 @@ def update_type_definitions(pandoc_types):
         log("")
 
         try:
-            sh.git("checkout", "-f", version)
+            sh.git("--no-pager", "checkout", "-f", version)
             if pathlib.Path("stack.yaml").exists():
                 log("found stack.yaml file")
             else:
