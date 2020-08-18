@@ -560,6 +560,7 @@ def write_json_v1(object_):
     return json_
 
 
+# TODO: support "maybe"
 # JSON Reader v2
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
@@ -640,7 +641,7 @@ def read_json_v2(json_, type_=None):
     C = getattr(types, constructor[0])
     return C(*args)
 
-
+# TODO: support "maybe"
 # JSON Writer v2
 # ------------------------------------------------------------------------------
 def write_json_v2(object_):

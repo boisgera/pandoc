@@ -150,11 +150,14 @@ def make_types():
     # also has to be taken care of in the types generation, like the map stuff
     # is. OK, study what i have been doing for MetaMap first then. 
     #
-    # OK, ATM I have use the "'Type' or None" syntax.
+    # OK, ATM I have use the "Type?" syntax.
     #
     # Caption is the new type that uses that.
     # --------------------------------------------------------------------------
     # TODO: Now, I still have to adapt the serialization.
+    # Nota: experiments show that Maybe Stuff is serialiazed in JSON as
+    # `null` or an instance of stuff. I guess that's how it is since I
+    # don't see a support for it in the markdown reader doc (yet ?).
     defs = pandoc.utils.parse(defs_src)
 
     # Create the types
