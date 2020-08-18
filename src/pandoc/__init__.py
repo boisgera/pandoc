@@ -560,10 +560,11 @@ def write_json_v1(object_):
     return json_
 
 
-# TODO: support "maybe"
 # JSON Reader v2
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
+    # DEBUG needed. Maybe in Caption makes the process go wrong.
+    print("type:", type_, "json:", json_)
     types = import_types()
 
     if type_ is None:
@@ -596,6 +597,12 @@ def read_json_v2(json_, type_=None):
                 for (k, v) in json_.items()
             ]
         )
+    if type_[0] == "maybe":
+        value_type = type_[1][0]
+        if json_ == None:
+            return None
+        else:
+            return read_json_v2(json_, value_type)
 
     data_type = None
     constructor = None
@@ -605,6 +612,7 @@ def read_json_v2(json_, type_=None):
         if len(constructors) == 1:
             constructor = constructors[0]
         else:
+            print("*", json_)
             constructor = getattr(types, json_["t"])._def
     elif type_[0][0] == type_[0][0].upper():
         constructor = type_
@@ -641,7 +649,7 @@ def read_json_v2(json_, type_=None):
     C = getattr(types, constructor[0])
     return C(*args)
 
-# TODO: support "maybe"
+
 # JSON Writer v2
 # ------------------------------------------------------------------------------
 def write_json_v2(object_):
@@ -654,7 +662,7 @@ def write_json_v2(object_):
             json_ = [write_json_v2(item) for item in object_]
         elif isinstance(object_, dict):
             json_ = odict((k, write_json_v2(v)) for k, v in object_.items())
-        else:  # primitive type
+        else:  # primitive type, (inc. None used by Maybe's)
             json_ = object_
     elif isinstance(object_, types.Pandoc):
         version = configure(read=True)["pandoc_types_version"]
