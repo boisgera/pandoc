@@ -577,6 +577,9 @@ def read_json_v2(json_, type_=None):
         else:  # primitive type
             return type_(json_)
 
+    print("typedef:", type_)
+
+
     if type_[0] == "type":  # type alias
         type_ = type_[1][1]
         return read_json_v2(json_, type_)
@@ -635,6 +638,23 @@ def read_json_v2(json_, type_=None):
         return types.Meta(read_json_v2(json_, type_))
     elif not is_record:
         if single_type_constructor:
+            # For some reason, "Caption", which has a single constructor,
+            # does not erase the type ? Is it an issue of being a "newtype"
+            # and not a "data". That would make sense based on the semantics
+            # of these words. Let's experiment now :
+            # newtype instances are Meta (special case), Format, RowHeadColumns,
+            # RowSpan and ColSpan. Well with pandoc 2.10.1, this intuition is
+            # wrong: RowSpan and ColSpan have their types in the json at least.
+            # Format has its type erased. RowHeadColumns types is not erased either.
+            # So now it's only Format (and Meta) ??? Why ? And where can I see this
+            # in the code ? 
+            # data with single constructor: Row, TableHead, TableBody, TableFoot,
+            # Cell, etc.
+
+            # NOTE : also new: ColWidth has a constructor named ColWidth,
+            #        but there is also a default ; so we can't read hide
+            #        the father type, safely can we ?
+
             json_args = json_
         else:
             json_args = json_.get("c", [])
