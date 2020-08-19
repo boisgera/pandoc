@@ -564,7 +564,7 @@ def write_json_v1(object_):
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
     # DEBUG needed. Maybe in Caption makes the process go wrong.
-    print("type:", type_, "json:", json_)
+    #print("type:", type_, "json:", json_)
     types = import_types()
 
     if type_ is None:
@@ -577,7 +577,7 @@ def read_json_v2(json_, type_=None):
         else:  # primitive type
             return type_(json_)
 
-    print("typedef:", type_)
+    #print("typedef:", type_)
 
 
     if type_[0] == "type":  # type alias
@@ -615,7 +615,7 @@ def read_json_v2(json_, type_=None):
         if len(constructors) == 1:
             constructor = constructors[0]
         else:
-            print("*", json_)
+            #print("*", json_)
             constructor = getattr(types, json_["t"])._def
     elif type_[0][0] == type_[0][0].upper():
         constructor = type_
