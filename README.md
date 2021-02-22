@@ -25,8 +25,8 @@ you may install it with :
 
     $ conda install -c conda-forge pandoc=2.9.2.1
 
-:warning:: you may install an older pandoc version, but for the time being, 
-more recent versions of pandoc are *not* supported (see issues #20 and #21).
+:warning: older versions of pandoc are fine but -- for the time being -- 
+pandoc 2.10.x and 2.11.x are *not* supported (see issues [#20](https://github.com/boisgera/pandoc/issues/20) and [#21](https://github.com/boisgera/pandoc/issues/20)).
 
 Overview
 --------------------------------------------------------------------------------
