@@ -310,7 +310,7 @@ def docstring(decl):
             return "{{{0}: {1}}}".format(docstring(key_type), docstring(value_type))
         elif decl[0] == "maybe":
             maybe_type = decl[1][0]
-            return f"{maybe_type}?"
+            return f"{maybe_type} or None"
         else:  # constructor, distinguish normal and record types
             type_name = decl[0]
             args_type = decl[1][0]

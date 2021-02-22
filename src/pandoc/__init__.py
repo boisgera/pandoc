@@ -567,6 +567,8 @@ def read_json_v2(json_, type_=None):
     #print("type:", type_, "json:", json_)
     types = import_types()
 
+    print("JSON, TYPE:", json_, type_)
+
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
@@ -601,7 +603,9 @@ def read_json_v2(json_, type_=None):
             ]
         )
     if type_[0] == "maybe":
+        print("TYPE, json", type_, json_)
         value_type = type_[1][0]
+        print("VALUE_TYPE:", value_type)
         if json_ == None:
             return None
         else:

@@ -150,7 +150,7 @@ def make_types():
     # also has to be taken care of in the types generation, like the map stuff
     # is. OK, study what i have been doing for MetaMap first then. 
     #
-    # OK, ATM I have use the "Type?" syntax.
+    # OK, ATM I have use the "Type?" syntax. UPDATE: "Type or None" syntax.
     #
     # Caption is the new type that uses that.
     # --------------------------------------------------------------------------
@@ -170,8 +170,10 @@ def make_types():
             _types_dict[type_name] = data_type
             # Remark: when there is a constructor with the same name as its
             #         data type, the data type is shadowed.
-            #         This is intentional, but it's only consistent because
-            #         it happens when there is a single constructor.
+            #         This was intentional, because in pandoc-types < 1.21,
+            #         it used to happens only there is a single constructor.
+            #         But, now we have ColWidth, which is either a ColWidth(Double)
+            #         or a ColWidthDefault. So we need to adapt the model.
             # TODO: add an assert / check for this condition.
             for constructor in decl[1][1]:
                 constructor_name = constructor[0]
