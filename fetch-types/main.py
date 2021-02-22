@@ -50,6 +50,8 @@ def update_version_mapping(pandoc_types):
     # fetch the data only for unregistered versions
     version_mapping = pandoc_types["version_mapping"]
     versions = [v for v in versions if v not in version_mapping]
+    # remove 2.10.x (see https://github.com/boisgera/pandoc/issues/22)
+    versions = [v for v in versions if v != "2.10" and not v.startswith("2.10.")]
 
     for i, version in enumerate(versions):
         print(version + ": ", end="")
@@ -145,6 +147,8 @@ def update_type_definitions(pandoc_types):
     versions.sort(key=version_key)
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]
+    # remove 1.21.x from the list (see https://github.com/boisgera/pandoc/issues/22)
+    versions = [v for v in versions if v != "1.21" and not v.startswith("1.21.x")]
     # only fetch the data for unregistered versions
     versions = [v for v in versions if v not in type_definitions]
 
