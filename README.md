@@ -23,7 +23,10 @@ Install the latest version with:
 The [Pandoc] command-line tool is a also required dependency ;
 you may install it with :
 
-    $ conda install -c conda-forge pandoc 
+    $ conda install -c conda-forge pandoc=2.9.2.1
+
+:warning:: you may install an older pandoc version, but for the time being, 
+more recent versions of pandoc are *not* supported (see issues #20 and #21).
 
 Overview
 --------------------------------------------------------------------------------
