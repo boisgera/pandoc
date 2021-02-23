@@ -56,7 +56,7 @@ There are several possible types of blocks: headers, paragraphs, lists, etc.
           | DefinitionList([([Inline], [[Block]])])
           | Header(Int, Attr, [Inline])
           | HorizontalRule()
-          | Table([Inline], [Alignment], [Double], [TableCell], [[TableCell]])
+          | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
           | Div(Attr, [Block])
           | Null()
 
@@ -80,6 +80,7 @@ strong text, etc.
     >>> Inline
     Inline = Str(Text)
            | Emph([Inline])
+           | Underline([Inline])
            | Strong([Inline])
            | Strikeout([Inline])
            | Superscript([Inline])
