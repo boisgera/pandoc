@@ -686,7 +686,7 @@ def write_json_v2(object_):
             json_ = [write_json_v2(item) for item in object_]
         elif isinstance(object_, dict):
             json_ = odict((k, write_json_v2(v)) for k, v in object_.items())
-        else:  # primitive type, (inc. None used by Maybe's)
+        else:  # primitive type, (including None used by Maybes)
             json_ = object_
     elif isinstance(object_, types.Pandoc):
         version = configure(read=True)["pandoc_types_version"]
@@ -706,7 +706,13 @@ def write_json_v2(object_):
 
         json_ = odict()
         if not single_type_constructor:
-            json_["t"] = type(object_).__name__
+            type_name = type(object_).__name__
+            # If an underscore was used to in the type name to avoid a name
+            # collision between a constructor and its parent, remove it for 
+            # the json representation.
+            if type_name.endswith("_"):
+                type_name = type_name[:-1]
+            json_["t"] = type_name
         if not is_record:
             c = [write_json_v2(arg) for arg in object_]
             if single_constructor_argument:
