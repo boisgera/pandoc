@@ -126,56 +126,31 @@ def make_types():
     if not isinstance(defs_src, str):  # resource loaded as bytes in Python 3
         defs_src = defs_src.decode("utf-8")
 
-    #print(defs_src) # Issue with Caption that uses a Maybe. Shall I just add
-    # the definition to defs_src ? 
-    #     # data Maybe a = Just a | Nothing
-    # Would it make it work ? Arf, fuck, not a chance, we have generics, 
-    # my parser AND type factory would choke on this.
-    # 
-    # There is another issue that the Maybe pattern is extremely unpythonic ...
-    # Shall I map (Maybe Stuff) to just Stuff ? Arf we would break the Haskell
-    # types that we have followed to the letter so far. Or define Maybe manually
-    # (as a builtin) ? But then we have a generic type ? How do we deal with
-    # this in Python. Issues here, on the principles, that should be solved
-    # before the implementation issue.
-    # 
-    # May advice so far would be to adapt the type like I have been doing
-    # for MetaMap where
-    #     MetaMap (Map Text MetaValue)
-    # has been replaced with
-    #     MetaValue = MetaMap({Text: MetaValue})
-    # 
-    # Here, add a notation in the parsed defs that says optional and render it
-    # like "Stuff?" or "Stuff or None", whatever. But now this "optional" stuff
-    # also has to be taken care of in the types generation, like the map stuff
-    # is. OK, study what i have been doing for MetaMap first then. 
-    #
-    # OK, ATM I have use the "Type?" syntax. UPDATE: "Type or None" syntax.
-    #
-    # Caption is the new type that uses that.
-    # --------------------------------------------------------------------------
-    # TODO: Now, I still have to adapt the serialization.
-    # Nota: experiments show that Maybe Stuff is serialiazed in JSON as
-    # `null` or an instance of stuff. I guess that's how it is since I
-    # don't see a support for it in the markdown reader doc (yet ?).
     defs = pandoc.utils.parse(defs_src)
 
     # Create the types
     for decl in defs:
         decl_type = decl[0]
         type_name = decl[1][0]
-        _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
         if decl_type in ("data", "newtype"):
-            data_type = type(type_name, (Data,), _dict)
-            _types_dict[type_name] = data_type
             # Remark: when there is a constructor with the same name as its
             #         data type, the data type is shadowed.
             #         This was intentional, because in pandoc-types < 1.21,
             #         it used to happens only there is a single constructor.
             #         But, now we have ColWidth, which is either a ColWidth(Double)
-            #         or a ColWidthDefault. So we need to adapt the model.
-            # TODO: add an assert / check for this condition.
-            for constructor in decl[1][1]:
+            #         or a ColWidthDefault. So we need to adapt the model : we
+            #         add a "_" to the end of the constructor and patch the decl
+            constructors = decl[1][1]
+            if len(constructors) > 1:
+                for constructor in constructors:
+                    constructor_name = constructor[0]
+                    if constructor_name == type_name:
+                        constructor[0] = constructor_name + "_"
+
+            _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
+            data_type = type(type_name, (Data,), _dict)
+            _types_dict[type_name] = data_type
+            for constructor in constructors:
                 constructor_name = constructor[0]
                 bases = (Constructor, data_type)
                 _dict = {
@@ -185,6 +160,7 @@ def make_types():
                 type_ = type(constructor_name, bases, _dict)
                 _types_dict[constructor_name] = type_
         elif decl_type == "type":
+            _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
             type_ = type(type_name, (TypeDef,), _dict)
             _types_dict[type_name] = type_
 

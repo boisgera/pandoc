@@ -563,12 +563,7 @@ def write_json_v1(object_):
 # JSON Reader v2
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None):
-    # DEBUG needed. Maybe in Caption makes the process go wrong.
-    #print("type:", type_, "json:", json_)
     types = import_types()
-
-    print("JSON, TYPE:", json_, type_)
-
     if type_ is None:
         type_ = types.Pandoc
     if isinstance(type_, str):
@@ -578,9 +573,6 @@ def read_json_v2(json_, type_=None):
             type_ = type_._def
         else:  # primitive type
             return type_(json_)
-
-    #print("typedef:", type_)
-
 
     if type_[0] == "type":  # type alias
         type_ = type_[1][1]
@@ -603,9 +595,7 @@ def read_json_v2(json_, type_=None):
             ]
         )
     if type_[0] == "maybe":
-        print("TYPE, json", type_, json_)
         value_type = type_[1][0]
-        print("VALUE_TYPE:", value_type)
         if json_ == None:
             return None
         else:
@@ -619,8 +609,13 @@ def read_json_v2(json_, type_=None):
         if len(constructors) == 1:
             constructor = constructors[0]
         else:
-            #print("*", json_)
-            constructor = getattr(types, json_["t"])._def
+            constructors = data_type[1][1]
+            constructors_names = [constructor[0] for constructor in constructors]
+            constructor_name = json_["t"]
+            if constructor_name not in constructors_names: # shadowed
+                constructor_name = constructor_name + "_"
+                assert constructor_name in constructors_names
+            constructor = getattr(types, constructor_name)._def
     elif type_[0][0] == type_[0][0].upper():
         constructor = type_
         constructor_type = getattr(types, constructor[0])
@@ -642,23 +637,6 @@ def read_json_v2(json_, type_=None):
         return types.Meta(read_json_v2(json_, type_))
     elif not is_record:
         if single_type_constructor:
-            # For some reason, "Caption", which has a single constructor,
-            # does not erase the type ? Is it an issue of being a "newtype"
-            # and not a "data". That would make sense based on the semantics
-            # of these words. Let's experiment now :
-            # newtype instances are Meta (special case), Format, RowHeadColumns,
-            # RowSpan and ColSpan. Well with pandoc 2.10.1, this intuition is
-            # wrong: RowSpan and ColSpan have their types in the json at least.
-            # Format has its type erased. RowHeadColumns types is not erased either.
-            # So now it's only Format (and Meta) ??? Why ? And where can I see this
-            # in the code ? 
-            # data with single constructor: Row, TableHead, TableBody, TableFoot,
-            # Cell, etc.
-
-            # NOTE : also new: ColWidth has a constructor named ColWidth,
-            #        but there is also a default ; so we can't read hide
-            #        the father type, safely can we ?
-
             json_args = json_
         else:
             json_args = json_.get("c", [])
