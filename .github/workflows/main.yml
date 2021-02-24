@@ -8,18 +8,17 @@ jobs:
       run:
         shell: bash -l {0} 
     steps:
-      # Checkout
-      # ------------------------------------------------------------------------
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      # Activate Conda Environment
-      # ----------------------------------------------------------------------
-      - uses: conda-incubator/setup-miniconda@v2
+      - name: Activate Conda environment
+        uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: pandoc
           environment-file: environment.yml
 
-      # Install and test Python pandoc
-      # ------------------------------------------------------------------------
-      - run: python setup.py install
-      - run: python test.py -v
+      - name: Install Python pandoc 
+        run: python setup.py install
+
+      - name: Test Python pandoc
+        run: python test.py -v
