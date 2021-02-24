@@ -26,7 +26,7 @@ jobs:
       - name: Test Python pandoc
         run: python test.py -v
 
-      - name: Prepare deploy
+      - name: Prepare deployment
         if: matrix.os == 'ubuntu-20.04'
         run: rm .gitignore
 
