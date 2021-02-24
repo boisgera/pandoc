@@ -40,6 +40,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: "."
+          FOLDER: "docs"
           SINGLE_COMMIT: true
           PRESERVE: true
