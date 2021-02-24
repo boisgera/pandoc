@@ -22,4 +22,4 @@ jobs:
       # Install and test Python pandoc
       # ------------------------------------------------------------------------
       - run: python setup.py install
-      - run: python test.py
+      - run: python test.py -v
