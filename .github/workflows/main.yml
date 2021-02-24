@@ -3,7 +3,8 @@ on: [push]
 
 jobs:
   main:
-    runs-on: ubuntu-20.04
+    # was: ubuntu-20.04
+    runs-on: windows-latest
     defaults:
       run:
         shell: bash -l {0} 
