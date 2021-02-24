@@ -25,3 +25,17 @@ jobs:
 
       - name: Test Python pandoc
         run: python test.py -v
+
+      - name: Prepare deploy
+        if: matrix.os == "ubuntu-20.04"
+        run: rm .gitignore
+
+      - name: Deploy documentation
+        if: matrix.os == "ubuntu-20.04"
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: "."
+          SINGLE_COMMIT: true
+          PRESERVE: true
