@@ -7,11 +7,11 @@ Pandoc (Python Library)
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
 ![Status](https://img.shields.io/pypi/status/pandoc.svg)
 -->
-[![main](https://github.com/boisgera/pandoc/actions/workflows/main.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/main.yml)
 <!--
 [![Travis CI Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/usube01hmjcl1m0t?svg=true)](https://ci.appveyor.com/project/boisgera/pandoc)
 -->
+[![main](https://github.com/boisgera/pandoc/actions/workflows/main.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/main.yml)
 [![Gitter chat](https://badges.gitter.im/boisgera/python-pandoc.svg)](https://gitter.im/python-pandoc/community#)
 
 *This README is about the 2.x branch of the library (alpha stage!).*
