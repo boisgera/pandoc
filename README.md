@@ -15,7 +15,7 @@ Pandoc (Python Library)
 [![Downloads](https://pepy.tech/badge/pandoc)](https://pepy.tech/project/pandoc)
 [![Gitter chat](https://badges.gitter.im/boisgera/python-pandoc.svg)](https://gitter.im/python-pandoc/community#)
 
-*This README is about the 2.x branch of the library (alpha stage!).*
+*This README is about the 2.x branch of the library (alpha stage!). Only the 1.x branch is available on PyPi at the moment.*
 
 Getting started
 --------------------------------------------------------------------------------
