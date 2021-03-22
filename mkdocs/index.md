@@ -1,9 +1,12 @@
 
+!!! warning
+    This documentation is dedicated to the [latest version of the project
+    available on github](https://github.com/boisgera/pandoc). 
+    It is automatically tested against pandoc 2.11.4,
+    [the latest release of pandoc](https://pandoc.org/releases.html) so far.
+
 Overview
 ================================================================================
-
-*This documentation is about the 2.x branch of the library (alpha stage!).*
-
 
 This project brings [Pandoc]'s data model for markdown documents to Python:
 

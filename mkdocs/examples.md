@@ -1,72 +1,73 @@
 
-**TODO:** plain text (no image, no link, no div, not attribute, etc.). 
-Now that attributes & divs are captured from HTML, it can become VERY
-noisy, a filter like that could alleviate the problem. Test it on
-pandoc's web site for example? This is interesting, we will have
-to 'flatten' the divs. At least get rid of everything that smells
-too much HTML (link *may* be ok?), like raw html & divs.
-Wait there is no raw html in this case right? Get rid of it anyway.
+!!! warning
+    This documentation is dedicated to the [latest version of the project
+    available on github](https://github.com/boisgera/pandoc). 
+    It is automatically tested against pandoc 2.11.4,
+    [the latest release of pandoc](https://pandoc.org/releases.html) so far.
+
+
+!!! note "TODO"
+    plain text (no image, no link, no div, not attribute, etc.). 
+    Now that attributes & divs are captured from HTML, it can become VERY
+    noisy, a filter like that could alleviate the problem. Test it on
+    pandoc's web site for example? This is interesting, we will have
+    to 'flatten' the divs. At least get rid of everything that smells
+    too much HTML (link *may* be ok?), like raw html & divs.
+    Wait there is no raw html in this case right? Get rid of it anyway.
 
 Examples
 ================================================================================
 
-    >>> import pandoc
-    >>> from pandoc.types import *
+```python
+import pandoc
+from pandoc.types import *
+```
 
-    >>> def T(function):
-    ...     def _f(markdown):
-    ...         doc = pandoc.read(markdown)
-    ...         _doc = function(doc)
-    ...         if _doc is not None:
-    ...             doc = _doc
-    ...         print(pandoc.write(doc))
-    ...     return _f
+!!! note "TODO"
+    Better name for `T` ; `md2md` for example. Or `markdown` ?
+
+```python
+def T(function):
+    def _f(markdown):
+        doc = pandoc.read(markdown)
+        _doc = function(doc)
+        if _doc is not None:
+            doc = _doc
+        print(pandoc.write(doc))
+    return _f
+```
 
 Uppercase
 --------------------------------------------------------------------------------
 
-    >>> def capitalize(doc):
-    ...     for elt in pandoc.iter(doc):
-    ...         if isinstance(elt, Str):
-    ...             elt[0] = elt[0].upper()
- 
+```python
+def capitalize(doc):
+    for elt in pandoc.iter(doc):
+        if isinstance(elt, Str):
+            elt[0] = elt[0].upper()
+```
 
-    >>> T(capitalize)("I can't feel my legs")
-    I CAN'T FEEL MY LEGS
-    <BLANKLINE>
-
-**TODO:** extra NEWLINE in the output, solve this.
-OR maybe this is to be expected? A doc DOES END with a newline?
-See what pandoc does about this.
-
+```python
+>>> T(capitalize)("I can't feel my legs")
+I CAN'T FEEL MY LEGS
+<BLANKLINE>
+```
 
 De-emphasize
 --------------------------------------------------------------------------------
 
-**TODO:** think of the pattern: if something matches a condition, 
-          replace it with something (and stop the iteration in this
-          branch? Or iterate on the new object?). 
-          Pandoc-filters has the ability to let the 
-          "atomic transformation" control the rest of the iteration
-          by calling walk. See how this is done, study walk.
-         
+!!! note "TODO"
+    De-emphasize example. In-place, with a lookahead or with a new pandoc document.
+    Documentation of why lookahead works would be nice (the stuff we are changing
+    is not iterated over *yet*)
 
-
-    >>> def capitalize(doc):
-    ...     for elt in pandoc.iter(doc):
-    ...         if isinstance(elt, Str):
-    ...             elt[0] = elt[0].upper()
- 
-
-    >>> T(capitalize)("I can't feel my legs")
-    I CAN'T FEEL MY LEGS
-    <BLANKLINE>
-
-**TODO:** extra NEWLINE in the output, solve this.
-OR maybe this is to be expected? A doc DOES END with a newline?
-See what pandoc does about this.
-
-
+!!! note "TODO"
+    think of the pattern: if something matches a condition, 
+    replace it with something (and stop the iteration in this
+    branch? Or iterate on the new object?). 
+    Pandoc-filters has the ability to let the 
+    "atomic transformation" control the rest of the iteration
+    by calling walk. See how this is done, study walk.
 
 Comments
 --------------------------------------------------------------------------------
@@ -75,55 +76,55 @@ Remove everything between `<!-- BEGIN COMMENT -->` and `<!-- END COMMENT -->`.
 The comment lines must appear on lines by themselves, 
 with blank lines surrounding them.
 
-**TODO:** find HTML RawBlocks, check for start/end markers, 
-remove the items within.
+```python
+def begin_comment(elt):
+    return isinstance(elt, RawBlock) and \
+           elt[0] == Format(u"html") and \
+           "<!-- BEGIN COMMENT -->" in elt[1]
 
-**TODO:** these scheme *may* fail with tuples right?
-          Improve the "Block holder" detection.
-
-    >>> def begin_comment(elt):
-    ...     return isinstance(elt, RawBlock) and \
-    ...            elt[0] == Format(u"html") and \
-    ...            "<!-- BEGIN COMMENT -->" in elt[1]
-    ...
-    >>> def end_comment(elt):
-    ...     return isinstance(elt, RawBlock) and \
-    ...            elt[0] == Format(u"html") and \
-    ...            "<!-- END COMMENT -->" in elt[1]
+def end_comment(elt):
+    return isinstance(elt, RawBlock) and \
+           elt[0] == Format(u"html") and \
+           "<!-- END COMMENT -->" in elt[1]
+```
 
 And now
 
-    >>> def ignore_comments(doc):
-    ...     for elt in pandoc.iter(doc):
-    ...         if isinstance(elt, list) and len(elt) > 0 and isinstance(elt[0], Block):            
-    ...             children = []
-    ...             in_comment = False
-    ...             for child in elt[:]:
-    ...                 if begin_comment(child):
-    ...                     in_comment = True
-    ...                 elif end_comment(child):
-    ...                     in_comment = False
-    ...                 else:
-    ...                     if not in_comment:
-    ...                         children.append(child)
-    ...             elt[:] = children
+```python
+def ignore_comments(doc):
+    for elt in pandoc.iter(doc):
+        if isinstance(elt, list) and len(elt) > 0 and isinstance(elt[0], Block):            
+            children = []
+            in_comment = False
+            for child in elt[:]:
+                if begin_comment(child):
+                    in_comment = True
+                elif end_comment(child):
+                    in_comment = False
+                else:
+                    if not in_comment:
+                        children.append(child)
+            elt[:] = children
+```
 
 Leads to
 
-    >>> markdown = """\
-    ... Regular text
-    ...
-    ... <!-- BEGIN COMMENT -->
-    ... A comment
-    ...
-    ... <!-- END COMMENT -->
-    ... Moar regular text
-    ... """
-    >>> T(ignore_comments)(markdown)
-    Regular text
-    <BLANKLINE>
-    Moar regular text
-    <BLANKLINE>
+```python
+>>> markdown = """\
+... Regular text
+...
+... <!-- BEGIN COMMENT -->
+... A comment
+...
+... <!-- END COMMENT -->
+... Moar regular text
+... """
+>>> T(ignore_comments)(markdown)
+Regular text
+<BLANKLINE>
+Moar regular text
+<BLANKLINE>
+```
 
 
 Theorems
@@ -132,48 +133,58 @@ Theorems
 Convert divs with class="theorem" to LaTeX theorem environments in LaTeX output,
 and to numbered theorems in HTML output.
 
-**TODO:** to HTML version. Also export to LaTeX and HTML to see the outputs?
-Can it be done with an option to the `T` function?
+!!! note "TODO" 
+    to HTML version. Also export to LaTeX and HTML to see the outputs?
+    Can it be done with an option to the `T` function?
 
-**TODO:** think of some support for visitor patterns? 
-We see a lot of "do this in-place if this condition is met". 
-Or can we use the basic pandoc map/filter? Dunno. Think of it.
-Arf with filter or map we have to deal with linearized data types?
-We can linearize but can we reassemble. How are filter and map used
-for hierarchial structures in functional programming? Have a look at
-Haskell (e.g. <https://stackoverflow.com/questions/7624774/haskell-map-for-trees>).
-So, define a `pandoc.map` helper?
+!!! note "TODO"
+    think of some support for visitor patterns? 
+    We see a lot of "do this in-place if this condition is met". 
+    Or can we use the basic pandoc map/filter? Dunno. Think of it.
+    Arf with filter or map we have to deal with linearized data types?
+    We can linearize but can we reassemble. How are filter and map used
+    for hierarchial structures in functional programming? Have a look at
+    Haskell (e.g. <https://stackoverflow.com/questions/7624774/haskell-map-for-trees>).
+    So, define a `pandoc.map` helper?
 
-    >>> def is_theorem(elt):
-    ...     if isinstance(elt, Div):
-    ...         attrs = elt[0]
-    ...         _, classes, _ = attrs
-    ...         if "theorem" in classes:
-    ...             return True
-    ...     return False
+```python
+def is_theorem(elt):
+    if isinstance(elt, Div):
+        attrs = elt[0]
+        _, classes, _ = attrs
+        if "theorem" in classes:
+            return True
+    return False
+```
 
-    >>> def LaTeX(text):
-    ...     return RawBlock(Format('latex'), text)
+```python
+def LaTeX(text):
+    return RawBlock(Format('latex'), text)
+```
 
-    >>> def theorem_latex(doc):
-    ...     for elt in pandoc.iter(doc):
-    ...         if is_theorem(elt):
-    ...             id_ = elt[0][0]
-    ...             label = ""
-    ...             if id_:
-    ...                 label = r'\label{' + id_ + '}'
-    ...             start_theorem = LaTeX(r'\begin{theorem}' + label)
-    ...             end_theorem   = LaTeX(r'\end{theorem}')
-    ...             elt[1][:] = [start_theorem] + elt[1] + [end_theorem]
-    
-    >>> markdown = r"""
-    ... I'd like to introduce the following theorem:
-    ... <div id='cauchy-formula' class='theorem'>
-    ... $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
-    ... </div>
-    ... Right?
-    ... """
-    
+```python
+def theorem_latex(doc):
+    for elt in pandoc.iter(doc):
+        if is_theorem(elt):
+            id_ = elt[0][0]
+            label = ""
+            if id_:
+                label = r'\label{' + id_ + '}'
+            start_theorem = LaTeX(r'\begin{theorem}' + label)
+            end_theorem   = LaTeX(r'\end{theorem}')
+            elt[1][:] = [start_theorem] + elt[1] + [end_theorem]
+```
+
+```python
+markdown = r"""
+I'd like to introduce the following theorem:
+<div id='cauchy-formula' class='theorem'>
+$$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
+</div>
+Right?
+"""
+```   
+
     >>> T(theorem_latex)(markdown)
     I'd like to introduce the following theorem:
     <BLANKLINE>
@@ -193,104 +204,110 @@ So, define a `pandoc.map` helper?
 
 
 
-Notebooks
+Jupyter Notebooks
 --------------------------------------------------------------------------------
 
-<http://nbformat.readthedocs.io/en/latest/format_description.html#the-notebook-file-format>
+Transform a markdown document with Python code blocks into a Jupyter notebook
+(proof of concept).
 
+Source: [the notebook file format](http://nbformat.readthedocs.io/en/latest/format_description.html#the-notebook-file-format)
 
-    #!/usr/bin/env python
+Jupyter notebook helpers (notebook metadata and building blocks):
+```python
+import copy
 
-    # Python Standard Library
-    import copy
-    import json
-    import os.path
-    import sys
-
-    # Pandoc
-    import pandoc
-
-
-    def Notebook():
-        return copy.deepcopy(
-          {
-            "cells": [],
-            "metadata": {
-              "kernelspec": {
-                "display_name": "Python 3",
-                "language": "python",
-                "name": "python3"
-              },
-              "language_info": {
-                "codemirror_mode": {
-                  "name": "ipython",
-                  "version": 3
-                },
-                "file_extension": ".py",
-                "mimetype": "text/x-python",
-                "name": "python",
-                "nbconvert_exporter": "python",
-                "pygments_lexer": "ipython3",
-                "version": "3.6.4"
-               }
+def Notebook():
+    return copy.deepcopy(
+        {
+        "cells": [],
+        "metadata": {
+            "kernelspec": {
+            "display_name": "Python 3",
+            "language": "python",
+            "name": "python3"
             },
-            "nbformat": 4,
-            "nbformat_minor": 2
-          }
-        )
+            "language_info": {
+            "codemirror_mode": {
+                "name": "ipython",
+                "version": 3
+            },
+            "file_extension": ".py",
+            "mimetype": "text/x-python",
+            "name": "python",
+            "nbconvert_exporter": "python",
+            "pygments_lexer": "ipython3",
+            "version": "3.6.4"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 2
+        }
+    )
 
-    def CodeCell():
-        return copy.deepcopy(
-          {
-            "cell_type": "code",
-            "execution_count": 1,
-            "metadata": {},
-            "outputs": [],
-            "source": []
-          }
-        )
+def CodeCell():
+    return copy.deepcopy(
+        {
+        "cell_type": "code",
+        "execution_count": 1,
+        "metadata": {},
+        "outputs": [],
+        "source": []
+        }
+    )
 
-    def MarkdownCell(): 
-        return copy.deepcopy(
-          {
-            "cell_type": "markdown",
-            "metadata": {},
-            "source": []
-          }
-        )
+def MarkdownCell(): 
+    return copy.deepcopy(
+        {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": []
+        }
+    )
+```
 
-    def notebookify(doc):
-        from pandoc.types import Pandoc, Meta, CodeBlock
-        notebook = Notebook()
-        cells = notebook['cells']
-        blocks = doc[1]
-        #print(blocks)
-        execution_count = 1
-        for block in blocks:
-            if isinstance(block, CodeBlock):
-                source = block[1]
-                code_cell = CodeCell()
-                code_cell['source'] = source
-                code_cell['execution_count'] = execution_count
-                execution_count += 1
-                cells.append(code_cell)
-            else:
-                wrapper = Pandoc(Meta({}), [block])
-                #print(wrapper)
-                source = pandoc.write(wrapper)
-                markdown_cell = MarkdownCell()
-                markdown_cell['source'] = source
-                cells.append(markdown_cell)
-        return notebook
+The core transformation code
+```python
+import pandoc
+from pandoc.types import Pandoc, Meta, CodeBlock
 
-    if __name__ == '__main__':
-        filename = sys.argv[1]
-        doc = pandoc.read(file=filename)
-        notebook = notebookify(doc)
-        base, _ = os.path.splitext(filename)
-        output = open(base + '.ipynb', 'w')
-        output.write(json.dumps(notebook, indent=2))
-        output.close()
+def notebookify(doc):
+    notebook = Notebook()
+    cells = notebook['cells']
+    blocks = doc[1]
+    execution_count = 1
+    for block in blocks:
+        if isinstance(block, CodeBlock):
+            source = block[1]
+            code_cell = CodeCell()
+            code_cell['source'] = source
+            code_cell['execution_count'] = execution_count
+            execution_count += 1
+            cells.append(code_cell)
+        else:
+            wrapper = Pandoc(Meta({}), [block])
+            source = pandoc.write(wrapper)
+            markdown_cell = MarkdownCell()
+            markdown_cell['source'] = source
+            cells.append(markdown_cell)
+    return notebook
+```
+
+How to use `notebookify` in a script:
+```python
+# Python Standard Library
+import json
+import os.path
+import sys
+
+def main(): # invoke if __name__ == "__main__"
+    filename = sys.argv[1]
+    doc = pandoc.read(file=filename)
+    notebook = notebookify(doc)
+    base, _ = os.path.splitext(filename)
+    output = open(base + '.ipynb', 'w')
+    output.write(json.dumps(notebook, indent=2))
+    output.close()
+```
 
 
 Save Web Documents
@@ -402,29 +419,26 @@ of divs and get rid of the preamble.
 
 ### Unpack Divs
 
-    def unpack_divs(doc):
-        "Unpack Divs - Two-pass, In-Place Algorithm"
-
-        # Locate the divs and extract the relevant data
-        matches = []
-        for elt, path in pandoc.iter(doc, path=True):
-            if isinstance(elt, Div):
-                div = elt
-                parent, index = path[-1]
-                contents = div[1]
-                # Blocks are always held in lists (cf. the document model).
-                assert isinstance(parent, list)
-                matches.append((parent, index, contents))
-
-        # We need to unpack the divs in reverse document order 
-        # not to invalidate the remaining matches.
-        for parent, index, contents in reversed(matches):
-            del parent[index]
-            parent[index:index] = contents
-
-        return doc
-
-
+```python
+def unpack_divs(doc):
+    "Unpack Divs - Two-pass, In-Place Algorithm"
+    # Locate the divs and extract the relevant data
+    matches = []
+    for elt, path in pandoc.iter(doc, path=True):
+        if isinstance(elt, Div):
+            div = elt
+            parent, index = path[-1]
+            contents = div[1]
+            # Blocks are always held in lists (cf. the document model).
+            assert isinstance(parent, list)
+            matches.append((parent, index, contents))
+    # We need to unpack the divs in reverse document order 
+    # not to invalidate the remaining matches.
+    for parent, index, contents in reversed(matches):
+        del parent[index]
+        parent[index:index] = contents
+    return doc
+```
 
 ### Unpack Divs (Variant)
 
@@ -437,22 +451,24 @@ This is best achieved using recursion. To get a feeling how recursion
 can be used to create modified copies of a document, we can first 
 implement a copy without modification:
 
-    def copy(elt):
-        "Copy the document (or document fragment) recursively"
-        # List, tuple, map and (non-primitive) Pandoc types
-        if hasattr(elt, "__iter__") and not isinstance(elt, String):
-            type_ = type(elt)
-            if type_ is map:
-                args = list(elt.items())
-            else:
-                args = elt[:]
-            new_args = [copy(arg) for arg in args]
-            if issubclass(type_, (list, tuple, map)):
-                return type_(new_args)
-            else: # Pandoc types
-                return type_(*new_args)
-        else: # Python atomic (immutable) types
-            return elt 
+```python
+def copy(elt):
+    "Copy the document (or document fragment) recursively"
+    # List, tuple, map and (non-primitive) Pandoc types
+    if hasattr(elt, "__iter__") and not isinstance(elt, String):
+        type_ = type(elt)
+        if type_ is map:
+            args = list(elt.items())
+        else:
+            args = elt[:]
+        new_args = [copy(arg) for arg in args]
+        if issubclass(type_, (list, tuple, map)):
+            return type_(new_args)
+        else: # Pandoc types
+            return type_(*new_args)
+    else: # Python atomic (immutable) types
+        return elt 
+```
 
 Note that the name of the function argument is not `doc` but `elt` since the 
 `copy` function may be used with any document fragment, not merely with a
@@ -462,52 +478,52 @@ Let's go back to our original problem, which is div unpacking.
 Since divs are held in lists of blocks, 
 we define a predicate that identifies lists of blocks:
 
-    def is_blocks(elt): 
-        "Identify (non-empty) lists of blocks"
-        return isinstance(elt, list) and \
-               len(elt)!=0 and \
-               isinstance(elt[0], Block)
-
+```python
+def is_blocks(elt): 
+    "Identify (non-empty) lists of blocks"
+    return isinstance(elt, list) and \
+            len(elt)!=0 and \
+            isinstance(elt[0], Block)
+```
 
 And now we are ready to define the alternate implementation of `unpack_div`.
 First, we detect when `elt` is a list of blocks and 
 in this case, if some of these blocks are divs, 
 we expand them:
 
-    def unpack_divs(elt):
-        "Unpack Divs - One-Pass, Recursive, Non-Destructive Algorithm"
-
-        # Find the list of blocks and their div children and unpack them
-        if is_blocks(elt):
-            blocks = elt
-            new_blocks = []
-            for block in blocks:
-                if isinstance(block, Div):
-                    div = block
-                    contents = div[1]
-                    new_blocks.extend(unpack_divs(contents))
-                else:
-                    new_blocks.append(unpack_divs(block))
-            assert not any([isinstance(block, Div) for block in new_blocks])
-            return new_blocks
-
-We also need to handle the remaining cases, but this is easy
-since this is similar to what the recursive `copy` is doing:
-
-        # List, tuple, map and (non-primitive) Pandoc types
-        elif hasattr(elt, "__iter__") and not isinstance(elt, String):
-            type_ = type(elt)
-            if type_ is map:
-                args = list(elt.items())
+```python
+def unpack_divs(elt):
+    "Unpack Divs - One-Pass, Recursive, Non-Destructive Algorithm"
+    # Find the list of blocks and their div children and unpack them
+    if is_blocks(elt):
+        blocks = elt
+        new_blocks = []
+        for block in blocks:
+            if isinstance(block, Div):
+                div = block
+                contents = div[1]
+                new_blocks.extend(unpack_divs(contents))
             else:
-                args = elt[:]
-            new_args = [unpack_divs(arg) for arg in args]
-            if issubclass(type_, (list, tuple, map)):
-                return type_(new_args)
-            else: # Pandoc types
-                return type_(*new_args)
-        else: # Python atomic (immutable) types
-            return elt 
+                new_blocks.append(unpack_divs(block))
+        assert not any([isinstance(block, Div) for block in new_blocks])
+        return new_blocks
+    # We now need to handle the remaining cases, but this is easy
+    # since this is similar to what the recursive `copy` is doing:
+    # List, tuple, map and (non-primitive) Pandoc types
+    elif hasattr(elt, "__iter__") and not isinstance(elt, String):
+        type_ = type(elt)
+        if type_ is map:
+            args = list(elt.items())
+        else:
+            args = elt[:]
+        new_args = [unpack_divs(arg) for arg in args]
+        if issubclass(type_, (list, tuple, map)):
+            return type_(new_args)
+        else: # Pandoc types
+            return type_(*new_args)
+    else: # Python atomic (immutable) types
+        return elt 
+```
 
 ### Remove The Preamble
 
@@ -578,17 +594,19 @@ So we can detect this first paragraph
 – for example because it starts with an instance of `Str` – 
 and remove everything before it from the document:
 
-    def remove_preamble(doc):
-        "Remove everything before the first real paragraph"
-        blocks = doc[1]
-        for i, block in enumerate(blocks):
-            if isinstance(block, Para):
-                para = block
-                inlines = para[0]
-                if len(inlines) > 0 and isinstance(inlines[0], Str):
-                    break
-        doc[1] = blocks[i:]
-        return doc
+```python
+def remove_preamble(doc):
+    "Remove everything before the first real paragraph"
+    blocks = doc[1]
+    for i, block in enumerate(blocks):
+        if isinstance(block, Para):
+            para = block
+            inlines = para[0]
+            if len(inlines) > 0 and isinstance(inlines[0], Str):
+                break
+    doc[1] = blocks[i:]
+    return doc
+```
 
 Now, change the main entry point accordingly:
 

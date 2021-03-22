@@ -1,3 +1,9 @@
+!!! warning
+    This documentation is dedicated to the [latest version of the project
+    available on github](https://github.com/boisgera/pandoc). 
+    It is automatically tested against pandoc 2.11.4,
+    [the latest release of pandoc](https://pandoc.org/releases.html) so far.
+
 Iteration
 ================================================================================
 
@@ -13,3 +19,7 @@ TODO :
   - `iter` manages dicts (and strings) differently, explain
 
   - explain `path` iteration and info. 
+
+!!! note "TODO"
+    Document the in-place modification scheme that work: lookahead or locate
+    then alter in reverse document order.

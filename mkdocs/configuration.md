@@ -1,6 +1,16 @@
+!!! warning
+    This documentation is dedicated to the [latest version of the project
+    available on github](https://github.com/boisgera/pandoc). 
+    It is automatically tested against pandoc 2.11.4,
+    [the latest release of pandoc](https://pandoc.org/releases.html) so far.
+
 
 Configuration
 ================================================================================
+
+```python
+import pandoc
+```
 
 Introduction
 --------------------------------------------------------------------------------
@@ -70,20 +80,18 @@ Extra Arguments
 
 To get a copy of the configuration
 (or `None` if the library is not configured yet),
-enable the `read` option. The call 
-
-    pandoc.configure(read=True)
-
+enable the `read` option. The call `pandoc.configure(read=True)`
 does not change the current configuration 
 but returns a dictionary whose keys are `auto`, `path`, 
 `version` and `pandoc_types_version`, such as
 
-    {
-      'auto': True, 
-      'path': '/usr/bin/pandoc', 
-      'version': '1.16.0.2', 
-      'pandoc_types_version': '1.16.1.1'
-    }
+```python
+>>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+{'auto': True, 
+ 'path': ..., 
+ 'version': '2.11.4', 
+ 'pandoc_types_version': '1.22'}
+```
 
 The `read` option may be combined with other arguments, for example
 
