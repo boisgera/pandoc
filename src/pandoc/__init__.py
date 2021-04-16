@@ -29,7 +29,7 @@ from . import utils
 # Filesystem Helper
 # ------------------------------------------------------------------------------
 def rmtree(path):
-    """Deal with Windows 
+    """Deal with Windows
     (see e.g <https://www.gitmemory.com/issue/sdispater/poetry/1031/488759621>
     """
     retries = 10
@@ -612,7 +612,7 @@ def read_json_v2(json_, type_=None):
             constructors = data_type[1][1]
             constructors_names = [constructor[0] for constructor in constructors]
             constructor_name = json_["t"]
-            if constructor_name not in constructors_names: # shadowed
+            if constructor_name not in constructors_names:  # shadowed
                 constructor_name = constructor_name + "_"
                 assert constructor_name in constructors_names
             constructor = getattr(types, constructor_name)._def
@@ -686,7 +686,7 @@ def write_json_v2(object_):
         if not single_type_constructor:
             type_name = type(object_).__name__
             # If an underscore was used to in the type name to avoid a name
-            # collision between a constructor and its parent, remove it for 
+            # collision between a constructor and its parent, remove it for
             # the json representation.
             if type_name.endswith("_"):
                 type_name = type_name[:-1]
@@ -756,7 +756,101 @@ def write_json_v2(object_):
 #
 
 
-def iter(elt, path=False, enter=None, exit=None):
+def iter(elt, path=False, iterator=False):
+    return Iter(elt, path, iterator)
+    # return Iter ?
+
+# TODO: option for (enter/)exit signalling ? That is, reiterate the parent on
+#       exit (with an additional output cpt to signal ENTER or EXIT ?)
+
+# BUG: with respect to path, _iter and iter don't work the same (start and end).
+#      _iter starts with [] and ends with a pointer to the last element.
+#      Which is not what iter (new impl is doing ...). 
+
+class Iter:
+    def __init__(self, elt, path=False, iterator=False):
+        self.root = elt
+        if path in (False, True):
+            self.return_path = path
+            self.path = None
+        else:
+            self.return_path = True
+            self.path = path
+        self.iterator = iterator
+
+    def __iter__(self):
+        return self
+
+    def _return_current(self):
+        elt, _ = self.path[-1]
+        result = (elt,)
+        if self.return_path:
+            result = result + (self.path,)
+        if self.iterator:
+            result = result + (self,)
+        return result if len(result) > 1 else result[0]
+
+    def __next__(self):
+        if self.path is None:
+            self.path = [(self.root, 0)]
+            return self._return_current()
+
+        assert len(self.path) > 0
+        parent, index = self.path[-1]
+
+        if isinstance(parent, dict):
+            parent = list(parent.items())
+        try:
+            if isinstance(parent, types.String):
+                raise TypeError() # manage as a primitive type, not a container
+            elt = parent[index]
+            self.path.append((elt, 0))
+            return self._return_current()
+        except (IndexError, TypeError): # past-the-end or primitive type
+            # Move up
+            self.path.pop()
+            try:
+                parent, index = self.path[-1]
+                self.path[-1] = (parent, index + 1)
+            except IndexError: # empty path
+                raise StopIteration()
+            return next(self)
+
+    @staticmethod
+    def _prev_path(path):
+        if path is None or path == []:
+            return None
+        parent, index = path[-1]
+        path = path[:-1].copy()
+        if index > 0:
+            previous_sibling = parent[index - 1]
+            for _, subpath in pandoc.iter(previous_sibling, path=True):
+                pass
+            path.extend(subpath)
+        return path
+
+    def back(self):        
+        if self.path is None:
+            raise StopIteration() # can't go back, not started yet
+        if self.path == []: # back is the last element in the document
+            for _, path in pandoc.iter(self.root, path=True):
+                last_path = path
+            self.path[:] = path    
+        else:
+            parent, index = self.path[-1]
+            self.path = self.path[:-1]
+            if index > 0:
+                print("index > 0")
+                previous_sibling = parent[index - 1]
+                print("previous_sibling", previous_sibling)
+                for _, path in pandoc.iter(previous_sibling, path=True):
+                    last_path = path
+                print("subpath", subpath)
+                self.path.extend(last_path)
+            if self.path == []:
+                self.path = None
+
+def _iter(elt, path=False, enter=None, exit=None):
     if path is not False:
         if not isinstance(path, list):  # e.g. path = True
             path = []
@@ -781,7 +875,7 @@ def iter(elt, path=False, enter=None, exit=None):
                 child_path = False
             else:
                 child_path = path.copy() + [(elt, i)]
-            for subelt in iter(child, path=child_path, enter=enter, exit=exit):
+            for subelt in _iter(child, path=child_path, enter=enter, exit=exit):
                 yield subelt
 
     if exit is not None:
@@ -800,15 +894,17 @@ def iter_path(elt):
     for elt_ in iter(elt, enter=enter, exit=exit):
         yield path
 
+
 class Symbol(str):
     def __new__(cls, *args, **kw):
         return str.__new__(cls, *args, **kw)
+
     def __repr__(self):
         return str(self)
 
+
 ENTER = Symbol("ENTER")
 EXIT = Symbol("EXIT")
-
 
 
 # class Iter2:
@@ -829,7 +925,7 @@ EXIT = Symbol("EXIT")
 #             else:
 #                 parent, index = self.path[-1]
 #                 return parent[index], ENTER
-            
+
 #             else:
 #                 parent, index = self.path[-1]
 #                 if not hasattr(parent, "__getitem__") or isinstance(parent, str):
@@ -842,8 +938,6 @@ EXIT = Symbol("EXIT")
 #                 except IndexError:
 #                     self.way = EXIT
 #                     return parent, EXIT
-
-                
 
 
 def get_parent(doc, elt):
@@ -874,10 +968,11 @@ def _apply_children(f, elt):
         assert type(elt) in [bool, int, float, str]
         return elt
 
-def apply(f, elt=None): # apply the transform f bottom-up
+
+def apply(f, elt=None):  # apply the transform f bottom-up
     f_ = f
 
-    def f(elt): # sugar : no return value means no change 
+    def f(elt):  # sugar : no return value means no change
         new_elt = f_(elt)
         if new_elt is not None:
             return new_elt
