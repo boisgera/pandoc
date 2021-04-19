@@ -755,100 +755,116 @@ def write_json_v2(object_):
 #  - TODO: explore functional programming style (e.g. apply for trees, etc.)
 #
 
-
-def iter(elt, path=False, iterator=False):
-    return Iter(elt, path, iterator)
-    # return Iter ?
-
 # TODO: option for (enter/)exit signalling ? That is, reiterate the parent on
 #       exit (with an additional output cpt to signal ENTER or EXIT ?)
 
-# BUG: with respect to path, _iter and iter don't work the same (start and end).
-#      _iter starts with [] and ends with a pointer to the last element.
-#      Which is not what iter (new impl is doing ...). 
 
-class Iter:
+next = next
+
+def prev(it):
+    return it.__prev__()
+
+class iter:
     def __init__(self, elt, path=False, iterator=False):
         self.root = elt
         if path in (False, True):
             self.return_path = path
-            self.path = None
+            self._path = "START"
         else:
             self.return_path = True
-            self.path = path
-        self.iterator = iterator
+            self._path = path
+        self.return_iterator = iterator
+
+    def get_path(self):
+        return copy.copy(self._path)
+    
+    def set_path(self, path):
+        self._path = path
+
+    path = property(get_path, set_path)
 
     def __iter__(self):
         return self
 
-    def _return_current(self):
-        elt, _ = self.path[-1]
+    def current(self):
+        if self._path in ("START", "END"):
+            raise RuntimeError("no current element")
+        try:
+            parent, index = self.path[-1]
+        except IndexError: # self.path == []: path to root (convention)
+            parent, index = [self.root], 0 # such that parent[index] == root
+        finally:
+            elt = parent[index]
         result = (elt,)
         if self.return_path:
             result = result + (self.path,)
-        if self.iterator:
-            result = result + (self,)
-        return result if len(result) > 1 else result[0]
+        if self.return_iterator:
+            iterator = self
+            result = result + (iterator,)
+        return result if len(result) > 1 else result[0] # unwrap 1-uple.
 
-    def __next__(self):
-        if self.path is None:
-            self.path = [(self.root, 0)]
-            return self._return_current()
+    def __next__(self, _up=False):
+        if self._path == "START": # iteration not started yet
+            self._path = []       # convention for root
+            return self.current()
+        if self._path == "END":
+            raise StopIteration()
 
-        assert len(self.path) > 0
-        parent, index = self.path[-1]
-
-        if isinstance(parent, dict):
-            parent = list(parent.items())
         try:
-            if isinstance(parent, types.String):
-                raise TypeError() # manage as a primitive type, not a container
-            elt = parent[index]
-            self.path.append((elt, 0))
-            return self._return_current()
-        except (IndexError, TypeError): # past-the-end or primitive type
-            # Move up
-            self.path.pop()
-            try:
-                parent, index = self.path[-1]
-                self.path[-1] = (parent, index + 1)
-            except IndexError: # empty path
+            parent, index = self._path[-1]
+        except IndexError: # current element is the root
+            parent, index = [self.root], 0
+        if isinstance(parent, dict):
+                parent = list(parent.items())
+        elt = parent[index]
+
+        try: # Try to fetch a child first
+            if _up: # Nope, abort.
+                raise IndexError()
+            if isinstance(elt, types.String): # strings are considered atomic
+                raise TypeError() 
+            if isinstance(elt, dict):
+                elt = list(elt.items())                
+            _ = elt[0] # fails if element is atomic or past the end
+            self._path.append((elt, 0))
+            return self.current()
+        except (IndexError, TypeError):
+            pass
+
+        try: # Try next sibling
+            _ = parent[index + 1] # fails if parent is past the end
+            self._path[-1] = (parent, index + 1)
+            return self.current()
+        except IndexError: # We need to go up
+            if len(self._path):
+                self._path = self._path[:-1]
+            else:
+                self._path = "END"
                 raise StopIteration()
-            return next(self)
+            return self.__next__(_up=True)
 
-    @staticmethod
-    def _prev_path(path):
-        if path is None or path == []:
-            return None
-        parent, index = path[-1]
-        path = path[:-1].copy()
-        if index > 0:
-            previous_sibling = parent[index - 1]
-            for _, subpath in pandoc.iter(previous_sibling, path=True):
-                pass
-            path.extend(subpath)
-        return path
-
-    def back(self):        
-        if self.path is None:
-            raise StopIteration() # can't go back, not started yet
-        if self.path == []: # back is the last element in the document
+    def back(self):
+        if self._path == "START":
+            raise StopIteration()
+        elif self._path == []:
+            self._path = "START"
+        elif self._path == "END":
             for _, path in pandoc.iter(self.root, path=True):
-                last_path = path
-            self.path[:] = path    
+                pass
+            self._path = path
         else:
-            parent, index = self.path[-1]
-            self.path = self.path[:-1]
+            parent, index = self._path[-1]
+            self._path = self._path[:-1]
             if index > 0:
-                print("index > 0")
                 previous_sibling = parent[index - 1]
-                print("previous_sibling", previous_sibling)
-                for _, path in pandoc.iter(previous_sibling, path=True):
-                    last_path = path
-                print("subpath", subpath)
-                self.path.extend(last_path)
-            if self.path == []:
-                self.path = None
+                self._path.append((parent, index - 1))
+                for _, subpath in pandoc.iter(previous_sibling, path=True):
+                    pass
+                self._path.extend(subpath)
+
+    def __prev__(self):
+        self.back()
+        return self.current()
 
 def _iter(elt, path=False, enter=None, exit=None):
     if path is not False:
