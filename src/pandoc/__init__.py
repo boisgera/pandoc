@@ -764,6 +764,46 @@ next = next
 def prev(it):
     return it.__prev__()
 
+# TODO: document _up option not to enter into the element? Public API?
+#       change name (this is not "up", sibling is ok too). "skip" ? Dunno.
+#       Think of the use cases.
+
+# TODO: not sure that's an iterator I need; "back" is not iterating for example
+#       And if I want some chaining (such as it.up().skip()) I need to return
+#       the iterator itself, not the value. Nota: .again() for .back().next() ?
+
+# NOTA: if .skip() does NOT return the value but prepares the return of the
+#       next `next()` call, then `_up` or whatever needs to be a state again ?
+#       Grmmmppph ... This is if we use the iterator in a loop since we need
+#       not to set the next state, but to PREPARE for next. Unless we have a
+#       bit of state in the iterator that says for example "output current state
+#       during the next next". But such a state would have complex interactions
+#       with the public API, this is a bad idea. Here, we could .skip().back()
+#       to get the desired element at next stage, but computationnaly, this is
+#       insane. Actually, we'd better roll our own global iteration in a while
+#       loop. 
+
+# NOTA: on a related subject. Since mixing fine control of the iteration and the
+#       for loop is not a great idea, I'd better remove the `iterator` option.
+#       So that people would think twice before doing a foor loop with subtle
+#       iterator management. They can still do it anyway: it's only a matter of
+#       calling pandoc.iter() and then making a for loop on the result.
+
+# NOTA: in the "not-exactly-an-iterator" API, have it return itself (to chain)
+#       and () would lead to the current value ? Support copy by constructor
+#       (which would allow to change the options, such as path returned or not ?)
+#       Arf, this is stupid if we don't return the items. OK, so maybe I need a
+#       "cursor" or whatever (without the `return_path` options) which would be
+#       built on top of the cursor?
+#       Iterator would have a "simple-loop, read-only" flavor and cursor a
+#       "low-level, do what you want" one?
+
+# TODO: have a look at real code (especially double pass, with inverted 2nd) and
+#       see how that could be simplified with a low-level API. Otherwise, this is
+#       all for nothing.
+
+# TODO: implement (shallow) copy for subiterators or "lookahead schemes".
+
 class iter:
     def __init__(self, elt, path=False, iterator=False):
         self.root = elt
@@ -842,6 +882,9 @@ class iter:
                 self._path = "END"
                 raise StopIteration()
             return self.__next__(_up=True)
+
+    # TODO: back(self, path=None) ? context manager to make some lookahead
+    #       then go back ? iterator clone (i.e. sub iterator)
 
     def back(self):
         if self._path == "START":
