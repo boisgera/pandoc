@@ -1,7 +1,7 @@
 !!! warning
     This documentation is dedicated to the [latest version of the project
     available on github](https://github.com/boisgera/pandoc). 
-    It is automatically tested against pandoc 2.11.4,
+    It is automatically tested against pandoc 2.14.1,
     [the latest release of pandoc](https://pandoc.org/releases.html) so far.
 
 
@@ -89,7 +89,7 @@ but returns a dictionary whose keys are `auto`, `path`,
 >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 {'auto': True, 
  'path': ..., 
- 'version': '2.11.4', 
+ 'version': '2.14.1', 
  'pandoc_types_version': '1.22'}
 ```
 

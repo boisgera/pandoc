@@ -2,8 +2,8 @@ name: pandoc
 channels:
   - conda-forge
 dependencies:
-  - python=3.8
-  - pandoc=2.11.4
+  - python=3.9
+  - pandoc=2.14.1
   - plumbum
   - ply
   - pip
