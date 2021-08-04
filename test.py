@@ -66,14 +66,16 @@ def tweak(src):
     # then transform them into indented code blocks.
     lines = src.splitlines()
     chunks = {}
-    start, end, code = None, None, []
+    python, start, end, code = False, None, None, []
     for i, line in enumerate(lines):
-        if line.startswith("```python"):
+        if line.startswith("```python") or line.startswith("``` python"):
             start = i
             code.append("")
-        elif line.startswith("```"):
+            python = True
+        elif line.startswith("```") and python is True:
             end = i + 1
             code.append("")
+            python = False
             assert end - start == len(code)
             chunks[(start, end)] = code
             code = []
