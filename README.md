@@ -2,15 +2,6 @@
 Pandoc (Python Library)
 ================================================================================
 
-<!--
-[![PyPi](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
-![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
-![Status](https://img.shields.io/pypi/status/pandoc.svg)
--->
-<!--
-[![Travis CI Build Status](https://travis-ci.org/boisgera/pandoc.svg?branch=master)](https://travis-ci.org/boisgera/pandoc)
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/usube01hmjcl1m0t?svg=true)](https://ci.appveyor.com/project/boisgera/pandoc)
--->
 [![build](https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/build.yml)
 [![Downloads](https://pepy.tech/badge/pandoc)](https://pepy.tech/project/pandoc)
 [![Gitter chat](https://badges.gitter.im/boisgera/python-pandoc.svg)](https://gitter.im/python-pandoc/community#)
