@@ -7,6 +7,7 @@ site_dir: docs
 pages:
   - Overview: index.md
   - Examples: examples.md
+  - CLI: cli.md
   - Document: document.md
   - Elements: elements.md
   - Iteration: iteration.md
