@@ -9,7 +9,7 @@ from pandoc.types import *
 # Find / Analyze / etc.
 
 ```python
-elts = [elt for elt in pandoc.iter(doc) if condition(elt)]
+# elts = [elt for elt in pandoc.iter(doc) if condition(elt)]
 ```
 
 # Replacement
@@ -19,11 +19,11 @@ you first need locate emphasized text instances, that is find the collections
 of holders `holder` and indices `i` such that `emph = holder[i]`.
 
 ```python
-emph_locations = []
-for elt, path in pandoc.iter(doc, path=True):
-    if isinstance(elt, Emph):
-        holder, i = path[-1]
-        emph_locations.append((holder, i))
+# emph_locations = []
+# for elt, path in pandoc.iter(doc, path=True):
+#     if isinstance(elt, Emph):
+#         holder, i = path[-1]
+#         emph_locations.append((holder, i))
 ```
 
 **Question.** When is the "not-reversed-scheme" ok? When are the next locations
@@ -32,11 +32,11 @@ it here & document the stuff. Distinguish simple replacement with "extensive
 surgery" that may invalidate the inner locations. Talk about (shallow) replacement?
 
 ```python
->>> for holder, i in emph_locations:
-...    emph = holder[i] 
-...    inlines = emph[0] # Emph signature is Emph([Inline])
-...    strong = Strong(inlines) # Strong signature is Strong([Inline])
-...    holder[i] = strong
+# >>> for holder, i in emph_locations:
+# ...    emph = holder[i] 
+# ...    inlines = emph[0] # Emph signature is Emph([Inline])
+# ...    strong = Strong(inlines) # Strong signature is Strong([Inline])
+# ...    holder[i] = strong
 ```
 
 # TODO: Move fragments
