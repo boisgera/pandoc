@@ -39,6 +39,10 @@ surgery" that may invalidate the inner locations. Talk about (shallow) replaceme
 ...    holder[i] = strong
 ```
 
+# TODO: Move fragments
+
+(example: move some fragments to some annex)
+
 # Deletion
 
 **TODO.** start with a problem (either plain error or deletions that did no
