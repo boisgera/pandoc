@@ -86,8 +86,8 @@ pandoc's web site.
 ...             new_target = (target[0], "Pandoc - About pandoc")
 ...             elt[2] = new_target
 ... 
->>> pandoc.write(doc)
-'[Link to pandoc.org](https://pandoc.org "Pandoc - About pandoc")\n'
+>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+[Link to pandoc.org](https://pandoc.org "Pandoc - About pandoc")
 ```
 
 There are a few other types in the document structure that are also immutable,
@@ -145,8 +145,8 @@ def add_id(doc):
 ```python
 >>> doc = pandoc.read("[Link to pandoc.org](https://pandoc.org)")
 >>> add_id(doc)
->>> pandoc.write(doc)
-'[Link to pandoc.org](https://pandoc.org){#anonymous-01}\n'
+>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+[Link to pandoc.org](https://pandoc.org){#anonymous-01}
 ```
 
 # TODO: Move fragments
