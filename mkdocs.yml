@@ -5,14 +5,14 @@ docs_dir: mkdocs
 site_dir: docs
 
 pages:
-  - Overview: index.md
-  - Examples: examples.md
-  - CLI: cli.md
-  - Document: document.md
-  - Elements: elements.md
-  - Iteration: iteration.md
+  - Overview (wip): index.md
+  - Examples (wip): examples.md
+  - CLI (wip): cli.md
+  - Document structure (wip): document.md
+  - Elements (wip): elements.md
+  - Iteration (wip): iteration.md
   - Configuration: configuration.md
-  - ⚠️ Cookbook ⚠️: cookbook.md
+  - Cookbook (wip): cookbook.md
   - API Reference: api.md
 
 theme: "material" 
