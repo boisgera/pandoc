@@ -12,7 +12,7 @@ pages:
   - Elements: elements.md
   - Iteration: iteration.md
   - Configuration: configuration.md
-  - ⚠️Cookbook⚠️: cookbook.md
+  - ⚠️ Cookbook ⚠️: cookbook.md
   - API Reference: api.md
 
 theme: "material" 
