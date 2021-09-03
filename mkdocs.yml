@@ -8,12 +8,12 @@ pages:
   - Overview (wip): index.md
   - Examples (wip): examples.md
   - CLI (wip): cli.md
-  - Document structure (wip): document.md
+  - Document structure: document.md
   - Elements (wip): elements.md
   - Iteration (wip): iteration.md
   - Configuration: configuration.md
   - Cookbook (wip): cookbook.md
-  - API Reference: api.md
+  - API Reference (wip): api.md
 
 theme: "material" 
 
