@@ -79,9 +79,7 @@ Para([Str('Hello'), Space(), Str('pandoc!')])
 ```
 
 This works because the container of `"world!"` is an instance of `Str`,
-a custom Pandoc type, which is mutable. 
-
-Having to may seem to be a nuisance at first
+a custom Pandoc type, which is mutable.
 
 ### Type safety
 
