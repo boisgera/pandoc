@@ -85,7 +85,7 @@ a custom Pandoc type, which is mutable.
 
 While the above approach may seem to be a workaround at first, 
 it is actually *a good thing*, because it helps you to carefully consider
-the type of data that you select transform. Python strings for example
+the type of data that you select and transform. Python strings for example
 are of course in documents to describe pieces of text, but also in many
 other roles. 
 
