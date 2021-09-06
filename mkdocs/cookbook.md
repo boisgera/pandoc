@@ -39,11 +39,113 @@ surgery" that may invalidate the inner locations. Talk about (shallow) replaceme
 # ...    holder[i] = strong
 ```
 
-## Transformation of Immutable Data
+## Immutable Data
 
-!!! warning 
-    Issue intertwined with the "type synomym" and "type safety" issue 
-    at the moment. Revisit/improve?
+Every non-trivial pandoc document contains data that is immutable.
+To perform in-place modifications of your document, 
+you have to deal with them specifically. And this is a good thing!
+
+### Hello world!
+Consider the most basic "Hello world!" paragraph:
+
+```python
+>>> paragraph = Para([Str('Hello'), Space(), Str('world!')])
+>>> string = paragraph[0][2]
+>>> string
+Str('world!')
+>>> text = string[0]
+>>> text
+'world!'
+```
+
+Here `text` is a Python string, which is immutable.
+Thus, we cannot modify it in-place:
+
+```python
+>>> text[:] = "pandoc!"
+Traceback (most recent call last):
+...
+TypeError: 'str' object does not support item assignment
+```
+
+Does it mean that we cannot modify any word of this sentence?
+Absolutely not! Because instead of modifying the Python string,
+we can *replace it* in its container instead:
+
+```python
+>>> string[0] = "pandoc!"
+>>> paragraph
+Para([Str('Hello'), Space(), Str('pandoc!')])
+```
+
+This works because the container of `"world!"` is an instance of `Str`,
+a custom Pandoc type, which is mutable. 
+
+Having to may seem to be a nuisance at first
+
+### Type safety
+
+While the above approach may seem to be a workaround at first, 
+it is actually *a good thing*, because it helps you to carefully consider
+the type of data that you select transform. Python strings for example
+are of course in documents to describe pieces of text, but also in many
+other roles. 
+
+Consider the HTML fragment:
+```python
+>>> blocks = [ # <p>html rocks!</p>
+...     RawBlock(Format('html'), '<p>'), 
+...     Plain([Str('html'), Space(), Str('rocks!')]), 
+...     RawBlock(Format('html'), '</p>')
+... ]
+```
+Let's say that we want to replace `'html'` with `'pandoc'` in the document text.
+Notice that the string `'html'` is used in the `"html rocks!"`, 
+but also as a type field in the `Format` instance. 
+If Python strings were mutable, you could carelessly try to replace all
+`'html'` strings in the document model regardless of their role. 
+And you would end up with the (invalid) document fragment:
+```python
+>>> invalid_blocks = [
+...     RawBlock(Format('pandoc'), '<p>'), 
+...     Plain([Str('pandoc'), Space(), Str('rocks!')]),  
+...     RawBlock(Format('pandoc'), '</p>')
+... ]
+```
+Fortunately this approach will fail loudly:
+```python
+>>> for elt in pandoc.iter(blocks):
+...     if elt == "html":
+...         elt[:] = "pandoc"
+Traceback (most recent call last):
+...
+TypeError: 'str' object does not support item assignment
+```
+A correct, type-safe, way to proceed is instead:
+```python
+>>> for elt in pandoc.iter(blocks):
+...     if isinstance(elt, Str) and elt[0] == "html":
+...         elt[0] = "pandoc"
+... 
+>>> blocks == [
+...     RawBlock(Format('html'), '<p>'), 
+...     Plain([Str('pandoc'), Space(), Str('rocks!')]), 
+...     RawBlock(Format('html'), '</p>')
+... ]
+True
+```
+
+### TODO: More (similar) examples
+
+... and general approach. The most complex being `Attr` management probably.
+Target, Attr, etc.
+
+**TODO.** and by design *every custom Pandoc type is mutable*.
+
+```python
+doc = Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+```
+
 
 Say that you want to find all links in your document whose target URL is
 `"https://pandoc.org"` and make sure that the associated title is 
