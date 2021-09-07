@@ -1,16 +1,20 @@
 Document structure
 ================================================================================
 
+```python
+import pandoc
+from pandoc.types import *
+```
+
 !!! warning
     This documentation is dedicated to the [latest version of the project
     available on github](https://github.com/boisgera/pandoc). 
     It is automatically tested against pandoc 2.14.1,
     [the latest release of pandoc](https://pandoc.org/releases.html) so far.
 
-
 ```python
-import pandoc
-from pandoc.types import *
+>>> pandoc.configure(read=True)["version"]
+'2.14.1'
 ```
 
 Meta-model
