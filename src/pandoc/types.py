@@ -19,8 +19,8 @@ import pandoc.utils
 # ------------------------------------------------------------------------------
 def _fail_init(self, *args, **kwargs):
     type_name = type(self).__name__
-    error = "cannot instantiate abstract type {type}"
-    raise NotImplementedError(error.format(type=type_name))
+    error = "Can't instantiate abstract class {type}"
+    raise TypeError(error.format(type=type_name))
 
 
 class MetaType(type):
