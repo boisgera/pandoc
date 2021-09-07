@@ -319,6 +319,19 @@ Link(Attr, [Inline], Target)
 instead of `Link((Text, [Text], [(Text, Text)]), [Inline], (Text, Text))`
 without them.
 
+???+ error "TODO"
+    Generate error on `isinstance` test, even if structurally valid.
+    Or tweak isinstance to make the appropriare structural test?
+    That would be a lousy pattern matching practice **but** also a handy
+    type checking construct.
+
+    ```python
+    #>>> isinstance(("text", "text"), Target) # doctest: +ELLIPSIS
+    #Traceback (most recent call last):
+    #...
+    #TypeError: ...
+    ```
+
 To mimick closely the original Haskell type hierarchy, we also define aliases 
 for some Python primitive types. For example, the `Text` type used in the `Str` 
 data constructor is not a custom Pandoc type:
