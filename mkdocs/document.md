@@ -21,13 +21,13 @@ course the document type. These elements are combined using a well-defined
 set of rules which defines the document meta-model[^1].
 
 [^1]: A document model represents a given document. The document
-meta-model represents the document model itself, or in other words 
-the set of all valid documents.
+meta-model represents the document model itself, i.e. the set of all valid 
+documents.
 
-Basic use of pandoc, to convert one format to another with a few configuration
-options does not require to know anything about this. However, advanced usage
-where one analyzes, creates or transforms the content of documents requires
-at least some working knowledge of this meta-model.
+Pandoc can be used a converter between different document formats;
+this usage requires very little knowledge about the document structure. 
+However, if one wishes to analyze, create or transform documents,
+some working knowledge of this meta-model becomes necessary.
 
 # Haskell & Python
 
@@ -37,19 +37,18 @@ Haskell package. The meta-model, represented by a collection of Haskell types,
 is described in [the documentation of the `Text.Pandoc.Definition` module](<https://hackage.haskell.org/package/pandoc-types-1.22/docs/Text-Pandoc-Definition.html>).
 
 However, this source of information requires some understanding of the Haskell
-programming language. This pandoc Python library brings to Python the hierarchy 
-of types of the pandoc Haskell library ; it also offers an alternate and 
-interactive way to become familiar with this meta-model. This is what
-we describe in the following sections.
+programming language. The pandoc Python library brings to Python this hierarchy 
+of types ; it also offers an alternate and interactive way to become familiar 
+with the meta-model. This is what we describe in the following sections.
 
 # Documents
 
-## Read and explore
+## Explore
 The basic idea here is that you can create markdown documents that feature
-exactly the kind of document constructs that you are intersted in, and
+exactly the kind of document constructs that you are interested in, and
 then read them as pandoc documents to see how they look like. 
 By construction, these documents converted from markdown will be valid, 
-that is consistent with the pandoc meta-model. 
+i.e. consistent with the pandoc meta-model. 
 And since you can display them, it's a great way to build some understanding
 on how things work.
 
@@ -89,11 +88,15 @@ Para([Str('Hello,'), Space(), Str('World!')])
 Str('World!')
 ```
 
+I recommend that you try to reproduce the process above for small documents 
+that feature titles, headers, emphasized text, lists, etc. to become familiar 
+with the way that these constructs are described in pandoc documents.
+
 ## Create from scratch
 
-At this stage, even if you have not studied formally the meta-model, 
-I am pretty sure that you have gathered enough knowledge to build a 
-simple plain text document from scratch.
+At this stage, even if we have not yet described formally the meta-model, 
+we have already gathered enough knowledge to build a simple plain text document 
+from scratch.
 
 ```python
 >>> text = [Str("Python"), Space(), Str("&"), Space(), Str("Pandoc")]
@@ -110,6 +113,8 @@ Python & Pandoc
 ```
 
 # Types 
+
+## Explore
 
 The insights gathered in the previous sections were a good starting point to
 get a feel of the possible document structure. Now, to be certain that we
@@ -205,131 +210,127 @@ is a type without any content:
 >>> Space
 Space()
 ```
-<!-- DEPRECATED
-# Notations
+
+We now have successfully discovered all pandoc types used in our simple
+"Hello wordl!" document. Again, I recommend that you reproduce this process 
+for all document constructs that you are interested in.
+
+## Type Categories
+
+The types defined in `pandoc.types` are either data types, typedefs or aliases 
+for Python built-ins.
 
 ```python
->>> text = "Hello, World!"
->>> doc = pandoc.read(text)
->>> doc
-Pandoc(Meta({}), [Para([Str('Hello,'), Space(), Str('World!')])])
+>>> from pandoc.types import *
 ```
 
-A document is an instance of the `Pandoc` class; it has two arguments
-
+The `Pandoc` type is an example of data type:
 ```python
->>> Pandoc
-Pandoc(Meta, [Block])
-```
-
-The first argument, the instance of `Meta`, represents the document metadata.
-Since in this very simple example there is no metadata, we will ignore it and
-focus on the second argument instead, the document contents, which 
-is a list of blocks:
-
-```python
->>> blocks = doc[1]
->>> blocks
-[Para([Str('Hello,'), Space(), Str('World!')])]
-```
-
-Actually, there is a single block here
-
-```python
->>> len(blocks)
-1
-```
-
-There are several possible types of blocks: headers, paragraphs, lists, etc.
-
-```python
->>> Block
-Block = Plain([Inline])
-      | Para([Inline])
-      | LineBlock([[Inline]])
-      | CodeBlock(Attr, Text)
-      | RawBlock(Format, Text)
-      | BlockQuote([Block])
-      | OrderedList(ListAttributes, [[Block]])
-      | BulletList([[Block]])
-      | DefinitionList([([Inline], [[Block]])])
-      | Header(Int, Attr, [Inline])
-      | HorizontalRule()
-      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
-      | Div(Attr, [Block])
-      | Null()
-```
-
-Here our single block is a paragraph:
-
-```python
->>> para = blocks[0]
->>> para
-Para([Str('Hello,'), Space(), Str('World!')])
->>> isinstance(para, Para)
+>>> issubclass(Pandoc, Type)
+True
+>>> issubclass(Pandoc, Data)
 True
 ```
 
-In general, paragraphs contain lists of inline elements:
-
+Data types come in two flavors: abstract or concrete. The signature of abstract 
+data types list the collection of concrete types they correspond to:
 ```python
->>> Para
-Para([Inline])
->>> inlines = para[0]
-```
-
-Inlines can be several things: ordinary text, emphasized text,
-strong text, etc.
-
-```python
->>> Inline
+>>> Inline # doctest: +ELLIPSIS
 Inline = Str(Text)
        | Emph([Inline])
        | Underline([Inline])
        | Strong([Inline])
-       | Strikeout([Inline])
-       | Superscript([Inline])
-       | Subscript([Inline])
-       | SmallCaps([Inline])
-       | Quoted(QuoteType, [Inline])
-       | Cite([Citation], [Inline])
-       | Code(Attr, Text)
-       | Space()
-       | SoftBreak()
-       | LineBreak()
-       | Math(MathType, Text)
-       | RawInline(Format, Text)
-       | Link(Attr, [Inline], Target)
-       | Image(Attr, [Inline], Target)
-       | Note([Block])
-       | Span(Attr, [Inline])
-```
-
-Here we simply have a mixture of ordinary text and space.
-
-```python
->>> inlines = para[0]
->>> inlines
-[Str('Hello,'), Space(), Str('World!')]
-```
-
-Instances of `Space` have no argument while instances of `Str` 
-contain a text Text
-
-```python
->>> Space
-Space()
->>> Str
-Str(Text)
->>> Text == type(u"")
+...
+>>> issubclass(Inline, Type)
+True
+>>> issubclass(Inline, Data)
 True
 ```
 
-Finally
-
+The concrete types on the right-hand side of this signature are constructor
+(concrete) types. The abstract type itself is not a constructor ; 
+it cannot be instantiated:
 ```python
->>> print(inlines[0][0] + " " + inlines[2][0])
-Hello, World!
+>>> issubclass(Inline, Constructor)
+False
+>>> Inline()
+Traceback (most recent call last):
+...
+TypeError: Can't instantiate abstract class Inline
 ```
 
--->
+The constructors associated to some abstract data type are concrete:
+```python
+>>> issubclass(Str, Type)
+True
+>>> issubclass(Str, Data)
+True
+>>> issubclass(Str, Constructor)
+True
+```
+
+They can be instantiated and the classic inheritance test apply:
+```python
+>>> string = Str("Hello")
+>>> isinstance(string, Str)
+True
+```
+Constructor types inherit from the corresponding abstract data type:
+```python
+>>> issubclass(Str, Inline)
+True
+>>> isinstance(string, Inline)
+True
+```
+
+Typedefs are also another kind of abstract type. They are merely introduced
+so that we can name some constructs in the type hierarchy, but no instance
+of such types exist in documents. For example, consider 
+the `Attr` and `Target` types:
+```python
+>>> Attr
+Attr = (Text, [Text], [(Text, Text)])
+>>> Target
+Target = (Text, Text)
+```
+
+They are pandoc types which are not data types but typedefs:
+```python
+>>> issubclass(Attr, Type)
+True
+>>> issubclass(Attr, Data)
+False
+>>> issubclass(Attr, TypeDef)
+True
+>>> issubclass(Target, Type)
+True
+>>> issubclass(Target, Data)
+False
+>>> issubclass(Target, TypeDef)
+True
+```
+
+They enable more compact and readable types signatures. 
+For example, with typedefs, the `Link` signature is:
+```python
+>>> Link
+Link(Attr, [Inline], Target)
+```
+instead of `Link((Text, [Text], [(Text, Text)]), [Inline], (Text, Text))`
+without them.
+
+To mimick closely the original Haskell type hierarchy, we also define aliases 
+for some Python primitive types. For example, the `Text` type used in the `Str` 
+data constructor is not a custom Pandoc type:
+```python
+>>> Str
+Str(Text)
+>>> issubclass(Text, Type)
+False
+>>>
+```
+Instead, it's a mere alias for the builtin Python string:
+```python
+>>> Text
+<class 'str'>
+```
