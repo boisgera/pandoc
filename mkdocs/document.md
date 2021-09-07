@@ -320,7 +320,7 @@ instead of `Link((Text, [Text], [(Text, Text)]), [Inline], (Text, Text))`
 without them.
 
 ???+ error "TODO"
-    Generate error on `isinstance` test, even if structurally valid.
+    Generate error on `isinstance` test for typedefs, even if structurally valid.
     Or tweak isinstance to make the appropriare structural test?
     That would be a lousy pattern matching practice **but** also a handy
     type checking construct.
