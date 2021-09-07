@@ -13,7 +13,8 @@ import pandoc
 from pandoc.types import *
 ```
 
-# Meta-model
+Meta-model
+--------------------------------------------------------------------------------
 
 Pandoc models every document as a tree of elements. Each element has
 a well-defined type such as paragraph, image, note link, etc. and of 
@@ -29,7 +30,8 @@ this usage requires very little knowledge about the document structure.
 However, if one wishes to analyze, create or transform documents,
 some working knowledge of this meta-model becomes necessary.
 
-# Haskell & Python
+Haskell & Python
+--------------------------------------------------------------------------------
 
 The primary source of information about pandoc's meta-model is the hierarchy
 of types defined by the [pandoc-types](https://hackage.haskell.org/package/pandoc-types) 
@@ -41,9 +43,10 @@ programming language. The pandoc Python library brings to Python this hierarchy
 of types ; it also offers an alternate and interactive way to become familiar 
 with the meta-model. This is what we describe in the following sections.
 
-# Documents
+Documents
+--------------------------------------------------------------------------------
 
-## Explore
+### Explore
 The basic idea here is that you can create markdown documents that feature
 exactly the kind of document constructs that you are interested in, and
 then read them as pandoc documents to see how they look like. 
@@ -92,7 +95,7 @@ I recommend that you try to reproduce the process above for small documents
 that feature titles, headers, emphasized text, lists, etc. to become familiar 
 with the way that these constructs are described in pandoc documents.
 
-## Create from scratch
+### Create
 
 At this stage, even if we have not yet described formally the meta-model, 
 we have already gathered enough knowledge to build a simple plain text document 
@@ -112,9 +115,10 @@ by converting it to markdown and displaying the result:
 Python & Pandoc
 ```
 
-# Types 
+Types 
+--------------------------------------------------------------------------------
 
-## Explore
+### Explore
 
 The insights gathered in the previous sections were a good starting point to
 get a feel of the possible document structure. Now, to be certain that we
@@ -215,7 +219,7 @@ We now have successfully discovered all pandoc types used in our simple
 "Hello wordl!" document. Again, I recommend that you reproduce this process 
 for all document constructs that you are interested in.
 
-## Type Categories
+### Categories
 
 The types defined in `pandoc.types` are either data types, typedefs or aliases 
 for Python built-ins.
