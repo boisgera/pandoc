@@ -220,7 +220,7 @@ Space()
 ```
 
 We now have successfully discovered all pandoc types used in our simple
-"Hello wordl!" document. Again, I recommend that you reproduce this process 
+"Hello world!" document. Again, I recommend that you reproduce this process 
 for all document constructs that you are interested in.
 
 ### Categories
