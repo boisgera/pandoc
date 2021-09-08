@@ -1,10 +1,6 @@
 Document structure
 ================================================================================
 
-```python
-import pandoc
-from pandoc.types import *
-```
 
 !!! warning
     This documentation is dedicated to the [latest version of the project
@@ -13,8 +9,8 @@ from pandoc.types import *
     [the latest release of pandoc](https://pandoc.org/releases.html) so far.
 
 ```python
->>> pandoc.configure(read=True)["version"]
-'2.14.1'
+import pandoc
+from pandoc.types import *
 ```
 
 Meta-model
