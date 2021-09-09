@@ -1,4 +1,7 @@
 
+
+# Cookbook
+
 ⚠️ Random notes & TODOs.
 
 ```python
@@ -6,13 +9,13 @@ import pandoc
 from pandoc.types import *
 ```
 
-# Find / Analyze / etc.
+## Find / Analyze / etc.
 
 ```python
 # elts = [elt for elt in pandoc.iter(doc) if condition(elt)]
 ```
 
-# Replacement
+## Replacement
 
 To replace items, for example all instances of emphasized text with strong text,
 you first need locate emphasized text instances, that is find the collections
@@ -39,7 +42,7 @@ surgery" that may invalidate the inner locations. Talk about (shallow) replaceme
 # ...    holder[i] = strong
 ```
 
-## Immutable Data
+## Immutable data
 
 Every non-trivial pandoc document contains data that is immutable.
 To perform in-place modifications of your document, 
@@ -133,43 +136,45 @@ A correct, type-safe, way to proceed is instead:
 True
 ```
 
-### TODO: More (similar) examples
+### Use cases
 
-... and general approach. The most complex being `Attr` management probably.
-Target, Attr, etc.
+Python strings is an example of primitive type which is immutable and thus
+require special handling when in-place algorithms are used. 
+Boolean, integers and floating-point numbers are also found in document
+and can be handled similarly.
+The other immutable types that appears in documents are based on tuples.
+We illustrate how to deal with them on the two most common use cases: 
+targets and attributes.
 
-**TODO.** and by design *every custom Pandoc type is mutable*.
+#### Targets
 
+In pandoc, targets are pairs of Python strings
 ```python
-doc = Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+>>> Target
+Target = (Text, Text)
+>>> Text
+<class 'str'>
 ```
-
+The first text represents an URL and the second a title.
+Targets are used in link and image elements and only there.
 
 Say that you want to find all links in your document whose target URL is
 `"https://pandoc.org"` and make sure that the associated title is 
-`"Pandoc - About pandoc"`. The relevant piece of the document structure is:
+`"Pandoc - About pandoc"`. The relevant type signature is:
 
 ```python
 >>> Link
 Link(Attr, [Inline], Target)
->>> Target
-Target = (Text, Text)
 ```
 
-You may be tempted to iterate the document to find all pairs of text[^0],
+You may be tempted to iterate the document to find all pairs of text,
 then select those whose first item is "`https://pandoc.org`" and modify them. 
-But this approach will not work:
+But this approach will not work: we know by now that it is unsafe, since
+you may find some items which are not really targets[^1] ; and additionally,
+you cannot modify the targets in-place since tuples are immutable.
 
-  1. It is unsafe: you may find some items which are not targets[^1].
-  
-  2. You cannot modify the targets in-place since tuples are immutable.
-
-[^0]: `Target` is not a "real" type but a mere synonym for pairs of `Text`. 
-There are not instances of `Target` and thus attempts to pattern 
-match targets with `isinstance(..., Text)` will always fail.
-
-[^1]: these items would simply happen to share the same structure. 
-      For example, this can happend with attributes: 
+[^1]: These items would simply happen to share the same structure. 
+      For example, this can happen with attributes: 
       since `Attr = (Text, [Text], [(Text, Text)])`,
       the third component of every attribute -- its list of key-value pairs -- 
       will contain some pairs of `Text` if it's not empty.
@@ -190,8 +195,9 @@ pandoc's web site.
 [Link to pandoc.org](https://pandoc.org "Pandoc - About pandoc")
 ```
 
-There are a few other types in the document structure that are also immutable,
-the most notable being `Attr`:
+#### Attributes
+
+The other most notable immutable type in documents is `Attr`:
 
 ```python
 >>> Attr
@@ -200,60 +206,99 @@ Attr = (Text, [Text], [(Text, Text)])
 
 `Attr` is composed of an identifier, a list of classes, and a list of
 key-value pairs. To transform `Attr` content, again the easiest way to
-proceed is to target their holders. Say that we want add a numbered
-"anonymous" identifier for inline elements wit no identifier. 
-Since we have
+proceed is to target their holders. Say that we want add a class tag 
+that described the type of the pandoc element for every element which 
+is a `Attr` holder. 
+The relevant type signatures – we display all `Attr` holders – are:
 
 ```python
->>> Inline
-Inline = Str(Text)
-       | Emph([Inline])
-       | Underline([Inline])
-       | Strong([Inline])
-       | Strikeout([Inline])
-       | Superscript([Inline])
-       | Subscript([Inline])
-       | SmallCaps([Inline])
-       | Quoted(QuoteType, [Inline])
-       | Cite([Citation], [Inline])
+>>> Inline # doctest: +ELLIPSIS
+Inline = ...
        | Code(Attr, Text)
-       | Space()
-       | SoftBreak()
-       | LineBreak()
-       | Math(MathType, Text)
-       | RawInline(Format, Text)
+       ...
        | Link(Attr, [Inline], Target)
        | Image(Attr, [Inline], Target)
-       | Note([Block])
+       ...
        | Span(Attr, [Inline])
 ```
 
-we need to target `Code`, `Link`, `Image` and `Span` instances.
+and 
 
+```python
+>>> Block  # doctest: +ELLIPSIS
+Block = ...
+      | CodeBlock(Attr, Text)
+      ...
+      | Header(Int, Attr, [Inline])
+      ...
+      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+      | Div(Attr, [Block])
+      ...
+```
+
+So we need to target `Code`, `Link`, `Image`, `Span`, `Div`,`CodeBlock`,
+`Header`, `Table` and `Div` instances. `Header` is a special case here 
+since its attributes are its second item ; for every other type,
+the attributes come first. The transformation can be implemented as follows:
+
+```python
+AttrHolder = (Code, Link, Image, Span, Div, CodeBlock, Header, Table, Div)
+
+def add_class(doc):
+    for elt in pandoc.iter(doc):
+        if isinstance(elt, AttrHolder):
+            attr_index = 0 if not isinstance(elt, Header) else 1
+            identifier, classes, key_value_pairs = elt[attr_index]
+            typename = type(elt).__name__.lower()
+            classes.append(typename)
+```
+
+The transformation works as expected:
+```python
+>>> markdown = """
+... # Pandoc {#pandoc}
+... [Link to pandoc.org](https://pandoc.org)
+... """
+>>> doc = pandoc.read(markdown)
+>>> add_class(doc)
+>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+# Pandoc {#pandoc .header}
+[Link to pandoc.org](https://pandoc.org){.link}
+```
+
+Note that here we can get away without changing the attribute tuple entirely
+because its mutability is shallow: while we cannot rebind the reference to
+its items, if these items are mutable they can still be changed in-place.
+Here precisely, `classes` cannot be rebound, but since it is mutable,
+its contents can be changed.
+
+If we want to change the element ids instead, we would need to use a new tuple.
+For example, to add the id `anonymous` to every attribute holder without
+identifier, we can do:
 ```python
 def add_id(doc):
-    id_number = 1
     for elt in pandoc.iter(doc):
-        if isinstance(elt, (Code, Link, Image, Span)):
-            identifier, classes, key_value_pairs = elt[0]
+        if isinstance(elt, AttrHolder):
+            attr_index = 0 if not isinstance(elt, Header) else 1
+            identifier, classes, key_value_pairs = elt[attr_index]
             if not identifier:
-                identifier = f"anonymous-{id_number:02}"
-                elt[0] = identifier, classes, key_value_pairs
-                id_number += 1
+                identifier = "anonymous"
+                elt[attr_index] = identifier, classes, key_value_pairs
 ```
-
+and this transformation would result in:
 ```python
->>> doc = pandoc.read("[Link to pandoc.org](https://pandoc.org)")
 >>> add_id(doc)
 >>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
-[Link to pandoc.org](https://pandoc.org){#anonymous-01}
+# Pandoc {#pandoc .header}
+[Link to pandoc.org](https://pandoc.org){#anonymous .link}
 ```
 
-# TODO: Move fragments
+
+## TODO: Move fragments
 
 (example: move some fragments to some annex)
 
-# Deletion
+## Deletion
 
 **TODO.** start with a problem (either plain error or deletions that did no
 go as expected?)
@@ -273,12 +318,12 @@ much more pervasive.
 
 
 
-# Transform (more extensively)
+## Transform (more extensively)
 
 
 
-## TODO. two-pass find / replace in reverse-order pattern.
+### TODO. two-pass find / replace in reverse-order pattern.
 
 
 
-## TODO. deal with tuples / immutability
+## TODO. functional style (copy / recreate, not in-place)
