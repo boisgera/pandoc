@@ -73,6 +73,8 @@ http://www.w3.org/TR/html5/syntax.html#comments
 In most use cases, the implementation is straightforward ; but some others
 require a bit more subtelty.
 
+**TODO.** Don't change while you iterate.
+
 For example, to replace all instances of emphasized text with strong text,
 you first need locate emphasized text instances, that is find the collections
 of holders `holder` and indices `i` such that `emph = holder[i]`.
