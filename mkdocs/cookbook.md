@@ -1,5 +1,4 @@
 
-
 # Cookbook
 
 ⚠️ Random notes & TODOs.
@@ -9,38 +8,108 @@ import pandoc
 from pandoc.types import *
 ```
 
-## Find / Analyze / etc.
+## Fetch
+
+
+**TODO.** explain use get (get info, analysis, read-only)
+
+**TODO.** explain commonmark spec doc.
+
+```python
+from urllib.request import urlopen
+PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
+HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" 
+URL = f"https://{PATH}/{HASH}/spec.txt"
+COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
+```
+
+```python
+doc = pandoc.read(COMMONMARK_SPEC)
+```
+
+Display all external (http/https) link URLs used in the commonmark specification.
+
+``` python
+def display_external_links(doc):
+    links = [elt for elt in pandoc.iter(doc) if isinstance(elt, Link)]
+    for link in links:
+        _, _, target = link # Link signature is Link(Attr, [Inline], Target)
+        url, title = target # Target signature is (Text, Text)
+        if url.startswith("http"):
+            print(url)
+```
+
+```python
+>>> display_external_links(doc)
+http://creativecommons.org/licenses/by-sa/4.0/
+http://daringfireball.net/projects/markdown/syntax
+http://daringfireball.net/projects/markdown/
+http://www.methods.co.nz/asciidoc/
+http://daringfireball.net/projects/markdown/syntax
+http://article.gmane.org/gmane.text.markdown.general/1997
+http://article.gmane.org/gmane.text.markdown.general/2146
+http://article.gmane.org/gmane.text.markdown.general/2554
+https://html.spec.whatwg.org/entities.json
+http://www.aaronsw.com/2002/atx/atx.py
+http://docutils.sourceforge.net/rst.html
+http://daringfireball.net/projects/markdown/syntax#em
+http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags
+https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
+http://www.w3.org/TR/html5/syntax.html#comments
+```
+
+## Find (/ Analyze / etc.)
 
 ```python
 # elts = [elt for elt in pandoc.iter(doc) if condition(elt)]
 ```
 
-## Replacement
+**TODO.** differentiate fetch (get the stuff matching a pattern) from find
+(get their path, either holder index or from the top).
 
-To replace items, for example all instances of emphasized text with strong text,
+## Replace
+
+"Find-and-replace" is a very frequent pattern in document transformations.
+In most use cases, the implementation is straightforward ; but some others
+require a bit more subtelty.
+
+For example, to replace all instances of emphasized text with strong text,
 you first need locate emphasized text instances, that is find the collections
 of holders `holder` and indices `i` such that `emph = holder[i]`.
 
 ```python
-# emph_locations = []
-# for elt, path in pandoc.iter(doc, path=True):
-#     if isinstance(elt, Emph):
-#         holder, i = path[-1]
-#         emph_locations.append((holder, i))
+doc = pandoc.read("""
+# Title with *emphasis*
+Text with *emphasis*.
+""")
 ```
+
+```python
+emph_locations = []
+for elt, path in pandoc.iter(doc, path=True):
+    if isinstance(elt, Emph):
+        holder, i = path[-1]
+        emph_locations.append((holder, i))
+```
+
+```python
+>>> for holder, i in emph_locations:
+...    emph = holder[i] 
+...    inlines = emph[0]        # Emph signature is Emph([Inline])
+...    strong = Strong(inlines) # Strong signature is Strong([Inline])
+...    holder[i] = strong
+```
+
+#```python
+#>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+#```
 
 **Question.** When is the "not-reversed-scheme" ok? When are the next locations
 still valid? Even with most recursive scheme, that should be ok. Think more of
 it here & document the stuff. Distinguish simple replacement with "extensive
 surgery" that may invalidate the inner locations. Talk about (shallow) replacement?
 
-```python
-# >>> for holder, i in emph_locations:
-# ...    emph = holder[i] 
-# ...    inlines = emph[0] # Emph signature is Emph([Inline])
-# ...    strong = Strong(inlines) # Strong signature is Strong([Inline])
-# ...    holder[i] = strong
-```
+
 
 ## Immutable data
 
@@ -316,14 +385,8 @@ list of such stuff ? Or even focus with Attr or Target (mutation or deletion).
 For `Target`, this is easy, the only parents are images or links ; `Attr` is 
 much more pervasive.
 
-
-
 ## Transform (more extensively)
 
-
-
 ### TODO. two-pass find / replace in reverse-order pattern.
-
-
 
 ## TODO. functional style (copy / recreate, not in-place)
