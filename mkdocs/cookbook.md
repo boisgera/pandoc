@@ -100,10 +100,6 @@ for elt, path in pandoc.iter(doc, path=True):
 ...    holder[i] = strong
 ```
 
-#```python
-#>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
-#```
-
 **Question.** When is the "not-reversed-scheme" ok? When are the next locations
 still valid? Even with most recursive scheme, that should be ok. Think more of
 it here & document the stuff. Distinguish simple replacement with "extensive
