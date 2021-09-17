@@ -10,11 +10,16 @@ from pandoc.types import *
 
 ## Fetch
 
+Extraction of information from a document -- a very common use case in
+the automatic processing of documents -- requires usually to find the
+document fragments that meet some condition first and foremost. 
+This condition typically discriminates on the type of the fragment 
+and optionally its contents. This "fetch" pattern, 
+does not require any transformation of the document itself,
+often leads to rather straightforward implementations.
 
-**TODO.** explain use get (get info, analysis, read-only)
-
-**TODO.** explain commonmark spec doc.
-
+We'll present some examples of this pattern based on the commonmark spec, 
+which is a rather rich markdown document. It is available on github:
 ```python
 from urllib.request import urlopen
 PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
@@ -23,11 +28,60 @@ URL = f"https://{PATH}/{HASH}/spec.txt"
 COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
 ```
 
+We read it as a pandoc document `doc`:
 ```python
 doc = pandoc.read(COMMONMARK_SPEC)
 ```
 
-Display all external (http/https) link URLs used in the commonmark specification.
+We can find the document's author name in the document metadata[^11]:
+```python
+def author(doc):
+    metas = [elt for elt in pandoc.iter(doc) if isinstance(elt, Meta)]
+    assert len(metas) == 1
+    meta = metas[0]
+    metamap = meta[0] # Meta signature is Meta({Text: MetaValue})
+    author = metamap["author"]
+    assert isinstance(author, MetaInlines)
+    inlines = author[0] # MetaInlines signature: MetaInlines([Inline])
+    author_doc = Pandoc(Meta({}), [Plain(inlines)])
+    author_md = pandoc.write(author_doc).strip()
+    return author_md
+```
+
+```python
+>>> author(doc)
+'John MacFarlane'
+```
+
+[^11]: using a pointlessly complicated method since the metadata is available
+as `doc[0]`.
+
+We can build the table of contents of the document:
+``` python
+def table_of_contents(doc):
+    headers = [elt for elt in pandoc.iter(doc) if isinstance(elt, Header)]
+    toc_lines = []
+    for header in headers:
+       level, _, inlines = header[:] # Header signature: Header(Int, Attr, [Inline]) 
+       header_title = pandoc.write(Pandoc(Meta({}), [Plain(inlines)])).strip()
+       toc_lines.append( (level - 1) * 2 * " " + header_title)
+    return "\n".join(toc_lines)
+```
+
+``` python
+>>> print(table_of_contents(doc)) # doctest: +ELLIPSIS
+Introduction
+  What is Markdown?
+  Why is a spec needed?
+  About this document
+Preliminaries
+  Characters and lines
+  Tabs
+  Insecure characters
+  ...
+```
+
+We can display all external link URLs used in the commonmark specification.
 
 ``` python
 def display_external_links(doc):
@@ -56,6 +110,26 @@ http://daringfireball.net/projects/markdown/syntax#em
 http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags
 https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 http://www.w3.org/TR/html5/syntax.html#comments
+```
+
+We can get the list of the code blocks types (registered as classes):
+
+```python
+def fetch_code_types(doc):
+    code_blocks = [elt for elt in pandoc.iter(doc) if isinstance(elt, CodeBlock)]
+    types = set()
+    for code_block in code_blocks:
+        attr = code_block[0] # CodeBlock(Attr, Text)
+        _, classes, _ = attr # Attr = (Text, [Text], [(Text, Text)])
+        types.update(classes)
+    return sorted(list(types))
+```
+
+```python
+>>> code_types = fetch_code_types(doc)
+>>> code_types
+['example', 'html', 'markdown', 'tree']
+
 ```
 
 ## Find (/ Analyze / etc.)
