@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - pandoc=2.14.1
+  - pandoc=2.14.2
   - plumbum
   - ply
   - pip
