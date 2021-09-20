@@ -28,9 +28,9 @@ URL = f"https://{PATH}/{HASH}/spec.txt"
 COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
 ```
 
-We read it as a pandoc document `doc`:
+We read it as a pandoc document:
 ```python
-doc = pandoc.read(COMMONMARK_SPEC)
+commonmark_doc = pandoc.read(COMMONMARK_SPEC)
 ```
 
 We can find the document's author name in the document metadata[^11]:
@@ -49,7 +49,7 @@ def author(doc):
 ```
 
 ```python
->>> author(doc)
+>>> author(commonmark_doc)
 'John MacFarlane'
 ```
 
@@ -69,7 +69,7 @@ def table_of_contents(doc):
 ```
 
 ``` python
->>> print(table_of_contents(doc)) # doctest: +ELLIPSIS
+>>> print(table_of_contents(commonmark_doc)) # doctest: +ELLIPSIS
 Introduction
   What is Markdown?
   Why is a spec needed?
@@ -94,7 +94,7 @@ def display_external_links(doc):
 ```
 
 ```python
->>> display_external_links(doc)
+>>> display_external_links(commonmark_doc)
 http://creativecommons.org/licenses/by-sa/4.0/
 http://daringfireball.net/projects/markdown/syntax
 http://daringfireball.net/projects/markdown/
@@ -126,20 +126,54 @@ def fetch_code_types(doc):
 ```
 
 ```python
->>> code_types = fetch_code_types(doc)
+>>> code_types = fetch_code_types(commonmark_doc)
 >>> code_types
 ['example', 'html', 'markdown', 'tree']
 
 ```
 
-## Find (/ Analyze / etc.)
+## Find
 
-```python
-# elts = [elt for elt in pandoc.iter(doc) if condition(elt)]
+Another very common transformation pattern is when you need to locate the
+items meeting some condition in the document in order to change their
+content, to replace them or to delete them.
+
+To merely change the items content, the "fetch" pattern is good enough.
+For example, to change all http links in the document to their https 
+counterpart, it's enough to do:
+
+``` python
+def to_https(doc):
+    links = [elt for elt in pandoc.iter(doc) if isinstance(elt, Link)]
+    for link in links:
+        _, _, target = link # Link signature is Link(Attr, [Inline], Target)
+        url, title = target # Target signature is (Text, Text)
+        if url.startswith("http:"):
+            url = url.replace("http:", "https:")
+            target = url, title
+            link[2] = target
 ```
 
-**TODO.** differentiate fetch (get the stuff matching a pattern) from find
-(get their path, either holder index or from the top).
+``` python
+>>> to_https(commonmark_doc)
+>>> display_external_links(commonmark_doc)
+https://creativecommons.org/licenses/by-sa/4.0/
+https://daringfireball.net/projects/markdown/syntax
+https://daringfireball.net/projects/markdown/
+https://www.methods.co.nz/asciidoc/
+https://daringfireball.net/projects/markdown/syntax
+https://article.gmane.org/gmane.text.markdown.general/1997
+https://article.gmane.org/gmane.text.markdown.general/2146
+https://article.gmane.org/gmane.text.markdown.general/2554
+https://html.spec.whatwg.org/entities.json
+https://www.aaronsw.com/2002/atx/atx.py
+https://docutils.sourceforge.net/rst.html
+https://daringfireball.net/projects/markdown/syntax#em
+https://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags
+https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
+https://www.w3.org/TR/html5/syntax.html#comments
+```
+
 
 ## Replace
 
