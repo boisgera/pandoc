@@ -10,8 +10,10 @@ from pandoc.types import *
 
 ## Fetch
 
-Extraction of information from a document -- a very common use case in
-the automatic processing of documents -- requires usually to find the
+### Read
+
+Extraction of information from a document – a very common use case in
+the automatic processing of documents – requires usually to find the
 document fragments that meet some condition first and foremost. 
 This condition typically discriminates on the type of the fragment 
 and optionally its contents. This "fetch" pattern, 
@@ -132,27 +134,25 @@ def fetch_code_types(doc):
 
 ```
 
-## Find
+### Write
 
-Another very common transformation pattern is when you need to locate the
-items meeting some condition in the document in order to change their
-content, to replace them or to delete them.
-
-To merely change the items content, the "fetch" pattern is good enough.
-For example, to change all http links in the document to their https 
-counterpart, it's enough to do:
+The "fetch" pattern is also valuable to get a list of (mutable) items and then 
+change their content. For example, to change all http links in the document to 
+their https counterpart:
 
 ``` python
 def to_https(doc):
     links = [elt for elt in pandoc.iter(doc) if isinstance(elt, Link)]
     for link in links:
-        _, _, target = link # Link signature is Link(Attr, [Inline], Target)
+        target = link[2]    # Link signature is Link(Attr, [Inline], Target)
         url, title = target # Target signature is (Text, Text)
         if url.startswith("http:"):
             url = url.replace("http:", "https:")
             target = url, title
             link[2] = target
 ```
+
+We can check that this function performs the expected change in the document:
 
 ``` python
 >>> to_https(commonmark_doc)
@@ -175,7 +175,74 @@ https://www.w3.org/TR/html5/syntax.html#comments
 ```
 
 
-## Replace
+
+## Locate
+
+Another very common transformation pattern is when you need to locate the
+items meeting some condition in the document in order to replace them or 
+to delete them. In this case, fetching a list of items is not enough;
+instead we should obtain the location of the item in the document,
+which is given as a pair of item `holder` and item `index`, such that
+`item` is `holder[index]`.
+
+This information is avaible as `path[-1]` where `elt, path` is yielded by
+`pandoc.iter` with the option `path=True`. For example:
+
+``` python
+>>> doc = pandoc.read("Hello world!")
+>>> for elt, path in pandoc.iter(doc, path=True):
+...     if elt != doc: # elt == doc is the document root, it has no holder
+...          holder, index = path[-1]
+...          print(f"elt: {elt!r}")
+...          print(f"  -> holder: {holder}")
+...          print(f"  -> index: {index}")
+elt: Meta({})
+  -> holder: Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+  -> index: 0
+elt: {}
+  -> holder: Meta({})
+  -> index: 0
+elt: [Para([Str('Hello'), Space(), Str('world!')])]
+  -> holder: Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+  -> index: 1
+elt: Para([Str('Hello'), Space(), Str('world!')])
+  -> holder: [Para([Str('Hello'), Space(), Str('world!')])]
+  -> index: 0
+elt: [Str('Hello'), Space(), Str('world!')]
+  -> holder: Para([Str('Hello'), Space(), Str('world!')])
+  -> index: 0
+elt: Str('Hello')
+  -> holder: [Str('Hello'), Space(), Str('world!')]
+  -> index: 0
+elt: 'Hello'
+  -> holder: Str('Hello')
+  -> index: 0
+elt: Space()
+  -> holder: [Str('Hello'), Space(), Str('world!')]
+  -> index: 1
+elt: Str('world!')
+  -> holder: [Str('Hello'), Space(), Str('world!')]
+  -> index: 2
+elt: 'world!'
+  -> holder: Str('world!')
+  -> index: 0
+```
+
+The previous components of the path contain the holder and index that locate
+the element holder, then their holder and index, etc. up to the document root:
+``` python
+>>> for elt, path in pandoc.iter(doc, path=True):
+...     if elt == "world!":
+...         for holder, index in path:
+...             print(f"-> {holder}[{index}]")
+-> Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])[1]
+-> [Para([Str('Hello'), Space(), Str('world!')])][0]
+-> Para([Str('Hello'), Space(), Str('world!')])[0]
+-> [Str('Hello'), Space(), Str('world!')][2]
+-> Str('world!')[0]
+```
+
+### Replace
 
 "Find-and-replace" is a very frequent pattern in document transformations.
 In most use cases, the implementation is straightforward ; but some others
@@ -215,7 +282,9 @@ still valid? Even with most recursive scheme, that should be ok. Think more of
 it here & document the stuff. Distinguish simple replacement with "extensive
 surgery" that may invalidate the inner locations. Talk about (shallow) replacement?
 
+### Delete
 
+**TODO.**
 
 ## Immutable data
 
@@ -351,7 +420,7 @@ you cannot modify the targets in-place since tuples are immutable.
 [^1]: These items would simply happen to share the same structure. 
       For example, this can happen with attributes: 
       since `Attr = (Text, [Text], [(Text, Text)])`,
-      the third component of every attribute -- its list of key-value pairs -- 
+      the third component of every attribute – its list of key-value pairs – 
       will contain some pairs of `Text` if it's not empty.
 
 The easiest way to handle this situation is to search for links that target 
