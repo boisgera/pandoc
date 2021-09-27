@@ -286,6 +286,70 @@ surgery" that may invalidate the inner locations. Talk about (shallow) replaceme
 
 **TODO.**
 
+## Scoping
+
+Some patterns require to treat elements differently when one of their ancestors
+meet some condition. For example, to count the number of words in your document
+(defined as the number of `Str` instances), excluding those inside a `notes` div 
+(a way to inside speaker notes when reveal.js presentations are the target).
+
+Let's use the following example document:
+
+``` python
+doc = pandoc.read("""
+The words in this paragraph should be counted.
+
+::: notes ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+But these words should be excluded.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+""")
+```
+
+Counting all words is easy
+
+``` python
+>>> len([item for item in pandoc.iter(doc) if isinstance(item, Str)])
+14
+```
+
+But to exclude all words with a `notes` div, we need to detect when the iteration
+enters and exits such an element. The easiest way to do this is to record the
+depth of such divs[^99] when we enter them. As long as we iterate on items
+at a greater depth, we're still in the div scope ; when this depth becomes
+equal or smaller than this recorded depth, we're out of it. 
+Thus, a possible implementation of this pattern is:
+
+``` python
+def count_words(doc):
+    in_notes, depth = False, None
+    count = 0
+    for elt, path in pandoc.iter(doc, path=True):
+        # Detect entry & exit from notes div
+        if not in_notes:
+            if isinstance(elt, Div):
+                attr = elt[0]     # Div(Attr, [Block])
+                classes = attr[1] # attr = (id, classes, kvs)
+                if "notes" in classes:
+                    in_notes, depth = True, len(path) 
+        else:
+            if len(path) <= depth:
+                in_notes, depth = False, None
+        # Count words outside of notes divs
+        if isinstance(elt, Str) and not in_notes:
+            count += 1
+    return count
+```
+
+It provides the expected result:
+``` python
+>>> count_words(doc)
+8
+```
+
+[^99]: or the depths if they can be nested.
+
 ## Immutable data
 
 Every non-trivial pandoc document contains data that is immutable.
