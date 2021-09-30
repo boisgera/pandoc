@@ -8,30 +8,37 @@
 Elements
 ================================================================================
 
-
-    >>> import pandoc
-    >>> from pandoc.types import *
+``` pycon
+>>> import pandoc
+>>> from pandoc.types import *
+```
 
 Helpers
 --------------------------------------------------------------------------------
 
 We introduce a simple function to display pandoc elements in markdown:
 
-    >>> def display(elt):
-    ...     print(pandoc.write(elt))
+```pycon
+>>> def display(elt):
+...     print(pandoc.write(elt))
+```
 
 We also define a `to` function `to` to get a specific type of element inside
 a document:
 
-    >>> def to(elt, type):
-    ...     for _elt in pandoc.iter(elt):
-    ...         if isinstance(_elt, type):
-    ...             return _elt
+``` pycon
+>>> def to(elt, type):
+...     for _elt in pandoc.iter(elt):
+...         if isinstance(_elt, type):
+...             return _elt
+```
 
 Since we're a bit reckless, we monkey-patch the pandoc type base class 
 to use `to` as a method:
 
-    >>> Type.to = to
+``` pycon
+>>> Type.to = to
+```
 
 Paragraphs
 --------------------------------------------------------------------------------
@@ -93,53 +100,53 @@ then more advanced metadata ... and finally YAML blocks?
 **TODO:** specify use cases: use for custom templates, misc. configuration
 options (e.g. stylesheets, EPUB metadata, bibliography, etc.)
 
-    >>> Meta
-    Meta({Text: MetaValue})
+``` pycon
+>>> Meta
+Meta({Text: MetaValue})
+```
 
-...
+``` pycon
+>>> MetaValue
+MetaValue = MetaMap({Text: MetaValue})
+          | MetaList([MetaValue])
+          | MetaBool(Bool)
+          | MetaString(Text)
+          | MetaInlines([Inline])
+          | MetaBlocks([Block])
+```
 
-    >>> MetaValue
-    MetaValue = MetaMap({Text: MetaValue})
-              | MetaList([MetaValue])
-              | MetaBool(Bool)
-              | MetaString(Text)
-              | MetaInlines([Inline])
-              | MetaBlocks([Block])
+``` pycon
+>>> text = """\
+... % Document Title
+... % Author One, Author Two
+... % Date
+... """
+```
 
-...
+``` pycon
+>>> doc = pandoc.read(text)
+>>> doc == \
+... Pandoc(
+...   Meta(map([
+...     ('date', MetaInlines([Str('Date')])), 
+...     ('author', MetaList([MetaInlines(
+...       [Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), 
+...     ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))
+...   ])), 
+...   []
+... )
+True
+```
 
-    >>> text = """\
-    ... % Document Title
-    ... % Author One, Author Two
-    ... % Date
-    ... """
-
-...
-
-
-    >>> doc = pandoc.read(text)
-    >>> doc == \
-    ... Pandoc(
-    ...   Meta(map([
-    ...     ('date', MetaInlines([Str('Date')])), 
-    ...     ('author', MetaList([MetaInlines(
-    ...       [Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), 
-    ...     ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))
-    ...   ])), 
-    ...   []
-    ... )
-    True
-
-...
-
-    >>> metadata = doc[0][0]
-    >>> metadata["title"]
-    MetaInlines([Str('Document'), Space(), Str('Title')])
-    >>> metadata["author"]
-    MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])
-    >>> metadata["date"]
-    MetaInlines([Str('Date')])
-
+``` pycon
+>>> metadata = doc[0][0]
+>>> metadata["title"]
+MetaInlines([Str('Document'), Space(), Str('Title')])
+>>> metadata["author"]
+MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])
+>>> metadata["date"]
+MetaInlines([Str('Date')])
+```
 
 
 **TODO:** discuss simple vs general (YAML) syntax.
