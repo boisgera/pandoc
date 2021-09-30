@@ -4,7 +4,7 @@ docs_dir: mkdocs
 
 site_dir: docs
 
-pages:
+nav:
   - Overview (wip): index.md
   - Examples (wip): examples.md
   - CLI (wip): cli.md
