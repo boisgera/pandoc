@@ -18,7 +18,7 @@
 Examples
 ================================================================================
 
-```python
+``` python
 import pandoc
 from pandoc.types import *
 ```
@@ -26,7 +26,7 @@ from pandoc.types import *
 !!! note "TODO"
     Better name for `T` ; `md2md` for example. Or `markdown` ?
 
-```python
+``` python
 def T(function):
     def _f(markdown):
         doc = pandoc.read(markdown)
@@ -40,14 +40,14 @@ def T(function):
 Uppercase
 --------------------------------------------------------------------------------
 
-```python
+``` python
 def capitalize(doc):
     for elt in pandoc.iter(doc):
         if isinstance(elt, Str):
             elt[0] = elt[0].upper()
 ```
 
-```python
+``` pycon
 >>> T(capitalize)("I can't feel my legs")
 I CAN'T FEEL MY LEGS
 <BLANKLINE>
@@ -76,7 +76,7 @@ Remove everything between `<!-- BEGIN COMMENT -->` and `<!-- END COMMENT -->`.
 The comment lines must appear on lines by themselves, 
 with blank lines surrounding them.
 
-```python
+``` python
 def begin_comment(elt):
     return isinstance(elt, RawBlock) and \
            elt[0] == Format(u"html") and \
@@ -90,7 +90,7 @@ def end_comment(elt):
 
 And now
 
-```python
+``` python
 def ignore_comments(doc):
     for elt in pandoc.iter(doc):
         if isinstance(elt, list) and len(elt) > 0 and isinstance(elt[0], Block):            
@@ -109,7 +109,7 @@ def ignore_comments(doc):
 
 Leads to
 
-```python
+``` pycon
 >>> markdown = """\
 ... Regular text
 ...
@@ -147,7 +147,7 @@ and to numbered theorems in HTML output.
     Haskell (e.g. <https://stackoverflow.com/questions/7624774/haskell-map-for-trees>).
     So, define a `pandoc.map` helper?
 
-```python
+``` python
 def is_theorem(elt):
     if isinstance(elt, Div):
         attrs = elt[0]
@@ -157,12 +157,12 @@ def is_theorem(elt):
     return False
 ```
 
-```python
+``` python
 def LaTeX(text):
     return RawBlock(Format('latex'), text)
 ```
 
-```python
+``` python
 def theorem_latex(doc):
     for elt in pandoc.iter(doc):
         if is_theorem(elt):
@@ -175,7 +175,7 @@ def theorem_latex(doc):
             elt[1][:] = [start_theorem] + elt[1] + [end_theorem]
 ```
 
-```python
+``` python
 markdown = r"""
 I'd like to introduce the following theorem:
 <div id='cauchy-formula' class='theorem'>
@@ -203,7 +203,6 @@ Right?
     <BLANKLINE>
 
 
-
 Jupyter Notebooks
 --------------------------------------------------------------------------------
 
@@ -213,7 +212,8 @@ Transform a markdown document with Python code blocks into a Jupyter notebook
 Source: [the notebook file format](http://nbformat.readthedocs.io/en/latest/format_description.html#the-notebook-file-format)
 
 Jupyter notebook helpers (notebook metadata and building blocks):
-```python
+
+``` python
 import copy
 
 def Notebook():
@@ -266,7 +266,8 @@ def MarkdownCell():
 ```
 
 The core transformation code
-```python
+
+``` python
 import pandoc
 from pandoc.types import Pandoc, Meta, CodeBlock
 
@@ -293,7 +294,8 @@ def notebookify(doc):
 ```
 
 How to use `notebookify` in a script:
-```python
+
+``` python
 # Python Standard Library
 import json
 import os.path
@@ -419,7 +421,7 @@ of divs and get rid of the preamble.
 
 ### Unpack Divs
 
-```python
+``` python
 def unpack_divs(doc):
     "Unpack Divs - Two-pass, In-Place Algorithm"
     # Locate the divs and extract the relevant data
@@ -451,7 +453,7 @@ This is best achieved using recursion. To get a feeling how recursion
 can be used to create modified copies of a document, we can first 
 implement a copy without modification:
 
-```python
+``` python
 def copy(elt):
     "Copy the document (or document fragment) recursively"
     # List, tuple, map and (non-primitive) Pandoc types
@@ -478,11 +480,11 @@ Let's go back to our original problem, which is div unpacking.
 Since divs are held in lists of blocks, 
 we define a predicate that identifies lists of blocks:
 
-```python
+``` python
 def is_blocks(elt): 
     "Identify (non-empty) lists of blocks"
     return isinstance(elt, list) and \
-            len(elt)!=0 and \
+            len(elt) != 0 and \
             isinstance(elt[0], Block)
 ```
 
@@ -491,7 +493,7 @@ First, we detect when `elt` is a list of blocks and
 in this case, if some of these blocks are divs, 
 we expand them:
 
-```python
+``` python
 def unpack_divs(elt):
     "Unpack Divs - One-Pass, Recursive, Non-Destructive Algorithm"
     # Find the list of blocks and their div children and unpack them
@@ -594,7 +596,7 @@ So we can detect this first paragraph
 – for example because it starts with an instance of `Str` – 
 and remove everything before it from the document:
 
-```python
+``` python
 def remove_preamble(doc):
     "Remove everything before the first real paragraph"
     blocks = doc[1]
