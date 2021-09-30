@@ -8,7 +8,7 @@ Document structure
     It is automatically tested against pandoc 2.14.2,
     [the latest release of pandoc](https://pandoc.org/releases.html) so far.
 
-```python
+``` python
 import pandoc
 from pandoc.types import *
 ```
@@ -58,7 +58,7 @@ on how things work.
 For example, the plain text `"Hello World!"` is represented in
 the following manner:
 
-```python
+``` pycon
 >>> text = "Hello, World!"
 >>> doc = pandoc.read(text)
 >>> doc
@@ -70,7 +70,8 @@ which contains some (empty) metadata and whose contents are a single
 paragraph which contains strings and spaces.
 
 It's possible to explore interactively this document in a more precise manner:
-```python
+
+``` pycon
 >>> doc
 Pandoc(Meta({}), [Para([Str('Hello,'), Space(), Str('World!')])])
 >>> meta = doc[0]
@@ -101,7 +102,7 @@ At this stage, even if we have not yet described formally the meta-model,
 we have already gathered enough knowledge to build a simple plain text document 
 from scratch.
 
-```python
+``` pycon
 >>> text = [Str("Python"), Space(), Str("&"), Space(), Str("Pandoc")]
 >>> paragraph = Para(text)
 >>> metadata = Meta({})
@@ -110,7 +111,8 @@ from scratch.
 
 We can check that our document is valid and describes what we are expecting
 by converting it to markdown and displaying the result:
-```python
+
+``` pycon
 >>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
 Python & Pandoc
 ```
@@ -130,18 +132,22 @@ they are represented by a type signature. This signature described
 how they can be constructed.
 
 For example, the top-level type `Pandoc` is represented as:
-```python
+
+``` pycon
 >>> Pandoc
 Pandoc(Meta, [Block])
 ```
+
 which means that a `Pandoc` instance is defined by an instance of `Meta`
 (the document metadata) and a list of blocks. In our exemple above,
 the metadata was not very interesting: `Meta({})`. Still, we can make
 sure that this fragment is valid: the `Meta` type signature is
-```python
+
+``` pycon
 >>> Meta
 Meta({Text: MetaValue})
 ```
+
 which reads as: metadata instances contain a dictionary of `Text` keys and
 `MetaValue` values. In our example, this dictionary was empty, hence we
 don't need to explore the structure of `Text` and `MetaValue` any further
@@ -150,7 +156,7 @@ to conclude that the fragment is valid.
 Now, let's explore the content of the document which is defined as a list of
 blocks. The `Block` type signature is
 
-```python
+``` pycon
 >>> Block
 Block = Plain([Inline])
       | Para([Inline])
@@ -167,16 +173,20 @@ Block = Plain([Inline])
       | Div(Attr, [Block])
       | Null()
 ```
+
 Each `"|"` symbol in the signature represents an alternative: blocks are 
 either instances of `Plain` or `Para` or `LineBlock`, etc. In our example
 document, the only type of block that was used is the paragraph type `Para`,
 whose signature is:
-```python
+
+``` pycon
 >>> Para
 Para([Inline])
 ```
+
 Paragraphs contain a list of inlines. An inline is
-```python
+
+``` pycon
 >>> Inline
 Inline = Str(Text)
        | Emph([Inline])
@@ -199,18 +209,22 @@ Inline = Str(Text)
        | Note([Block])
        | Span(Attr, [Inline])
 ```
+
 In our plain text example, only two types of inlines where used: strings
 `Str` and white space `Space`. Since
-```python
+
+``` pycon
 >>> Str
 Str(Text)
 >>> Text
 <class 'str'>
 ```
+
 we see that `Str` merely wraps an instance of `Text` which is simply a 
 synonym for the Python string type. On the other hand, the white space
 is a type without any content:
-```python
+
+``` pycon
 >>> Space
 Space()
 ```
@@ -224,12 +238,13 @@ for all document constructs that you are interested in.
 The types defined in `pandoc.types` are either data types, typedefs or aliases 
 for Python built-ins.
 
-```python
+``` pycon
 >>> from pandoc.types import *
 ```
 
 The `Pandoc` type is an example of data type:
-```python
+
+``` pycon
 >>> issubclass(Pandoc, Type)
 True
 >>> issubclass(Pandoc, Data)
@@ -238,7 +253,8 @@ True
 
 Data types come in two flavors: abstract or concrete. The signature of abstract 
 data types list the collection of concrete types they correspond to:
-```python
+
+``` pycon
 >>> Inline # doctest: +ELLIPSIS
 Inline = Str(Text)
        | Emph([Inline])
@@ -254,7 +270,8 @@ True
 The concrete types on the right-hand side of this signature are constructor
 (concrete) types. The abstract type itself is not a constructor ; 
 it cannot be instantiated:
-```python
+
+``` pycon
 >>> issubclass(Inline, Constructor)
 False
 >>> Inline()
@@ -264,7 +281,8 @@ TypeError: Can't instantiate abstract class Inline
 ```
 
 The constructors associated to some abstract data type are concrete:
-```python
+
+``` pycon
 >>> issubclass(Str, Type)
 True
 >>> issubclass(Str, Data)
@@ -274,13 +292,16 @@ True
 ```
 
 They can be instantiated and the classic inheritance test apply:
-```python
+
+``` pycon
 >>> string = Str("Hello")
 >>> isinstance(string, Str)
 True
 ```
+
 Constructor types inherit from the corresponding abstract data type:
-```python
+
+``` pycon
 >>> issubclass(Str, Inline)
 True
 >>> isinstance(string, Inline)
@@ -291,7 +312,8 @@ Typedefs are also another kind of abstract type. They are merely introduced
 so that we can name some constructs in the type hierarchy, but no instance
 of such types exist in documents. For example, consider 
 the `Attr` and `Target` types:
-```python
+
+``` pycon
 >>> Attr
 Attr = (Text, [Text], [(Text, Text)])
 >>> Target
@@ -299,7 +321,8 @@ Target = (Text, Text)
 ```
 
 They are pandoc types which are not data types but typedefs:
-```python
+
+``` pycon
 >>> issubclass(Attr, Type)
 True
 >>> issubclass(Attr, Data)
@@ -316,10 +339,12 @@ True
 
 They enable more compact and readable types signatures. 
 For example, with typedefs, the `Link` signature is:
-```python
+
+``` pycon
 >>> Link
 Link(Attr, [Inline], Target)
 ```
+
 instead of `Link((Text, [Text], [(Text, Text)]), [Inline], (Text, Text))`
 without them.
 
@@ -329,7 +354,7 @@ without them.
     That would be a lousy pattern matching practice **but** also a handy
     type checking construct.
 
-    ```python
+    ``` pycon
     #>>> isinstance(("text", "text"), Target) # doctest: +ELLIPSIS
     #Traceback (most recent call last):
     #...
@@ -339,15 +364,18 @@ without them.
 To mimick closely the original Haskell type hierarchy, we also define aliases 
 for some Python primitive types. For example, the `Text` type used in the `Str` 
 data constructor is not a custom Pandoc type:
-```python
+
+``` pycon
 >>> Str
 Str(Text)
 >>> issubclass(Text, Type)
 False
 >>>
 ```
+
 Instead, it's a mere alias for the builtin Python string:
-```python
+
+``` pycon
 >>> Text
 <class 'str'>
 ```
