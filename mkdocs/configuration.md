@@ -8,7 +8,7 @@
 Configuration
 ================================================================================
 
-```python
+``` python
 import pandoc
 ```
 
@@ -34,7 +34,6 @@ it is triggered only when no configuration is specified when
   - you import `pandoc.types` or
 
   - you call `pandoc.read` or `pandoc.write`. 
-
 
 
 Options
@@ -85,7 +84,7 @@ does not change the current configuration
 but returns a dictionary whose keys are `auto`, `path`, 
 `version` and `pandoc_types_version`, such as
 
-```python
+``` pycon
 >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 {'auto': True, 
  'path': ..., 
