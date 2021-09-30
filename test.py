@@ -16,8 +16,8 @@ import strictyaml
 
 # Test Files
 # ------------------------------------------------------------------------------
-mkdocs_pages = strictyaml.load(open("mkdocs.yml").read())["pages"].data
-test_files = ["mkdocs/" + list(item.values())[0] for item in mkdocs_pages]
+mkdocs_nav = strictyaml.load(open("mkdocs.yml").read())["nav"].data
+test_files = ["mkdocs/" + list(item.values())[0] for item in mkdocs_nav]
 
 # Sandbox the Test Files
 # ------------------------------------------------------------------------------
