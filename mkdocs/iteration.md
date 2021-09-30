@@ -13,16 +13,16 @@ import pandoc
 from pandoc.types import *
 ```
 
-Container Interface
+Container
 --------------------------------------------------------------------------------
 
-All concrete[^1] Pandoc data types (`Pandoc`, `Para`, `Str`, etc.) are list-like ;
+All concrete[^1] Pandoc element (of type `Pandoc`, `Para`, `Str`, etc.) are list-like ;
 their items are the arguments passed to their constructor. 
 We present here several familiar methods to access this content.
 
 [^1]: any custom pandoc type that can be instantiated. If needed, refer to the [kind of types](document/#kinds-of-types) section of the documentation for additional explanations.
 
-We illustrate this interace with the following `doc` instance of the `Pandoc` type:
+We illustrate this interface with the `"Hello world!"` document:
 
 ``` python
 meta = Meta({})
@@ -30,7 +30,9 @@ blocks = [Para([Str('Hello'), Space(), Str('world!')])]
 doc = Pandoc(meta, blocks)
 ```
 
-Indexing and slicing for this object work pretty much as in lists:
+### Random access
+
+Indexing and slicing for this element work pretty much as in lists:
 
 ``` python
 >>> doc[0]
@@ -44,7 +46,7 @@ Meta({})
 [Para([Str('Hello'), Space(), Str('world!')])]
 ```
 
-The same patterns apply to change the object contents:
+The same patterns apply to change the element contents:
 
 ``` pycon
 >>> maths = [Para([Math(InlineMath(), 'a=1')])]
@@ -57,8 +59,10 @@ Pandoc(Meta({}), [Para([Math(InlineMath(), 'a=1')])])
 Pandoc(Meta({'title': MetaInlines([Str('Maths')])}), [Para([Math(InlineMath(), 'a=1')])])
 ```
 
-The length of `doc` counts the number of items it contains
-(here: the `meta` and `blocks` arguments of its constructor):
+### Length
+
+The length of element is the number of items it contains.
+Here for `doc`, the `meta` and `blocks` arguments of its constructor:
 
 ``` pycon
 >>> len(doc)
@@ -67,7 +71,9 @@ The length of `doc` counts the number of items it contains
 True
 ```
 
-Two instances of concrete pandoc types can be compared. 
+### Equality
+
+Pandoc elements can be compared. 
 The equality test checks for equality of type, 
 then (recusively if needed) for equality of contents:
 
@@ -81,7 +87,9 @@ False
 False
 ```
 
-The membership test is also available:
+### Membership
+
+A membership test – that leverages the equality test – is also available:
 
 ``` pycon
 >>> Meta({}) in doc
@@ -90,23 +98,92 @@ False
 True
 ```
 
-And finally, the items of a concrete pandoc type can be iterated:
+
+
+Iteration
+--------------------------------------------------------------------------------
+
+Pandoc item can be iterated:
+
+``` python
+doc = pandoc.read("Hello world!")
+```
 
 ``` pycon
 >>> for elt in doc:
 ...     print(elt)
-Meta({'title': MetaInlines([Str('Maths')])})
-[Para([Math(InlineMath(), 'a=1')])]
+Meta({})
+[Para([Str('Hello'), Space(), Str('world!')])]
+>>> meta, blocks = doc[:]
+>>> for elt in meta:
+...     print(elt)
+{}
+>>> para = blocks[0]
+>>> for elt in para:
+...     print(elt)
+[Str('Hello'), Space(), Str('world!')]
+>>> world = para[0][2]
+>>> for elt in world:
+...      print(elt)
+world!
 ```
 
-Document Iteration
---------------------------------------------------------------------------------
+Python's built-in `iter` – which is used implicitly in the for loops – 
+yields the children of the pandoc element, 
+the arguments that were given to its constructor ;
+therefore it is non-recursive. 
+On the contrary, `pandoc.iter` iterates a pandoc item recursively, 
+in document order:
+it performs a (preoder) depth-first traversal.
 
-`iter` is non-recursive. `pandoc.iter` is
+For example, with the following document
 
-(preorder) depth-first traversal, document order, etc.
+``` pycon
+>>> doc = pandoc.read("""
+# Title
+Content
+""")
+>>> doc
+Pandoc(Meta({}), [Header(1, ('title', [], []), [Str('Title')]), Para([Str('Content')])])
+```
 
-  - `pandoc.iter` (examples, use `NORMALIZE_WHITESPACE` when appropriate)
+we have on one hand
+
+``` pycon
+>>> for elt in iter(doc):
+...     print(elt)
+Meta({})
+[Header(1, ('title', [], []), [Str('Title')]), Para([Str('Content')])]
+```
+
+and on the other hand
+
+``` pycon
+>>> for elt in pandoc.iter(doc):
+...     print(elt)
+Pandoc(Meta({}), [Header(1, ('title', [], []), [Str('Title')]), Para([Str('Content')])])
+Meta({})
+{}
+[Header(1, ('title', [], []), [Str('Title')]), Para([Str('Content')])]
+Header(1, ('title', [], []), [Str('Title')])
+1
+('title', [], [])
+title
+[]
+[]
+[Str('Title')]
+Str('Title')
+Title
+Para([Str('Content')])
+[Str('Content')]
+Str('Content')
+Content
+```
+
+### TODO
+
+  - transform "normal" iter in the container section, and keep the second
+    section for `pandoc.iter` ?
 
   - `pandoc.iter` manages dicts (and strings) differently, explain
 
