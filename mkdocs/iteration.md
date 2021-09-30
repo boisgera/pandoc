@@ -8,7 +8,7 @@
 Containers and Iteration
 ================================================================================
 
-```python
+``` python
 import pandoc
 from pandoc.types import *
 ```
@@ -24,14 +24,15 @@ We present here several familiar methods to access this content.
 
 We illustrate this interace with the following `doc` instance of the `Pandoc` type:
 
-```python
+``` python
 meta = Meta({})
 blocks = [Para([Str('Hello'), Space(), Str('world!')])]
 doc = Pandoc(meta, blocks)
 ```
 
 Indexing and slicing for this object work pretty much as in lists:
-```python
+
+``` python
 >>> doc[0]
 Meta({})
 >>> doc[1]
@@ -45,7 +46,7 @@ Meta({})
 
 The same patterns apply to change the object contents:
 
-```python
+``` pycon
 >>> maths = [Para([Math(InlineMath(), 'a=1')])]
 >>> doc[1] = maths
 >>> doc
@@ -58,7 +59,8 @@ Pandoc(Meta({'title': MetaInlines([Str('Maths')])}), [Para([Math(InlineMath(), '
 
 The length of `doc` counts the number of items it contains
 (here: the `meta` and `blocks` arguments of its constructor):
-```python
+
+``` pycon
 >>> len(doc)
 2
 >>> len(doc) == len(doc[:])
@@ -69,7 +71,7 @@ Two instances of concrete pandoc types can be compared.
 The equality test checks for equality of type, 
 then (recusively if needed) for equality of contents:
 
-```python
+``` pycon
 >>> para = doc[1][0]
 >>> para == Para([Math(InlineMath(), 'a=1')])
 True
@@ -80,7 +82,8 @@ False
 ```
 
 The membership test is also available:
-```python
+
+``` pycon
 >>> Meta({}) in doc
 False
 >>> Meta({'title': MetaInlines([Str('Maths')])}) in doc
@@ -88,14 +91,13 @@ True
 ```
 
 And finally, the items of a concrete pandoc type can be iterated:
-```python
+
+``` pycon
 >>> for elt in doc:
 ...     print(elt)
 Meta({'title': MetaInlines([Str('Maths')])})
 [Para([Math(InlineMath(), 'a=1')])]
 ```
-
-
 
 Document Iteration
 --------------------------------------------------------------------------------
