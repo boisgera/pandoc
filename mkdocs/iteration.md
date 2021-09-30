@@ -140,9 +140,9 @@ For example, with the following document
 
 ``` pycon
 >>> doc = pandoc.read("""
-# Title
-Content
-""")
+... # Title
+... Content
+... """)
 >>> doc
 Pandoc(Meta({}), [Header(1, ('title', [], []), [Str('Title')]), Para([Str('Content')])])
 ```
