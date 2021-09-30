@@ -35,7 +35,7 @@ for filename in test_files:
 # Tweak the Test Files
 # ------------------------------------------------------------------------------
 # For each file, find the python fences, see if they are in interpreter mode
-# or "code" mode. If they are in code mode, add the prompts then remove the 
+# or "code" mode. If they are in code mode, add the prompts then remove the
 # fences and indent the code lines.
 def promptize(src):
     "Add >>> or ... prompts to Python code"
@@ -55,10 +55,11 @@ def promptize(src):
             code = cc("\n".join(chunk))
             if code is not None:  # full statement
                 chunk = []  # start over
-        except: # pragma: no cover
+        except:  # pragma: no cover
             raise
     assert len(lines) == len(output)
     return "\n".join(output)
+
 
 def tweak(src):
     # Find code blocks with python fences,
@@ -68,7 +69,12 @@ def tweak(src):
     chunks = {}
     python, start, end, code = False, None, None, []
     for i, line in enumerate(lines):
-        if line.startswith("```python") or line.startswith("``` python"):
+        if (
+            line.startswith("```python")
+            or line.startswith("``` python")
+            or line.startswith("```pycon")
+            or line.startswith("``` pycon")
+        ):
             start = i
             code.append("")
             python = True
@@ -115,11 +121,11 @@ for filename in test_files:
     options = {"module_relative": False, "verbose": verbose}
 
     # Relax the tests to deal with test files that have a '\n' line break
-    # (Linux flavor) which does not match the pandoc line break on Windows 
+    # (Linux flavor) which does not match the pandoc line break on Windows
     # (Windows flavor : '\r\n').
-    # The proper way to deal with this would be to convert the test files 
+    # The proper way to deal with this would be to convert the test files
     # beforehand on Windows.
-    if platform.system() == "Windows": 
+    if platform.system() == "Windows":
         options["optionflags"] = doctest.NORMALIZE_WHITESPACE
 
     _fails, _tests = doctest.testfile(filename, **options)
