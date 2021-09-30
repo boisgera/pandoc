@@ -3,7 +3,7 @@
 
 ⚠️ Random notes & TODOs.
 
-```python
+``` python
 import pandoc
 from pandoc.types import *
 ```
@@ -22,7 +22,7 @@ often leads to rather straightforward implementations.
 
 We'll present some examples of this pattern based on the commonmark spec, 
 which is a rather rich markdown document. It is available on github:
-```python
+``` python
 from urllib.request import urlopen
 PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
 HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" 
@@ -36,7 +36,7 @@ commonmark_doc = pandoc.read(COMMONMARK_SPEC)
 ```
 
 We can find the document's author name in the document metadata[^11]:
-```python
+``` python
 def author(doc):
     metas = [elt for elt in pandoc.iter(doc) if isinstance(elt, Meta)]
     assert len(metas) == 1
@@ -50,7 +50,7 @@ def author(doc):
     return author_md
 ```
 
-```python
+``` pycon
 >>> author(commonmark_doc)
 'John MacFarlane'
 ```
@@ -70,7 +70,7 @@ def table_of_contents(doc):
     return "\n".join(toc_lines)
 ```
 
-``` python
+``` pycon
 >>> print(table_of_contents(commonmark_doc)) # doctest: +ELLIPSIS
 Introduction
   What is Markdown?
@@ -95,7 +95,7 @@ def display_external_links(doc):
             print(url)
 ```
 
-```python
+``` pycon
 >>> display_external_links(commonmark_doc)
 http://creativecommons.org/licenses/by-sa/4.0/
 http://daringfireball.net/projects/markdown/syntax
@@ -116,7 +116,7 @@ http://www.w3.org/TR/html5/syntax.html#comments
 
 We can get the list of the code blocks types (registered as classes):
 
-```python
+``` python
 def fetch_code_types(doc):
     code_blocks = [elt for elt in pandoc.iter(doc) if isinstance(elt, CodeBlock)]
     types = set()
@@ -127,7 +127,7 @@ def fetch_code_types(doc):
     return sorted(list(types))
 ```
 
-```python
+``` pycon
 >>> code_types = fetch_code_types(commonmark_doc)
 >>> code_types
 ['example', 'html', 'markdown', 'tree']
@@ -154,7 +154,7 @@ def to_https(doc):
 
 We can check that this function performs the expected change in the document:
 
-``` python
+``` pycon
 >>> to_https(commonmark_doc)
 >>> display_external_links(commonmark_doc)
 https://creativecommons.org/licenses/by-sa/4.0/
@@ -174,8 +174,6 @@ https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 https://www.w3.org/TR/html5/syntax.html#comments
 ```
 
-
-
 ## Locate
 
 Another very common transformation pattern is when you need to locate the
@@ -188,7 +186,7 @@ which is given as a pair of item `holder` and item `index`, such that
 This information is avaible as `path[-1]` where `elt, path` is yielded by
 `pandoc.iter` with the option `path=True`. For example:
 
-``` python
+``` pycon
 >>> doc = pandoc.read("Hello world!")
 >>> for elt, path in pandoc.iter(doc, path=True):
 ...     if elt != doc: # elt == doc is the document root, it has no holder
@@ -230,7 +228,7 @@ elt: 'world!'
 
 The previous components of the path contain the holder and index that locate
 the element holder, then their holder and index, etc. up to the document root:
-``` python
+``` pycon
 >>> for elt, path in pandoc.iter(doc, path=True):
 ...     if elt == "world!":
 ...         for holder, index in path:
@@ -254,14 +252,14 @@ For example, to replace all instances of emphasized text with strong text,
 you first need locate emphasized text instances, that is find the collections
 of holders `holder` and indices `i` such that `emph = holder[i]`.
 
-```python
+``` python
 doc = pandoc.read("""
 # Title with *emphasis*
 Text with *emphasis*.
 """)
 ```
 
-```python
+``` python
 emph_locations = []
 for elt, path in pandoc.iter(doc, path=True):
     if isinstance(elt, Emph):
@@ -269,7 +267,7 @@ for elt, path in pandoc.iter(doc, path=True):
         emph_locations.append((holder, i))
 ```
 
-```python
+``` pycon
 >>> for holder, i in emph_locations:
 ...    emph = holder[i] 
 ...    inlines = emph[0]        # Emph signature is Emph([Inline])
@@ -309,7 +307,7 @@ But these words should be excluded.
 
 Counting all words is easy
 
-``` python
+``` pycon
 >>> len([item for item in pandoc.iter(doc) if isinstance(item, Str)])
 14
 ```
@@ -343,7 +341,7 @@ def count_words(doc):
 ```
 
 It provides the expected result:
-``` python
+``` pycon
 >>> count_words(doc)
 8
 ```
@@ -359,7 +357,7 @@ you have to deal with them specifically. And this is a good thing!
 ### Hello world!
 Consider the most basic "Hello world!" paragraph:
 
-```python
+``` pycon
 >>> paragraph = Para([Str('Hello'), Space(), Str('world!')])
 >>> string = paragraph[0][2]
 >>> string
@@ -372,7 +370,7 @@ Str('world!')
 Here `text` is a Python string, which is immutable.
 Thus, we cannot modify it in-place:
 
-```python
+``` pycon
 >>> text[:] = "pandoc!"
 Traceback (most recent call last):
 ...
@@ -383,7 +381,7 @@ Does it mean that we cannot modify any word of this sentence?
 Absolutely not! Because instead of modifying the Python string,
 we can *replace it* in its container instead:
 
-```python
+``` pycon
 >>> string[0] = "pandoc!"
 >>> paragraph
 Para([Str('Hello'), Space(), Str('pandoc!')])
@@ -401,7 +399,7 @@ are of course in documents to describe pieces of text, but also in many
 other roles. 
 
 Consider the HTML fragment:
-```python
+``` pycon
 >>> blocks = [ # <p>html rocks!</p>
 ...     RawBlock(Format('html'), '<p>'), 
 ...     Plain([Str('html'), Space(), Str('rocks!')]), 
@@ -414,15 +412,18 @@ but also as a type field in the `Format` instance.
 If Python strings were mutable, you could carelessly try to replace all
 `'html'` strings in the document model regardless of their role. 
 And you would end up with the (invalid) document fragment:
-```python
+
+``` pycon
 >>> invalid_blocks = [
 ...     RawBlock(Format('pandoc'), '<p>'), 
 ...     Plain([Str('pandoc'), Space(), Str('rocks!')]),  
 ...     RawBlock(Format('pandoc'), '</p>')
 ... ]
 ```
+
 Fortunately this approach will fail loudly:
-```python
+
+```pycon
 >>> for elt in pandoc.iter(blocks):
 ...     if elt == "html":
 ...         elt[:] = "pandoc"
@@ -430,8 +431,10 @@ Traceback (most recent call last):
 ...
 TypeError: 'str' object does not support item assignment
 ```
+
 A correct, type-safe, way to proceed is instead:
-```python
+
+``` pycon
 >>> for elt in pandoc.iter(blocks):
 ...     if isinstance(elt, Str) and elt[0] == "html":
 ...         elt[0] = "pandoc"
@@ -457,12 +460,14 @@ targets and attributes.
 #### Targets
 
 In pandoc, targets are pairs of Python strings
-```python
+
+```pycon
 >>> Target
 Target = (Text, Text)
 >>> Text
 <class 'str'>
 ```
+
 The first text represents an URL and the second a title.
 Targets are used in link and image elements and only there.
 
@@ -470,7 +475,7 @@ Say that you want to find all links in your document whose target URL is
 `"https://pandoc.org"` and make sure that the associated title is 
 `"Pandoc - About pandoc"`. The relevant type signature is:
 
-```python
+```pycon
 >>> Link
 Link(Attr, [Inline], Target)
 ```
@@ -490,7 +495,7 @@ you cannot modify the targets in-place since tuples are immutable.
 The easiest way to handle this situation is to search for links that target 
 pandoc's web site.
 
-```python
+``` pycon
 >>> doc = pandoc.read("[Link to pandoc.org](https://pandoc.org)")
 >>> for elt in pandoc.iter(doc):
 ...     if isinstance(elt, Link):
@@ -507,7 +512,7 @@ pandoc's web site.
 
 The other most notable immutable type in documents is `Attr`:
 
-```python
+``` pycon
 >>> Attr
 Attr = (Text, [Text], [(Text, Text)])
 ```
@@ -519,7 +524,7 @@ that described the type of the pandoc element for every element which
 is a `Attr` holder. 
 The relevant type signatures – we display all `Attr` holders – are:
 
-```python
+``` pycon
 >>> Inline # doctest: +ELLIPSIS
 Inline = ...
        | Code(Attr, Text)
@@ -532,7 +537,7 @@ Inline = ...
 
 and 
 
-```python
+``` pycon
 >>> Block  # doctest: +ELLIPSIS
 Block = ...
       | CodeBlock(Attr, Text)
@@ -549,7 +554,7 @@ So we need to target `Code`, `Link`, `Image`, `Span`, `Div`,`CodeBlock`,
 since its attributes are its second item ; for every other type,
 the attributes come first. The transformation can be implemented as follows:
 
-```python
+``` python
 AttrHolder = (Code, Link, Image, Span, Div, CodeBlock, Header, Table, Div)
 
 def add_class(doc):
@@ -562,7 +567,8 @@ def add_class(doc):
 ```
 
 The transformation works as expected:
-```python
+
+``` pycon
 >>> markdown = """
 ... # Pandoc {#pandoc}
 ... [Link to pandoc.org](https://pandoc.org)
@@ -583,6 +589,7 @@ its contents can be changed.
 If we want to change the element ids instead, we would need to use a new tuple.
 For example, to add the id `anonymous` to every attribute holder without
 identifier, we can do:
+
 ```python
 def add_id(doc):
     for elt in pandoc.iter(doc):
@@ -593,8 +600,10 @@ def add_id(doc):
                 identifier = "anonymous"
                 elt[attr_index] = identifier, classes, key_value_pairs
 ```
+
 and this transformation would result in:
-```python
+
+``` pycon
 >>> add_id(doc)
 >>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
 # Pandoc {#pandoc .header}
