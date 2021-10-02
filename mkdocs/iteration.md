@@ -98,16 +98,16 @@ False
 True
 ```
 
+### Iteration
 
 
-Iteration
---------------------------------------------------------------------------------
-
-Pandoc item can be iterated:
+All pandoc item can be iterated. Consider
 
 ``` python
 doc = pandoc.read("Hello world!")
 ```
+
+We have:
 
 ``` pycon
 >>> for elt in doc:
@@ -128,13 +128,17 @@ Meta({})
 world!
 ```
 
+Tree Iteration
+--------------------------------------------------------------------------------
+
+### Depth-first traversal
+
 Python's built-in `iter` – which is used implicitly in the for loops – 
 yields the children of the pandoc element, 
 the arguments that were given to its constructor ;
 therefore it is non-recursive. 
 On the contrary, `pandoc.iter` iterates a pandoc item recursively, 
-in document order:
-it performs a (preoder) depth-first traversal.
+in document order ; it performs a (preoder) depth-first traversal.
 
 For example, with the following document
 
@@ -179,12 +183,49 @@ Para([Str('Content')])
 Str('Content')
 Content
 ```
+### Built-in types
+
+The `pandoc.iter` function can be applied to Python builts-in types.
+For any item which is not iterable with the built-in `iter` function,
+`pandoc.iter` yields the item itself:
+
+```pycon
+>>> for elt in True:
+...     print(elt)
+Traceback (most recent call last):
+...
+TypeError: 'bool' object is not iterable
+>>> for elt in pandoc.iter(True):
+...     print(elt)
+True
+>>> for elt in 1:
+...     print(elt)
+Traceback (most recent call last):
+...
+TypeError: 'int' object is not iterable
+>>> for elt in pandoc.iter(1):
+...     print(elt)
+1
+```
+
+The same behavior applies to strings ; `pandoc.iter` does not iterate on characters:
+
+``` pycon
+>>> for elt in "Hello!":
+...     print(elt)
+H
+e
+l
+l
+o
+!
+>>> for elt in pandoc.iter("Hello!"):
+...     print(elt)
+Hello!
+```
 
 ### TODO
 
-  - transform "normal" iter in the container section, and keep the second
-    section for `pandoc.iter` ?
-
-  - `pandoc.iter` manages dicts (and strings) differently, explain
+  - `pandoc.iter` for lists, tuples and dicts,
 
   - explain `path` iteration. 
