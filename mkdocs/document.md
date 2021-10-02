@@ -252,7 +252,7 @@ True
 ```
 
 Data types come in two flavors: abstract or concrete. The signature of abstract 
-data types list the collection of concrete types they correspond to:
+data types lists the collection of concrete types they correspond to:
 
 ``` pycon
 >>> Inline # doctest: +ELLIPSIS
