@@ -16,80 +16,316 @@ Elements
 Helpers
 --------------------------------------------------------------------------------
 
-We introduce a simple function to display pandoc elements in markdown:
-
-```pycon
->>> def display(elt):
-...     print(pandoc.write(elt))
+``` python
+def findall(text, type_):
+    doc = pandoc.read(text)
+    return [elt for elt in pandoc.iter(doc) if isinstance(elt, type_)]
 ```
 
-We also define a `to` function `to` to get a specific type of element inside
-a document:
+``` python
+def find(text, type_):
+    doc = pandoc.read(text)
+    for elt in pandoc.iter(doc):
+        if isinstance(elt, type_):
+            return elt
+```
+
+``` python
+def display(text, type_):
+    for elt in findall(text, type_):
+        print(elt)
+```
+
+Paragraphs (TODO)
+--------------------------------------------------------------------------------
+
+Headings
+--------------------------------------------------------------------------------
+
+### Setext-style headings
+
+``` python
+text = """
+A level-one heading
+===================
+
+A level-two heading
+-------------------
+"""
+```
 
 ``` pycon
->>> def to(elt, type):
-...     for _elt in pandoc.iter(elt):
-...         if isinstance(_elt, type):
-...             return _elt
+>>> display(text, Header)
+Header(1, ('a-level-one-heading', [], []), [Str('A'), Space(), Str('level-one'), Space(), Str('heading')])
+Header(2, ('a-level-two-heading', [], []), [Str('A'), Space(), Str('level-two'), Space(), Str('heading')])
 ```
 
-Since we're a bit reckless, we monkey-patch the pandoc type base class 
-to use `to` as a method:
+### ATX-style headings
+
+``` python
+text = """
+A level-one heading
+===================
+
+A level-two heading
+-------------------
+"""
+```
 
 ``` pycon
->>> Type.to = to
+>>> display(text, Header)
+Header(1, ('a-level-one-heading', [], []), [Str('A'), Space(), Str('level-one'), Space(), Str('heading')])
+Header(2, ('a-level-two-heading', [], []), [Str('A'), Space(), Str('level-two'), Space(), Str('heading')])
 ```
 
-Paragraphs
+``` python
+text = "# A level-one heading with a [link](/url) and *emphasis*"
+```
+
+``` pycon
+>>> display(text, Header)
+Header(1, ('a-level-one-heading-with-a-link-and-emphasis', [], []), [Str('A'), Space(), Str('level-one'), Space(), Str('heading'), Space(), Str('with'), Space(), Str('a'), Space(), Link(('', [], []), [Str('link')], ('/url', '')), Space(), Str('and'), Space(), Emph([Str('emphasis')])])
+```
+
+### Heading identifiers
+
+#### Header attributes
+
+``` python
+text = """
+# My heading {#foo}
+
+## My heading ##    {#foo}
+
+My other heading   {#foo}
+---------------
+"""
+```
+
+``` pycon
+>>> display(text, Header)
+Header(1, ('foo', [], []), [Str('My'), Space(), Str('heading')])
+Header(2, ('foo', [], []), [Str('My'), Space(), Str('heading')])
+Header(2, ('foo', [], []), [Str('My'), Space(), Str('other'), Space(), Str('heading')])
+```
+
+``` python
+text = """
+# My heading {-}
+
+# My heading {.unnumbered}
+"""
+```
+
+``` pycon
+>>> display(text, Header)
+Header(1, ('my-heading', ['unnumbered'], []), [Str('My'), Space(), Str('heading')])
+Header(1, ('my-heading-1', ['unnumbered'], []), [Str('My'), Space(), Str('heading')])
+```
+
+#### Implicit Header References
+
+``` python
+text = """
+# Heading identifiers in HTML
+
+[Heading identifiers in HTML]
+
+[Heading identifiers in HTML][]
+
+[the section on heading identifiers][heading identifiers in
+HTML]
+
+[Heading identifiers in HTML](#heading-identifiers-in-html)
+"""
+```
+
+``` pycon
+>>> display(text, Link)
+Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))
+Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))
+Link(('', [], []), [Str('the'), Space(), Str('section'), Space(), Str('on'), Space(), Str('heading'), Space(), Str('identifiers')], ('#heading-identifiers-in-html', ''))
+Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))
+```
+
+Block quotations
 --------------------------------------------------------------------------------
 
-Headers
---------------------------------------------------------------------------------
+``` python
+text = """
+> This is a block quote. This
+> paragraph has two lines.
+>
+> 1. This is a list inside a block quote.
+> 2. Second item.
+"""
+```
 
-Quotations
---------------------------------------------------------------------------------
+``` pycon
+>>> display(text, BlockQuote)
+BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), Space(), Str('This'), SoftBreak(), Str('paragraph'), Space(), Str('has'), Space(), Str('two'), Space(), Str('lines.')]), OrderedList((1, Decimal(), Period()), [[Plain([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('list'), Space(), Str('inside'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])], [Plain([Str('Second'), Space(), Str('item.')])]])])
+```
 
-Code Blocks
+A “lazy” form, which requires the > character only on the first line of each block, is also allowed:
+
+``` python
+text = """
+> This is a block quote. This
+paragraph has two lines.
+
+> 1. This is a list inside a block quote.
+2. Second item.
+"""
+```
+
+``` pycon
+>>> display(text, BlockQuote)
+BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), Space(), Str('This'), SoftBreak(), Str('paragraph'), Space(), Str('has'), Space(), Str('two'), Space(), Str('lines.')])])
+BlockQuote([OrderedList((1, Decimal(), Period()), [[Plain([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('list'), Space(), Str('inside'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])], [Plain([Str('Second'), Space(), Str('item.')])]])])
+```
+
+``` python
+text = """
+> This is a block quote.
+>
+> > A block quote within a block quote.
+"""
+```
+
+``` pycon
+>>> display(text, BlockQuote)
+BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')]), BlockQuote([Para([Str('A'), Space(), Str('block'), Space(), Str('quote'), Space(), Str('within'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])])])
+BlockQuote([Para([Str('A'), Space(), Str('block'), Space(), Str('quote'), Space(), Str('within'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])])
+```
+
+``` python
+text = """
+>     code
+"""
+```
+
+``` pycon
+>>> display(text, BlockQuote)
+BlockQuote([CodeBlock(('', [], []), 'code')])
+```
+
+#### Blank before blockquote
+
+``` python
+text = """
+> This is a block quote.
+>> Nested.
+"""
+```
+
+``` pycon
+>>> display(text, BlockQuote)
+BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), SoftBreak(), Str('>'), Space(), Str('Nested.')])])
+```
+
+Code Blocks (TODO)
 --------------------------------------------------------------------------------
 
 Line Blocks
 --------------------------------------------------------------------------------
 
-Lists
+``` python
+text = """
+| The limerick packs laughs anatomical
+| In space that is quite economical.
+|    But the good ones I've seen
+|    So seldom are clean
+| And the clean ones so seldom are comical
+
+| 200 Main St.
+| Berkeley, CA 94718
+"""
+```
+
+``` pycon
+>>> display(text, LineBlock)
+LineBlock([[Str('The'), Space(), Str('limerick'), Space(), Str('packs'), Space(), Str('laughs'), Space(), Str('anatomical')], [Str('In'), Space(), Str('space'), Space(), Str('that'), Space(), Str('is'), Space(), Str('quite'), Space(), Str('economical.')], [Str('\xa0\xa0\xa0But'), Space(), Str('the'), Space(), Str('good'), Space(), Str('ones'), Space(), Str('I’ve'), Space(), Str('seen')], [Str('\xa0\xa0\xa0So'), Space(), Str('seldom'), Space(), Str('are'), Space(), Str('clean')], [Str('And'), Space(), Str('the'), Space(), Str('clean'), Space(), Str('ones'), Space(), Str('so'), Space(), Str('seldom'), Space(), Str('are'), Space(), Str('comical')]])
+LineBlock([[Str('200'), Space(), Str('Main'), Space(), Str('St.')], [Str('Berkeley,'), Space(), Str('CA'), Space(), Str('94718')]])
+```
+
+
+``` python
+text = """
+| The Right Honorable Most Venerable and Righteous Samuel L.
+  Constable, Jr.
+| 200 Main St.
+| Berkeley, CA 94718
+"""
+```
+
+``` pycon
+>>> display(text, LineBlock)
+LineBlock([[Str('The'), Space(), Str('Right'), Space(), Str('Honorable'), Space(), Str('Most'), Space(), Str('Venerable'), Space(), Str('and'), Space(), Str('Righteous'), Space(), Str('Samuel'), Space(), Str('L.'), Space(), Str('Constable,'), Space(), Str('Jr.')], [Str('200'), Space(), Str('Main'), Space(), Str('St.')], [Str('Berkeley,'), Space(), Str('CA'), Space(), Str('94718')]])
+```
+
+Lists (TODO)
 --------------------------------------------------------------------------------
 
-Horizontal Rules
+Horizontal Rules (TODO)
 --------------------------------------------------------------------------------
 
-Tables
+Tables (TODO)
 --------------------------------------------------------------------------------
 
-Inline Formatting
+Inline Formatting (TODO)
 --------------------------------------------------------------------------------
 
-LaTeX and Math
+LaTeX and Math (TODO)
 --------------------------------------------------------------------------------
 
-HTML
+HTML (TODO)
 --------------------------------------------------------------------------------
 
 
-Links
+Links (TODO)
 --------------------------------------------------------------------------------
 
-Images
+Images (TODO)
 --------------------------------------------------------------------------------
 
-Divs and Spans
+Divs and Spans (TODO)
 --------------------------------------------------------------------------------
 
-Footnotes
+Footnotes (wip)
 --------------------------------------------------------------------------------
+
+``` python
+text = """
+Here is a footnote reference,[^1] and another.[^longnote]
+
+[^1]: Here is the footnote.
+
+[^longnote]: Here's one with multiple blocks.
+
+    Subsequent paragraphs are indented to show that they
+belong to the previous footnote.
+
+        { some.code }
+
+    The whole paragraph can be indented, or just the first
+    line.  In this way, multi-paragraph footnotes work like
+    multi-paragraph list items.
+
+This paragraph won't be part of the note, because it
+isn't indented.
+"""
+```
+
+``` pycon
+>>> display(text, Note)
+Note([Para([Str('Here'), Space(), Str('is'), Space(), Str('the'), Space(), Str('footnote.')])])
+Note([Para([Str('Here’s'), Space(), Str('one'), Space(), Str('with'), Space(), Str('multiple'), Space(), Str('blocks.')]), Para([Str('Subsequent'), Space(), Str('paragraphs'), Space(), Str('are'), Space(), Str('indented'), Space(), Str('to'), Space(), Str('show'), Space(), Str('that'), Space(), Str('they'), SoftBreak(), Str('belong'), Space(), Str('to'), Space(), Str('the'), Space(), Str('previous'), Space(), Str('footnote.')]), CodeBlock(('', [], []), '{ some.code }'), Para([Str('The'), Space(), Str('whole'), Space(), Str('paragraph'), Space(), Str('can'), Space(), Str('be'), Space(), Str('indented,'), Space(), Str('or'), Space(), Str('just'), Space(), Str('the'), Space(), Str('first'), SoftBreak(), Str('line.'), Space(), Str('In'), Space(), Str('this'), Space(), Str('way,'), Space(), Str('multi-paragraph'), Space(), Str('footnotes'), Space(), Str('work'), Space(), Str('like'), SoftBreak(), Str('multi-paragraph'), Space(), Str('list'), Space(), Str('items.')])])
+```
 
 Citations
 --------------------------------------------------------------------------------
 
-Metadata
+Metadata (wip)
 --------------------------------------------------------------------------------    
 
 **Reference:** [Pandoc User's Guide / Metadata Blocks](https://pandoc.org/MANUAL.html#metadata-blocks)
@@ -124,27 +360,24 @@ MetaValue = MetaMap({Text: MetaValue})
 ```
 
 ``` pycon
->>> doc = pandoc.read(text)
->>> doc == \
-... Pandoc(
-...   Meta(map([
-...     ('date', MetaInlines([Str('Date')])), 
-...     ('author', MetaList([MetaInlines(
-...       [Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), 
-...     ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))
-...   ])), 
-...   []
-... )
+>>> metadata = find(text, Meta)
+>>> metadata == \
+... Meta(map([
+...   ('date', MetaInlines([Str('Date')])), 
+...   ('author', MetaList([MetaInlines(
+...     [Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), 
+...   ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))
+... ]))
 True
 ```
 
 ``` pycon
->>> metadata = doc[0][0]
->>> metadata["title"]
+>>> metamap = metadata[0]
+>>> metamap["title"]
 MetaInlines([Str('Document'), Space(), Str('Title')])
->>> metadata["author"]
+>>> metamap["author"]
 MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])
->>> metadata["date"]
+>>> metamap["date"]
 MetaInlines([Str('Date')])
 ```
 
