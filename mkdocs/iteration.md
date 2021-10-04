@@ -5,7 +5,7 @@
     [the latest release of pandoc](https://pandoc.org/releases.html) so far.
 
 
-Containers and Iteration
+Containers and iteration
 ================================================================================
 
 ``` python
