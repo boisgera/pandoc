@@ -347,7 +347,7 @@ is a dict. In this special case, it would be its i-th key-value pair:
 ``` python
 def getitem(elt, i):
     if isinstance(elt, dict):
-        elt = list(elt.items())
+        elt = elt.items()
     return elt[i]
 ```
 
