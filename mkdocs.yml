@@ -10,7 +10,7 @@ nav:
   - CLI (wip): cli.md
   - Document structure: document.md
   - Elements (wip): elements.md
-  - Iteration (wip): iteration.md
+  - Containers and Iteration: iteration.md
   - Configuration: configuration.md
   - Cookbook (wip): cookbook.md
   - API Reference (wip): api.md
