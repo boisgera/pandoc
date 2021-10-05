@@ -8,31 +8,19 @@
 Elements
 ================================================================================
 
-``` pycon
->>> import pandoc
->>> from pandoc.types import *
-```
-
-Helpers
---------------------------------------------------------------------------------
-
 ``` python
-def findall(text, types):
-    doc = pandoc.read(text)
-    return [elt for elt in pandoc.iter(doc) if isinstance(elt, types)]
+import pandoc
+from pandoc.types import *
 ```
 
-``` python
-def find(text, type_):
-    doc = pandoc.read(text)
-    for elt in pandoc.iter(doc):
-        if isinstance(elt, type_):
-            return elt
-```
+A helper function which displays the pandoc elements of a given type
+(or set of types) within a markdown document:
 
 ``` python
 def display(text, types):
-    for elt in findall(text, types):
+    doc = pandoc.read(text)
+    elts = [elt for elt in pandoc.iter(doc) if isinstance(elt, types)]
+    for elt in elts:
         print(elt)
 ```
 
@@ -364,8 +352,6 @@ qsort [] = []
 CodeBlock(('', ['haskell'], []), 'qsort [] = []')
 ```
 
-
-
 Line Blocks
 --------------------------------------------------------------------------------
 
@@ -388,7 +374,6 @@ LineBlock([[Str('The'), Space(), Str('limerick'), Space(), Str('packs'), Space()
 LineBlock([[Str('200'), Space(), Str('Main'), Space(), Str('St.')], [Str('Berkeley,'), Space(), Str('CA'), Space(), Str('94718')]])
 ```
 
-
 ``` python
 text = """
 | The Right Honorable Most Venerable and Righteous Samuel L.
@@ -403,8 +388,356 @@ text = """
 LineBlock([[Str('The'), Space(), Str('Right'), Space(), Str('Honorable'), Space(), Str('Most'), Space(), Str('Venerable'), Space(), Str('and'), Space(), Str('Righteous'), Space(), Str('Samuel'), Space(), Str('L.'), Space(), Str('Constable,'), Space(), Str('Jr.')], [Str('200'), Space(), Str('Main'), Space(), Str('St.')], [Str('Berkeley,'), Space(), Str('CA'), Space(), Str('94718')]])
 ```
 
-Lists (TODO)
+Lists
 --------------------------------------------------------------------------------
+
+### Bullet lists
+
+``` python
+text = """
+* one
+* two
+* three
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])
+```
+
+``` python
+text = """
+* one
+
+* two
+
+* three
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Para([Str('one')])], [Para([Str('two')])], [Para([Str('three')])]])
+```
+
+``` python
+text = """
+* here is my first
+  list item.
+* and my second.
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Plain([Str('here'), Space(), Str('is'), Space(), Str('my'), Space(), Str('first'), SoftBreak(), Str('list'), Space(), Str('item.')])], [Plain([Str('and'), Space(), Str('my'), Space(), Str('second.')])]])
+```
+
+``` python
+text = """
+* here is my first
+list item.
+* and my second.
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Plain([Str('here'), Space(), Str('is'), Space(), Str('my'), Space(), Str('first'), SoftBreak(), Str('list'), Space(), Str('item.')])], [Plain([Str('and'), Space(), Str('my'), Space(), Str('second.')])]])
+```
+
+### Block content in list items
+
+``` python
+text = """
+  * First paragraph.
+
+    Continued.
+
+  * Second paragraph. With a code block, which must be indented
+    eight spaces:
+
+        { code }
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Para([Str('First'), Space(), Str('paragraph.')]), Para([Str('Continued.')])], [Para([Str('Second'), Space(), Str('paragraph.'), Space(), Str('With'), Space(), Str('a'), Space(), Str('code'), Space(), Str('block,'), Space(), Str('which'), Space(), Str('must'), Space(), Str('be'), Space(), Str('indented'), SoftBreak(), Str('eight'), Space(), Str('spaces:')]), CodeBlock(('', [], []), '{ code }')]])
+```
+
+``` python
+text = """
+*     code
+
+  continuation paragraph
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[CodeBlock(('', [], []), 'code'), Plain([Str('continuation'), Space(), Str('paragraph')])]])
+```
+
+``` python
+text = """
+* fruits
+  + apples
+    - macintosh
+    - red delicious
+  + pears
+  + peaches
+* vegetables
+  + broccoli
+  + chard
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Plain([Str('fruits')]), BulletList([[Plain([Str('apples')]), BulletList([[Plain([Str('macintosh')])], [Plain([Str('red'), Space(), Str('delicious')])]])], [Plain([Str('pears')])], [Plain([Str('peaches')])]])], [Plain([Str('vegetables')]), BulletList([[Plain([Str('broccoli')])], [Plain([Str('chard')])]])]])
+BulletList([[Plain([Str('apples')]), BulletList([[Plain([Str('macintosh')])], [Plain([Str('red'), Space(), Str('delicious')])]])], [Plain([Str('pears')])], [Plain([Str('peaches')])]])
+BulletList([[Plain([Str('macintosh')])], [Plain([Str('red'), Space(), Str('delicious')])]])
+BulletList([[Plain([Str('broccoli')])], [Plain([Str('chard')])]])
+```
+
+``` python
+text = """
++ A lazy, lazy, list
+item.
+
++ Another one; this looks
+bad but is legal.
+
+    Second paragraph of second
+list item.
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Para([Str('A'), Space(), Str('lazy,'), Space(), Str('lazy,'), Space(), Str('list'), SoftBreak(), Str('item.')])], [Para([Str('Another'), Space(), Str('one;'), Space(), Str('this'), Space(), Str('looks'), SoftBreak(), Str('bad'), Space(), Str('but'), Space(), Str('is'), Space(), Str('legal.')]), Para([Str('Second'), Space(), Str('paragraph'), Space(), Str('of'), Space(), Str('second'), SoftBreak(), Str('list'), Space(), Str('item.')])]])
+```
+
+### Ordered lists
+
+``` python
+text = """
+1.  one
+2.  two
+3.  three
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((1, Decimal(), Period()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])
+```
+
+``` python
+text = """
+5.  one
+7.  two
+1.  three
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((5, Decimal(), Period()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])
+```
+
+#### Fancy lists
+
+``` python
+text = """
+#. one
+#. two
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((1, DefaultStyle(), DefaultDelim()), [[Plain([Str('one')])], [Plain([Str('two')])]])
+```
+
+#### Startnum
+
+``` python
+text = """
+ 9)  Ninth
+10)  Tenth
+11)  Eleventh
+       i. subone
+      ii. subtwo
+     iii. subthree
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((9, Decimal(), OneParen()), [[Plain([Str('Ninth')])], [Plain([Str('Tenth')])], [Plain([Str('Eleventh')]), OrderedList((1, LowerRoman(), Period()), [[Plain([Str('subone')])], [Plain([Str('subtwo')])], [Plain([Str('subthree')])]])]])
+OrderedList((1, LowerRoman(), Period()), [[Plain([Str('subone')])], [Plain([Str('subtwo')])], [Plain([Str('subthree')])]])
+```
+
+``` python
+text = """
+(2) Two
+(5) Three
+1.  Four
+*   Five
+"""
+```
+
+``` pycon
+>>> display(text, (BulletList, OrderedList))
+OrderedList((2, Decimal(), TwoParens()), [[Plain([Str('Two')])], [Plain([Str('Three')])]])
+OrderedList((1, Decimal(), Period()), [[Plain([Str('Four')])]])
+BulletList([[Plain([Str('Five')])]])
+```
+
+``` python
+text = """
+#.  one
+#.  two
+#.  three
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((1, DefaultStyle(), DefaultDelim()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])
+```
+
+#### Task lists
+
+``` python
+text = """
+- [ ] an unchecked task list item
+- [x] checked item
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Plain([Str('☐'), Space(), Str('an'), Space(), Str('unchecked'), Space(), Str('task'), Space(), Str('list'), Space(), Str('item')])], [Plain([Str('☒'), Space(), Str('checked'), Space(), Str('item')])]])
+```
+
+### Definition lists
+
+``` python
+text = """
+Term 1
+
+:   Definition 1
+
+Term 2 with *inline markup*
+
+:   Definition 2
+
+        { some code, part of Definition 2 }
+
+    Third paragraph of definition 2.
+"""
+```
+
+
+``` python
+text = """
+Term 1
+  ~ Definition 1
+
+Term 2
+  ~ Definition 2a
+  ~ Definition 2b
+"""
+```
+
+### Numbered example lists
+
+``` python
+text = """
+(@)  My first example will be numbered (1).
+(@)  My second example will be numbered (2).
+
+Explanation of examples.
+
+(@)  My third example will be numbered (3).
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((1, Example(), TwoParens()), [[Plain([Str('My'), Space(), Str('first'), Space(), Str('example'), Space(), Str('will'), Space(), Str('be'), Space(), Str('numbered'), Space(), Str('(1).')])], [Plain([Str('My'), Space(), Str('second'), Space(), Str('example'), Space(), Str('will'), Space(), Str('be'), Space(), Str('numbered'), Space(), Str('(2).')])]])
+OrderedList((3, Example(), TwoParens()), [[Plain([Str('My'), Space(), Str('third'), Space(), Str('example'), Space(), Str('will'), Space(), Str('be'), Space(), Str('numbered'), Space(), Str('(3).')])]])
+```
+
+
+``` python
+text = """
+(@good)  This is a good example.
+
+As (@good) illustrates, ...
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((1, Example(), TwoParens()), [[Plain([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('good'), Space(), Str('example.')])]])
+```
+
+### Ending a list
+
+``` python
+text = """
+-   item one
+-   item two
+
+    { my code block }
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Para([Str('item'), Space(), Str('one')])], [Para([Str('item'), Space(), Str('two')]), Para([Str('{'), Space(), Str('my'), Space(), Str('code'), Space(), Str('block'), Space(), Str('}')])]])
+```
+
+``` python
+text = """
+-   item one
+-   item two
+
+<!-- end of list -->
+
+    { my code block }
+"""
+```
+
+``` pycon
+>>> display(text, BulletList)
+BulletList([[Plain([Str('item'), Space(), Str('one')])], [Plain([Str('item'), Space(), Str('two')])]])
+```
+
+``` python
+text = """
+1.  one
+2.  two
+3.  three
+
+<!-- -->
+
+1.  uno
+2.  dos
+3.  tres
+"""
+```
+
+``` pycon
+>>> display(text, OrderedList)
+OrderedList((1, Decimal(), Period()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])
+OrderedList((1, Decimal(), Period()), [[Plain([Str('uno')])], [Plain([Str('dos')])], [Plain([Str('tres')])]])
+```
 
 Horizontal Rules (TODO)
 --------------------------------------------------------------------------------
@@ -500,18 +833,13 @@ MetaValue = MetaMap({Text: MetaValue})
 ```
 
 ``` pycon
->>> metadata = find(text, Meta)
->>> metadata == \
-... Meta(map([
-...   ('date', MetaInlines([Str('Date')])), 
-...   ('author', MetaList([MetaInlines(
-...     [Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])])), 
-...   ('title', MetaInlines([Str('Document'), Space(), Str('Title')]))
-... ]))
-True
+>>> display(text, Meta)
+Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One,'), Space(), Str('Author'), Space(), Str('Two')])]), 'date': MetaInlines([Str('Date')]), 'title': MetaInlines([Str('Document'), Space(), Str('Title')])})
 ```
 
 ``` pycon
+>>> doc = pandoc.read(text)
+>>> metadata = doc[0]
 >>> metamap = metadata[0]
 >>> metamap["title"]
 MetaInlines([Str('Document'), Space(), Str('Title')])
