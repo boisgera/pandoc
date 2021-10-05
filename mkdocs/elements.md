@@ -17,9 +17,9 @@ Helpers
 --------------------------------------------------------------------------------
 
 ``` python
-def findall(text, type_):
+def findall(text, types):
     doc = pandoc.read(text)
-    return [elt for elt in pandoc.iter(doc) if isinstance(elt, type_)]
+    return [elt for elt in pandoc.iter(doc) if isinstance(elt, types)]
 ```
 
 ``` python
@@ -31,13 +31,57 @@ def find(text, type_):
 ```
 
 ``` python
-def display(text, type_):
-    for elt in findall(text, type_):
+def display(text, types):
+    for elt in findall(text, types):
         print(elt)
 ```
 
-Paragraphs (TODO)
+Paragraphs
 --------------------------------------------------------------------------------
+
+``` python
+text = """
+First paragraph
+
+Second paragraph
+
+Third paragraph;
+new lines introduce a soft line break.
+
+Fourth paragraph;  
+two or more spaces at the end of the line generate a hard line break.
+"""
+```
+
+``` pycon
+>>> display(text, Para)
+Para([Str('First'), Space(), Str('paragraph')])
+Para([Str('Second'), Space(), Str('paragraph')])
+Para([Str('Third'), Space(), Str('paragraph;'), SoftBreak(), Str('new'), Space(), Str('lines'), Space(), Str('introduce'), Space(), Str('a'), Space(), Str('soft'), Space(), Str('line'), Space(), Str('break.')])
+Para([Str('Fourth'), Space(), Str('paragraph;'), LineBreak(), Str('two'), Space(), Str('or'), Space(), Str('more'), Space(), Str('spaces'), Space(), Str('at'), Space(), Str('the'), Space(), Str('end'), Space(), Str('of'), Space(), Str('the'), Space(), Str('line'), Space(), Str('generate'), Space(), Str('a'), Space(), Str('hard'), Space(), Str('line'), Space(), Str('break.')])
+```
+
+``` pycon
+>>> display(text, (SoftBreak, LineBreak))
+SoftBreak()
+LineBreak()
+```
+
+### Escaped line breaks
+
+``` python
+text = r"""
+A backslash followed by a newline \
+is also a hard line break
+"""
+```
+
+``` pycon
+>>> display(text, Para)
+Para([Str('A'), Space(), Str('backslash'), Space(), Str('followed'), Space(), Str('by'), Space(), Str('a'), Space(), Str('newline'), LineBreak(), Str('is'), Space(), Str('also'), Space(), Str('a'), Space(), Str('hard'), Space(), Str('line'), Space(), Str('break')])
+>>> display(text, LineBreak)
+LineBreak()
+```
 
 Headings
 --------------------------------------------------------------------------------
@@ -223,8 +267,104 @@ text = """
 BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), SoftBreak(), Str('>'), Space(), Str('Nested.')])])
 ```
 
-Code Blocks (TODO)
+Verbatim (code) blocks
 --------------------------------------------------------------------------------
+
+### Indented code blocks
+
+``` python
+text = """
+    if (a > 3) {
+      moveShip(5 * gravity, DOWN);
+    }
+"""
+```
+
+``` pycon
+>>> display(text, CodeBlock)
+CodeBlock(('', [], []), 'if (a > 3) {\n  moveShip(5 * gravity, DOWN);\n}')
+```
+
+### Fenced code blocks
+
+``` python
+text = """
+~~~~~~~
+if (a > 3) {
+  moveShip(5 * gravity, DOWN);
+}
+~~~~~~~
+"""
+```
+
+``` pycon
+>>> display(text, CodeBlock)
+CodeBlock(('', [], []), 'if (a > 3) {\n  moveShip(5 * gravity, DOWN);\n}')
+```
+
+``` python
+text = """
+~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+code including tildes
+~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+"""
+```
+
+``` pycon
+>>> display(text, CodeBlock)
+CodeBlock(('', [], []), '~~~~~~~~~~\ncode including tildes\n~~~~~~~~~~')
+```
+
+#### Backtick code blocks
+
+~~~ python
+text = """
+```
+if (a > 3) {
+  moveShip(5 * gravity, DOWN);
+}
+```
+"""
+~~~
+
+``` pycon
+>>> display(text, CodeBlock)
+CodeBlock(('', [], []), 'if (a > 3) {\n  moveShip(5 * gravity, DOWN);\n}')
+```
+
+#### Fenced code attributes
+
+``` python
+text = """
+~~~~ {#mycode .haskell .numberLines startFrom="100"}
+qsort []     = []
+qsort (x:xs) = qsort (filter (< x) xs) ++ [x] ++
+               qsort (filter (>= x) xs)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+```
+
+``` pycon
+>>> display(text, CodeBlock)
+CodeBlock(('mycode', ['haskell', 'numberLines'], [('startFrom', '100')]), 'qsort []     = []\nqsort (x:xs) = qsort (filter (< x) xs) ++ [x] ++\n               qsort (filter (>= x) xs)')
+```
+
+~~~ python
+text = """
+```haskell
+qsort [] = []
+```
+"""
+~~~
+
+``` pycon
+>>> display(text, CodeBlock)
+CodeBlock(('', ['haskell'], []), 'qsort [] = []')
+```
+
+
 
 Line Blocks
 --------------------------------------------------------------------------------

@@ -67,18 +67,17 @@ def tweak(src):
     # then transform them into indented code blocks.
     lines = src.splitlines()
     chunks = {}
-    python, start, end, code = False, None, None, []
+    python, sep, start, end, code = False, None, None, None, []
     for i, line in enumerate(lines):
-        if (
-            line.startswith("```python")
-            or line.startswith("``` python")
-            or line.startswith("```pycon")
-            or line.startswith("``` pycon")
+        if ( # match at least three backquotes, optional space, then python or pycon
+            re.match(r"(`|~){3,}\s*py(c|th)on", line)
         ):
+            sep = line[0] ; assert sep in "`~"
             start = i
             code.append("")
             python = True
-        elif line.startswith("```") and python is True:
+        elif python is True and line.startswith(3*sep):
+            sep = None
             end = i + 1
             code.append("")
             python = False
