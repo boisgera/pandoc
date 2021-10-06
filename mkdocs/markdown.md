@@ -2298,7 +2298,7 @@ Macro definitions in LaTeX will be passed through as raw LaTeX only if
 other formats allowing `raw_tex`) will be passed through regardless of
 whether `latex_macros` is enabled.
 
-## Links {#links-1}
+## Links
 
 Markdown allows links to be specified in several ways.
 

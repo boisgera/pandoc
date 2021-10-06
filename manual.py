@@ -30,6 +30,11 @@ src = urlopen(URL).read().decode("utf-8")
 
 ### TODO: create and insert diff here?
 
+# Hack to avoid having the "links" header title repeated
+# ------------------------------------------------------------------------------
+src = src.replace("#### Links", "#### ???") # remove the links h4 title
+
+# ------------------------------------------------------------------------------
 doc = pandoc.read(src)
 
 in_section = False
