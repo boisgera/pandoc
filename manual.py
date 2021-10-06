@@ -11,6 +11,9 @@ from pandoc.types import CodeBlock, DoubleQuote, Header, Meta, Pandoc, Para, Quo
 URL = "https://raw.githubusercontent.com/jgm/pandoc/2.14.2/MANUAL.txt"
 
 src = urlopen(URL).read().decode("utf-8")
+
+### TODO: create and insert diff here?
+
 doc = pandoc.read(src)
 
 in_section = False

@@ -106,12 +106,58 @@ os.chdir(tmp_dir)
 for filename in test_files:
     with open(filename, encoding="utf-8") as file:
         src = file.read()
+    if filename == "mkdocs/markdown.md":
+
+        src = "``` python\nimport pandoc\n```\n\n" + src
+
+        # Need to fetch markdown content, unident, wrap in ``` python block
+        # and add the text = """ stuff.
+        # Then add a ``` pycon block with repr stuff
+
+        pattern  = r'=== "Markdown"(?:(?:\n)|(?:[ ]{8}.*\n))*'
+        pattern += r'=== "Python"(?:(?:\n)|(?:[ ]{8}.*\n))*'
+
+        found = re.findall(pattern, src)
+        ritems = []
+        for item in found:
+
+            if "```" in item:
+                sep = "~~~"
+            else:
+                sep = "```"
+
+            ritem = item.strip()
+            ritem = re.sub("^[ ]{8}", "", ritem, flags=re.MULTILINE)
+            ritem = ritem.replace(
+                '=== "Markdown"', 
+                f'=== "Markdown"\n\n{sep} python\ntext = """')
+            ritem = ritem.replace(
+                '\n=== "Python"\n',
+                f'"""\n{sep}\n\n=== "Python"\n\n{sep} pycon\n>>> pandoc.read(text)'
+            )
+            ritem += f"\n{sep}\n\n"
+            ritems.append(ritem)
+
+            #print(40 * "-")
+            #print(item, ritem)
+
+        for item, ritem in zip(found, ritems):
+            src = src.replace(item, ritem)
+
+        # and in any case, "normal tweak"
     src = tweak(src)
+    if filename == "mkdocs/markdown.md":
+        pass # print(src)
+
+
     with open(filename, "w", encoding="utf-8") as file:
         file.write(src)
 
 # Run the Tests
 # ------------------------------------------------------------------------------
+
+#sys.exit(0)
+
 verbose = "-v" in sys.argv or "--verbose" in sys.argv
 
 fails = 0
