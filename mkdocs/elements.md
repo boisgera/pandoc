@@ -742,6 +742,23 @@ OrderedList((1, Decimal(), Period()), [[Plain([Str('uno')])], [Plain([Str('dos')
 Horizontal Rules (TODO)
 --------------------------------------------------------------------------------
 
+A line containing a row of three or more `*`, `-`, or `_` characters (optionally 
+separated by spaces) produces a horizontal rule:
+
+``` python
+text = """
+*  *  *  *
+
+---------------
+"""
+```
+
+``` pycon
+>>> display(text, HorizontalRule)
+HorizontalRule()
+HorizontalRule()
+```
+
 Tables (TODO)
 --------------------------------------------------------------------------------
 
