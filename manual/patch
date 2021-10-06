@@ -1,0 +1,202 @@
+--- MANUAL.txt	2021-10-06 17:12:32.332592876 +0200
++++ MANUAL-patched.txt	2021-10-06 17:21:35.851653896 +0200
+@@ -3262,7 +3262,9 @@
+ Headings can be assigned attributes using this syntax at the end
+ of the line containing the heading text:
+ 
+-    {#identifier .class .class key=value key=value}
++``` skip
++{#identifier .class .class key=value key=value}
++```
+ 
+ Thus, for example, the following headings will all be assigned the identifier
+ `foo`:
+@@ -3307,14 +3309,17 @@
+ 
+ you can simply write
+ 
++    # Heading identifiers in HTML
+     [Heading identifiers in HTML]
+ 
+ or
+ 
++    # Heading identifiers in HTML
+     [Heading identifiers in HTML][]
+ 
+ or
+ 
++    # Heading identifiers in HTML
+     [the section on heading identifiers][heading identifiers in
+     HTML]
+ 
+@@ -3462,11 +3467,13 @@
+ --list-highlight-languages`.) Otherwise, the code block above
+ will appear as follows:
+ 
+-    <pre id="mycode" class="haskell numberLines" startFrom="100">
+-      <code>
+-      ...
+-      </code>
+-    </pre>
++``` skip
++<pre id="mycode" class="haskell numberLines" startFrom="100">
++    <code>
++    ...
++    </code>
++</pre>
++```
+ 
+ The `numberLines` (or `number-lines`) class will cause the lines
+ of the code block to be numbered, starting with `1` or the value
+@@ -4100,15 +4107,18 @@
+ both.  So, all of the following are equivalent:
+ 
+ ```
++%
+ % Author One
+   Author Two
+ ```
+ 
+ ```
++%
+ % Author One; Author Two
+ ```
+ 
+ ```
++%
+ % Author One;
+   Author Two
+ ```
+@@ -4160,7 +4170,9 @@
+ several are provided, you may also keep the metadata in a separate YAML file
+ and pass it to pandoc as an argument, along with your Markdown files:
+ 
+-    pandoc chap1.md chap2.md chap3.md metadata.yaml -s -o book.html
++``` skip
++pandoc chap1.md chap2.md chap3.md metadata.yaml -s -o book.html
++```
+ 
+ Just be sure that the YAML file begins with `---` and ends with `---` or
+ `...`.) Alternatively, you can use the `--metadata-file` option. Using
+@@ -4218,8 +4230,10 @@
+ example, in writing HTML, the variable `abstract` will be set to the HTML
+ equivalent of the Markdown in the `abstract` field:
+ 
+-    <p>This is the abstract.</p>
+-    <p>It consists of two paragraphs.</p>
++``` skip
++<p>This is the abstract.</p>
++<p>It consists of two paragraphs.</p>
++```
+ 
+ Variables can contain arbitrary YAML structures, but the template must match
+ this structure.  The `author` variable in the default templates expects a
+@@ -4239,13 +4253,15 @@
+ To use the structured authors in the example above, you would need a custom
+ template:
+ 
+-    $for(author)$
+-    $if(author.name)$
+-    $author.name$$if(author.affiliation)$ ($author.affiliation$)$endif$
+-    $else$
+-    $author$
+-    $endif$
+-    $endfor$
++``` skip
++$for(author)$
++$if(author.name)$
++$author.name$$if(author.affiliation)$ ($author.affiliation$)$endif$
++$else$
++$author$
++$endif$
++$endfor$
++```
+ 
+ Raw content to include in the document's header may be specified
+ using `header-includes`; however, it is important to mark up
+@@ -4253,12 +4269,14 @@
+ the [`raw_attribute` extension](#extension-raw_attribute)), or it
+ will be interpreted as markdown. For example:
+ 
++    ---
+     header-includes:
+     - |
+       ```{=latex}
+       \let\oldsection\section
+       \renewcommand{\section}[1]{\clearpage\oldsection{#1}}
+       ```
++    ...
+ 
+ Note:  the `yaml_metadata_block` extension works with
+ `commonmark` as well as `markdown` (and it is enabled by default
+@@ -4290,16 +4308,22 @@
+ 
+ one will get
+ 
+-    <em>*hello*</em>
++``` skip
++<em>*hello*</em>
++```
+ 
+ instead of
+ 
+-    <strong>hello</strong>
++``` skip
++<strong>hello</strong>
++```
+ 
+ This rule is easier to remember than standard Markdown's rule,
+ which allows only the following characters to be backslash-escaped:
+ 
+-    \`*_{}[]()>#+-.!
++``` skip
++\`*_{}[]()>#+-.!
++```
+ 
+ (However, if the `markdown_strict` format is used, the standard Markdown rule
+ will be used.)
+@@ -4557,12 +4581,14 @@
+ 
+ into
+ 
+-    <table>
+-    <tr>
+-    <td><em>one</em></td>
+-    <td><a href="https://google.com">a link</a></td>
+-    </tr>
+-    </table>
++``` skip
++<table>
++<tr>
++<td><em>one</em></td>
++<td><a href="https://google.com">a link</a></td>
++</tr>
++</table>
++```
+ 
+ whereas `Markdown.pl` will preserve it as is.
+ 
+@@ -4732,6 +4758,8 @@
+ 
+ Here are some examples:
+ 
++    [blah][my label 1], [blah][my label 2], [blah][my label 3], [blah][my label 4].
++
+     [my label 1]: /foo/bar.html  "My title, optional"
+     [my label 2]: /foo
+     [my label 3]: https://fsf.org (The free software foundation)
+@@ -4739,10 +4767,14 @@
+ 
+ The URL may optionally be surrounded by angle brackets:
+ 
++    [blah][my label 5]
++
+     [my label 5]: <http://foo.bar.baz>
+ 
+ The title may go on the next line:
+ 
++    [blah][my label 3]
++
+     [my label 3]: https://fsf.org
+       "The free software foundation"
+ 

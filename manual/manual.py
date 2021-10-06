@@ -25,8 +25,8 @@ from pandoc.types import (
 
 # ------------------------------------------------------------------------------
 URL = "https://raw.githubusercontent.com/jgm/pandoc/2.14.2/MANUAL.txt"
-
-src = urlopen(URL).read().decode("utf-8")
+# src = urlopen(URL).read().decode("utf-8")
+src = open("MANUAL-patched.txt").read()
 
 ### TODO: create and insert diff here?
 
@@ -51,8 +51,10 @@ for block in blocks:
                     in_section = True
                     new_doc[1].append(header)
     else:
-        if isinstance(block, Header) and block[0] == 1:
+        if isinstance(block, Header) and \
+            block[2] == [Str("Non-default"), Space(), Str("extensions")]:
             in_section = False
+            break
         else:
             new_doc[1].append(block)
 
@@ -84,7 +86,7 @@ for holder, i in reversed(found):
 locations = [
     path[-1]
     for elt, path in pandoc.iter(new_doc, path=True)
-    if isinstance(elt, CodeBlock)
+    if isinstance(elt, CodeBlock) and "skip" not in elt[0][1] # classes
 ]
 
 def indent(text, lvl=4):
@@ -111,4 +113,4 @@ for holder, i in reversed(locations):
 
 # ------------------------------------------------------------------------------
 
-pandoc.write(new_doc, "mkdocs/markdown.md", format="markdown-raw_attribute")
+pandoc.write(new_doc, "../mkdocs/markdown.md", format="markdown-raw_attribute")

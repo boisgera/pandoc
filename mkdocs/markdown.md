@@ -139,15 +139,9 @@ above.
 Headings can be assigned attributes using this syntax at the end of the
 line containing the heading text:
 
-=== "Markdown"
-
-        {#identifier .class .class key=value key=value}
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('{#identifier'), Space(), Str('.class'), Space(), Str('.class'), Space(), Str('key=value'), Space(), Str('key=value}')])])
-
-<!-- prevent container tabs merge -->
+``` skip
+{#identifier .class .class key=value key=value}
+```
 
 Thus, for example, the following headings will all be assigned the
 identifier `foo`:
@@ -228,11 +222,12 @@ you can simply write
 
 === "Markdown"
 
+        # Heading identifiers in HTML
         [Heading identifiers in HTML]
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Str('[Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML]')])])
+        Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')]), Para([Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))])])
 
 <!-- prevent container tabs merge -->
 
@@ -240,11 +235,12 @@ or
 
 === "Markdown"
 
+        # Heading identifiers in HTML
         [Heading identifiers in HTML][]
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Str('[Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML][]')])])
+        Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')]), Para([Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))])])
 
 <!-- prevent container tabs merge -->
 
@@ -252,12 +248,13 @@ or
 
 === "Markdown"
 
+        # Heading identifiers in HTML
         [the section on heading identifiers][heading identifiers in
         HTML]
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Str('[the'), Space(), Str('section'), Space(), Str('on'), Space(), Str('heading'), Space(), Str('identifiers][heading'), Space(), Str('identifiers'), Space(), Str('in'), SoftBreak(), Str('HTML]')])])
+        Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')]), Para([Link(('', [], []), [Str('the'), Space(), Str('section'), Space(), Str('on'), Space(), Str('heading'), Space(), Str('identifiers')], ('#heading-identifiers-in-html', ''))])])
 
 <!-- prevent container tabs merge -->
 
@@ -489,19 +486,13 @@ numbered lines. (To see which languages are supported, type
 `pandoc --list-highlight-languages`.) Otherwise, the code block above
 will appear as follows:
 
-=== "Markdown"
-
-        <pre id="mycode" class="haskell numberLines" startFrom="100">
-          <code>
-          ...
-          </code>
-        </pre>
-
-=== "Python"
-
-        Pandoc(Meta({}), [RawBlock(Format('html'), '<pre id="mycode" class="haskell numberLines" startFrom="100">\n  <code>\n  ...\n  </code>\n</pre>')])
-
-<!-- prevent container tabs merge -->
+``` skip
+<pre id="mycode" class="haskell numberLines" startFrom="100">
+    <code>
+    ...
+    </code>
+</pre>
+```
 
 The `numberLines` (or `number-lines`) class will cause the lines of the
 code block to be numbered, starting with `1` or the value of the
@@ -1436,33 +1427,36 @@ of the following are equivalent:
 
 === "Markdown"
 
+        %
         % Author One
           Author Two
 
 === "Python"
 
-        Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One'), SoftBreak(), Str('Author'), Space(), Str('Two')])}), [])
+        Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])])}), [])
 
 <!-- prevent container tabs merge -->
 
 === "Markdown"
 
+        %
         % Author One; Author Two
 
 === "Python"
 
-        Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One;'), Space(), Str('Author'), Space(), Str('Two')])}), [])
+        Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])])}), [])
 
 <!-- prevent container tabs merge -->
 
 === "Markdown"
 
+        %
         % Author One;
           Author Two
 
 === "Python"
 
-        Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One;'), SoftBreak(), Str('Author'), Space(), Str('Two')])}), [])
+        Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])])}), [])
 
 <!-- prevent container tabs merge -->
 
@@ -1538,15 +1532,9 @@ files when several are provided, you may also keep the metadata in a
 separate YAML file and pass it to pandoc as an argument, along with your
 Markdown files:
 
-=== "Markdown"
-
-        pandoc chap1.md chap2.md chap3.md metadata.yaml -s -o book.html
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('chap1.md'), Space(), Str('chap2.md'), Space(), Str('chap3.md'), Space(), Str('metadata.yaml'), Space(), Str('-s'), Space(), Str('-o'), Space(), Str('book.html')])])
-
-<!-- prevent container tabs merge -->
+``` skip
+pandoc chap1.md chap2.md chap3.md metadata.yaml -s -o book.html
+```
 
 Just be sure that the YAML file begins with `---` and ends with `---` or
 `...`.) Alternatively, you can use the `--metadata-file` option. Using
@@ -1613,16 +1601,10 @@ Template variables will be set automatically from the metadata. Thus,
 for example, in writing HTML, the variable `abstract` will be set to the
 HTML equivalent of the Markdown in the `abstract` field:
 
-=== "Markdown"
-
-        <p>This is the abstract.</p>
-        <p>It consists of two paragraphs.</p>
-
-=== "Python"
-
-        Pandoc(Meta({}), [RawBlock(Format('html'), '<p>'), Plain([Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('abstract.')]), RawBlock(Format('html'), '</p>'), RawBlock(Format('html'), '<p>'), Plain([Str('It'), Space(), Str('consists'), Space(), Str('of'), Space(), Str('two'), Space(), Str('paragraphs.')]), RawBlock(Format('html'), '</p>')])
-
-<!-- prevent container tabs merge -->
+``` skip
+<p>This is the abstract.</p>
+<p>It consists of two paragraphs.</p>
+```
 
 Variables can contain arbitrary YAML structures, but the template must
 match this structure. The `author` variable in the default templates
@@ -1650,21 +1632,15 @@ add an affiliation to the author if one is given:
 To use the structured authors in the example above, you would need a
 custom template:
 
-=== "Markdown"
-
-        $for(author)$
-        $if(author.name)$
-        $author.name$$if(author.affiliation)$ ($author.affiliation$)$endif$
-        $else$
-        $author$
-        $endif$
-        $endfor$
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Math(InlineMath(), 'for(author)'), SoftBreak(), Math(InlineMath(), 'if(author.name)'), SoftBreak(), Math(InlineMath(), 'author.name'), Math(InlineMath(), 'if(author.affiliation)'), Space(), Str('('), Math(InlineMath(), 'author.affiliation'), Str(')'), Math(InlineMath(), 'endif'), SoftBreak(), Math(InlineMath(), 'else'), SoftBreak(), Math(InlineMath(), 'author'), SoftBreak(), Math(InlineMath(), 'endif'), SoftBreak(), Math(InlineMath(), 'endfor')])])
-
-<!-- prevent container tabs merge -->
+``` skip
+$for(author)$
+$if(author.name)$
+$author.name$$if(author.affiliation)$ ($author.affiliation$)$endif$
+$else$
+$author$
+$endif$
+$endfor$
+```
 
 Raw content to include in the document's header may be specified using
 `header-includes`; however, it is important to mark up this content as
@@ -1674,16 +1650,18 @@ markdown. For example:
 
 === "Markdown"
 
+        ---
         header-includes:
         - |
           ```{=latex}
           \let\oldsection\section
           \renewcommand{\section}[1]{\clearpage\oldsection{#1}}
           ```
+        ...
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Str('header-includes:'), SoftBreak(), Str('-'), Space(), Str('|'), SoftBreak(), Code(('', [], []), '{=latex}   \\let\\oldsection\\section   \\renewcommand{\\section}[1]{\\clearpage\\oldsection{#1}}')])])
+        Pandoc(Meta({'header-includes': MetaList([MetaBlocks([RawBlock(Format('latex'), '\\let\\oldsection\\section\n\\renewcommand{\\section}[1]{\\clearpage\\oldsection{#1}}')])])}), [])
 
 <!-- prevent container tabs merge -->
 
@@ -1721,40 +1699,22 @@ would normally indicate formatting. Thus, for example, if one writes
 
 one will get
 
-=== "Markdown"
-
-        <em>*hello*</em>
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([RawInline(Format('html'), '<em>'), Emph([Str('hello')]), RawInline(Format('html'), '</em>')])])
-
-<!-- prevent container tabs merge -->
+``` skip
+<em>*hello*</em>
+```
 
 instead of
 
-=== "Markdown"
-
-        <strong>hello</strong>
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([RawInline(Format('html'), '<strong>'), Str('hello'), RawInline(Format('html'), '</strong>')])])
-
-<!-- prevent container tabs merge -->
+``` skip
+<strong>hello</strong>
+```
 
 This rule is easier to remember than standard Markdown's rule, which
 allows only the following characters to be backslash-escaped:
 
-=== "Markdown"
-
-        \`*_{}[]()>#+-.!
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('`*_{}'), Link(('', [], []), [], ('', '')), Str('>#+-.!')])])
-
-<!-- prevent container tabs merge -->
+``` skip
+\`*_{}[]()>#+-.!
+```
 
 (However, if the `markdown_strict` format is used, the standard Markdown
 rule will be used.)
@@ -2119,20 +2079,14 @@ Markdown. Thus, for example, pandoc will turn
 
 into
 
-=== "Markdown"
-
-        <table>
-        <tr>
-        <td><em>one</em></td>
-        <td><a href="https://google.com">a link</a></td>
-        </tr>
-        </table>
-
-=== "Python"
-
-        Pandoc(Meta({}), [RawBlock(Format('html'), '<table>'), RawBlock(Format('html'), '<tr>'), RawBlock(Format('html'), '<td>'), Plain([RawInline(Format('html'), '<em>'), Str('one'), RawInline(Format('html'), '</em>')]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '<td>'), Plain([RawInline(Format('html'), '<a href="https://google.com">'), Str('a'), Space(), Str('link'), RawInline(Format('html'), '</a>')]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '</tr>'), RawBlock(Format('html'), '</table>')])
-
-<!-- prevent container tabs merge -->
+``` skip
+<table>
+<tr>
+<td><em>one</em></td>
+<td><a href="https://google.com">a link</a></td>
+</tr>
+</table>
+```
 
 whereas `Markdown.pl` will preserve it as is.
 
@@ -2371,6 +2325,8 @@ Here are some examples:
 
 === "Markdown"
 
+        [blah][my label 1], [blah][my label 2], [blah][my label 3], [blah][my label 4].
+        
         [my label 1]: /foo/bar.html  "My title, optional"
         [my label 2]: /foo
         [my label 3]: https://fsf.org (The free software foundation)
@@ -2378,7 +2334,7 @@ Here are some examples:
 
 === "Python"
 
-        Pandoc(Meta({}), [])
+        Pandoc(Meta({}), [Para([Link(('', [], []), [Str('blah')], ('/foo/bar.html', 'My title, optional')), Str(','), Space(), Link(('', [], []), [Str('blah')], ('/foo', '')), Str(','), Space(), Link(('', [], []), [Str('blah')], ('https://fsf.org', 'The free software foundation')), Str(','), Space(), Link(('', [], []), [Str('blah')], ('/bar#special', 'A title in single quotes')), Str('.')])])
 
 <!-- prevent container tabs merge -->
 
@@ -2386,11 +2342,13 @@ The URL may optionally be surrounded by angle brackets:
 
 === "Markdown"
 
+        [blah][my label 5]
+        
         [my label 5]: <http://foo.bar.baz>
 
 === "Python"
 
-        Pandoc(Meta({}), [])
+        Pandoc(Meta({}), [Para([Link(('', [], []), [Str('blah')], ('http://foo.bar.baz', ''))])])
 
 <!-- prevent container tabs merge -->
 
@@ -2398,12 +2356,14 @@ The title may go on the next line:
 
 === "Markdown"
 
+        [blah][my label 3]
+        
         [my label 3]: https://fsf.org
           "The free software foundation"
 
 === "Python"
 
-        Pandoc(Meta({}), [])
+        Pandoc(Meta({}), [Para([Link(('', [], []), [Str('blah')], ('https://fsf.org', 'The free software foundation'))])])
 
 <!-- prevent container tabs merge -->
 
@@ -2910,317 +2870,6 @@ that normal citations will be put in parentheses, while author-in-text
 citations will not. For this reason, it is sometimes preferable to use
 the author-in-text style inside notes when using a note style.
 
-## Non-default extensions
-
-The following Markdown syntax extensions are not enabled by default in
-pandoc, but may be enabled by adding `+EXTENSION` to the format name,
-where `EXTENSION` is the name of the extension. Thus, for example,
-`markdown+hard_line_breaks` is Markdown with hard line breaks.
-
-#### Extension: `rebase_relative_paths`
-
-Rewrite relative paths for Markdown links and images, depending on the
-path of the file containing the link or image link. For each link or
-image, pandoc will compute the directory of the containing file,
-relative to the working directory, and prepend the resulting path to the
-link or image path.
-
-The use of this extension is best understood by example. Suppose you
-have a a subdirectory for each chapter of a book, `chap1`, `chap2`,
-`chap3`. Each contains a file `text.md` and a number of images used in
-the chapter. You would like to have `![image](spider.jpg)` in
-`chap1/text.md` refer to `chap1/spider.jpg` and `![image](spider.jpg)`
-in `chap2/text.md` refer to `chap2/spider.jpg`. To do this, use
-
-=== "Markdown"
-
-        pandoc chap*/*.md -f markdown+rebase_relative_paths
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('chap'), Emph([Str('/')]), Str('.md'), Space(), Str('-f'), Space(), Str('markdown+rebase_relative_paths')])])
-
-<!-- prevent container tabs merge -->
-
-Without this extension, you would have to use
-`![image](chap1/spider.jpg)` in `chap1/text.md` and
-`![image](chap2/spider.jpg)` in `chap2/text.md`. Links with relative
-paths will be rewritten in the same way as images.
-
-Absolute paths and URLs are not changed. Neither are empty paths or
-paths consisting entirely of a fragment, e.g., `#foo`.
-
-Note that relative paths in reference links and images will be rewritten
-relative to the file containing the link reference definition, not the
-file containing the reference link or image itself, if these differ.
-
-#### Extension: `attributes`
-
-Allows attributes to be attached to any inline or block-level element.
-The syntax for the attributes is the same as that used in
-[`header_attributes`](#extension-header_attributes).
-
--   Attributes that occur immediately after an inline element affect
-    that element. If they follow a space, then they belong to the space.
-    (Hence, this option subsumes `inline_code_attributes` and
-    `link_attributes`.)
--   Attributes that occur immediately before a block element, on a line
-    by themselves, affect that element.
--   Consecutive attribute specifiers may be used, either for blocks or
-    for inlines. Their attributes will be combined.
--   Attributes that occur at the end of the text of a Setext or ATX
-    heading (separated by whitespace from the text) affect the heading
-    element. (Hence, this option subsumes `header_attributes`.)
--   Attributes that occur after the opening fence in a fenced code block
-    affect the code block element. (Hence, this option subsumes
-    `fenced_code_attributes`.)
--   Attributes that occur at the end of a reference link definition
-    affect links that refer to that definition.
-
-Note that pandoc's AST does not currently allow attributes to be
-attached to arbitrary elements. Hence a Span or Div container will be
-added if needed.
-
-#### Extension: `old_dashes`
-
-Selects the pandoc \<= 1.8.2.1 behavior for parsing smart dashes: `-`
-before a numeral is an en-dash, and `--` is an em-dash. This option only
-has an effect if `smart` is enabled. It is selected automatically for
-`textile` input.
-
-#### Extension: `angle_brackets_escapable`
-
-Allow `<` and `>` to be backslash-escaped, as they can be in GitHub
-flavored Markdown but not original Markdown. This is implied by pandoc's
-default `all_symbols_escapable`.
-
-#### Extension: `lists_without_preceding_blankline`
-
-Allow a list to occur right after a paragraph, with no intervening blank
-space.
-
-#### Extension: `four_space_rule`
-
-Selects the pandoc \<= 2.0 behavior for parsing lists, so that four
-spaces indent are needed for list item continuation paragraphs.
-
-#### Extension: `spaced_reference_links`
-
-Allow whitespace between the two components of a reference link, for
-example,
-
-=== "Markdown"
-
-        [foo] [bar].
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('[foo]'), Space(), Str('[bar].')])])
-
-<!-- prevent container tabs merge -->
-
-#### Extension: `hard_line_breaks`
-
-Causes all newlines within a paragraph to be interpreted as hard line
-breaks instead of spaces.
-
-#### Extension: `ignore_line_breaks`
-
-Causes newlines within a paragraph to be ignored, rather than being
-treated as spaces or as hard line breaks. This option is intended for
-use with East Asian languages where spaces are not used between words,
-but text is divided into lines for readability.
-
-#### Extension: `east_asian_line_breaks`
-
-Causes newlines within a paragraph to be ignored, rather than being
-treated as spaces or as hard line breaks, when they occur between two
-East Asian wide characters. This is a better choice than
-`ignore_line_breaks` for texts that include a mix of East Asian wide
-characters and other characters.
-
-#### Extension: `emoji`
-
-Parses textual emojis like `:smile:` as Unicode emoticons.
-
-#### Extension: `tex_math_single_backslash`
-
-Causes anything between `\(` and `\)` to be interpreted as inline TeX
-math, and anything between `\[` and `\]` to be interpreted as display
-TeX math. Note: a drawback of this extension is that it precludes
-escaping `(` and `[`.
-
-#### Extension: `tex_math_double_backslash`
-
-Causes anything between `\\(` and `\\)` to be interpreted as inline TeX
-math, and anything between `\\[` and `\\]` to be interpreted as display
-TeX math.
-
-#### Extension: `markdown_attribute`
-
-By default, pandoc interprets material inside block-level tags as
-Markdown. This extension changes the behavior so that Markdown is only
-parsed inside block-level tags if the tags have the attribute
-`markdown=1`.
-
-#### Extension: `mmd_title_block`
-
-Enables a [MultiMarkdown](https://fletcherpenney.net/multimarkdown/)
-style title block at the top of the document, for example:
-
-=== "Markdown"
-
-        Title:   My title
-        Author:  John Doe
-        Date:    September 1, 2008
-        Comment: This is a sample mmd title block, with
-                 a field spanning multiple lines.
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('Title:'), Space(), Str('My'), Space(), Str('title'), SoftBreak(), Str('Author:'), Space(), Str('John'), Space(), Str('Doe'), SoftBreak(), Str('Date:'), Space(), Str('September'), Space(), Str('1,'), Space(), Str('2008'), SoftBreak(), Str('Comment:'), Space(), Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('sample'), Space(), Str('mmd'), Space(), Str('title'), Space(), Str('block,'), Space(), Str('with'), SoftBreak(), Str('a'), Space(), Str('field'), Space(), Str('spanning'), Space(), Str('multiple'), Space(), Str('lines.')])])
-
-<!-- prevent container tabs merge -->
-
-See the MultiMarkdown documentation for details. If `pandoc_title_block`
-or `yaml_metadata_block` is enabled, it will take precedence over
-`mmd_title_block`.
-
-#### Extension: `abbreviations`
-
-Parses PHP Markdown Extra abbreviation keys, like
-
-=== "Markdown"
-
-        *[HTML]: Hypertext Markup Language
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('*[HTML]:'), Space(), Str('Hypertext'), Space(), Str('Markup'), Space(), Str('Language')])])
-
-<!-- prevent container tabs merge -->
-
-Note that the pandoc document model does not support abbreviations, so
-if this extension is enabled, abbreviation keys are simply skipped (as
-opposed to being parsed as paragraphs).
-
-#### Extension: `autolink_bare_uris`
-
-Makes all absolute URIs into links, even when not surrounded by pointy
-braces `<...>`.
-
-#### Extension: `mmd_link_attributes`
-
-Parses multimarkdown style key-value attributes on link and image
-references. This extension should not be confused with the
-[`link_attributes`](#extension-link_attributes) extension.
-
-=== "Markdown"
-
-        This is a reference ![image][ref] with multimarkdown attributes.
-        
-        [ref]: https://path.to/image "Image title" width=20px height=30px
-               id=myId class="myClass1 myClass2"
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('reference'), Space(), Str('[image][ref]'), Space(), Str('with'), Space(), Str('multimarkdown'), Space(), Str('attributes.')]), Para([Str('[ref]:'), Space(), Str('https://path.to/image'), Space(), Quoted(DoubleQuote(), [Str('Image'), Space(), Str('title')]), Space(), Str('width=20px'), Space(), Str('height=30px'), SoftBreak(), Str('id=myId'), Space(), Str('class='), Quoted(DoubleQuote(), [Str('myClass1'), Space(), Str('myClass2')])])])
-
-<!-- prevent container tabs merge -->
-
-#### Extension: `mmd_header_identifiers`
-
-Parses multimarkdown style heading identifiers (in square brackets,
-after the heading but before any trailing `#`s in an ATX heading).
-
-#### Extension: `compact_definition_lists`
-
-Activates the definition list syntax of pandoc 1.12.x and earlier. This
-syntax differs from the one described above under [Definition
-lists](#definition-lists) in several respects:
-
--   No blank line is required between consecutive items of the
-    definition list.
--   To get a "tight" or "compact" list, omit space between consecutive
-    items; the space between a term and its definition does not affect
-    anything.
--   Lazy wrapping of paragraphs is not allowed: the entire definition
-    must be indented four spaces.[^4]
-
-#### Extension: `gutenberg`
-
-Use [Project Gutenberg](https://www.gutenberg.org) conventions for
-`plain` output: all-caps for strong emphasis, surround by underscores
-for regular emphasis, add extra blank space around headings.
-
-#### Extension: `sourcepos`
-
-Include source position attributes when parsing `commonmark`. For
-elements that accept attributes, a `data-pos` attribute is added; other
-elements are placed in a surrounding Div or Span elemnet with a
-`data-pos` attribute.
-
-#### Extension: `short_subsuperscript`
-
-Parse multimarkdown style subscripts and superscripts, which start with
-a '\~' or '\^' character, respectively, and include the alphanumeric
-sequence that follows. For example:
-
-=== "Markdown"
-
-        x^2 = 4
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('x^2'), Space(), Str('='), Space(), Str('4')])])
-
-<!-- prevent container tabs merge -->
-
-or
-
-=== "Markdown"
-
-        Oxygen is O~2.
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('Oxygen'), Space(), Str('is'), Space(), Str('O~2.')])])
-
-<!-- prevent container tabs merge -->
-
-## Markdown variants
-
-In addition to pandoc's extended Markdown, the following Markdown
-variants are supported:
-
--   `markdown_phpextra` (PHP Markdown Extra)
--   `markdown_github` (deprecated GitHub-Flavored Markdown)
--   `markdown_mmd` (MultiMarkdown)
--   `markdown_strict` (Markdown.pl)
--   `commonmark` (CommonMark)
--   `gfm` (Github-Flavored Markdown)
--   `commonmark_x` (CommonMark with many pandoc extensions)
-
-To see which extensions are supported for a given format, and which are
-enabled by default, you can use the command
-
-=== "Markdown"
-
-        pandoc --list-extensions=FORMAT
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('–list-extensions=FORMAT')])])
-
-<!-- prevent container tabs merge -->
-
-where `FORMAT` is replaced with the name of the format.
-
-Note that the list of extensions for `commonmark`, `gfm`, and
-`commonmark_x` are defined relative to default commonmark. So, for
-example, `backtick_code_blocks` does not appear as an extension, since
-it is enabled by default and cannot be disabled.
-
 [^1]: The point of this rule is to ensure that normal paragraphs
     starting with people's initials, like
 
@@ -3267,24 +2916,3 @@ it is enabled by default and cannot be disabled.
 [^3]: This scheme is due to Michel Fortin, who proposed it on the
     [Markdown discussion
     list](http://six.pairlist.net/pipermail/markdown-discuss/2005-March/001097.html).
-
-[^4]: To see why laziness is incompatible with relaxing the requirement
-    of a blank line between items, consider the following example:
-
-    === "Markdown"
-
-            bar
-            :    definition
-            foo
-            :    definition
-
-    === "Python"
-
-            Pandoc(Meta({}), [DefinitionList([([Str('bar')], [[Plain([Str('definition'), SoftBreak(), Str('foo')])], [Plain([Str('definition')])]])])])
-
-    <!-- prevent container tabs merge -->
-
-    Is this a single list item with two definitions of "bar," the first
-    of which is lazily wrapped, or two list items? To remove the
-    ambiguity we must either disallow lazy wrapping or require a blank
-    line between list items.
