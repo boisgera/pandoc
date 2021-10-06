@@ -9,6 +9,7 @@ nav:
   - Examples (wip): examples.md
   - CLI (wip): cli.md
   - Document structure: document.md
+  - Pandoc's Markdown (wip): markdown.md
   - Elements (wip): elements.md
   - Containers and iteration: iteration.md
   - Configuration: configuration.md
@@ -24,6 +25,8 @@ markdown_extensions:
   - footnotes
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 
 repo_name: "pandoc"
 repo_url: "https://github.com/boisgera/pandoc"
