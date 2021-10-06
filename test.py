@@ -129,8 +129,8 @@ for filename in test_files:
             ritem = item.strip()
             ritem = re.sub("^[ ]{8}", "", ritem, flags=re.MULTILINE)
             ritem = ritem.replace(
-                '=== "Markdown"', 
-                f'=== "Markdown"\n\n{sep} python\ntext = """')
+                '=== "Markdown"\n\n', 
+                f'=== "Markdown"\n\n{sep} python\ntext = \\\nr"""')
             ritem = ritem.replace(
                 '\n=== "Python"\n',
                 f'"""\n{sep}\n\n=== "Python"\n\n{sep} pycon\n>>> pandoc.read(text)'
@@ -138,26 +138,17 @@ for filename in test_files:
             ritem += f"\n{sep}\n\n"
             ritems.append(ritem)
 
-            #print(40 * "-")
-            #print(item, ritem)
-
         for item, ritem in zip(found, ritems):
             src = src.replace(item, ritem)
 
         # and in any case, "normal tweak"
     src = tweak(src)
-    if filename == "mkdocs/markdown.md":
-        pass # print(src)
-
 
     with open(filename, "w", encoding="utf-8") as file:
         file.write(src)
 
 # Run the Tests
 # ------------------------------------------------------------------------------
-
-#sys.exit(0)
-
 verbose = "-v" in sys.argv or "--verbose" in sys.argv
 
 fails = 0
