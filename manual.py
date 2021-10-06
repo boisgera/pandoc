@@ -34,6 +34,7 @@ src = urlopen(URL).read().decode("utf-8")
 # ------------------------------------------------------------------------------
 src = src.replace("#### Links", "#### ???") # remove the links h4 title
 
+# Extract the "Pandoc's Markdown" section
 # ------------------------------------------------------------------------------
 doc = pandoc.read(src)
 
@@ -55,7 +56,7 @@ for block in blocks:
         else:
             new_doc[1].append(block)
 
-# Add manual source
+# Add Pandoc's manual reference
 # ------------------------------------------------------------------------------
 reference = pandoc.read(f"**Source:** <{URL}>")[1]
 new_doc[1][1:1] = reference
@@ -85,6 +86,10 @@ locations = [
     for elt, path in pandoc.iter(new_doc, path=True)
     if isinstance(elt, CodeBlock)
 ]
+
+def indent(text, lvl=4):
+    return "\n".join(lvl*" " + line for line in text.splitlines)
+
 
 for holder, i in reversed(locations):
     attr, text = codeblock = holder[i]
