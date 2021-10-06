@@ -9,7 +9,7 @@ nav:
   - Examples (wip): examples.md
   - CLI (wip): cli.md
   - Document structure: document.md
-  - Pandoc's Markdown (wip): markdown.md
+  - Pandoc's Markdown: markdown.md
   - Elements (wip): elements.md
   - Containers and iteration: iteration.md
   - Configuration: configuration.md
