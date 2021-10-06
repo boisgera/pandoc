@@ -68,6 +68,8 @@ signs (for a level-one heading) or `-` signs (for a level-two heading):
 
         Pandoc(Meta({}), [Header(1, ('a-level-one-heading', [], []), [Str('A'), Space(), Str('level-one'), Space(), Str('heading')]), Header(2, ('a-level-two-heading', [], []), [Str('A'), Space(), Str('level-two'), Space(), Str('heading')])])
 
+<!-- prevent container tabs merge -->
+
 The heading text can contain inline formatting, such as emphasis (see
 [Inline formatting](#inline-formatting), below).
 
@@ -87,6 +89,8 @@ signs at the beginning of the line is the heading level:
 
         Pandoc(Meta({}), [Header(2, ('a-level-two-heading', [], []), [Str('A'), Space(), Str('level-two'), Space(), Str('heading')]), Header(3, ('a-level-three-heading', [], []), [Str('A'), Space(), Str('level-three'), Space(), Str('heading')])])
 
+<!-- prevent container tabs merge -->
+
 As with setext-style headings, the heading text can contain formatting:
 
 === "Markdown"
@@ -96,6 +100,8 @@ As with setext-style headings, the heading text can contain formatting:
 === "Python"
 
         Pandoc(Meta({}), [Header(1, ('a-level-one-heading-with-a-link-and-emphasis', [], []), [Str('A'), Space(), Str('level-one'), Space(), Str('heading'), Space(), Str('with'), Space(), Str('a'), Space(), Link(('', [], []), [Str('link')], ('/url', '')), Space(), Str('and'), Space(), Emph([Str('emphasis')])])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `blank_before_header`
 
@@ -113,6 +119,8 @@ line wrapping). Consider, for example:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('I'), Space(), Str('like'), Space(), Str('several'), Space(), Str('of'), Space(), Str('their'), Space(), Str('flavors'), Space(), Str('of'), Space(), Str('ice'), Space(), Str('cream:'), SoftBreak(), Str('#22,'), Space(), Str('for'), Space(), Str('example,'), Space(), Str('and'), Space(), Str('#5.')])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `space_in_atx_header`
 
@@ -139,6 +147,8 @@ line containing the heading text:
 
         Pandoc(Meta({}), [Para([Str('{#identifier'), Space(), Str('.class'), Space(), Str('.class'), Space(), Str('key=value'), Space(), Str('key=value}')])])
 
+<!-- prevent container tabs merge -->
+
 Thus, for example, the following headings will all be assigned the
 identifier `foo`:
 
@@ -154,6 +164,8 @@ identifier `foo`:
 === "Python"
 
         Pandoc(Meta({}), [Header(1, ('foo', [], []), [Str('My'), Space(), Str('heading')]), Header(2, ('foo', [], []), [Str('My'), Space(), Str('heading')]), Header(2, ('foo', [], []), [Str('My'), Space(), Str('other'), Space(), Str('heading')])])
+
+<!-- prevent container tabs merge -->
 
 (This syntax is compatible with [PHP Markdown
 Extra](https://michelf.ca/projects/php-markdown/extra/).)
@@ -178,6 +190,8 @@ documents. So,
 
         Pandoc(Meta({}), [Header(1, ('my-heading', ['unnumbered'], []), [Str('My'), Space(), Str('heading')])])
 
+<!-- prevent container tabs merge -->
+
 is just the same as
 
 === "Markdown"
@@ -187,6 +201,8 @@ is just the same as
 === "Python"
 
         Pandoc(Meta({}), [Header(1, ('my-heading', ['unnumbered'], []), [Str('My'), Space(), Str('heading')])])
+
+<!-- prevent container tabs merge -->
 
 If the `unlisted` class is present in addition to `unnumbered`, the
 heading will not be included in a table of contents. (Currently this
@@ -206,6 +222,8 @@ So, to link to a heading
 
         Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')])])
 
+<!-- prevent container tabs merge -->
+
 you can simply write
 
 === "Markdown"
@@ -216,6 +234,8 @@ you can simply write
 
         Pandoc(Meta({}), [Para([Str('[Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML]')])])
 
+<!-- prevent container tabs merge -->
+
 or
 
 === "Markdown"
@@ -225,6 +245,8 @@ or
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('[Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML][]')])])
+
+<!-- prevent container tabs merge -->
 
 or
 
@@ -237,6 +259,8 @@ or
 
         Pandoc(Meta({}), [Para([Str('[the'), Space(), Str('section'), Space(), Str('on'), Space(), Str('heading'), Space(), Str('identifiers][heading'), Space(), Str('identifiers'), Space(), Str('in'), SoftBreak(), Str('HTML]')])])
 
+<!-- prevent container tabs merge -->
+
 instead of giving the identifier explicitly:
 
 === "Markdown"
@@ -246,6 +270,8 @@ instead of giving the identifier explicitly:
 === "Python"
 
         Pandoc(Meta({}), [Para([Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))])])
+
+<!-- prevent container tabs merge -->
 
 If there are multiple headings with identical text, the corresponding
 reference will link to the first one only, and you will need to use
@@ -269,6 +295,8 @@ heading references. So, in the following example, the link will point to
 
         Pandoc(Meta({}), [Header(1, ('foo', [], []), [Str('Foo')]), Para([Str('See'), Space(), Link(('', [], []), [Str('foo')], ('bar', ''))])])
 
+<!-- prevent container tabs merge -->
+
 ## Block quotations
 
 Markdown uses email conventions for quoting blocks of text. A block
@@ -289,6 +317,8 @@ should not be indented more than three spaces.)
 
         Pandoc(Meta({}), [BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), Space(), Str('This'), SoftBreak(), Str('paragraph'), Space(), Str('has'), Space(), Str('two'), Space(), Str('lines.')]), OrderedList((1, Decimal(), Period()), [[Plain([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('list'), Space(), Str('inside'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])], [Plain([Str('Second'), Space(), Str('item.')])]])])])
 
+<!-- prevent container tabs merge -->
+
 A "lazy" form, which requires the `>` character only on the first line
 of each block, is also allowed:
 
@@ -304,6 +334,8 @@ of each block, is also allowed:
 
         Pandoc(Meta({}), [BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), Space(), Str('This'), SoftBreak(), Str('paragraph'), Space(), Str('has'), Space(), Str('two'), Space(), Str('lines.')])]), BlockQuote([OrderedList((1, Decimal(), Period()), [[Plain([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('list'), Space(), Str('inside'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])], [Plain([Str('Second'), Space(), Str('item.')])]])])])
 
+<!-- prevent container tabs merge -->
+
 Among the block elements that can be contained in a block quote are
 other block quotes. That is, block quotes can be nested:
 
@@ -317,6 +349,8 @@ other block quotes. That is, block quotes can be nested:
 
         Pandoc(Meta({}), [BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')]), BlockQuote([Para([Str('A'), Space(), Str('block'), Space(), Str('quote'), Space(), Str('within'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.')])])])])
 
+<!-- prevent container tabs merge -->
+
 If the `>` character is followed by an optional space, that space will
 be considered part of the block quote marker and not part of the
 indentation of the contents. Thus, to put an indented code block in a
@@ -329,6 +363,8 @@ block quote, you need five spaces after the `>`:
 === "Python"
 
         Pandoc(Meta({}), [BlockQuote([CodeBlock(('', [], []), 'code')])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `blank_before_blockquote`
 
@@ -348,6 +384,8 @@ the following does not produce a nested block quote in pandoc:
 
         Pandoc(Meta({}), [BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), SoftBreak(), Str('>'), Space(), Str('Nested.')])])])
 
+<!-- prevent container tabs merge -->
+
 ## Verbatim (code) blocks
 
 ### Indented code blocks
@@ -365,6 +403,8 @@ all spaces and line breaks are preserved. For example,
 === "Python"
 
         Pandoc(Meta({}), [CodeBlock(('', [], []), 'if (a > 3) {\n  moveShip(5 * gravity, DOWN);\n}')])
+
+<!-- prevent container tabs merge -->
 
 The initial (four space or one tab) indentation is not considered part
 of the verbatim text, and is removed in the output.
@@ -393,6 +433,8 @@ is necessary:
 
         Pandoc(Meta({}), [CodeBlock(('', [], []), 'if (a > 3) {\n  moveShip(5 * gravity, DOWN);\n}')])
 
+<!-- prevent container tabs merge -->
+
 Like regular code blocks, fenced code blocks must be separated from
 surrounding text by blank lines.
 
@@ -410,6 +452,8 @@ longer row of tildes or backticks at the start and end:
 === "Python"
 
         Pandoc(Meta({}), [CodeBlock(('', [], []), '~~~~~~~~~~\ncode including tildes\n~~~~~~~~~~')])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `backtick_code_blocks`
 
@@ -433,6 +477,8 @@ using this syntax:
 
         Pandoc(Meta({}), [CodeBlock(('mycode', ['haskell', 'numberLines'], [('startFrom', '100')]), 'qsort []     = []\nqsort (x:xs) = qsort (filter (< x) xs) ++ [x] ++\n               qsort (filter (>= x) xs)')])
 
+<!-- prevent container tabs merge -->
+
 Here `mycode` is an identifier, `haskell` and `numberLines` are classes,
 and `startFrom` is an attribute with value `100`. Some output formats
 can use this information to do syntax highlighting. Currently, the only
@@ -455,6 +501,8 @@ will appear as follows:
 
         Pandoc(Meta({}), [RawBlock(Format('html'), '<pre id="mycode" class="haskell numberLines" startFrom="100">\n  <code>\n  ...\n  </code>\n</pre>')])
 
+<!-- prevent container tabs merge -->
+
 The `numberLines` (or `number-lines`) class will cause the lines of the
 code block to be numbered, starting with `1` or the value of the
 `startFrom` attribute. The `lineAnchors` (or `line-anchors`) class will
@@ -473,6 +521,8 @@ block:
 
         Pandoc(Meta({}), [CodeBlock(('', ['haskell'], []), 'qsort [] = []')])
 
+<!-- prevent container tabs merge -->
+
 This is equivalent to:
 
 === "Markdown"
@@ -484,6 +534,8 @@ This is equivalent to:
 === "Python"
 
         Pandoc(Meta({}), [CodeBlock(('', ['haskell'], []), 'qsort [] = []')])
+
+<!-- prevent container tabs merge -->
 
 If the `fenced_code_attributes` extension is disabled, but input
 contains class attribute(s) for the code block, the first class
@@ -517,6 +569,8 @@ formatted as Markdown. This is useful for verse and addresses:
 
         Pandoc(Meta({}), [LineBlock([[Str('The'), Space(), Str('limerick'), Space(), Str('packs'), Space(), Str('laughs'), Space(), Str('anatomical')], [Str('In'), Space(), Str('space'), Space(), Str('that'), Space(), Str('is'), Space(), Str('quite'), Space(), Str('economical.')], [Str('\xa0\xa0\xa0But'), Space(), Str('the'), Space(), Str('good'), Space(), Str('ones'), Space(), Str('I’ve'), Space(), Str('seen')], [Str('\xa0\xa0\xa0So'), Space(), Str('seldom'), Space(), Str('are'), Space(), Str('clean')], [Str('And'), Space(), Str('the'), Space(), Str('clean'), Space(), Str('ones'), Space(), Str('so'), Space(), Str('seldom'), Space(), Str('are'), Space(), Str('comical')]]), LineBlock([[Str('200'), Space(), Str('Main'), Space(), Str('St.')], [Str('Berkeley,'), Space(), Str('CA'), Space(), Str('94718')]])])
 
+<!-- prevent container tabs merge -->
+
 The lines can be hard-wrapped if needed, but the continuation line must
 begin with a space.
 
@@ -530,6 +584,8 @@ begin with a space.
 === "Python"
 
         Pandoc(Meta({}), [LineBlock([[Str('The'), Space(), Str('Right'), Space(), Str('Honorable'), Space(), Str('Most'), Space(), Str('Venerable'), Space(), Str('and'), Space(), Str('Righteous'), Space(), Str('Samuel'), Space(), Str('L.'), Space(), Str('Constable,'), Space(), Str('Jr.')], [Str('200'), Space(), Str('Main'), Space(), Str('St.')], [Str('Berkeley,'), Space(), Str('CA'), Space(), Str('94718')]])])
+
+<!-- prevent container tabs merge -->
 
 Inline formatting (such as emphasis) is allowed in the content, but not
 block-level formatting (such as block quotes or lists).
@@ -554,6 +610,8 @@ begins with a bullet (`*`, `+`, or `-`). Here is a simple example:
 
         Pandoc(Meta({}), [BulletList([[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])])
 
+<!-- prevent container tabs merge -->
+
 This will produce a "compact" list. If you want a "loose" list, in which
 each item is formatted as a paragraph, put spaces between the items:
 
@@ -568,6 +626,8 @@ each item is formatted as a paragraph, put spaces between the items:
 === "Python"
 
         Pandoc(Meta({}), [BulletList([[Para([Str('one')])], [Para([Str('two')])], [Para([Str('three')])]])])
+
+<!-- prevent container tabs merge -->
 
 The bullets need not be flush with the left margin; they may be indented
 one, two, or three spaces. The bullet must be followed by whitespace.
@@ -585,6 +645,8 @@ List items look best if subsequent lines are flush with the first line
 
         Pandoc(Meta({}), [BulletList([[Plain([Str('here'), Space(), Str('is'), Space(), Str('my'), Space(), Str('first'), SoftBreak(), Str('list'), Space(), Str('item.')])], [Plain([Str('and'), Space(), Str('my'), Space(), Str('second.')])]])])
 
+<!-- prevent container tabs merge -->
+
 But Markdown also allows a "lazy" format:
 
 === "Markdown"
@@ -596,6 +658,8 @@ But Markdown also allows a "lazy" format:
 === "Python"
 
         Pandoc(Meta({}), [BulletList([[Plain([Str('here'), Space(), Str('is'), Space(), Str('my'), Space(), Str('first'), SoftBreak(), Str('list'), Space(), Str('item.')])], [Plain([Str('and'), Space(), Str('my'), Space(), Str('second.')])]])])
+
+<!-- prevent container tabs merge -->
 
 ### Block content in list items
 
@@ -619,6 +683,8 @@ marker.
 
         Pandoc(Meta({}), [BulletList([[Para([Str('First'), Space(), Str('paragraph.')]), Para([Str('Continued.')])], [Para([Str('Second'), Space(), Str('paragraph.'), Space(), Str('With'), Space(), Str('a'), Space(), Str('code'), Space(), Str('block,'), Space(), Str('which'), Space(), Str('must'), Space(), Str('be'), Space(), Str('indented'), SoftBreak(), Str('eight'), Space(), Str('spaces:')]), CodeBlock(('', [], []), '{ code }')]])])
 
+<!-- prevent container tabs merge -->
+
 Exception: if the list marker is followed by an indented code block,
 which must begin 5 spaces after the list marker, then subsequent
 paragraphs must begin two columns after the last character of the list
@@ -633,6 +699,8 @@ marker:
 === "Python"
 
         Pandoc(Meta({}), [BulletList([[CodeBlock(('', [], []), 'code'), Plain([Str('continuation'), Space(), Str('paragraph')])]])])
+
+<!-- prevent container tabs merge -->
 
 List items may include other lists. In this case the preceding blank
 line is optional. The nested list must be indented to line up with the
@@ -655,6 +723,8 @@ item.
 
         Pandoc(Meta({}), [BulletList([[Plain([Str('fruits')]), BulletList([[Plain([Str('apples')]), BulletList([[Plain([Str('macintosh')])], [Plain([Str('red'), Space(), Str('delicious')])]])], [Plain([Str('pears')])], [Plain([Str('peaches')])]])], [Plain([Str('vegetables')]), BulletList([[Plain([Str('broccoli')])], [Plain([Str('chard')])]])]])])
 
+<!-- prevent container tabs merge -->
+
 As noted above, Markdown allows you to write list items "lazily,"
 instead of indenting continuation lines. However, if there are multiple
 paragraphs or other blocks in a list item, the first line of each must
@@ -675,6 +745,8 @@ be indented.
 
         Pandoc(Meta({}), [BulletList([[Para([Str('A'), Space(), Str('lazy,'), Space(), Str('lazy,'), Space(), Str('list'), SoftBreak(), Str('item.')])], [Para([Str('Another'), Space(), Str('one;'), Space(), Str('this'), Space(), Str('looks'), SoftBreak(), Str('bad'), Space(), Str('but'), Space(), Str('is'), Space(), Str('legal.')]), Para([Str('Second'), Space(), Str('paragraph'), Space(), Str('of'), Space(), Str('second'), SoftBreak(), Str('list'), Space(), Str('item.')])]])])
 
+<!-- prevent container tabs merge -->
+
 ### Ordered lists
 
 Ordered lists work just like bulleted lists, except that the items begin
@@ -694,6 +766,8 @@ difference between this list:
 
         Pandoc(Meta({}), [OrderedList((1, Decimal(), Period()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])])
 
+<!-- prevent container tabs merge -->
+
 and this one:
 
 === "Markdown"
@@ -705,6 +779,8 @@ and this one:
 === "Python"
 
         Pandoc(Meta({}), [OrderedList((5, Decimal(), Period()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `fancy_lists`
 
@@ -727,6 +803,8 @@ list marker in place of a numeral:
 
         Pandoc(Meta({}), [OrderedList((1, DefaultStyle(), DefaultDelim()), [[Plain([Str('one')])], [Plain([Str('two')])]])])
 
+<!-- prevent container tabs merge -->
+
 #### Extension: `startnum`
 
 Pandoc also pays attention to the type of list marker used, and to the
@@ -748,6 +826,8 @@ roman numerals:
 
         Pandoc(Meta({}), [OrderedList((9, Decimal(), OneParen()), [[Plain([Str('Ninth')])], [Plain([Str('Tenth')])], [Plain([Str('Eleventh')]), OrderedList((1, LowerRoman(), Period()), [[Plain([Str('subone')])], [Plain([Str('subtwo')])], [Plain([Str('subthree')])]])]])])
 
+<!-- prevent container tabs merge -->
+
 Pandoc will start a new list each time a different type of list marker
 is used. So, the following will create three lists:
 
@@ -762,6 +842,8 @@ is used. So, the following will create three lists:
 
         Pandoc(Meta({}), [OrderedList((2, Decimal(), TwoParens()), [[Plain([Str('Two')])], [Plain([Str('Three')])]]), OrderedList((1, Decimal(), Period()), [[Plain([Str('Four')])]]), BulletList([[Plain([Str('Five')])]])])
 
+<!-- prevent container tabs merge -->
+
 If default list markers are desired, use `#.`:
 
 === "Markdown"
@@ -773,6 +855,8 @@ If default list markers are desired, use `#.`:
 === "Python"
 
         Pandoc(Meta({}), [OrderedList((1, DefaultStyle(), DefaultDelim()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `task_lists`
 
@@ -787,6 +871,8 @@ Markdown.
 === "Python"
 
         Pandoc(Meta({}), [BulletList([[Plain([Str('☐'), Space(), Str('an'), Space(), Str('unchecked'), Space(), Str('task'), Space(), Str('list'), Space(), Str('item')])], [Plain([Str('☒'), Space(), Str('checked'), Space(), Str('item')])]])])
+
+<!-- prevent container tabs merge -->
 
 ### Definition lists
 
@@ -814,6 +900,8 @@ extensions.[^2]
 
         Pandoc(Meta({}), [DefinitionList([([Str('Term'), Space(), Str('1')], [[Para([Str('Definition'), Space(), Str('1')])]]), ([Str('Term'), Space(), Str('2'), Space(), Str('with'), Space(), Emph([Str('inline'), Space(), Str('markup')])], [[Para([Str('Definition'), Space(), Str('2')]), CodeBlock(('', [], []), '{ some code, part of Definition 2 }'), Para([Str('Third'), Space(), Str('paragraph'), Space(), Str('of'), Space(), Str('definition'), Space(), Str('2.')])]])])])
 
+<!-- prevent container tabs merge -->
+
 Each term must fit on one line, which may optionally be followed by a
 blank line, and must be followed by one or more definitions. A
 definition begins with a colon or tilde, which may be indented one or
@@ -840,6 +928,8 @@ other block element:
 
         Pandoc(Meta({}), [DefinitionList([([Str('Term'), Space(), Str('1')], [[Para([Str('Definition'), SoftBreak(), Str('with'), Space(), Str('lazy'), Space(), Str('continuation.')]), Para([Str('Second'), Space(), Str('paragraph'), Space(), Str('of'), Space(), Str('the'), Space(), Str('definition.')])]])])])
 
+<!-- prevent container tabs merge -->
+
 If you leave space before the definition (as in the example above), the
 text of the definition will be treated as a paragraph. In some output
 formats, this will mean greater spacing between term/definition pairs.
@@ -858,6 +948,8 @@ definition:
 === "Python"
 
         Pandoc(Meta({}), [DefinitionList([([Str('Term'), Space(), Str('1')], [[Plain([Str('Definition'), Space(), Str('1')])]]), ([Str('Term'), Space(), Str('2')], [[Plain([Str('Definition'), Space(), Str('2a')])], [Plain([Str('Definition'), Space(), Str('2b')])]])])])
+
+<!-- prevent container tabs merge -->
 
 Note that space between items in a definition list is required. (A
 variant that loosens this requirement, but disallows "lazy" hard
@@ -887,6 +979,8 @@ where the last stopped. So, for example:
 
         Pandoc(Meta({}), [OrderedList((1, Example(), TwoParens()), [[Plain([Str('My'), Space(), Str('first'), Space(), Str('example'), Space(), Str('will'), Space(), Str('be'), Space(), Str('numbered'), Space(), Str('(1).')])], [Plain([Str('My'), Space(), Str('second'), Space(), Str('example'), Space(), Str('will'), Space(), Str('be'), Space(), Str('numbered'), Space(), Str('(2).')])]]), Para([Str('Explanation'), Space(), Str('of'), Space(), Str('examples.')]), OrderedList((3, Example(), TwoParens()), [[Plain([Str('My'), Space(), Str('third'), Space(), Str('example'), Space(), Str('will'), Space(), Str('be'), Space(), Str('numbered'), Space(), Str('(3).')])]])])
 
+<!-- prevent container tabs merge -->
+
 Numbered examples can be labeled and referred to elsewhere in the
 document:
 
@@ -899,6 +993,8 @@ document:
 === "Python"
 
         Pandoc(Meta({}), [OrderedList((1, Example(), TwoParens()), [[Plain([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('good'), Space(), Str('example.')])]]), Para([Str('As'), Space(), Str('(1)'), Space(), Str('illustrates,'), Space(), Str('…')])])
+
+<!-- prevent container tabs merge -->
 
 The label can be any string of alphanumeric characters, underscores, or
 hyphens.
@@ -925,6 +1021,8 @@ What if you want to put an indented code block after a list?
 
         Pandoc(Meta({}), [BulletList([[Para([Str('item'), Space(), Str('one')])], [Para([Str('item'), Space(), Str('two')]), Para([Str('{'), Space(), Str('my'), Space(), Str('code'), Space(), Str('block'), Space(), Str('}')])]])])
 
+<!-- prevent container tabs merge -->
+
 Trouble! Here pandoc (like other Markdown implementations) will treat
 `{ my code block }` as the second paragraph of item two, and not as a
 code block.
@@ -946,6 +1044,8 @@ format:
 
         Pandoc(Meta({}), [BulletList([[Plain([Str('item'), Space(), Str('one')])], [Plain([Str('item'), Space(), Str('two')])]]), RawBlock(Format('html'), '<!-- end of list -->'), CodeBlock(('', [], []), '{ my code block }')])
 
+<!-- prevent container tabs merge -->
+
 You can use the same trick if you want two consecutive lists instead of
 one big list:
 
@@ -965,6 +1065,8 @@ one big list:
 
         Pandoc(Meta({}), [OrderedList((1, Decimal(), Period()), [[Plain([Str('one')])], [Plain([Str('two')])], [Plain([Str('three')])]]), RawBlock(Format('html'), '<!-- -->'), OrderedList((1, Decimal(), Period()), [[Plain([Str('uno')])], [Plain([Str('dos')])], [Plain([Str('tres')])]])])
 
+<!-- prevent container tabs merge -->
+
 ## Horizontal rules
 
 A line containing a row of three or more `*`, `-`, or `_` characters
@@ -979,6 +1081,8 @@ A line containing a row of three or more `*`, `-`, or `_` characters
 === "Python"
 
         Pandoc(Meta({}), [HorizontalRule(), HorizontalRule()])
+
+<!-- prevent container tabs merge -->
 
 ## Tables
 
@@ -1012,6 +1116,8 @@ Simple tables look like this:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, [Plain([Str('Demonstration'), Space(), Str('of'), Space(), Str('simple'), Space(), Str('table'), Space(), Str('syntax.')])]), [(AlignRight(), ColWidthDefault()), (AlignLeft(), ColWidthDefault()), (AlignCenter(), ColWidthDefault()), (AlignDefault(), ColWidthDefault())], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Right')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Left')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Center')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Default')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 The header and table rows must each fit on one line. Column alignments
 are determined by the position of the header text relative to the dashed
 line below it:[^3]
@@ -1042,6 +1148,8 @@ end the table. For example:
 === "Python"
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignRight(), ColWidthDefault()), (AlignLeft(), ColWidthDefault()), (AlignCenter(), ColWidthDefault()), (AlignRight(), ColWidthDefault())], TableHead(('', [], []), []), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])])])])], TableFoot(('', [], []), []))])
+
+<!-- prevent container tabs merge -->
 
 When the header row is omitted, column alignments are determined on the
 basis of the first line of the table body. So, in the tables above, the
@@ -1074,6 +1182,8 @@ supported). Here is an example:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, [Plain([Str('Here’s'), Space(), Str('the'), Space(), Str('caption.'), Space(), Str('It,'), Space(), Str('too,'), Space(), Str('may'), Space(), Str('span'), SoftBreak(), Str('multiple'), Space(), Str('lines.')])]), [(AlignCenter(), ColWidth_(0.16666666666666666)), (AlignDefault(), ColWidth_(0.1111111111111111)), (AlignRight(), ColWidth_(0.2222222222222222)), (AlignLeft(), ColWidth_(0.3611111111111111))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Centered'), SoftBreak(), Str('Header')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Default'), SoftBreak(), Str('Aligned')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Right'), SoftBreak(), Str('Aligned')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Left'), SoftBreak(), Str('Aligned')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('First')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('row')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12.0')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Example'), Space(), Str('of'), Space(), Str('a'), Space(), Str('row'), Space(), Str('that'), SoftBreak(), Str('spans'), Space(), Str('multiple'), Space(), Str('lines.')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Second')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('row')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('5.0')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Here’s'), Space(), Str('another'), Space(), Str('one.'), Space(), Str('Note'), SoftBreak(), Str('the'), Space(), Str('blank'), Space(), Str('line'), Space(), Str('between'), SoftBreak(), Str('rows.')])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 These work like simple tables, but with the following differences:
 
 -   They must begin with a row of dashes, before the header text (unless
@@ -1105,6 +1215,8 @@ The header may be omitted in multiline tables as well as simple tables:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, [Plain([Str('Here’s'), Space(), Str('a'), Space(), Str('multiline'), Space(), Str('table'), Space(), Str('without'), Space(), Str('a'), Space(), Str('header.')])]), [(AlignCenter(), ColWidth_(0.16666666666666666)), (AlignLeft(), ColWidth_(0.1111111111111111)), (AlignRight(), ColWidth_(0.2222222222222222)), (AlignLeft(), ColWidth_(0.3611111111111111))], TableHead(('', [], []), []), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('First')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('row')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12.0')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Example'), Space(), Str('of'), Space(), Str('a'), Space(), Str('row'), Space(), Str('that'), SoftBreak(), Str('spans'), Space(), Str('multiple'), Space(), Str('lines.')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Second')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('row')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('5.0')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Here’s'), Space(), Str('another'), Space(), Str('one.'), Space(), Str('Note'), SoftBreak(), Str('the'), Space(), Str('blank'), Space(), Str('line'), Space(), Str('between'), SoftBreak(), Str('rows.')])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 It is possible for a multiline table to have just one row, but the row
 should be followed by a blank line (and then the row of dashes that ends
 the table), or the table may be interpreted as a simple table.
@@ -1131,6 +1243,8 @@ Grid tables look like this:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, [Plain([Str('Sample'), Space(), Str('grid'), Space(), Str('table.')])]), [(AlignDefault(), ColWidth_(0.2222222222222222)), (AlignDefault(), ColWidth_(0.2222222222222222)), (AlignDefault(), ColWidth_(0.2916666666666667))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Fruit')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Price')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Advantages')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Bananas')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('$1.34')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [BulletList([[Plain([Str('built-in'), Space(), Str('wrapper')])], [Plain([Str('bright'), Space(), Str('color')])]])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Oranges')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('$2.10')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [BulletList([[Plain([Str('cures'), Space(), Str('scurvy')])], [Plain([Str('tasty')])]])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 The row of `=`s separates the header from the table body, and can be
 omitted for a headerless table. The cells of grid tables may contain
 arbitrary block elements (multiple paragraphs, code blocks, lists,
@@ -1153,6 +1267,8 @@ the boundaries of the separator line after the header:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignRight(), ColWidth_(0.2222222222222222)), (AlignLeft(), ColWidth_(0.2222222222222222)), (AlignCenter(), ColWidth_(0.2916666666666667))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Right')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Left')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Centered')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Bananas')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('$1.34')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('built-in'), Space(), Str('wrapper')])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 For headerless tables, the colons go on the top line instead:
 
 === "Markdown"
@@ -1164,6 +1280,8 @@ For headerless tables, the colons go on the top line instead:
 === "Python"
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignRight(), ColWidth_(0.2222222222222222)), (AlignLeft(), ColWidth_(0.2222222222222222)), (AlignCenter(), ColWidth_(0.2916666666666667))], TableHead(('', [], []), []), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Right')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Left')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Centered')])])])])], TableFoot(('', [], []), []))])
+
+<!-- prevent container tabs merge -->
 
 ##### Grid Table Limitations
 
@@ -1193,6 +1311,8 @@ Pipe tables look like this:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, [Plain([Str('Demonstration'), Space(), Str('of'), Space(), Str('pipe'), Space(), Str('table'), Space(), Str('syntax.')])]), [(AlignRight(), ColWidthDefault()), (AlignLeft(), ColWidthDefault()), (AlignDefault(), ColWidthDefault()), (AlignCenter(), ColWidthDefault())], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Right')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Left')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Default')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Center')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('12')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('123')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1')])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 The syntax is identical to [PHP Markdown Extra
 tables](https://michelf.ca/projects/php-markdown/extra/#table). The
 beginning and ending pipe characters are optional, but pipes are
@@ -1215,6 +1335,8 @@ perfectly legal (though ugly) pipe table:
 === "Python"
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignDefault(), ColWidthDefault()), (AlignRight(), ColWidthDefault())], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('fruit')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('price')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('apple')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('2.05')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('pear')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('1.37')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('orange')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('3.09')])])])])], TableFoot(('', [], []), []))])
+
+<!-- prevent container tabs merge -->
 
 The cells of pipe tables cannot contain block elements like paragraphs
 and lists, and cannot span multiple lines. If a pipe table contains a
@@ -1241,6 +1363,8 @@ be produced by Emacs' orgtbl-mode:
 
         Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignDefault(), ColWidthDefault()), (AlignDefault(), ColWidthDefault())], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('One')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Two')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('my')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('table')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('is')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('nice')])])])])], TableFoot(('', [], []), []))])
 
+<!-- prevent container tabs merge -->
+
 The difference is that `+` is used instead of `|`. Other orgtbl features
 are not supported. In particular, to get non-default column alignment,
 you'll need to add colons as above.
@@ -1261,6 +1385,8 @@ If the file begins with a title block
 
         Pandoc(Meta({'author': MetaList([MetaInlines([Str('author(s)'), Space(), Str('(separated'), Space(), Str('by'), Space(), Str('semicolons)')])]), 'date': MetaInlines([Str('date')]), 'title': MetaInlines([Str('title')])}), [])
 
+<!-- prevent container tabs merge -->
+
 it will be parsed as bibliographic information, not regular text. (It
 will be used, for example, in the title of standalone LaTeX or HTML
 output.) The block may contain just a title, a title and an author, or
@@ -1276,6 +1402,8 @@ title and a date but no author, you need a blank line:
 
         Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author')])])}), [])
 
+<!-- prevent container tabs merge -->
+
 === "Markdown"
 
         % My title
@@ -1285,6 +1413,8 @@ title and a date but no author, you need a blank line:
 === "Python"
 
         Pandoc(Meta({'author': MetaList([MetaInlines([])]), 'date': MetaInlines([Str('June'), Space(), Str('15,'), Space(), Str('2006')]), 'title': MetaInlines([Str('My'), Space(), Str('title')])}), [])
+
+<!-- prevent container tabs merge -->
 
 The title may occupy multiple lines, but continuation lines must begin
 with leading space, thus:
@@ -1297,6 +1427,8 @@ with leading space, thus:
 === "Python"
 
         Pandoc(Meta({'title': MetaInlines([Str('My'), Space(), Str('title'), SoftBreak(), Str('on'), Space(), Str('multiple'), Space(), Str('lines')])}), [])
+
+<!-- prevent container tabs merge -->
 
 If a document has multiple authors, the authors may be put on separate
 lines with leading space, or separated by semicolons, or both. So, all
@@ -1311,6 +1443,8 @@ of the following are equivalent:
 
         Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One'), SoftBreak(), Str('Author'), Space(), Str('Two')])}), [])
 
+<!-- prevent container tabs merge -->
+
 === "Markdown"
 
         % Author One; Author Two
@@ -1318,6 +1452,8 @@ of the following are equivalent:
 === "Python"
 
         Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One;'), Space(), Str('Author'), Space(), Str('Two')])}), [])
+
+<!-- prevent container tabs merge -->
 
 === "Markdown"
 
@@ -1327,6 +1463,8 @@ of the following are equivalent:
 === "Python"
 
         Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One;'), SoftBreak(), Str('Author'), Space(), Str('Two')])}), [])
+
+<!-- prevent container tabs merge -->
 
 The date must fit on one line.
 
@@ -1360,6 +1498,8 @@ should be used to separate the footer text from the header text. Thus,
 
         Pandoc(Meta({'title': MetaInlines([Str('PANDOC(1)')])}), [])
 
+<!-- prevent container tabs merge -->
+
 will yield a man page with the title `PANDOC` and section 1.
 
 === "Markdown"
@@ -1370,6 +1510,8 @@ will yield a man page with the title `PANDOC` and section 1.
 
         Pandoc(Meta({'title': MetaInlines([Str('PANDOC(1)'), Space(), Str('Pandoc'), Space(), Str('User'), Space(), Str('Manuals')])}), [])
 
+<!-- prevent container tabs merge -->
+
 will also have "Pandoc User Manuals" in the footer.
 
 === "Markdown"
@@ -1379,6 +1521,8 @@ will also have "Pandoc User Manuals" in the footer.
 === "Python"
 
         Pandoc(Meta({'title': MetaInlines([Str('PANDOC(1)'), Space(), Str('Pandoc'), Space(), Str('User'), Space(), Str('Manuals'), Space(), Str('|'), Space(), Str('Version'), Space(), Str('4.0')])}), [])
+
+<!-- prevent container tabs merge -->
 
 will also have "Version 4.0" in the header.
 
@@ -1401,6 +1545,8 @@ Markdown files:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('chap1.md'), Space(), Str('chap2.md'), Space(), Str('chap3.md'), Space(), Str('metadata.yaml'), Space(), Str('-s'), Space(), Str('-o'), Space(), Str('book.html')])])
+
+<!-- prevent container tabs merge -->
 
 Just be sure that the YAML file begins with `---` and ends with `---` or
 `...`.) Alternatively, you can use the `--metadata-file` option. Using
@@ -1455,6 +1601,8 @@ when the field contains blank lines or block-level formatting:
 
         Pandoc(Meta({'abstract': MetaBlocks([Para([Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('abstract.')]), Para([Str('It'), Space(), Str('consists'), Space(), Str('of'), Space(), Str('two'), Space(), Str('paragraphs.')])]), 'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])]), 'keywords': MetaList([MetaInlines([Str('nothing')]), MetaInlines([Str('nothingness')])]), 'title': MetaInlines([Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('title:'), Space(), Str('it'), Space(), Str('contains'), Space(), Str('a'), Space(), Str('colon')])}), [])
 
+<!-- prevent container tabs merge -->
+
 The literal block after the `|` must be indented relative to the line
 containing the `|`. If it is not, the YAML will be invalid and pandoc
 will not interpret it as metadata. For an overview of the complex rules
@@ -1473,6 +1621,8 @@ HTML equivalent of the Markdown in the `abstract` field:
 === "Python"
 
         Pandoc(Meta({}), [RawBlock(Format('html'), '<p>'), Plain([Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('abstract.')]), RawBlock(Format('html'), '</p>'), RawBlock(Format('html'), '<p>'), Plain([Str('It'), Space(), Str('consists'), Space(), Str('of'), Space(), Str('two'), Space(), Str('paragraphs.')]), RawBlock(Format('html'), '</p>')])
+
+<!-- prevent container tabs merge -->
 
 Variables can contain arbitrary YAML structures, but the template must
 match this structure. The `author` variable in the default templates
@@ -1495,6 +1645,8 @@ add an affiliation to the author if one is given:
 
         Pandoc(Meta({'author': MetaList([MetaMap({'affiliation': MetaInlines([Str('University'), Space(), Str('of'), Space(), Str('Somewhere')]), 'name': MetaInlines([Str('Author'), Space(), Str('One')])}), MetaMap({'affiliation': MetaInlines([Str('University'), Space(), Str('of'), Space(), Str('Nowhere')]), 'name': MetaInlines([Str('Author'), Space(), Str('Two')])})]), 'title': MetaInlines([Str('The'), Space(), Str('document'), Space(), Str('title')])}), [])
 
+<!-- prevent container tabs merge -->
+
 To use the structured authors in the example above, you would need a
 custom template:
 
@@ -1511,6 +1663,8 @@ custom template:
 === "Python"
 
         Pandoc(Meta({}), [Para([Math(InlineMath(), 'for(author)'), SoftBreak(), Math(InlineMath(), 'if(author.name)'), SoftBreak(), Math(InlineMath(), 'author.name'), Math(InlineMath(), 'if(author.affiliation)'), Space(), Str('('), Math(InlineMath(), 'author.affiliation'), Str(')'), Math(InlineMath(), 'endif'), SoftBreak(), Math(InlineMath(), 'else'), SoftBreak(), Math(InlineMath(), 'author'), SoftBreak(), Math(InlineMath(), 'endif'), SoftBreak(), Math(InlineMath(), 'endfor')])])
+
+<!-- prevent container tabs merge -->
 
 Raw content to include in the document's header may be specified using
 `header-includes`; however, it is important to mark up this content as
@@ -1530,6 +1684,8 @@ markdown. For example:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('header-includes:'), SoftBreak(), Str('-'), Space(), Str('|'), SoftBreak(), Code(('', [], []), '{=latex}   \\let\\oldsection\\section   \\renewcommand{\\section}[1]{\\clearpage\\oldsection{#1}}')])])
+
+<!-- prevent container tabs merge -->
 
 Note: the `yaml_metadata_block` extension works with `commonmark` as
 well as `markdown` (and it is enabled by default in `gfm` and
@@ -1561,6 +1717,8 @@ would normally indicate formatting. Thus, for example, if one writes
 
         Pandoc(Meta({}), [Para([Emph([Str('*hello*')])])])
 
+<!-- prevent container tabs merge -->
+
 one will get
 
 === "Markdown"
@@ -1570,6 +1728,8 @@ one will get
 === "Python"
 
         Pandoc(Meta({}), [Para([RawInline(Format('html'), '<em>'), Emph([Str('hello')]), RawInline(Format('html'), '</em>')])])
+
+<!-- prevent container tabs merge -->
 
 instead of
 
@@ -1581,6 +1741,8 @@ instead of
 
         Pandoc(Meta({}), [Para([RawInline(Format('html'), '<strong>'), Str('hello'), RawInline(Format('html'), '</strong>')])])
 
+<!-- prevent container tabs merge -->
+
 This rule is easier to remember than standard Markdown's rule, which
 allows only the following characters to be backslash-escaped:
 
@@ -1591,6 +1753,8 @@ allows only the following characters to be backslash-escaped:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('`*_{}'), Link(('', [], []), [], ('', '')), Str('>#+-.!')])])
+
+<!-- prevent container tabs merge -->
 
 (However, if the `markdown_strict` format is used, the standard Markdown
 rule will be used.)
@@ -1625,6 +1789,8 @@ To *emphasize* some text, surround it with `*`s or `_`, like this:
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('text'), Space(), Str('is'), Space(), Emph([Str('emphasized'), Space(), Str('with'), Space(), Str('underscores')]), Str(','), Space(), Str('and'), Space(), Str('this'), SoftBreak(), Str('is'), Space(), Emph([Str('emphasized'), Space(), Str('with'), Space(), Str('asterisks')]), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 Double `*` or `_` produces **strong emphasis**:
 
 === "Markdown"
@@ -1634,6 +1800,8 @@ Double `*` or `_` produces **strong emphasis**:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), Strong([Str('strong'), Space(), Str('emphasis')]), Space(), Str('and'), Space(), Strong([Str('with'), Space(), Str('underscores')]), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 A `*` or `_` character surrounded by spaces, or backslash-escaped, will
 not trigger emphasis:
@@ -1645,6 +1813,8 @@ not trigger emphasis:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), Str('*'), Space(), Str('not'), Space(), Str('emphasized'), Space(), Str('*,'), Space(), Str('and'), Space(), Str('*neither'), Space(), Str('is'), Space(), Str('this*.')])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `intraword_underscores`
 
@@ -1659,6 +1829,8 @@ marker. If you want to emphasize just part of a word, use `*`:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('feas'), Emph([Str('ible')]), Str(','), Space(), Str('not'), Space(), Str('feas'), Emph([Str('able')]), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 ### Strikeout
 
@@ -1675,6 +1847,8 @@ with `~~`. Thus, for example,
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Strikeout([Str('is'), Space(), Str('deleted'), Space(), Str('text.')])])])
 
+<!-- prevent container tabs merge -->
+
 ### Superscripts and subscripts
 
 #### Extension: `superscript`, `subscript`
@@ -1690,6 +1864,8 @@ text by `~` characters. Thus, for example,
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('H'), Subscript([Str('2')]), Str('O'), Space(), Str('is'), Space(), Str('a'), Space(), Str('liquid.'), Space(), Str('2'), Superscript([Str('10')]), Space(), Str('is'), Space(), Str('1024.')])])
+
+<!-- prevent container tabs merge -->
 
 The text between `^...^` or `~...~` may not contain spaces or newlines.
 If the superscripted or subscripted text contains spaces, these spaces
@@ -1710,6 +1886,8 @@ To make a short span of text verbatim, put it inside backticks:
 
         Pandoc(Meta({}), [Para([Str('What'), Space(), Str('is'), Space(), Str('the'), Space(), Str('difference'), Space(), Str('between'), Space(), Code(('', [], []), '>>='), Space(), Str('and'), Space(), Code(('', [], []), '>>'), Str('?')])])
 
+<!-- prevent container tabs merge -->
+
 If the verbatim text includes a backtick, use double backticks:
 
 === "Markdown"
@@ -1719,6 +1897,8 @@ If the verbatim text includes a backtick, use double backticks:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('Here'), Space(), Str('is'), Space(), Str('a'), Space(), Str('literal'), Space(), Str('backtick'), Space(), Code(('', [], []), '`'), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 (The spaces after the opening backticks and before the closing backticks
 will be ignored.)
@@ -1738,6 +1918,8 @@ in verbatim contexts:
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('backslash'), Space(), Str('followed'), Space(), Str('by'), Space(), Str('an'), Space(), Str('asterisk:'), Space(), Code(('', [], []), '\\*'), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 #### Extension: `inline_code_attributes`
 
 Attributes can be attached to verbatim text, just as with [fenced code
@@ -1751,6 +1933,8 @@ blocks](#fenced-code-blocks):
 
         Pandoc(Meta({}), [Para([Code(('', ['haskell'], []), '<$>')])])
 
+<!-- prevent container tabs merge -->
+
 ### Underline
 
 To underline text, use the `underline` class:
@@ -1763,6 +1947,8 @@ To underline text, use the `underline` class:
 
         Pandoc(Meta({}), [Para([Underline([Str('Underline')])])])
 
+<!-- prevent container tabs merge -->
+
 Or, without the `bracketed_spans` extension (but with `native_spans`):
 
 === "Markdown"
@@ -1772,6 +1958,8 @@ Or, without the `bracketed_spans` extension (but with `native_spans`):
 === "Python"
 
         Pandoc(Meta({}), [Para([Underline([Str('Underline')])])])
+
+<!-- prevent container tabs merge -->
 
 This will work in all output formats that support underline.
 
@@ -1787,6 +1975,8 @@ To write small caps, use the `smallcaps` class:
 
         Pandoc(Meta({}), [Para([SmallCaps([Str('Small'), Space(), Str('caps')])])])
 
+<!-- prevent container tabs merge -->
+
 Or, without the `bracketed_spans` extension:
 
 === "Markdown"
@@ -1797,6 +1987,8 @@ Or, without the `bracketed_spans` extension:
 
         Pandoc(Meta({}), [Para([SmallCaps([Str('Small'), Space(), Str('caps')])])])
 
+<!-- prevent container tabs merge -->
+
 For compatibility with other Markdown flavors, CSS is also supported:
 
 === "Markdown"
@@ -1806,6 +1998,8 @@ For compatibility with other Markdown flavors, CSS is also supported:
 === "Python"
 
         Pandoc(Meta({}), [Para([SmallCaps([Str('Small'), Space(), Str('caps')])])])
+
+<!-- prevent container tabs merge -->
 
 This will work in all output formats that support small caps.
 
@@ -1935,6 +2129,8 @@ Markdown. Thus, for example, pandoc will turn
 
         Pandoc(Meta({}), [RawBlock(Format('html'), '<table>'), RawBlock(Format('html'), '<tr>'), RawBlock(Format('html'), '<td>'), Plain([Emph([Str('one')])]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '<td>'), Plain([Link(('', [], []), [Str('a'), Space(), Str('link')], ('https://google.com', ''))]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '</tr>'), RawBlock(Format('html'), '</table>')])
 
+<!-- prevent container tabs merge -->
+
 into
 
 === "Markdown"
@@ -1949,6 +2145,8 @@ into
 === "Python"
 
         Pandoc(Meta({}), [RawBlock(Format('html'), '<table>'), RawBlock(Format('html'), '<tr>'), RawBlock(Format('html'), '<td>'), Plain([RawInline(Format('html'), '<em>'), Str('one'), RawInline(Format('html'), '</em>')]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '<td>'), Plain([RawInline(Format('html'), '<a href="https://google.com">'), Str('a'), Space(), Str('link'), RawInline(Format('html'), '</a>')]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '</tr>'), RawBlock(Format('html'), '</table>')])
+
+<!-- prevent container tabs merge -->
 
 whereas `Markdown.pl` will preserve it as is.
 
@@ -1988,6 +2186,8 @@ use LaTeX to include BibTeX citations:
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('result'), Space(), Str('was'), Space(), Str('proved'), Space(), Str('in'), Space(), RawInline(Format('tex'), '\\cite{jones.1967}'), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 Note that in LaTeX environments, like
 
 === "Markdown"
@@ -2002,6 +2202,8 @@ Note that in LaTeX environments, like
 === "Python"
 
         Pandoc(Meta({}), [RawBlock(Format('tex'), '\\begin{tabular}{|l|l|}\\hline\nAge & Frequency \\\\ \\hline\n18--25  & 15 \\\\\n26--35  & 33 \\\\\n36--45  & 22 \\\\ \\hline\n\\end{tabular}')])
+
+<!-- prevent container tabs merge -->
 
 the material between the begin and end tags will be interpreted as raw
 LaTeX, not as Markdown.
@@ -2031,6 +2233,8 @@ the following produces a raw roff `ms` block:
 
         Pandoc(Meta({}), [RawBlock(Format('ms'), '.MYMACRO\nblah blah')])
 
+<!-- prevent container tabs merge -->
+
 And the following produces a raw `html` inline element:
 
 === "Markdown"
@@ -2040,6 +2244,8 @@ And the following produces a raw `html` inline element:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), RawInline(Format('html'), '<a>html</a>')])])
+
+<!-- prevent container tabs merge -->
 
 This can be useful to insert raw xml into `docx` documents, e.g. a
 pagebreak:
@@ -2057,6 +2263,8 @@ pagebreak:
 === "Python"
 
         Pandoc(Meta({}), [RawBlock(Format('openxml'), '<w:p>\n  <w:r>\n    <w:br w:type="page"/>\n  </w:r>\n</w:p>')])
+
+<!-- prevent container tabs merge -->
 
 The format name should match the target format name (see `-t/--to`,
 above, for a list, or use `pandoc --list-output-formats`). Use `openxml`
@@ -2089,6 +2297,8 @@ not just LaTeX:
 
         Pandoc(Meta({}), [RawBlock(Format('tex'), '\\newcommand{\\tuple}[1]{\\langle #1 \\rangle}'), Para([Math(InlineMath(), '\\langle a, b, c \\rangle')])])
 
+<!-- prevent container tabs merge -->
+
 Note that LaTeX macros will not be applied if they occur inside a raw
 span or block marked with the [`raw_attribute`
 extension](#extension-raw_attribute).
@@ -2120,6 +2330,8 @@ a link:
 
         Pandoc(Meta({}), [Para([Link(('', ['uri'], []), [Str('https://google.com')], ('https://google.com', '')), SoftBreak(), Link(('', ['email'], []), [Str('sam@green.eggs.ham')], ('mailto:sam@green.eggs.ham', ''))])])
 
+<!-- prevent container tabs merge -->
+
 ### Inline links
 
 An inline link consists of the link text in square brackets, followed by
@@ -2135,6 +2347,8 @@ title, in quotes.)
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), Str('an'), Space(), Link(('', [], []), [Str('inline'), Space(), Str('link')], ('/url', '')), Str(','), Space(), Str('and'), Space(), Str('here’s'), Space(), Link(('', [], []), [Str('one'), Space(), Str('with'), SoftBreak(), Str('a'), Space(), Str('title')], ('https://fsf.org', 'click here for a good time!')), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 There can be no space between the bracketed part and the parenthesized
 part. The link text can contain formatting (such as emphasis), but the
 title cannot.
@@ -2149,6 +2363,8 @@ prefixed with `mailto`:
 === "Python"
 
         Pandoc(Meta({}), [Para([Link(('', [], []), [Str('Write'), Space(), Str('me!')], ('mailto:sam@green.eggs.ham', ''))])])
+
+<!-- prevent container tabs merge -->
 
 ### Reference links
 
@@ -2178,6 +2394,8 @@ Here are some examples:
 
         Pandoc(Meta({}), [])
 
+<!-- prevent container tabs merge -->
+
 The URL may optionally be surrounded by angle brackets:
 
 === "Markdown"
@@ -2187,6 +2405,8 @@ The URL may optionally be surrounded by angle brackets:
 === "Python"
 
         Pandoc(Meta({}), [])
+
+<!-- prevent container tabs merge -->
 
 The title may go on the next line:
 
@@ -2198,6 +2418,8 @@ The title may go on the next line:
 === "Python"
 
         Pandoc(Meta({}), [])
+
+<!-- prevent container tabs merge -->
 
 Note that link labels are not case sensitive. So, this will work:
 
@@ -2211,6 +2433,8 @@ Note that link labels are not case sensitive. So, this will work:
 
         Pandoc(Meta({}), [Para([Str('Here'), Space(), Str('is'), Space(), Link(('', [], []), [Str('my'), Space(), Str('link')], ('/bar/baz', ''))])])
 
+<!-- prevent container tabs merge -->
+
 In an *implicit* reference link, the second pair of brackets is empty:
 
 === "Markdown"
@@ -2222,6 +2446,8 @@ In an *implicit* reference link, the second pair of brackets is empty:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('See'), Space(), Link(('', [], []), [Str('my'), Space(), Str('website')], ('http://foo.bar.baz', '')), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 Note: In `Markdown.pl` and most other Markdown implementations,
 reference link definitions cannot occur in nested constructions such as
@@ -2239,6 +2465,8 @@ other implementations:
 
         Pandoc(Meta({}), [BlockQuote([Para([Str('My'), Space(), Str('block'), Space(), Link(('', [], []), [Str('quote')], ('/foo', '')), Str('.')])])])
 
+<!-- prevent container tabs merge -->
+
 #### Extension: `shortcut_reference_links`
 
 In a *shortcut* reference link, the second pair of brackets may be
@@ -2254,6 +2482,8 @@ omitted entirely:
 
         Pandoc(Meta({}), [Para([Str('See'), Space(), Link(('', [], []), [Str('my'), Space(), Str('website')], ('http://foo.bar.baz', '')), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 ### Internal links
 
 To link to another section of the same document, use the automatically
@@ -2268,6 +2498,8 @@ For example:
 
         Pandoc(Meta({}), [Para([Str('See'), Space(), Str('the'), Space(), Link(('', [], []), [Str('Introduction')], ('#introduction', '')), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 or
 
 === "Markdown"
@@ -2279,6 +2511,8 @@ or
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('See'), Space(), Str('the'), Space(), Link(('', [], []), [Str('Introduction')], ('#introduction', '')), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 Internal links are currently supported for HTML formats (including HTML
 slide shows and EPUB), LaTeX, and ConTeXt.
@@ -2300,6 +2534,8 @@ link text will be used as the image's alt text:
 
         Pandoc(Meta({}), [Para([Image(('', [], []), [Str('la'), Space(), Str('lune')], ('lalune.jpg', 'fig:Voyage to the moon'))]), Para([Image(('', [], []), [Str('movie'), Space(), Str('reel')], ('movie.gif', 'fig:'))])])
 
+<!-- prevent container tabs merge -->
+
 #### Extension: `implicit_figures`
 
 An image with nonempty alt text, occurring by itself in a paragraph,
@@ -2313,6 +2549,8 @@ be used as the caption.
 === "Python"
 
         Pandoc(Meta({}), [Para([Image(('', [], []), [Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('caption')], ('/url/of/image.png', 'fig:'))])])
+
+<!-- prevent container tabs merge -->
 
 How this is rendered depends on the output format. Some output formats
 (e.g. RTF) do not yet support figures. In those formats, you'll just get
@@ -2329,6 +2567,8 @@ nonbreaking space after the image:
 === "Python"
 
         Pandoc(Meta({}), [Para([Image(('', [], []), [Str('This'), Space(), Str('image'), Space(), Str('won’t'), Space(), Str('be'), Space(), Str('a'), Space(), Str('figure')], ('/url/of/image.png', '')), LineBreak()])])
+
+<!-- prevent container tabs merge -->
 
 Note that in reveal.js slide shows, an image in a paragraph by itself
 that has the `stretch` class will fill the screen, and the caption and
@@ -2348,6 +2588,8 @@ Attributes can be set on links and images:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('An'), Space(), Str('inline'), Space(), Image(('id', ['class'], [('width', '30'), ('height', '20px')]), [Str('image')], ('foo.jpg', '')), SoftBreak(), Str('and'), Space(), Str('a'), Space(), Str('reference'), Space(), Image(('id', ['class'], [('key', 'val'), ('key2', 'val 2')]), [Str('image')], ('foo.jpg', 'optional title')), Space(), Str('with'), Space(), Str('attributes.')])])
+
+<!-- prevent container tabs merge -->
 
 (This syntax is compatible with [PHP Markdown
 Extra](https://michelf.ca/projects/php-markdown/extra/) when only `#id`
@@ -2372,6 +2614,8 @@ unit. For example:
 === "Python"
 
         Pandoc(Meta({}), [Para([Image(('', [], [('width', '50%')]), [], ('file.jpg', ''))])])
+
+<!-- prevent container tabs merge -->
 
 -   Dimensions may be converted to a form that is compatible with the
     output format (for example, dimensions given in pixels will be
@@ -2429,6 +2673,8 @@ Example:
 
         Pandoc(Meta({}), [Div(('special', ['sidebar'], []), [Para([Str('Here'), Space(), Str('is'), Space(), Str('a'), Space(), Str('paragraph.')]), Para([Str('And'), Space(), Str('another.')])])])
 
+<!-- prevent container tabs merge -->
+
 Fenced divs can be nested. Opening fences are distinguished because they
 *must* have attributes:
 
@@ -2445,6 +2691,8 @@ Fenced divs can be nested. Opening fences are distinguished because they
 === "Python"
 
         Pandoc(Meta({}), [Div(('', ['Warning'], []), [Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('warning.')]), Div(('', ['Danger'], []), [Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('warning'), Space(), Str('within'), Space(), Str('a'), Space(), Str('warning.')])])])])
+
+<!-- prevent container tabs merge -->
 
 Fences without attributes are always closing fences. Unlike with fenced
 code blocks, the number of colons in the closing fence need not match
@@ -2465,6 +2713,8 @@ attributes:
 === "Python"
 
         Pandoc(Meta({}), [Para([Span(('', ['class'], [('key', 'val')]), [Str('This'), Space(), Str('is'), Space(), Emph([Str('some'), Space(), Str('text')])])])])
+
+<!-- prevent container tabs merge -->
 
 ## Footnotes
 
@@ -2496,6 +2746,8 @@ Pandoc's Markdown allows footnotes, using the following syntax:
 
         Pandoc(Meta({}), [Para([Str('Here'), Space(), Str('is'), Space(), Str('a'), Space(), Str('footnote'), Space(), Str('reference,'), Note([Para([Str('Here'), Space(), Str('is'), Space(), Str('the'), Space(), Str('footnote.')])]), Space(), Str('and'), Space(), Str('another.'), Note([Para([Str('Here’s'), Space(), Str('one'), Space(), Str('with'), Space(), Str('multiple'), Space(), Str('blocks.')]), Para([Str('Subsequent'), Space(), Str('paragraphs'), Space(), Str('are'), Space(), Str('indented'), Space(), Str('to'), Space(), Str('show'), Space(), Str('that'), Space(), Str('they'), SoftBreak(), Str('belong'), Space(), Str('to'), Space(), Str('the'), Space(), Str('previous'), Space(), Str('footnote.')]), CodeBlock(('', [], []), '{ some.code }'), Para([Str('The'), Space(), Str('whole'), Space(), Str('paragraph'), Space(), Str('can'), Space(), Str('be'), Space(), Str('indented,'), Space(), Str('or'), Space(), Str('just'), Space(), Str('the'), Space(), Str('first'), SoftBreak(), Str('line.'), Space(), Str('In'), Space(), Str('this'), Space(), Str('way,'), Space(), Str('multi-paragraph'), Space(), Str('footnotes'), Space(), Str('work'), Space(), Str('like'), SoftBreak(), Str('multi-paragraph'), Space(), Str('list'), Space(), Str('items.')])])]), Para([Str('This'), Space(), Str('paragraph'), Space(), Str('won’t'), Space(), Str('be'), Space(), Str('part'), Space(), Str('of'), Space(), Str('the'), Space(), Str('note,'), Space(), Str('because'), Space(), Str('it'), SoftBreak(), Str('isn’t'), Space(), Str('indented.')])])
 
+<!-- prevent container tabs merge -->
+
 The identifiers in footnote references may not contain spaces, tabs, or
 newlines. These identifiers are used only to correlate the footnote
 reference with the note itself; in the output, footnotes will be
@@ -2521,6 +2773,8 @@ cannot contain multiple paragraphs). The syntax is as follows:
 
         Pandoc(Meta({}), [Para([Str('Here'), Space(), Str('is'), Space(), Str('an'), Space(), Str('inline'), Space(), Str('note.'), Note([Para([Str('Inlines'), Space(), Str('notes'), Space(), Str('are'), Space(), Str('easier'), Space(), Str('to'), Space(), Str('write,'), Space(), Str('since'), SoftBreak(), Str('you'), Space(), Str('don’t'), Space(), Str('have'), Space(), Str('to'), Space(), Str('pick'), Space(), Str('an'), Space(), Str('identifier'), Space(), Str('and'), Space(), Str('move'), Space(), Str('down'), Space(), Str('to'), Space(), Str('type'), Space(), Str('the'), SoftBreak(), Str('note.')])])])])
 
+<!-- prevent container tabs merge -->
+
 Inline and regular footnotes may be mixed freely.
 
 ## Citation syntax
@@ -2539,6 +2793,8 @@ semicolons separating distinct items:
 
         Pandoc(Meta({}), [Para([Str('Blah'), Space(), Str('blah'), Space(), Cite([Citation('doe99', [], [], NormalCitation(), 1, 0), Citation('smith2000', [], [], NormalCitation(), 1, 0), Citation('smith2004', [], [], NormalCitation(), 1, 0)], [Str('[@doe99;'), Space(), Str('@smith2000;'), Space(), Str('@smith2004]')]), Str('.')])])
 
+<!-- prevent container tabs merge -->
+
 How this is rendered depends on the citation style. In an author-date
 style, it might render as
 
@@ -2549,6 +2805,8 @@ style, it might render as
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('Blah'), Space(), Str('blah'), Space(), Str('(Doe'), Space(), Str('1999,'), Space(), Str('Smith'), Space(), Str('2000,'), Space(), Str('2004).')])])
+
+<!-- prevent container tabs merge -->
 
 In a footnote style, it might render as
 
@@ -2563,6 +2821,8 @@ In a footnote style, it might render as
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('Blah'), Space(), Str('blah.'), Note([Para([Str('John'), Space(), Str('Doe,'), Space(), Quoted(DoubleQuote(), [Str('Frogs,')]), Space(), Emph([Str('Journal'), Space(), Str('of'), Space(), Str('Amphibians')]), Space(), Str('44'), Space(), Str('(1999);'), SoftBreak(), Str('Susan'), Space(), Str('Smith,'), Space(), Quoted(DoubleQuote(), [Str('Flies,')]), Space(), Emph([Str('Journal'), Space(), Str('of'), Space(), Str('Insects')]), Space(), Str('(2000);'), SoftBreak(), Str('Susan'), Space(), Str('Smith,'), Space(), Quoted(DoubleQuote(), [Str('Bees,')]), Space(), Emph([Str('Journal'), Space(), Str('of'), Space(), Str('Insects')]), Space(), Str('(2004).')])])])])
+
+<!-- prevent container tabs merge -->
 
 See the [CSL user documentation](https://citationstyles.org/authors/)
 for more information about CSL styles and how they affect rendering.
@@ -2588,6 +2848,8 @@ In
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('Blah'), Space(), Str('blah'), Space(), Cite([Citation('doe99', [Str('see')], [Str(','), Space(), Str('pp.\xa033-35'), Space(), Str('and'), Space(), Emph([Str('passim')])], NormalCitation(), 1, 0), Citation('smith04', [], [Str(','), Space(), Str('chap.\xa01')], NormalCitation(), 1, 0)], [Str('[see'), Space(), Str('@doe99,'), Space(), Str('pp.'), Space(), Str('33-35'), Space(), Str('and'), Space(), Str('*passim*;'), Space(), Str('@smith04,'), Space(), Str('chap.'), Space(), Str('1]')]), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 The first item (`doe99`) has prefix `see`, locator `pp.  33-35`, and
 suffix `and *passim*`. The second item (`smith04`) has locator `chap. 1`
@@ -2620,6 +2882,8 @@ prepending curly braces:
 
         Pandoc(Meta({}), [Para([Cite([Citation('smith', [], [Str('{ii,'), Space(), Str('A,'), Space(), Str('D-Z},'), Space(), Str('with'), Space(), Str('a'), Space(), Str('suffix')], NormalCitation(), 1, 0)], [Str('[@smith{ii,'), Space(), Str('A,'), Space(), Str('D-Z},'), Space(), Str('with'), Space(), Str('a'), Space(), Str('suffix]')]), SoftBreak(), Cite([Citation('smith', [], [Str(','), Space(), Str('{pp.\xa0iv,'), Space(), Str('vi-xi,'), Space(), Str('(xv)-(xvii)}'), Space(), Str('with'), Space(), Str('suffix'), Space(), Str('here')], NormalCitation(), 2, 0)], [Str('[@smith,'), Space(), Str('{pp.'), Space(), Str('iv,'), Space(), Str('vi-xi,'), Space(), Str('(xv)-(xvii)}'), Space(), Str('with'), Space(), Str('suffix'), Space(), Str('here]')]), SoftBreak(), Cite([Citation('smith', [], [Str('{},'), Space(), Str('99'), Space(), Str('years'), Space(), Str('later')], NormalCitation(), 3, 0)], [Str('[@smith{},'), Space(), Str('99'), Space(), Str('years'), Space(), Str('later]')])])])
 
+<!-- prevent container tabs merge -->
+
 A minus sign (`-`) before the `@` will suppress mention of the author in
 the citation. This can be useful when the author is already mentioned in
 the text:
@@ -2631,6 +2895,8 @@ the text:
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('Smith'), Space(), Str('says'), Space(), Str('blah'), Space(), Cite([Citation('smith04', [], [], SuppressAuthor(), 1, 0)], [Str('[-@smith04]')]), Str('.')])])
+
+<!-- prevent container tabs merge -->
 
 You can also write an author-in-text citation, by omitting the square
 brackets:
@@ -2644,6 +2910,8 @@ brackets:
 === "Python"
 
         Pandoc(Meta({}), [Para([Cite([Citation('smith04', [], [], AuthorInText(), 1, 0)], [Str('@smith04')]), Space(), Str('says'), Space(), Str('blah.')]), Para([Cite([Citation('smith04', [], [Str('p.\xa033')], AuthorInText(), 2, 0)], [Str('@smith04'), Space(), Str('[p.'), Space(), Str('33]')]), Space(), Str('says'), Space(), Str('blah.')])])
+
+<!-- prevent container tabs merge -->
 
 This will cause the author's name to be rendered, followed by the
 bibliographical details. Use this form when you want to make the
@@ -2685,6 +2953,8 @@ in `chap2/text.md` refer to `chap2/spider.jpg`. To do this, use
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('chap'), Emph([Str('/')]), Str('.md'), Space(), Str('-f'), Space(), Str('markdown+rebase_relative_paths')])])
+
+<!-- prevent container tabs merge -->
 
 Without this extension, you would have to use
 `![image](chap1/spider.jpg)` in `chap1/text.md` and
@@ -2761,6 +3031,8 @@ example,
 
         Pandoc(Meta({}), [Para([Str('[foo]'), Space(), Str('[bar].')])])
 
+<!-- prevent container tabs merge -->
+
 #### Extension: `hard_line_breaks`
 
 Causes all newlines within a paragraph to be interpreted as hard line
@@ -2822,6 +3094,8 @@ style title block at the top of the document, for example:
 
         Pandoc(Meta({}), [Para([Str('Title:'), Space(), Str('My'), Space(), Str('title'), SoftBreak(), Str('Author:'), Space(), Str('John'), Space(), Str('Doe'), SoftBreak(), Str('Date:'), Space(), Str('September'), Space(), Str('1,'), Space(), Str('2008'), SoftBreak(), Str('Comment:'), Space(), Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('sample'), Space(), Str('mmd'), Space(), Str('title'), Space(), Str('block,'), Space(), Str('with'), SoftBreak(), Str('a'), Space(), Str('field'), Space(), Str('spanning'), Space(), Str('multiple'), Space(), Str('lines.')])])
 
+<!-- prevent container tabs merge -->
+
 See the MultiMarkdown documentation for details. If `pandoc_title_block`
 or `yaml_metadata_block` is enabled, it will take precedence over
 `mmd_title_block`.
@@ -2837,6 +3111,8 @@ Parses PHP Markdown Extra abbreviation keys, like
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('*[HTML]:'), Space(), Str('Hypertext'), Space(), Str('Markup'), Space(), Str('Language')])])
+
+<!-- prevent container tabs merge -->
 
 Note that the pandoc document model does not support abbreviations, so
 if this extension is enabled, abbreviation keys are simply skipped (as
@@ -2863,6 +3139,8 @@ references. This extension should not be confused with the
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('reference'), Space(), Str('[image][ref]'), Space(), Str('with'), Space(), Str('multimarkdown'), Space(), Str('attributes.')]), Para([Str('[ref]:'), Space(), Str('https://path.to/image'), Space(), Quoted(DoubleQuote(), [Str('Image'), Space(), Str('title')]), Space(), Str('width=20px'), Space(), Str('height=30px'), SoftBreak(), Str('id=myId'), Space(), Str('class='), Quoted(DoubleQuote(), [Str('myClass1'), Space(), Str('myClass2')])])])
+
+<!-- prevent container tabs merge -->
 
 #### Extension: `mmd_header_identifiers`
 
@@ -2910,6 +3188,8 @@ sequence that follows. For example:
 
         Pandoc(Meta({}), [Para([Str('x^2'), Space(), Str('='), Space(), Str('4')])])
 
+<!-- prevent container tabs merge -->
+
 or
 
 === "Markdown"
@@ -2919,6 +3199,8 @@ or
 === "Python"
 
         Pandoc(Meta({}), [Para([Str('Oxygen'), Space(), Str('is'), Space(), Str('O~2.')])])
+
+<!-- prevent container tabs merge -->
 
 ## Markdown variants
 
@@ -2944,6 +3226,8 @@ enabled by default, you can use the command
 
         Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('–list-extensions=FORMAT')])])
 
+<!-- prevent container tabs merge -->
+
 where `FORMAT` is replaced with the name of the format.
 
 Note that the list of extensions for `commonmark`, `gfm`, and
@@ -2962,6 +3246,8 @@ it is enabled by default and cannot be disabled.
 
             Pandoc(Meta({}), [Para([Str('B.'), Space(), Str('Russell'), Space(), Str('was'), Space(), Str('an'), Space(), Str('English'), Space(), Str('philosopher.')])])
 
+    <!-- prevent container tabs merge -->
+
     do not get treated as list items.
 
     This rule will not prevent
@@ -2974,6 +3260,8 @@ it is enabled by default and cannot be disabled.
 
             Pandoc(Meta({}), [OrderedList((3, UpperAlpha(), TwoParens()), [[Plain([Str('2007'), Space(), Str('Joe'), Space(), Str('Smith')])]])])
 
+    <!-- prevent container tabs merge -->
+
     from being interpreted as a list item. In this case, a backslash
     escape can be used:
 
@@ -2984,6 +3272,8 @@ it is enabled by default and cannot be disabled.
     === "Python"
 
             Pandoc(Meta({}), [Para([Str('(C)'), Space(), Str('2007'), Space(), Str('Joe'), Space(), Str('Smith')])])
+
+    <!-- prevent container tabs merge -->
 
 [^2]: I have been influenced by the suggestions of [David
     Wheeler](https://justatheory.com/2009/02/modest-markdown-proposal/).
@@ -3005,6 +3295,8 @@ it is enabled by default and cannot be disabled.
     === "Python"
 
             Pandoc(Meta({}), [DefinitionList([([Str('bar')], [[Plain([Str('definition'), SoftBreak(), Str('foo')])], [Plain([Str('definition')])]])])])
+
+    <!-- prevent container tabs merge -->
 
     Is this a single list item with two definitions of "bar," the first
     of which is lazily wrapped, or two list items? To remove the
