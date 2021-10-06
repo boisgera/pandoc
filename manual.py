@@ -6,17 +6,21 @@ from urllib.request import urlopen
 # Pandoc
 import pandoc
 from pandoc.types import (
+    BulletList,
     CodeBlock,
+    DefinitionList,
     DoubleQuote,
     Format,
     Header,
     Meta,
     Pandoc,
     Para,
+    Plain,
     Quoted,
     RawBlock,
     Space,
     Str,
+    Strong,
 )
 
 # ------------------------------------------------------------------------------
@@ -50,6 +54,24 @@ for block in blocks:
 # ------------------------------------------------------------------------------
 reference = pandoc.read(f"**Source:** <{URL}>")[1]
 new_doc[1][1:1] = reference
+
+# Manage definition lists
+# ------------------------------------------------------------------------------
+found = []
+for elt, path in pandoc.iter(new_doc, path=True):
+    if isinstance(elt, DefinitionList):
+        found.append(path[-1])
+
+for holder, i in reversed(found):
+    definition_list = holder[i]
+    list_of_blocks = []
+    for term, definitions in definition_list[0]:
+        # definitions is a list of list of blocks (several defs are possible)
+        assert len(definitions) == 1 # document-dependent
+        blocks = [Plain([Strong(term + [Str(".")])])] + definitions[0]
+        list_of_blocks.append(blocks)
+
+    holder[i] = BulletList(list_of_blocks)
 
 # Massage code blocks
 # ------------------------------------------------------------------------------
