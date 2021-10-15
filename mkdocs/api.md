@@ -17,27 +17,26 @@ from pandoc.types import *
 ???+ note "`pandoc.read(source=None, file=None, format=None, options=None)`"
     Read a source document.
 
+    The source document must be specified by either `source` or `file`.
+    Implicitly, the document format is inferred from the filename extension
+    when possible[^heuristics], otherwise the markdown format is assumed
+    by default; the format can also be specified explicitly.
+    Extra options can be passed to the pandoc command-line tool.
+
+
     <h5>Arguments</h5>
 
-    The source document must be specified by either `source` or `file`:
 
       - `source`: the document content, as a string or as utf-8 encoded bytes.
       
-      - `file`: the document, provided as file or as a filename.
-
-    Implicitly, the document format is inferred from the filename extension
-    when possible[^heuristics]. Otherwise the markdown format is assumed
-    by default. It can also be specified explicitly:
+      - `file`: the document, provided as a file or filename.
 
     [^heuristics]: refer to [Pandoc's heuristics](https://github.com/jgm/pandoc/blob/master/src/Text/Pandoc/App/FormatHeuristics.hs) for the gory details of this inference.
 
-      - `format`: the source document format (a string such as `"markdown"`, `"odt"`, `"docx"`, `"html"`, etc.)
+      - `format`: the document format (such as `"markdown"`, `"odt"`, `"docx"`, `"html"`, etc.)
 
         Refer to [Pandoc's README](https://github.com/jgm/pandoc#pandoc) for
         the list of supported input formats.
-
-    Extra options can be passed to the pandoc command-line tool that 
-    performs the read.
 
       - `options`: additional pandoc options (a list of strings).
 
