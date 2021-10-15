@@ -155,9 +155,16 @@ from pandoc.types import *
     Use alternate (text or binary) output formats:
 
     ``` pycon
-    >>> pandoc.write(doc, format="html") # html output
-    '<p>Hello world!</p>\n'
-    >>> pandoc.write(doc, format="odt") # doctest: +ELLIPSIS
+    >>> output = pandoc.write(doc, format="html") # html output
+    >>> type(output)
+    <class 'str'>
+    >>> print(output)
+    <p>Hello world!</p>
+    <BLANKLINE>
+    >>> output = pandoc.write(doc, format="odt")
+    >>> type(output)
+    <class 'bytes'>
+    >>> output # doctest: +ELLIPSIS
     b'PK...'
     ```
 
