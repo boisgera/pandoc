@@ -70,13 +70,13 @@ def tweak(src):
     python, sep, start, end, code = False, None, None, None, []
     for i, line in enumerate(lines):
         if ( # match at least three backquotes, optional space, then python or pycon
-            re.match(r"(`|~){3,}\s*py(c|th)on", line)
+            re.match(r"\s*(`|~){3,}\s*py(c|th)on", line)
         ):
-            sep = line[0] ; assert sep in "`~"
+            sep = line.strip()[0] ; assert sep in "`~"
             start = i
             code.append("")
             python = True
-        elif python is True and line.startswith(3*sep):
+        elif python is True and 3*sep in line:
             sep = None
             end = i + 1
             code.append("")
