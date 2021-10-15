@@ -354,12 +354,8 @@ without them.
     That would be a lousy pattern matching practice **but** also a handy
     type checking construct.
 
-    ``` pycon
-    #>>> isinstance(("text", "text"), Target) # doctest: +ELLIPSIS
-    #Traceback (most recent call last):
-    #...
-    #TypeError: ...
-    ```
+    `isinstance(("text", "text"), Target)` ???
+
 
 To mimick closely the original Haskell type hierarchy, we also define aliases 
 for some Python primitive types. For example, the `Text` type used in the `Str` 
