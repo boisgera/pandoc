@@ -125,24 +125,31 @@ from pandoc.types import *
     >>> doc = pandoc.read("Hello world!")
     >>> doc
     Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
-    >>> pandoc.write(doc) # markdown output
-    'Hello world!\n'
+    >>> print(pandoc.write(doc)) # markdown output
+    Hello world!
+    <BLANKLINE>
     ```
 
     Write document fragments to markdown strings:
 
     ``` pycon
-    >>> pandoc.write(Str("Hello!"))
-    'Hello!\n'
-    >>> pandoc.write([Str('Hello'), Space(), Str('world!')])
-    'Hello world!\n'
-    >>> pandoc.write(Para([Str('Hello'), Space(), Str('world!')]))
-    'Hello world!\n'
-    >>> pandoc.write([
+    >>> print(pandoc.write(Str("Hello!")))
+    Hello!
+    <BLANKLINE>
+    >>> print(pandoc.write([Str('Hello'), Space(), Str('world!')]))
+    Hello world!
+    <BLANKLINE>
+    >>> print(pandoc.write(Para([Str('Hello'), Space(), Str('world!')])))
+    Hello world!
+    <BLANKLINE>
+    >>> print(pandoc.write([
     ...     Para([Str('Hello'), Space(), Str('world!')]),
     ...     Para([Str('Hello'), Space(), Str('world!')])
-    ... ])
-    'Hello world!\n\nHello world!\n'
+    ... ]))
+    Hello world!
+    <BLANKLINE>
+    Hello world!
+    <BLANKLINE>
     ```
 
     Use alternate (text or binary) output formats:
