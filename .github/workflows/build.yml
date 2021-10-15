@@ -24,7 +24,7 @@ jobs:
         run: python setup.py install
 
       - name: Test Python pandoc
-        run: python test.py -v
+        run: python test.py
 
       - name: Build documentation
         if: matrix.os == 'ubuntu-20.04'
