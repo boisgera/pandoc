@@ -14,7 +14,7 @@ from pandoc.types import *
 ```
 
 
-???+ note "`pandoc.read(source=None, file=None, format=None, options=None)`"
+??? note "`pandoc.read(source=None, file=None, format=None, options=None)`"
     Read a source document.
 
     The source document must be specified by either `source` or `file`.
@@ -82,8 +82,8 @@ from pandoc.types import *
     ```
     
 
-???+ note "`pandoc.write(doc, file=None, format=None, options=None)`"
-    Write a pandoc document or document fragment to a file.
+??? note "`pandoc.write(doc, file=None, format=None, options=None)`"
+    Write a pandoc document (or document fragment) to a file.
 
     The function always returns the file contents.
     The output for document fragment has empty metadata; 
@@ -197,3 +197,114 @@ from pandoc.types import *
     </body>
     </html>
     ```
+
+??? note "`pandoc.iter(elt, path=False)`"
+
+    Iterate on document elements in document order.
+    
+    <h5>Arguments</h5>
+
+      - `elt`: a pandoc item (or more generally any Python object),
+
+      - `path`: a boolean; defaults to `False`.
+
+    <h5>Returns</h5>
+
+      - `iterator`: a depth-first tree iterator.
+
+      - `elt_path` (when `path==True`): a list of `(elt, index)` pairs. 
+      
+    <h5>Usage</h5>
+
+    This iterator may be used as a general-purpose tree iterator
+
+    ``` pycon
+    >>> tree = [1, [2, [3]]]
+    >>> for elt in pandoc.iter(tree):
+    ...     print(elt)
+    [1, [2, [3]]]
+    1
+    [2, [3]]
+    2
+    [3]
+    3
+    ```
+
+    Non-iterable objects yield themselves:
+
+    ``` pycon
+    >>> root = 1
+    >>> for elt in pandoc.iter(root):
+    ...     print(elt)
+    1
+    ```
+
+    But it is really meant to be used with pandoc objects:
+
+    ``` pycon
+    >>> doc = Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+    >>> for elt in pandoc.iter(doc):
+    ...     print(elt)
+    Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+    Meta({})
+    {}
+    [Para([Str('Hello'), Space(), Str('world!')])]
+    Para([Str('Hello'), Space(), Str('world!')])
+    [Str('Hello'), Space(), Str('world!')]
+    Str('Hello')
+    Hello
+    Space()
+    Str('world!')
+    world!
+    ```
+
+    Two gotchas: characters in strings are not iterated (strings are considered
+    "atomic")
+
+    ``` pycon
+    >>> root = "Hello world!"
+    >>> for elt in pandoc.iter(root):
+    ...     print(elt)
+    Hello world!
+    ```
+
+    and dicts yield their key-value pairs (and not only their keys):
+
+    ``` pycon
+    >>> root = {"a": 1, "b": 2}
+    >>> for elt in pandoc.iter(root):
+    ...      print(elt)
+    {'a': 1, 'b': 2}
+    ('a', 1)
+    a
+    1
+    ('b', 2)
+    b
+    2
+    ```
+
+    Use `path=True` when you need to locate the element in the document.
+    You can get the element parent and index within this parent as `path[-1]`,
+    the grand-parent and the index of the parent within the grand-parent 
+    as `path[-2]`, etc. up to the document root.
+
+    ``` pycon
+    >>> doc = Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+    >>> world = Str("world!")
+    >>> for elt, path in pandoc.iter(doc, path=True): # find the path to Str("world!")
+    ...     if elt == world:
+    ...         break
+    >>> for elt, index in path:
+    ...     print(f"At index {index} in {elt}:")
+    ... else:
+    ...     print(world)
+    At index 1 in Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])]):
+    At index 0 in [Para([Str('Hello'), Space(), Str('world!')])]:
+    At index 0 in Para([Str('Hello'), Space(), Str('world!')]):
+    At index 2 in [Str('Hello'), Space(), Str('world!')]:
+    Str('world!')
+    ```
+
+    <h5>See also</h5>
+
+    For more details, refer to the [Tree iteration section](http://127.0.0.1:8000/iteration/#tree-iteration).
