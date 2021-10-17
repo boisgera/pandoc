@@ -63,7 +63,7 @@ for key in sorted(td):
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
 {type_sig}
     ```
 

@@ -329,7 +329,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     AlignCenter()
     ```
 
@@ -343,7 +343,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     AlignDefault()
     ```
 
@@ -357,7 +357,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     AlignLeft()
     ```
 
@@ -371,7 +371,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     AlignRight()
     ```
 
@@ -385,7 +385,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Alignment = AlignLeft()
               | AlignRight()
               | AlignCenter()
@@ -404,7 +404,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Attr = (Text, [Text], [(Text, Text)])
     ```
 
@@ -420,7 +420,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     AuthorInText()
     ```
 
@@ -434,7 +434,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Block = Plain([Inline])
           | Para([Inline])
           | LineBlock([[Inline]])
@@ -463,7 +463,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     BlockQuote([Block])
     ```
 
@@ -479,7 +479,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     bool
     ```
 
@@ -493,7 +493,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     BulletList([[Block]])
     ```
 
@@ -509,7 +509,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Caption(ShortCaption or None, [Block])
     ```
 
@@ -525,7 +525,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Cell(Attr, Alignment, RowSpan, ColSpan, [Block])
     ```
 
@@ -541,7 +541,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Citation(Text, [Inline], [Inline], CitationMode, Int, Int)
     ```
 
@@ -557,7 +557,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     CitationMode = AuthorInText()
                  | SuppressAuthor()
                  | NormalCitation()
@@ -575,7 +575,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Cite([Citation], [Inline])
     ```
 
@@ -591,7 +591,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Code(Attr, Text)
     ```
 
@@ -607,7 +607,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     CodeBlock(Attr, Text)
     ```
 
@@ -623,7 +623,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ColSpan(Int)
     ```
 
@@ -639,7 +639,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ColSpec = (Alignment, ColWidth)
     ```
 
@@ -655,7 +655,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ColWidth = ColWidth_(Double)
              | ColWidthDefault()
     ```
@@ -672,7 +672,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ColWidthDefault()
     ```
 
@@ -686,7 +686,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ColWidth_(Double)
     ```
 
@@ -702,7 +702,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Decimal()
     ```
 
@@ -716,7 +716,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     DefaultDelim()
     ```
 
@@ -730,7 +730,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     DefaultStyle()
     ```
 
@@ -744,7 +744,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     DefinitionList([([Inline], [[Block]])])
     ```
 
@@ -760,7 +760,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     DisplayMath()
     ```
 
@@ -774,7 +774,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Div(Attr, [Block])
     ```
 
@@ -790,7 +790,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     float
     ```
 
@@ -804,7 +804,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     DoubleQuote()
     ```
 
@@ -818,7 +818,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Emph([Inline])
     ```
 
@@ -834,7 +834,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Example()
     ```
 
@@ -848,7 +848,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Format(Text)
     ```
 
@@ -864,7 +864,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Header(Int, Attr, [Inline])
     ```
 
@@ -880,7 +880,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     HorizontalRule()
     ```
 
@@ -894,7 +894,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Image(Attr, [Inline], Target)
     ```
 
@@ -910,7 +910,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Inline = Str(Text)
            | Emph([Inline])
            | Underline([Inline])
@@ -945,7 +945,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     InlineMath()
     ```
 
@@ -959,7 +959,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     int
     ```
 
@@ -973,7 +973,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     LineBlock([[Inline]])
     ```
 
@@ -989,7 +989,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     LineBreak()
     ```
 
@@ -1003,7 +1003,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Link(Attr, [Inline], Target)
     ```
 
@@ -1019,7 +1019,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
     ```
 
@@ -1035,7 +1035,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ListNumberDelim = DefaultDelim()
                     | Period()
                     | OneParen()
@@ -1054,7 +1054,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ListNumberStyle = DefaultStyle()
                     | Example()
                     | Decimal()
@@ -1076,7 +1076,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     LowerAlpha()
     ```
 
@@ -1090,7 +1090,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     LowerRoman()
     ```
 
@@ -1104,7 +1104,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Math(MathType, Text)
     ```
 
@@ -1120,7 +1120,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MathType = DisplayMath()
              | InlineMath()
     ```
@@ -1137,7 +1137,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Meta({Text: MetaValue})
     ```
 
@@ -1153,7 +1153,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaBlocks([Block])
     ```
 
@@ -1169,7 +1169,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaBool(Bool)
     ```
 
@@ -1185,7 +1185,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaInlines([Inline])
     ```
 
@@ -1201,7 +1201,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaList([MetaValue])
     ```
 
@@ -1217,7 +1217,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaMap({Text: MetaValue})
     ```
 
@@ -1233,7 +1233,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaString(Text)
     ```
 
@@ -1249,7 +1249,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     MetaValue = MetaMap({Text: MetaValue})
               | MetaList([MetaValue])
               | MetaBool(Bool)
@@ -1270,7 +1270,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     NormalCitation()
     ```
 
@@ -1284,7 +1284,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Note([Block])
     ```
 
@@ -1300,7 +1300,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Null()
     ```
 
@@ -1314,7 +1314,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     OneParen()
     ```
 
@@ -1328,7 +1328,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     OrderedList(ListAttributes, [[Block]])
     ```
 
@@ -1344,7 +1344,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Pandoc(Meta, [Block])
     ```
 
@@ -1360,7 +1360,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Para([Inline])
     ```
 
@@ -1376,7 +1376,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Period()
     ```
 
@@ -1390,7 +1390,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Plain([Inline])
     ```
 
@@ -1406,7 +1406,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     QuoteType = SingleQuote()
               | DoubleQuote()
     ```
@@ -1423,7 +1423,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Quoted(QuoteType, [Inline])
     ```
 
@@ -1439,7 +1439,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     RawBlock(Format, Text)
     ```
 
@@ -1455,7 +1455,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     RawInline(Format, Text)
     ```
 
@@ -1471,7 +1471,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Row(Attr, [Cell])
     ```
 
@@ -1487,7 +1487,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     RowHeadColumns(Int)
     ```
 
@@ -1503,7 +1503,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     RowSpan(Int)
     ```
 
@@ -1519,7 +1519,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     ShortCaption = [Inline]
     ```
 
@@ -1535,7 +1535,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     SingleQuote()
     ```
 
@@ -1549,7 +1549,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     SmallCaps([Inline])
     ```
 
@@ -1565,7 +1565,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     SoftBreak()
     ```
 
@@ -1579,7 +1579,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Space()
     ```
 
@@ -1593,7 +1593,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Span(Attr, [Inline])
     ```
 
@@ -1609,7 +1609,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Str(Text)
     ```
 
@@ -1625,7 +1625,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Strikeout([Inline])
     ```
 
@@ -1641,7 +1641,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     str
     ```
 
@@ -1655,7 +1655,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Strong([Inline])
     ```
 
@@ -1671,7 +1671,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Subscript([Inline])
     ```
 
@@ -1687,7 +1687,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Superscript([Inline])
     ```
 
@@ -1703,7 +1703,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     SuppressAuthor()
     ```
 
@@ -1717,7 +1717,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
     ```
 
@@ -1733,7 +1733,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     TableBody(Attr, RowHeadColumns, [Row], [Row])
     ```
 
@@ -1749,7 +1749,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     TableFoot(Attr, [Row])
     ```
 
@@ -1765,7 +1765,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     TableHead(Attr, [Row])
     ```
 
@@ -1781,7 +1781,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Target = (Text, Text)
     ```
 
@@ -1797,7 +1797,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     str
     ```
 
@@ -1811,7 +1811,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     TwoParens()
     ```
 
@@ -1825,7 +1825,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     Underline([Inline])
     ```
 
@@ -1841,7 +1841,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     UpperAlpha()
     ```
 
@@ -1855,7 +1855,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     UpperRoman()
     ```
 
@@ -1869,7 +1869,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     list
     ```
 
@@ -1883,7 +1883,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     dict
     ```
 
@@ -1897,7 +1897,7 @@ from pandoc.types import *
 
     <h5>Signature</h5>
 
-    ``` python
+    ``` skip
     tuple
     ```
 
