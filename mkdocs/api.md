@@ -13,6 +13,9 @@ import pandoc
 from pandoc.types import *
 ```
 
+`pandoc`
+--------------------------------------------------------------------------------
+
 
 ??? note "`pandoc.read(source=None, file=None, format=None, options=None)`"
     Read a source document.
@@ -308,3 +311,1594 @@ from pandoc.types import *
     <h5>See also</h5>
 
     For more details, refer to the [Tree iteration section](http://127.0.0.1:8000/iteration/#tree-iteration).
+
+`pandoc.configure`
+--------------------------------------------------------------------------------
+
+???+ error "TODO"
+
+`pandoc.types`
+--------------------------------------------------------------------------------
+
+
+<div id="AlignCenter"></div>
+
+??? note "`AlignCenter`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    AlignCenter()
+    ```
+
+
+
+<div id="AlignDefault"></div>
+
+??? note "`AlignDefault`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    AlignDefault()
+    ```
+
+
+
+<div id="AlignLeft"></div>
+
+??? note "`AlignLeft`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    AlignLeft()
+    ```
+
+
+
+<div id="AlignRight"></div>
+
+??? note "`AlignRight`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    AlignRight()
+    ```
+
+
+
+<div id="Alignment"></div>
+
+??? note "`Alignment`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Alignment = AlignLeft()
+              | AlignRight()
+              | AlignCenter()
+              | AlignDefault()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#AlignCenter"><code>AlignCenter</code></a>, <a href="#AlignDefault"><code>AlignDefault</code></a>, <a href="#AlignLeft"><code>AlignLeft</code></a>, <a href="#AlignRight"><code>AlignRight</code></a>.
+
+<div id="Attr"></div>
+
+??? note "`Attr`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` python
+    Attr = (Text, [Text], [(Text, Text)])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Text"><code>Text</code></a>.
+
+<div id="AuthorInText"></div>
+
+??? note "`AuthorInText`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    AuthorInText()
+    ```
+
+
+
+<div id="Block"></div>
+
+??? note "`Block`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Block = Plain([Inline])
+          | Para([Inline])
+          | LineBlock([[Inline]])
+          | CodeBlock(Attr, Text)
+          | RawBlock(Format, Text)
+          | BlockQuote([Block])
+          | OrderedList(ListAttributes, [[Block]])
+          | BulletList([[Block]])
+          | DefinitionList([([Inline], [[Block]])])
+          | Header(Int, Attr, [Inline])
+          | HorizontalRule()
+          | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+          | Div(Attr, [Block])
+          | Null()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#BlockQuote"><code>BlockQuote</code></a>, <a href="#BulletList"><code>BulletList</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#CodeBlock"><code>CodeBlock</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#DefinitionList"><code>DefinitionList</code></a>, <a href="#Div"><code>Div</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Header"><code>Header</code></a>, <a href="#HorizontalRule"><code>HorizontalRule</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#LineBlock"><code>LineBlock</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>, <a href="#Null"><code>Null</code></a>, <a href="#OrderedList"><code>OrderedList</code></a>, <a href="#Para"><code>Para</code></a>, <a href="#Plain"><code>Plain</code></a>, <a href="#RawBlock"><code>RawBlock</code></a>, <a href="#Table"><code>Table</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="BlockQuote"></div>
+
+??? note "`BlockQuote`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    BlockQuote([Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>.
+
+<div id="Bool"></div>
+
+??? note "`Bool`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    bool
+    ```
+
+
+
+<div id="BulletList"></div>
+
+??? note "`BulletList`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    BulletList([[Block]])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>.
+
+<div id="Caption"></div>
+
+??? note "`Caption`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Caption(ShortCaption or None, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>, <a href="#ShortCaption"><code>ShortCaption</code></a>.
+
+<div id="Cell"></div>
+
+??? note "`Cell`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Cell(Attr, Alignment, RowSpan, ColSpan, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Alignment"><code>Alignment</code></a>, <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#ColSpan"><code>ColSpan</code></a>, <a href="#RowSpan"><code>RowSpan</code></a>.
+
+<div id="Citation"></div>
+
+??? note "`Citation`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Citation(Text, [Inline], [Inline], CitationMode, Int, Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#CitationMode"><code>CitationMode</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="CitationMode"></div>
+
+??? note "`CitationMode`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    CitationMode = AuthorInText()
+                 | SuppressAuthor()
+                 | NormalCitation()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#AuthorInText"><code>AuthorInText</code></a>, <a href="#NormalCitation"><code>NormalCitation</code></a>, <a href="#SuppressAuthor"><code>SuppressAuthor</code></a>.
+
+<div id="Cite"></div>
+
+??? note "`Cite`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Cite([Citation], [Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Citation"><code>Citation</code></a>, <a href="#Inline"><code>Inline</code></a>.
+
+<div id="Code"></div>
+
+??? note "`Code`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Code(Attr, Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="CodeBlock"></div>
+
+??? note "`CodeBlock`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    CodeBlock(Attr, Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="ColSpan"></div>
+
+??? note "`ColSpan`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    ColSpan(Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>.
+
+<div id="ColSpec"></div>
+
+??? note "`ColSpec`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` python
+    ColSpec = (Alignment, ColWidth)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Alignment"><code>Alignment</code></a>, <a href="#ColWidth"><code>ColWidth</code></a>.
+
+<div id="ColWidth"></div>
+
+??? note "`ColWidth`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    ColWidth = ColWidth_(Double)
+             | ColWidthDefault()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#ColWidthDefault"><code>ColWidthDefault</code></a>, <a href="#ColWidth_"><code>ColWidth_</code></a>, <a href="#Double"><code>Double</code></a>.
+
+<div id="ColWidthDefault"></div>
+
+??? note "`ColWidthDefault`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    ColWidthDefault()
+    ```
+
+
+
+<div id="ColWidth_"></div>
+
+??? note "`ColWidth_`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    ColWidth_(Double)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Double"><code>Double</code></a>.
+
+<div id="Decimal"></div>
+
+??? note "`Decimal`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Decimal()
+    ```
+
+
+
+<div id="DefaultDelim"></div>
+
+??? note "`DefaultDelim`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    DefaultDelim()
+    ```
+
+
+
+<div id="DefaultStyle"></div>
+
+??? note "`DefaultStyle`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    DefaultStyle()
+    ```
+
+
+
+<div id="DefinitionList"></div>
+
+??? note "`DefinitionList`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    DefinitionList([([Inline], [[Block]])])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>, <a href="#Inline"><code>Inline</code></a>.
+
+<div id="DisplayMath"></div>
+
+??? note "`DisplayMath`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    DisplayMath()
+    ```
+
+
+
+<div id="Div"></div>
+
+??? note "`Div`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Div(Attr, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>.
+
+<div id="Double"></div>
+
+??? note "`Double`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    float
+    ```
+
+
+
+<div id="DoubleQuote"></div>
+
+??? note "`DoubleQuote`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    DoubleQuote()
+    ```
+
+
+
+<div id="Emph"></div>
+
+??? note "`Emph`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Emph([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="Example"></div>
+
+??? note "`Example`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Example()
+    ```
+
+
+
+<div id="Format"></div>
+
+??? note "`Format`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Format(Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Text"><code>Text</code></a>.
+
+<div id="Header"></div>
+
+??? note "`Header`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Header(Int, Attr, [Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>.
+
+<div id="HorizontalRule"></div>
+
+??? note "`HorizontalRule`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    HorizontalRule()
+    ```
+
+
+
+<div id="Image"></div>
+
+??? note "`Image`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Image(Attr, [Inline], Target)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Target"><code>Target</code></a>.
+
+<div id="Inline"></div>
+
+??? note "`Inline`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Inline = Str(Text)
+           | Emph([Inline])
+           | Underline([Inline])
+           | Strong([Inline])
+           | Strikeout([Inline])
+           | Superscript([Inline])
+           | Subscript([Inline])
+           | SmallCaps([Inline])
+           | Quoted(QuoteType, [Inline])
+           | Cite([Citation], [Inline])
+           | Code(Attr, Text)
+           | Space()
+           | SoftBreak()
+           | LineBreak()
+           | Math(MathType, Text)
+           | RawInline(Format, Text)
+           | Link(Attr, [Inline], Target)
+           | Image(Attr, [Inline], Target)
+           | Note([Block])
+           | Span(Attr, [Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#Citation"><code>Citation</code></a>, <a href="#Cite"><code>Cite</code></a>, <a href="#Code"><code>Code</code></a>, <a href="#Emph"><code>Emph</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Image"><code>Image</code></a>, <a href="#LineBreak"><code>LineBreak</code></a>, <a href="#Link"><code>Link</code></a>, <a href="#Math"><code>Math</code></a>, <a href="#MathType"><code>MathType</code></a>, <a href="#Note"><code>Note</code></a>, <a href="#QuoteType"><code>QuoteType</code></a>, <a href="#Quoted"><code>Quoted</code></a>, <a href="#RawInline"><code>RawInline</code></a>, <a href="#SmallCaps"><code>SmallCaps</code></a>, <a href="#SoftBreak"><code>SoftBreak</code></a>, <a href="#Space"><code>Space</code></a>, <a href="#Span"><code>Span</code></a>, <a href="#Str"><code>Str</code></a>, <a href="#Strikeout"><code>Strikeout</code></a>, <a href="#Strong"><code>Strong</code></a>, <a href="#Subscript"><code>Subscript</code></a>, <a href="#Superscript"><code>Superscript</code></a>, <a href="#Target"><code>Target</code></a>, <a href="#Text"><code>Text</code></a>, <a href="#Underline"><code>Underline</code></a>.
+
+<div id="InlineMath"></div>
+
+??? note "`InlineMath`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    InlineMath()
+    ```
+
+
+
+<div id="Int"></div>
+
+??? note "`Int`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    int
+    ```
+
+
+
+<div id="LineBlock"></div>
+
+??? note "`LineBlock`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    LineBlock([[Inline]])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="LineBreak"></div>
+
+??? note "`LineBreak`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    LineBreak()
+    ```
+
+
+
+<div id="Link"></div>
+
+??? note "`Link`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Link(Attr, [Inline], Target)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Target"><code>Target</code></a>.
+
+<div id="ListAttributes"></div>
+
+??? note "`ListAttributes`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` python
+    ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>, <a href="#ListNumberDelim"><code>ListNumberDelim</code></a>, <a href="#ListNumberStyle"><code>ListNumberStyle</code></a>.
+
+<div id="ListNumberDelim"></div>
+
+??? note "`ListNumberDelim`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    ListNumberDelim = DefaultDelim()
+                    | Period()
+                    | OneParen()
+                    | TwoParens()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#DefaultDelim"><code>DefaultDelim</code></a>, <a href="#OneParen"><code>OneParen</code></a>, <a href="#Period"><code>Period</code></a>, <a href="#TwoParens"><code>TwoParens</code></a>.
+
+<div id="ListNumberStyle"></div>
+
+??? note "`ListNumberStyle`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    ListNumberStyle = DefaultStyle()
+                    | Example()
+                    | Decimal()
+                    | LowerRoman()
+                    | UpperRoman()
+                    | LowerAlpha()
+                    | UpperAlpha()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Decimal"><code>Decimal</code></a>, <a href="#DefaultStyle"><code>DefaultStyle</code></a>, <a href="#Example"><code>Example</code></a>, <a href="#LowerAlpha"><code>LowerAlpha</code></a>, <a href="#LowerRoman"><code>LowerRoman</code></a>, <a href="#UpperAlpha"><code>UpperAlpha</code></a>, <a href="#UpperRoman"><code>UpperRoman</code></a>.
+
+<div id="LowerAlpha"></div>
+
+??? note "`LowerAlpha`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    LowerAlpha()
+    ```
+
+
+
+<div id="LowerRoman"></div>
+
+??? note "`LowerRoman`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    LowerRoman()
+    ```
+
+
+
+<div id="Math"></div>
+
+??? note "`Math`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Math(MathType, Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#MathType"><code>MathType</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="MathType"></div>
+
+??? note "`MathType`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MathType = DisplayMath()
+             | InlineMath()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#DisplayMath"><code>DisplayMath</code></a>, <a href="#InlineMath"><code>InlineMath</code></a>.
+
+<div id="Meta"></div>
+
+??? note "`Meta`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Meta({Text: MetaValue})
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#MetaValue"><code>MetaValue</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="MetaBlocks"></div>
+
+??? note "`MetaBlocks`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaBlocks([Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>.
+
+<div id="MetaBool"></div>
+
+??? note "`MetaBool`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaBool(Bool)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Bool"><code>Bool</code></a>.
+
+<div id="MetaInlines"></div>
+
+??? note "`MetaInlines`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaInlines([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="MetaList"></div>
+
+??? note "`MetaList`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaList([MetaValue])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#MetaValue"><code>MetaValue</code></a>.
+
+<div id="MetaMap"></div>
+
+??? note "`MetaMap`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaMap({Text: MetaValue})
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#MetaValue"><code>MetaValue</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="MetaString"></div>
+
+??? note "`MetaString`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaString(Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Text"><code>Text</code></a>.
+
+<div id="MetaValue"></div>
+
+??? note "`MetaValue`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    MetaValue = MetaMap({Text: MetaValue})
+              | MetaList([MetaValue])
+              | MetaBool(Bool)
+              | MetaString(Text)
+              | MetaInlines([Inline])
+              | MetaBlocks([Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>, <a href="#Bool"><code>Bool</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#MetaBlocks"><code>MetaBlocks</code></a>, <a href="#MetaBool"><code>MetaBool</code></a>, <a href="#MetaInlines"><code>MetaInlines</code></a>, <a href="#MetaList"><code>MetaList</code></a>, <a href="#MetaMap"><code>MetaMap</code></a>, <a href="#MetaString"><code>MetaString</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="NormalCitation"></div>
+
+??? note "`NormalCitation`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    NormalCitation()
+    ```
+
+
+
+<div id="Note"></div>
+
+??? note "`Note`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Note([Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>.
+
+<div id="Null"></div>
+
+??? note "`Null`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Null()
+    ```
+
+
+
+<div id="OneParen"></div>
+
+??? note "`OneParen`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    OneParen()
+    ```
+
+
+
+<div id="OrderedList"></div>
+
+??? note "`OrderedList`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    OrderedList(ListAttributes, [[Block]])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>.
+
+<div id="Pandoc"></div>
+
+??? note "`Pandoc`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Pandoc(Meta, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>, <a href="#Meta"><code>Meta</code></a>.
+
+<div id="Para"></div>
+
+??? note "`Para`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Para([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="Period"></div>
+
+??? note "`Period`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Period()
+    ```
+
+
+
+<div id="Plain"></div>
+
+??? note "`Plain`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Plain([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="QuoteType"></div>
+
+??? note "`QuoteType`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    QuoteType = SingleQuote()
+              | DoubleQuote()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#DoubleQuote"><code>DoubleQuote</code></a>, <a href="#SingleQuote"><code>SingleQuote</code></a>.
+
+<div id="Quoted"></div>
+
+??? note "`Quoted`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Quoted(QuoteType, [Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>, <a href="#QuoteType"><code>QuoteType</code></a>.
+
+<div id="RawBlock"></div>
+
+??? note "`RawBlock`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    RawBlock(Format, Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Format"><code>Format</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="RawInline"></div>
+
+??? note "`RawInline`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    RawInline(Format, Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Format"><code>Format</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="Row"></div>
+
+??? note "`Row`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Row(Attr, [Cell])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Cell"><code>Cell</code></a>.
+
+<div id="RowHeadColumns"></div>
+
+??? note "`RowHeadColumns`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    RowHeadColumns(Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>.
+
+<div id="RowSpan"></div>
+
+??? note "`RowSpan`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    RowSpan(Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>.
+
+<div id="ShortCaption"></div>
+
+??? note "`ShortCaption`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` python
+    ShortCaption = [Inline]
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="SingleQuote"></div>
+
+??? note "`SingleQuote`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    SingleQuote()
+    ```
+
+
+
+<div id="SmallCaps"></div>
+
+??? note "`SmallCaps`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    SmallCaps([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="SoftBreak"></div>
+
+??? note "`SoftBreak`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    SoftBreak()
+    ```
+
+
+
+<div id="Space"></div>
+
+??? note "`Space`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Space()
+    ```
+
+
+
+<div id="Span"></div>
+
+??? note "`Span`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Span(Attr, [Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>.
+
+<div id="Str"></div>
+
+??? note "`Str`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Str(Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Text"><code>Text</code></a>.
+
+<div id="Strikeout"></div>
+
+??? note "`Strikeout`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Strikeout([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="String"></div>
+
+??? note "`String`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    str
+    ```
+
+
+
+<div id="Strong"></div>
+
+??? note "`Strong`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Strong([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="Subscript"></div>
+
+??? note "`Subscript`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Subscript([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="Superscript"></div>
+
+??? note "`Superscript`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Superscript([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="SuppressAuthor"></div>
+
+??? note "`SuppressAuthor`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    SuppressAuthor()
+    ```
+
+
+
+<div id="Table"></div>
+
+??? note "`Table`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>.
+
+<div id="TableBody"></div>
+
+??? note "`TableBody`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    TableBody(Attr, RowHeadColumns, [Row], [Row])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>, <a href="#RowHeadColumns"><code>RowHeadColumns</code></a>.
+
+<div id="TableFoot"></div>
+
+??? note "`TableFoot`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    TableFoot(Attr, [Row])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>.
+
+<div id="TableHead"></div>
+
+??? note "`TableHead`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    TableHead(Attr, [Row])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>.
+
+<div id="Target"></div>
+
+??? note "`Target`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` python
+    Target = (Text, Text)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Text"><code>Text</code></a>.
+
+<div id="Text"></div>
+
+??? note "`Text`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    str
+    ```
+
+
+
+<div id="TwoParens"></div>
+
+??? note "`TwoParens`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    TwoParens()
+    ```
+
+
+
+<div id="Underline"></div>
+
+??? note "`Underline`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    Underline([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
+
+<div id="UpperAlpha"></div>
+
+??? note "`UpperAlpha`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    UpperAlpha()
+    ```
+
+
+
+<div id="UpperRoman"></div>
+
+??? note "`UpperRoman`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` python
+    UpperRoman()
+    ```
+
+
+
+<div id="list"></div>
+
+??? note "`list`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    list
+    ```
+
+
+
+<div id="map"></div>
+
+??? note "`map`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    dict
+    ```
+
+
+
+<div id="tuple"></div>
+
+??? note "`tuple`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` python
+    tuple
+    ```
+
+
