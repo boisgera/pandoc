@@ -17,7 +17,7 @@ from pandoc.types import *
 --------------------------------------------------------------------------------
 
 
-??? note "`pandoc.read(source=None, file=None, format=None, options=None)`"
+??? note "`read(source=None, file=None, format=None, options=None)`"
     Read a source document.
 
     The source document must be specified by either `source` or `file`.
@@ -85,7 +85,7 @@ from pandoc.types import *
     ```
     
 
-??? note "`pandoc.write(doc, file=None, format=None, options=None)`"
+??? note "`write(doc, file=None, format=None, options=None)`"
     Write a pandoc document (or document fragment) to a file.
 
     The function always returns the file contents.
@@ -201,7 +201,7 @@ from pandoc.types import *
     </html>
     ```
 
-??? note "`pandoc.iter(elt, path=False)`"
+??? note "`iter(elt, path=False)`"
 
     Iterate on document elements in document order.
     
