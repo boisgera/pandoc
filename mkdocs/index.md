@@ -1,10 +1,4 @@
 
-!!! warning
-    This documentation is dedicated to the [latest version of the project
-    available on github](https://github.com/boisgera/pandoc). 
-    It is automatically tested against pandoc 2.14.2,
-    [the latest release of pandoc](https://pandoc.org/releases.html) so far.
-
 Overview
 ================================================================================
 
@@ -41,3 +35,8 @@ Hello Python!
 [Python]: https://www.python.org/
 [TPD]: https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html
 
+!!! warning
+    This documentation is dedicated to the [latest version of the project
+    available on github](https://github.com/boisgera/pandoc). 
+    It is automatically tested against pandoc 2.14.2,
+    [the latest release of pandoc](https://pandoc.org/releases.html) so far.
