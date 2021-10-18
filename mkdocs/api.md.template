@@ -306,7 +306,7 @@ from pandoc.types import *
     Refer to the [Tree iteration section](#tree-iteration).
 
 
-??? note "`configure(auto=None, path=None, version=None, pandoc_types_version=None, read=False, reset=False)`"
+??? note "`configure(auto=False, path=None, version=None, pandoc_types_version=None, read=False, reset=False)`"
 
     <h5>Arguments</h5>
 
