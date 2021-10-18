@@ -35,26 +35,27 @@ def see_also(type_):
 td = pandoc.types._types_dict
 
 for key in sorted(td):
-    type_ = td[key]
-    if issubclass(type_, Data):
-        if issubclass(type_, Constructor):
-            type_doc = "Concrete data type"
-            type_sig = indent(repr(type_))
-            see_also_ = see_also(type_)
+    if key[0].isupper():
+        type_ = td[key]
+        if issubclass(type_, Data):
+            if issubclass(type_, Constructor):
+                type_doc = "Concrete data type"
+                type_sig = indent(repr(type_))
+                see_also_ = see_also(type_)
 
-        else:
-            type_doc = "Abstract data type"
+            else:
+                type_doc = "Abstract data type"
+                type_sig = indent(repr(type_))
+                see_also_ = see_also(type_)
+        elif issubclass(type_, TypeDef):
+            type_doc = "Typedef"
             type_sig = indent(repr(type_))
             see_also_ = see_also(type_)
-    elif issubclass(type_, TypeDef):
-        type_doc = "Typedef"
-        type_sig = indent(repr(type_))
-        see_also_ = see_also(type_)
-    else:
-        type_doc = "Primitive type"
-        type_sig = 4 * " " + type_.__name__
-        see_also_ = ""
-    doc += f"""
+        else:
+            type_doc = "Primitive type"
+            type_sig = 4 * " " + type_.__name__
+            see_also_ = ""
+        doc += f"""
 <div id="{key}"></div>
 
 ??? note "`{key}`"
