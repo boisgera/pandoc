@@ -310,12 +310,64 @@ from pandoc.types import *
 
     <h5>See also</h5>
 
-    For more details, refer to the [Tree iteration section](http://127.0.0.1:8000/iteration/#tree-iteration).
+    Refer to the [Tree iteration section](#tree-iteration).
 
-`pandoc.configure`
---------------------------------------------------------------------------------
 
-???+ error "TODO"
+??? note "`configure(auto=None, path=None, version=None, pandoc_types_version=None, read=False, reset=False)`"
+
+    <h5>Arguments</h5>
+
+      - `auto`: a boolean; defaults to `False`; set to `True` to
+        infer the configuration from the `pandoc` in your path.
+
+      - `path`: the path to the pandoc executable, such as `"/usr/bin/pandoc"`.
+
+      - `version`: the `pandoc` command-line tool version, such as `"2.14.2"`.
+
+      - `pandoc_types_version`: the [`pandoc-types`](https://hackage.haskell.org/package/pandoc-types)
+         version, such as `"1.22"`.
+
+      - `read`: a boolean; defaults to `False`. Return the configuration dictionary.
+
+      - `reset`: a boolean; defaults to `False`. Delete the current configuration.
+
+    <h5>Returns</h5>
+
+      - `configuration` (if `read==True`): the configuration dictionary,
+        with entries `"auto"`, `"path"`, `"version"` and "`pandoc_types_version`".
+
+    <h5>Usage</h5>
+
+    The configuration step is triggered when you import `pandoc.types` or
+    call `pandoc.read` or `pandoc.write` and will automatically infer the
+    configuration from the `pandoc` executable found in the path (or fails).
+
+    ``` pycon
+    >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    {'auto': True, 
+     'path': ..., 
+     'version': '2.14.2', 
+     'pandoc_types_version': '1.22'}
+    ```
+    To avoid this, call `pandoc.configure(...)` yourself beforehand.
+    Alternatively, select another pandoc executable afterwards:
+
+    ``` pycon
+    >>> pandoc.configure(reset=True)
+    >>> pandoc.configure(read=True) is None
+    True
+    >>> pandoc.configure(path="/usr/bin/pandoc", version="2.5", pandoc_types_version="1.17.5")
+    >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    {'auto': False, 
+     'path': '/usr/bin/pandoc', 
+     'version': '2.5', 
+     'pandoc_types_version': '1.17.5'}    
+    ```
+
+    <h5>See also</h5>
+
+    Refer to the [Configuration section](#configuration).
+
 
 `pandoc.types`
 --------------------------------------------------------------------------------

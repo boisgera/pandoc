@@ -56,7 +56,7 @@ def import_types():
 
 
 def configure(
-    auto=None,
+    auto=False,
     path=None,
     version=None,
     pandoc_types_version=None,
@@ -66,7 +66,7 @@ def configure(
     global _configuration
 
     default = (
-        auto is None
+        auto is False
         and path is None
         and version is None
         and pandoc_types_version is None
@@ -83,7 +83,7 @@ def configure(
 
     read_only = (
         read
-        and auto is None
+        and auto is False
         and path is None
         and version is None
         and pandoc_types_version is None

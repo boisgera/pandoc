@@ -13,7 +13,7 @@ nav:
   - Containers and iteration: iteration.md
   - Configuration: configuration.md
   - Cookbook (wip): cookbook.md
-  - API reference (wip): api.md
+  - API reference: api.md
 
 theme: "material" 
 
