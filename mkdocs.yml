@@ -5,7 +5,8 @@ docs_dir: mkdocs
 site_dir: docs
 
 nav:
-  - Overview (wip): index.md
+  - Overview: index.md
+  - Getting started: getting-started.md
   - Examples (wip): examples.md
   - CLI (wip): cli.md
   - Document structure: document.md

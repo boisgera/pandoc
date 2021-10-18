@@ -336,25 +336,27 @@ from pandoc.types import *
     configuration from the `pandoc` executable found in the path (or fails).
 
     ``` pycon
-    >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> config = pandoc.configure(read=True)
+    >>> config # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': True, 
      'path': ..., 
      'version': '2.14.2', 
      'pandoc_types_version': '1.22'}
     ```
     To avoid this, call `pandoc.configure(...)` yourself beforehand.
-    Alternatively, select another pandoc executable afterwards:
+    Alternatively, select manually your pandoc executable afterwards:
 
     ``` pycon
     >>> pandoc.configure(reset=True)
     >>> pandoc.configure(read=True) is None
     True
-    >>> pandoc.configure(path="/usr/bin/pandoc", version="2.5", pandoc_types_version="1.17.5")
+    >>> config["auto"] = False
+    >>> pandoc.configure(**config)
     >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': False, 
-     'path': '/usr/bin/pandoc', 
-     'version': '2.5', 
-     'pandoc_types_version': '1.17.5'}    
+     'path': ..., 
+     'version': '2.14.2', 
+     'pandoc_types_version': '1.22'}    
     ```
 
     <h5>See also</h5>
