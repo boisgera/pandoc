@@ -207,8 +207,6 @@ def read(source=None, file=None, format=None, options=None):
 
 
 # ------------------------------------------------------------------------------
-# TODO: add ".py" / Python support
-
 _ext_to_file_format = {
     ".adoc": "asciidoc",
     ".asciidoc": "asciidoc",
@@ -684,11 +682,8 @@ def apply(f, elt=None):  # apply the transform f bottom-up
 
 # Main Entry Point
 # ------------------------------------------------------------------------------
-# BUG : by using files instead of filenames in argparse types,
-#       we are losing the extension info and cannot select the proper format.
-#       This is an issue in itself ; but since we use the pandoc convention
-#       not to have "pdf" as an output format per se, that means that we
-#       cannot output pdf at all.
+# TODO: use argparse.FileType and access the filename attribute when needed.
+#       see https://stackoverflow.com/questions/19656426/how-to-get-filename-with-argparse-while-specifying-type-filetype-for-this-a
 def main():
     prog = "python -m pandoc"
     description = "Read/write pandoc documents with Python"
