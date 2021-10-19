@@ -218,41 +218,6 @@ def configure(
 #       still my preferences: it should be simpler; if you need files,
 #       use a proper keyword argument).
 
-# Deprecated in favor of format_from_filename
-# ------------------------------------------------------------------------------
-# _readers = {
-#     ".xhtml": "html",
-#     ".html": "html",
-#     ".htm": "html",
-#     ".md": "markdown",
-#     ".markdown": "markdown",
-#     ".muse": "muse",
-#     ".tex": "latex",
-#     ".latex": "latex",
-#     ".ltx": "latex",
-#     ".rst": "rst",
-#     ".org": "org",
-#     ".lhs": "markdown+lhs",
-#     ".db": "docbook",
-#     ".opml": "opml",
-#     ".wiki": "mediawiki",
-#     ".dokuwiki": "dokuwiki",
-#     ".textile": "textile",
-#     ".native": "native",
-#     ".json": "json",
-#     ".docx": "docx",
-#     ".t2t": "t2t",
-#     ".epub": "epub",
-#     ".odt": "odt",
-#     ".pdf": "pdf",
-#     ".doc": "doc",
-# }
-#
-#
-# def default_reader_name(filename):
-#     _, ext = os.path.splitext(filename)
-#     return _readers.get(ext)
-
 
 def read(source=None, file=None, format=None, options=None):
     if configure(read=True) is None:
@@ -375,61 +340,6 @@ for _i in range(1, 10):
 def format_from_filename(filename):
     ext = pathlib.Path(filename.lower()).suffix
     return _ext_to_file_format.get(ext)
-
-
-# Deprecated in favor of format_from_filename
-# ------------------------------------------------------------------------------
-# _writers = {
-#     "": "markdown",
-#     ".pdf": "latex",
-#     ".tex": "latex",
-#     ".latex": "latex",
-#     ".ltx": "latex",
-#     ".context": "context",
-#     ".ctx": "context",
-#     ".rtf": "rtf",
-#     ".rst": "rst",
-#     ".s5": "s5",
-#     ".native": "native",
-#     ".json": "json",
-#     ".txt": "markdown",
-#     ".text": "markdown",
-#     ".md": "markdown",
-#     ".muse": "muse",
-#     ".markdown": "markdown",
-#     ".textile": "textile",
-#     ".lhs": "markdown+lhs",
-#     ".texi": "texinfo",
-#     ".texinfo": "texinfo",
-#     ".db": "docbook",
-#     ".odt": "odt",
-#     ".docx": "docx",
-#     ".epub": "epub",
-#     ".org": "org",
-#     ".asciidoc": "asciidoc",
-#     ".adoc": "asciidoc",
-#     ".fb2": "fb2",
-#     ".opml": "opml",
-#     ".icml": "icml",
-#     ".tei.xml": "tei",
-#     ".tei": "tei",
-#     ".ms": "ms",
-#     ".roff": "ms",
-#     ".pptx": "pptx",
-#     ".xhtml": "html",
-#     ".html": "html",
-#     ".htm": "html",
-# }
-#
-#
-# def default_writer_name(filename):
-#     if filename.endswith(".tei.xml"):
-#         filename = filename[:-4]  # uhu ? test this.
-#     _, ext = os.path.splitext(filename)
-#     if len(ext) == 2 and ext[1] in "0123456789":
-#         return "man"
-#     else:
-#         return _writers.get(ext)
 
 
 # TODO: better management for pdf "format" which is not a format according
