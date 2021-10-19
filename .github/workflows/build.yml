@@ -6,7 +6,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-latest, windows-latest]
     defaults:
       run:
         shell: bash -l {0} 
@@ -21,7 +21,8 @@ jobs:
           environment-file: environment.yml
 
       - name: Install LaTeX
-        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install texlive-full
+        if: matrix.os == "ubuntu-latest"
+        run: sudo apt-get update && sudo apt-get install texlive-full
 
       - name: Install Python pandoc 
         run: python setup.py install
