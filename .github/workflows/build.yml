@@ -68,7 +68,7 @@ jobs:
         run: python setup.py install
 
       - name: Test Python pandoc
-        run: python test.py
+        run: python test.py && python test.py -v
 
       - name: Build documentation (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
