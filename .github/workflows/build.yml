@@ -21,7 +21,7 @@ jobs:
           environment-file: environment.yml
 
       - name: Install LaTeX
-        run: apt-get update && apt-get upgrade && apt-get install texlive-full
+        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install texlive-full
 
       - name: Install Python pandoc 
         run: python setup.py install
