@@ -175,7 +175,7 @@ def read(source=None, file=None, format=None, options=None):
     input.close()
 
     if format is None and filename is not None:
-        format = format_from_filename(filename)  # default_reader_name(filename)
+        format = format_from_filename(filename)
     if format is None:
         format = "markdown"
     if format != "json" and _configuration["path"] is None:
@@ -304,7 +304,7 @@ def write(doc, file=None, format=None, options=None):
         file = open(filename, "wb")
 
     if format is None and filename is not None:
-        format = format_from_filename(filename)  # default_writer_name(filename)
+        format = format_from_filename(filename)
     if format is None:
         format = "markdown"  # instead of html, yep.
     if format != "json" and _configuration["path"] is None:
