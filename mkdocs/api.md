@@ -174,6 +174,9 @@ from pandoc.types import *
     >>> _ = pandoc.write(doc, file="doc.html")
     >>> open("doc.html", encoding="utf-8").read()
     '<p>Hello world!</p>\n'
+    >>> _ = pandoc.write(doc, file="doc.pdf")
+    >>> open("doc.pdf", "rb").read() # doctest: +ELLIPSIS
+    b'%PDF...'
     ```
 
     Use extra pandoc options:
@@ -377,7 +380,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.AlignCenter'>
+    AlignCenter()
     ```
 
 
@@ -391,7 +394,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.AlignDefault'>
+    AlignDefault()
     ```
 
 
@@ -405,7 +408,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.AlignLeft'>
+    AlignLeft()
     ```
 
 
@@ -419,7 +422,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.AlignRight'>
+    AlignRight()
     ```
 
 
@@ -433,7 +436,10 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Alignment'>
+    Alignment = AlignLeft()
+              | AlignRight()
+              | AlignCenter()
+              | AlignDefault()
     ```
 
     <h5>See also</h5>
@@ -449,12 +455,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Attr'>
+    Attr = (Text, [Text], [(Text, Text)])
     ```
 
     <h5>See also</h5>
     
-    <a href="#String"><code>String</code></a>.
+    <a href="#Text"><code>Text</code></a>.
 
 <div id="AuthorInText"></div>
 
@@ -465,7 +471,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.AuthorInText'>
+    AuthorInText()
     ```
 
 
@@ -479,12 +485,25 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Block'>
+    Block = Plain([Inline])
+          | Para([Inline])
+          | LineBlock([[Inline]])
+          | CodeBlock(Attr, Text)
+          | RawBlock(Format, Text)
+          | BlockQuote([Block])
+          | OrderedList(ListAttributes, [[Block]])
+          | BulletList([[Block]])
+          | DefinitionList([([Inline], [[Block]])])
+          | Header(Int, Attr, [Inline])
+          | HorizontalRule()
+          | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+          | Div(Attr, [Block])
+          | Null()
     ```
 
     <h5>See also</h5>
     
-    <a href="#Alignment"><code>Alignment</code></a>, <a href="#Attr"><code>Attr</code></a>, <a href="#BlockQuote"><code>BlockQuote</code></a>, <a href="#BulletList"><code>BulletList</code></a>, <a href="#CodeBlock"><code>CodeBlock</code></a>, <a href="#DefinitionList"><code>DefinitionList</code></a>, <a href="#Div"><code>Div</code></a>, <a href="#Double"><code>Double</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Header"><code>Header</code></a>, <a href="#HorizontalRule"><code>HorizontalRule</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#LineBlock"><code>LineBlock</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>, <a href="#Null"><code>Null</code></a>, <a href="#OrderedList"><code>OrderedList</code></a>, <a href="#Para"><code>Para</code></a>, <a href="#Plain"><code>Plain</code></a>, <a href="#RawBlock"><code>RawBlock</code></a>, <a href="#String"><code>String</code></a>, <a href="#Table"><code>Table</code></a>, <a href="#TableCell"><code>TableCell</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#BlockQuote"><code>BlockQuote</code></a>, <a href="#BulletList"><code>BulletList</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#CodeBlock"><code>CodeBlock</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#DefinitionList"><code>DefinitionList</code></a>, <a href="#Div"><code>Div</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Header"><code>Header</code></a>, <a href="#HorizontalRule"><code>HorizontalRule</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#LineBlock"><code>LineBlock</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>, <a href="#Null"><code>Null</code></a>, <a href="#OrderedList"><code>OrderedList</code></a>, <a href="#Para"><code>Para</code></a>, <a href="#Plain"><code>Plain</code></a>, <a href="#RawBlock"><code>RawBlock</code></a>, <a href="#Table"><code>Table</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="BlockQuote"></div>
 
@@ -495,7 +514,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.BlockQuote'>
+    BlockQuote([Block])
     ```
 
     <h5>See also</h5>
@@ -525,12 +544,44 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.BulletList'>
+    BulletList([[Block]])
     ```
 
     <h5>See also</h5>
     
     <a href="#Block"><code>Block</code></a>.
+
+<div id="Caption"></div>
+
+??? note "`Caption`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    Caption(ShortCaption or None, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Block"><code>Block</code></a>, <a href="#ShortCaption"><code>ShortCaption</code></a>.
+
+<div id="Cell"></div>
+
+??? note "`Cell`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    Cell(Attr, Alignment, RowSpan, ColSpan, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Alignment"><code>Alignment</code></a>, <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#ColSpan"><code>ColSpan</code></a>, <a href="#RowSpan"><code>RowSpan</code></a>.
 
 <div id="Citation"></div>
 
@@ -541,12 +592,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Citation'>
+    Citation(Text, [Inline], [Inline], CitationMode, Int, Int)
     ```
 
     <h5>See also</h5>
     
-    <a href="#CitationMode"><code>CitationMode</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#CitationMode"><code>CitationMode</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="CitationMode"></div>
 
@@ -557,7 +608,9 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.CitationMode'>
+    CitationMode = AuthorInText()
+                 | SuppressAuthor()
+                 | NormalCitation()
     ```
 
     <h5>See also</h5>
@@ -573,7 +626,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Cite'>
+    Cite([Citation], [Inline])
     ```
 
     <h5>See also</h5>
@@ -589,12 +642,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Code'>
+    Code(Attr, Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#Attr"><code>Attr</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="CodeBlock"></div>
 
@@ -605,12 +658,91 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.CodeBlock'>
+    CodeBlock(Attr, Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#Attr"><code>Attr</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="ColSpan"></div>
+
+??? note "`ColSpan`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    ColSpan(Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>.
+
+<div id="ColSpec"></div>
+
+??? note "`ColSpec`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` skip
+    ColSpec = (Alignment, ColWidth)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Alignment"><code>Alignment</code></a>, <a href="#ColWidth"><code>ColWidth</code></a>.
+
+<div id="ColWidth"></div>
+
+??? note "`ColWidth`"
+
+    Abstract data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    ColWidth = ColWidth_(Double)
+             | ColWidthDefault()
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#ColWidthDefault"><code>ColWidthDefault</code></a>, <a href="#ColWidth_"><code>ColWidth_</code></a>, <a href="#Double"><code>Double</code></a>.
+
+<div id="ColWidthDefault"></div>
+
+??? note "`ColWidthDefault`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    ColWidthDefault()
+    ```
+
+
+
+<div id="ColWidth_"></div>
+
+??? note "`ColWidth_`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    ColWidth_(Double)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Double"><code>Double</code></a>.
 
 <div id="Decimal"></div>
 
@@ -621,7 +753,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Decimal'>
+    Decimal()
     ```
 
 
@@ -635,7 +767,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.DefaultDelim'>
+    DefaultDelim()
     ```
 
 
@@ -649,7 +781,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.DefaultStyle'>
+    DefaultStyle()
     ```
 
 
@@ -663,7 +795,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.DefinitionList'>
+    DefinitionList([([Inline], [[Block]])])
     ```
 
     <h5>See also</h5>
@@ -679,7 +811,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.DisplayMath'>
+    DisplayMath()
     ```
 
 
@@ -693,7 +825,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Div'>
+    Div(Attr, [Block])
     ```
 
     <h5>See also</h5>
@@ -723,7 +855,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.DoubleQuote'>
+    DoubleQuote()
     ```
 
 
@@ -737,7 +869,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Emph'>
+    Emph([Inline])
     ```
 
     <h5>See also</h5>
@@ -753,7 +885,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Example'>
+    Example()
     ```
 
 
@@ -767,12 +899,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Format'>
+    Format(Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#String"><code>String</code></a>.
+    <a href="#Text"><code>Text</code></a>.
 
 <div id="Header"></div>
 
@@ -783,7 +915,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Header'>
+    Header(Int, Attr, [Inline])
     ```
 
     <h5>See also</h5>
@@ -799,7 +931,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.HorizontalRule'>
+    HorizontalRule()
     ```
 
 
@@ -813,7 +945,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Image'>
+    Image(Attr, [Inline], Target)
     ```
 
     <h5>See also</h5>
@@ -829,12 +961,31 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Inline'>
+    Inline = Str(Text)
+           | Emph([Inline])
+           | Underline([Inline])
+           | Strong([Inline])
+           | Strikeout([Inline])
+           | Superscript([Inline])
+           | Subscript([Inline])
+           | SmallCaps([Inline])
+           | Quoted(QuoteType, [Inline])
+           | Cite([Citation], [Inline])
+           | Code(Attr, Text)
+           | Space()
+           | SoftBreak()
+           | LineBreak()
+           | Math(MathType, Text)
+           | RawInline(Format, Text)
+           | Link(Attr, [Inline], Target)
+           | Image(Attr, [Inline], Target)
+           | Note([Block])
+           | Span(Attr, [Inline])
     ```
 
     <h5>See also</h5>
     
-    <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#Citation"><code>Citation</code></a>, <a href="#Cite"><code>Cite</code></a>, <a href="#Code"><code>Code</code></a>, <a href="#Emph"><code>Emph</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Image"><code>Image</code></a>, <a href="#LineBreak"><code>LineBreak</code></a>, <a href="#Link"><code>Link</code></a>, <a href="#Math"><code>Math</code></a>, <a href="#MathType"><code>MathType</code></a>, <a href="#Note"><code>Note</code></a>, <a href="#QuoteType"><code>QuoteType</code></a>, <a href="#Quoted"><code>Quoted</code></a>, <a href="#RawInline"><code>RawInline</code></a>, <a href="#SmallCaps"><code>SmallCaps</code></a>, <a href="#SoftBreak"><code>SoftBreak</code></a>, <a href="#Space"><code>Space</code></a>, <a href="#Span"><code>Span</code></a>, <a href="#Str"><code>Str</code></a>, <a href="#Strikeout"><code>Strikeout</code></a>, <a href="#String"><code>String</code></a>, <a href="#Strong"><code>Strong</code></a>, <a href="#Subscript"><code>Subscript</code></a>, <a href="#Superscript"><code>Superscript</code></a>, <a href="#Target"><code>Target</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#Citation"><code>Citation</code></a>, <a href="#Cite"><code>Cite</code></a>, <a href="#Code"><code>Code</code></a>, <a href="#Emph"><code>Emph</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Image"><code>Image</code></a>, <a href="#LineBreak"><code>LineBreak</code></a>, <a href="#Link"><code>Link</code></a>, <a href="#Math"><code>Math</code></a>, <a href="#MathType"><code>MathType</code></a>, <a href="#Note"><code>Note</code></a>, <a href="#QuoteType"><code>QuoteType</code></a>, <a href="#Quoted"><code>Quoted</code></a>, <a href="#RawInline"><code>RawInline</code></a>, <a href="#SmallCaps"><code>SmallCaps</code></a>, <a href="#SoftBreak"><code>SoftBreak</code></a>, <a href="#Space"><code>Space</code></a>, <a href="#Span"><code>Span</code></a>, <a href="#Str"><code>Str</code></a>, <a href="#Strikeout"><code>Strikeout</code></a>, <a href="#Strong"><code>Strong</code></a>, <a href="#Subscript"><code>Subscript</code></a>, <a href="#Superscript"><code>Superscript</code></a>, <a href="#Target"><code>Target</code></a>, <a href="#Text"><code>Text</code></a>, <a href="#Underline"><code>Underline</code></a>.
 
 <div id="InlineMath"></div>
 
@@ -845,7 +996,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.InlineMath'>
+    InlineMath()
     ```
 
 
@@ -873,7 +1024,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.LineBlock'>
+    LineBlock([[Inline]])
     ```
 
     <h5>See also</h5>
@@ -889,7 +1040,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.LineBreak'>
+    LineBreak()
     ```
 
 
@@ -903,7 +1054,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Link'>
+    Link(Attr, [Inline], Target)
     ```
 
     <h5>See also</h5>
@@ -919,7 +1070,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.ListAttributes'>
+    ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
     ```
 
     <h5>See also</h5>
@@ -935,7 +1086,10 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.ListNumberDelim'>
+    ListNumberDelim = DefaultDelim()
+                    | Period()
+                    | OneParen()
+                    | TwoParens()
     ```
 
     <h5>See also</h5>
@@ -951,7 +1105,13 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.ListNumberStyle'>
+    ListNumberStyle = DefaultStyle()
+                    | Example()
+                    | Decimal()
+                    | LowerRoman()
+                    | UpperRoman()
+                    | LowerAlpha()
+                    | UpperAlpha()
     ```
 
     <h5>See also</h5>
@@ -967,7 +1127,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.LowerAlpha'>
+    LowerAlpha()
     ```
 
 
@@ -981,7 +1141,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.LowerRoman'>
+    LowerRoman()
     ```
 
 
@@ -995,12 +1155,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Math'>
+    Math(MathType, Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#MathType"><code>MathType</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#MathType"><code>MathType</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="MathType"></div>
 
@@ -1011,7 +1171,8 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MathType'>
+    MathType = DisplayMath()
+             | InlineMath()
     ```
 
     <h5>See also</h5>
@@ -1027,12 +1188,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Meta'>
+    Meta({Text: MetaValue})
     ```
 
     <h5>See also</h5>
     
-    <a href="#MetaValue"><code>MetaValue</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#MetaValue"><code>MetaValue</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="MetaBlocks"></div>
 
@@ -1043,7 +1204,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaBlocks'>
+    MetaBlocks([Block])
     ```
 
     <h5>See also</h5>
@@ -1059,7 +1220,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaBool'>
+    MetaBool(Bool)
     ```
 
     <h5>See also</h5>
@@ -1075,7 +1236,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaInlines'>
+    MetaInlines([Inline])
     ```
 
     <h5>See also</h5>
@@ -1091,7 +1252,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaList'>
+    MetaList([MetaValue])
     ```
 
     <h5>See also</h5>
@@ -1107,12 +1268,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaMap'>
+    MetaMap({Text: MetaValue})
     ```
 
     <h5>See also</h5>
     
-    <a href="#MetaValue"><code>MetaValue</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#MetaValue"><code>MetaValue</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="MetaString"></div>
 
@@ -1123,12 +1284,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaString'>
+    MetaString(Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#String"><code>String</code></a>.
+    <a href="#Text"><code>Text</code></a>.
 
 <div id="MetaValue"></div>
 
@@ -1139,12 +1300,17 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.MetaValue'>
+    MetaValue = MetaMap({Text: MetaValue})
+              | MetaList([MetaValue])
+              | MetaBool(Bool)
+              | MetaString(Text)
+              | MetaInlines([Inline])
+              | MetaBlocks([Block])
     ```
 
     <h5>See also</h5>
     
-    <a href="#Block"><code>Block</code></a>, <a href="#Bool"><code>Bool</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#MetaBlocks"><code>MetaBlocks</code></a>, <a href="#MetaBool"><code>MetaBool</code></a>, <a href="#MetaInlines"><code>MetaInlines</code></a>, <a href="#MetaList"><code>MetaList</code></a>, <a href="#MetaMap"><code>MetaMap</code></a>, <a href="#MetaString"><code>MetaString</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#Block"><code>Block</code></a>, <a href="#Bool"><code>Bool</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#MetaBlocks"><code>MetaBlocks</code></a>, <a href="#MetaBool"><code>MetaBool</code></a>, <a href="#MetaInlines"><code>MetaInlines</code></a>, <a href="#MetaList"><code>MetaList</code></a>, <a href="#MetaMap"><code>MetaMap</code></a>, <a href="#MetaString"><code>MetaString</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="NormalCitation"></div>
 
@@ -1155,7 +1321,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.NormalCitation'>
+    NormalCitation()
     ```
 
 
@@ -1169,7 +1335,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Note'>
+    Note([Block])
     ```
 
     <h5>See also</h5>
@@ -1185,7 +1351,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Null'>
+    Null()
     ```
 
 
@@ -1199,7 +1365,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.OneParen'>
+    OneParen()
     ```
 
 
@@ -1213,7 +1379,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.OrderedList'>
+    OrderedList(ListAttributes, [[Block]])
     ```
 
     <h5>See also</h5>
@@ -1229,7 +1395,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Pandoc'>
+    Pandoc(Meta, [Block])
     ```
 
     <h5>See also</h5>
@@ -1245,7 +1411,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Para'>
+    Para([Inline])
     ```
 
     <h5>See also</h5>
@@ -1261,7 +1427,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Period'>
+    Period()
     ```
 
 
@@ -1275,7 +1441,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Plain'>
+    Plain([Inline])
     ```
 
     <h5>See also</h5>
@@ -1291,7 +1457,8 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.QuoteType'>
+    QuoteType = SingleQuote()
+              | DoubleQuote()
     ```
 
     <h5>See also</h5>
@@ -1307,7 +1474,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Quoted'>
+    Quoted(QuoteType, [Inline])
     ```
 
     <h5>See also</h5>
@@ -1323,12 +1490,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.RawBlock'>
+    RawBlock(Format, Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#Format"><code>Format</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#Format"><code>Format</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="RawInline"></div>
 
@@ -1339,12 +1506,76 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.RawInline'>
+    RawInline(Format, Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#Format"><code>Format</code></a>, <a href="#String"><code>String</code></a>.
+    <a href="#Format"><code>Format</code></a>, <a href="#Text"><code>Text</code></a>.
+
+<div id="Row"></div>
+
+??? note "`Row`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    Row(Attr, [Cell])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Cell"><code>Cell</code></a>.
+
+<div id="RowHeadColumns"></div>
+
+??? note "`RowHeadColumns`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    RowHeadColumns(Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>.
+
+<div id="RowSpan"></div>
+
+??? note "`RowSpan`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    RowSpan(Int)
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Int"><code>Int</code></a>.
+
+<div id="ShortCaption"></div>
+
+??? note "`ShortCaption`"
+
+    Typedef
+
+    <h5>Signature</h5>
+
+    ``` skip
+    ShortCaption = [Inline]
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
 
 <div id="SingleQuote"></div>
 
@@ -1355,7 +1586,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.SingleQuote'>
+    SingleQuote()
     ```
 
 
@@ -1369,7 +1600,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.SmallCaps'>
+    SmallCaps([Inline])
     ```
 
     <h5>See also</h5>
@@ -1385,7 +1616,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.SoftBreak'>
+    SoftBreak()
     ```
 
 
@@ -1399,7 +1630,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Space'>
+    Space()
     ```
 
 
@@ -1413,7 +1644,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Span'>
+    Span(Attr, [Inline])
     ```
 
     <h5>See also</h5>
@@ -1429,12 +1660,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Str'>
+    Str(Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#String"><code>String</code></a>.
+    <a href="#Text"><code>Text</code></a>.
 
 <div id="Strikeout"></div>
 
@@ -1445,7 +1676,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Strikeout'>
+    Strikeout([Inline])
     ```
 
     <h5>See also</h5>
@@ -1475,7 +1706,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Strong'>
+    Strong([Inline])
     ```
 
     <h5>See also</h5>
@@ -1491,7 +1722,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Subscript'>
+    Subscript([Inline])
     ```
 
     <h5>See also</h5>
@@ -1507,7 +1738,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Superscript'>
+    Superscript([Inline])
     ```
 
     <h5>See also</h5>
@@ -1523,7 +1754,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.SuppressAuthor'>
+    SuppressAuthor()
     ```
 
 
@@ -1537,28 +1768,60 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Table'>
+    Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
     ```
 
     <h5>See also</h5>
     
-    <a href="#Alignment"><code>Alignment</code></a>, <a href="#Double"><code>Double</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#TableCell"><code>TableCell</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>.
 
-<div id="TableCell"></div>
+<div id="TableBody"></div>
 
-??? note "`TableCell`"
+??? note "`TableBody`"
 
-    Typedef
+    Concrete data type
 
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.TableCell'>
+    TableBody(Attr, RowHeadColumns, [Row], [Row])
     ```
 
     <h5>See also</h5>
     
-    <a href="#Block"><code>Block</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>, <a href="#RowHeadColumns"><code>RowHeadColumns</code></a>.
+
+<div id="TableFoot"></div>
+
+??? note "`TableFoot`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    TableFoot(Attr, [Row])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>.
+
+<div id="TableHead"></div>
+
+??? note "`TableHead`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    TableHead(Attr, [Row])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>.
 
 <div id="Target"></div>
 
@@ -1569,12 +1832,26 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.Target'>
+    Target = (Text, Text)
     ```
 
     <h5>See also</h5>
     
-    <a href="#String"><code>String</code></a>.
+    <a href="#Text"><code>Text</code></a>.
+
+<div id="Text"></div>
+
+??? note "`Text`"
+
+    Primitive type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    str
+    ```
+
+
 
 <div id="TwoParens"></div>
 
@@ -1585,10 +1862,26 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.TwoParens'>
+    TwoParens()
     ```
 
 
+
+<div id="Underline"></div>
+
+??? note "`Underline`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    Underline([Inline])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Inline"><code>Inline</code></a>.
 
 <div id="UpperAlpha"></div>
 
@@ -1599,7 +1892,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.UpperAlpha'>
+    UpperAlpha()
     ```
 
 
@@ -1613,7 +1906,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    <class 'pandoc.types.UpperRoman'>
+    UpperRoman()
     ```
 
 
