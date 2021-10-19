@@ -325,7 +325,7 @@ def write(doc, file=None, format=None, options=None):
         output_path = input_path
     else:
         if filename is not None:
-            # preserve file extensions (for format inference)
+            # preserve file extensions (for output format inference)
             tmp_filename = os.path.basename(filename)
         else:
             tmp_filename = "output"
@@ -568,7 +568,7 @@ def write_json_v2(object_):
             json_ = [write_json_v2(item) for item in object_]
         elif isinstance(object_, dict):
             json_ = odict((k, write_json_v2(v)) for k, v in object_.items())
-        else:  # primitive type, (including None used by Maybes)
+        else:  # primitive type (including None used by Maybes)
             json_ = object_
     elif isinstance(object_, types.Pandoc):
         version = configure(read=True)["pandoc_types_version"]
@@ -613,54 +613,7 @@ def write_json_v2(object_):
 
 # Iteration
 # ------------------------------------------------------------------------------
-
-# Thoughts:
-#
-#   - maybe 'iter_path' is not the right naming:
-#     I would envision for iter_path something that returns roughly speaking
-#     a list of indices that would allow us to find the element from doc.
-#     What would be the right new name for the old concept of path then?
-#     Have the list of ancestors named "context"? for example?
-#     And have it as supplementary data (also return elt as usual?)
-#     So consider a "mega-iter-named-whataver-with-options" ?
-#     And keep "iter" for the building block? Or use 'iter' for that?
-#     Wrt path as list of indices: have [] (or another function) support
-#     these list of path directly? Yeah would need some support anyway.
-#
-#   - Nota: I have at least 3 different "context" structures that may
-#     be handy:
-#
-#       - the list of parents (say without the elt, aka "context" or "parents"?)
-#
-#       - the list of indices (aka "path")
-#
-#       - a hybrid parent + index tuple list.
-#
-#     And these lists *may* (or may not) be reversed for convenience.
-#     Actually we may keep the top to bottom order and name "path"
-#     the list of pairs. This is a redundant structure (all you need
-#     for example is the root and the indices), but we don't care,
-#     the redundancy is actually convenient.
-#
-#     And add a "path" option to iter to return the (elt, path) pair.
-#     Does it fly? Name ? "path" or "context"? Nah, path ...
-#
-#   - Nota: does it make sense to also use string keys in path for maps?
-#     Several issues: have a look in the complete chain to see if pandoc
-#     map-like structure have their ordered preserved (I think not),
-#     then think "tree/structural" vs value stuff (maps have a varying
-#     number of items for example ...), and finally think of the consistency
-#     of the interface of named keys wrt to "iter" that is 100% integer based.
-#     Nota wrt "non-structural iteration": we are already doing it with lists,
-#     so nothing new here.
-#
-#  - TODO: explore visitor-style stuff (have a look at ANTLR for example)
-#
-#  - TODO: explore functional programming style (e.g. apply for trees, etc.)
-#
-
-
-def iter(elt, path=False, enter=None, exit=None):
+def iter(elt, path=False):
     if path is not False:
         if not isinstance(path, list):  # e.g. path = True
             path = []
@@ -668,9 +621,6 @@ def iter(elt, path=False, enter=None, exit=None):
     args = [elt]
     if path is not False:
         args.append(path)
-
-    if enter is not None:
-        enter(*args)
 
     if path is False:
         yield elt
@@ -685,77 +635,8 @@ def iter(elt, path=False, enter=None, exit=None):
                 child_path = False
             else:
                 child_path = path.copy() + [(elt, i)]
-            for subelt in iter(child, path=child_path, enter=enter, exit=exit):
+            for subelt in iter(child, path=child_path):
                 yield subelt
-
-    if exit is not None:
-        exit(*args)
-
-
-def iter_path(elt):
-    path = []
-
-    def enter(elt_):
-        path.append(elt_)
-
-    def exit(elt_):
-        path.pop()
-
-    for elt_ in iter(elt, enter=enter, exit=exit):
-        yield path
-
-
-class Symbol(str):
-    def __new__(cls, *args, **kw):
-        return str.__new__(cls, *args, **kw)
-
-    def __repr__(self):
-        return str(self)
-
-
-ENTER = Symbol("ENTER")
-EXIT = Symbol("EXIT")
-
-
-# class Iter2:
-#     def __init__(root, path=None, way=None):
-#         if path is None:
-#             path = []
-#         if way is None:
-#             way = ENTER
-#         self.root = root
-#         self.path = path
-#         self.way = way
-#     def __iter__(self):
-#         return self
-#     def __next__(self):
-#         if self.way == ENTER:
-#             if self.path == []:
-#                 return self.root, ENTER
-#             else:
-#                 parent, index = self.path[-1]
-#                 return parent[index], ENTER
-
-#             else:
-#                 parent, index = self.path[-1]
-#                 if not hasattr(parent, "__getitem__") or isinstance(parent, str):
-#                     return self.elt, EXIT
-#                 if isinstance(parent, dict):
-#                     parent = list(parent.items())
-#                 try:
-#                     elt = parent[index]
-#                     self.path.append((elt, 0))
-#                 except IndexError:
-#                     self.way = EXIT
-#                     return parent, EXIT
-
-
-def get_parent(doc, elt):
-    for path in iter_path(doc):
-        elt_ = path[-1]
-        if elt is elt_:
-            parent = path[-2] if len(path) >= 2 else None
-            return parent
 
 
 # Functional Transformation Patterns (Scrap-Your-Boilerplate-ish)
@@ -803,7 +684,6 @@ def apply(f, elt=None):  # apply the transform f bottom-up
 
 # Main Entry Point
 # ------------------------------------------------------------------------------
-# TODO : support custom indendation for Python output.
 # BUG : by using files instead of filenames in argparse types,
 #       we are losing the extension info and cannot select the proper format.
 #       This is an issue in itself ; but since we use the pandoc convention
