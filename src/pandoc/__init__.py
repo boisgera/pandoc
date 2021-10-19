@@ -4,11 +4,9 @@
 import argparse
 import collections
 import copy
-import inspect
 import json
 import os.path
 import pathlib
-import shlex
 import shutil
 import sys
 import time
@@ -20,12 +18,6 @@ import plumbum
 # Pandoc
 import pandoc.about
 from . import utils
-
-# TODO
-# ------------------------------------------------------------------------------
-#
-#   - Add pandoc options to the CLI (use shlex or partial parsing in argparse ?)
-#
 
 # Filesystem Helper
 # ------------------------------------------------------------------------------
@@ -156,69 +148,6 @@ def configure(
 
 # JSON Reader / Writer
 # ------------------------------------------------------------------------------
-
-# Break compat? Read consumes markdown only? Bump major version number then.
-# Yay, worth it.
-#
-# TODO: optional input or output FILES or FILENAMES in read/write? Dunno.
-#       Think about it. The NAMES read and write seem to imply it ...
-#       But the filesystem stuff is orthogonal really ...
-#       However, for a ".doc" output for example, writing it as a string
-#       is *probably* useless.
-#
-# TODO: Study also the str vs bytes stuff: we don't want encoding stuff
-#       mixed in when we produce a word document, just BYTES.
-#       For Markdown OTOH, unicode repr is the right abstraction.
-#       What to do for latex, html docs? Bytes or Unicode?
-#       FYI, Pandoc is using DECLARING utf-8 encoding for both in standalone
-#       mode, so if you write these standalone outputs, you SHALL use utf-8 ...
-#       Otherwise, well, I don't know ... but it's pretty much the same for
-#       markdown: to get it properly processed, pandoc REQUIRES utf-8.
-#       So, distinguish, markdown, latex and html as "source formats" and
-#       use unicode for them? And bytes for the others?
-#       What is the list? There is also ReST? How to get it automatically?
-#       Try to trap the error? (Assuming the error message are stable?)
-#       Nota: from the pandoc source code, ATM, "non-text formats" are
-#        ["odt","docx","epub2","epub3","epub","pptx"]
-#       But the non-text format categorization is used for OUTPUTS only,
-#       what about inputs? OK, there is a classification into StringReader
-#       (text sources) and ByteStringReader. For the latter, piping is not
-#       accepted. So where is the list of the types of readers?
-#       Grepping the sources leads to "docx", "odt" and "epub". OK then.
-#       Am I really willing to hardcode all this stuff, or shall I return
-#       bytes and let the user decide what to do with it? For INPUTS,
-#       I can still accept unicode and convert to utf-8 seemlessly, the
-#       question is: what to do for outputs? Only return unicode for markdown?
-#       (that has no encoding metadata)? Dunno ...
-#       UPDATE: OK, I have configured plumbum to always use utf-8 when
-#       there is some conversion to be made between unicode and bytes.
-#       BUT how can I deal with stuff (in or out) that are BYTES that
-#       may not be utf-8 stuff?
-#       Also, I forgot to configure cat for utf-8 ... and is cat available
-#       on windows? Use temp files instead, that will solve two issues at
-#       the same time (bytes as input and car availability).
-#       Arf for the output, this is funny: for docx for example,
-#       pandoc (haskell) WONT LET ME USE STDOUT! Which is nice :)
-#       Nota: it won't read it either; so basically it manages differently
-#       the binary formats. Same thing for epub for examples.
-#       The messages are typically "pandoc: Cannot read archive from stdin"
-#       and "Specify an output file using the -o option".
-#       So I have to find a list in pandoc of binary vs text/utf-8 formats.
-#       OR detect the appropriate error at runtime?
-#       And then the bytes vs unicode policy is clear.
-#       And I don't need to tweak encoding settings in plumbum since I
-#       will use files for input and output anyway.
-#
-#       OK, so it's probaly safe to consider a shortlist of "binary" formats
-#       that are "doc*", "epub*", "ppt*", "odt" and to return bytes only
-#       for these formats.
-#
-#       And yes, working directly with filenames/files should work out
-#       of the box, and yes, NOT using files should be ok too (and is
-#       still my preferences: it should be simpler; if you need files,
-#       use a proper keyword argument).
-
-
 def read(source=None, file=None, format=None, options=None):
     if configure(read=True) is None:
         configure(auto=True)
