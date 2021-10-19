@@ -396,8 +396,7 @@ def write(doc, file=None, format=None, options=None):
         output_path = input_path
     else:
         if filename is not None:
-            # preserve extensions (sometimes pandoc looks for the extension,
-            # e.g. for pdf files)
+            # preserve file extensions (for format inference)
             tmp_filename = os.path.basename(filename)
         else:
             tmp_filename = "output"
@@ -411,8 +410,8 @@ def write(doc, file=None, format=None, options=None):
         pandoc(options)
 
     output_bytes = open(output_path, "rb").read()
-    binary_formats = ["doc", "epub", "ppt", "odt"]
-    if any(tag in format for tag in binary_formats) or output_path.endswith(".pdf"):
+    binary_formats = ["docx", "epub", "epub2", "epub3", "odt", "pdf", "pptx"]
+    if format in binary_formats or output_path.endswith(".pdf"):
         output = output_bytes
     else:  # text format
         output = output_bytes.decode("utf-8")
