@@ -21,8 +21,10 @@ jobs:
           environment-file: environment.yml
 
       - name: Install LaTeX
-        if: matrix.os == "ubuntu-latest"
-        run: sudo apt-get update && sudo apt-get install texlive-full
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install texlive-full
 
       - name: Install Python pandoc 
         run: python setup.py install
