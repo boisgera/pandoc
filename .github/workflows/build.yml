@@ -20,11 +20,50 @@ jobs:
           activate-environment: pandoc
           environment-file: environment.yml
 
-      - name: Install LaTeX
+      - name: Install LaTeX (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install texlive-full
+
+      - name: Install LaTeX (Windows)
+        if: matrix.os == 'windows-latest'
+            - name: Install System dependencies and LaTeX
+        shell: bash
+        run: |
+          set -x
+          echo "Downloading MiKTeX CLI installer"
+          # We download from a specific miror already # TODO: Should store this setup package somewhere ourselves
+          curl -L -O https://ctan.math.illinois.edu/systems/win32/miktex/setup/windows-x64/miktexsetup-4.1-x64.zip
+          unzip miktexsetup-4.1-x64.zip
+
+          echo "Setting up the local package directory via download"
+          ./miktexsetup_standalone --verbose \
+              --local-package-repository=C:/MiKTeX-Repo \
+              --remote-package-repository="https://ctan.math.illinois.edu/systems/win32/miktex/tm/packages/" \
+              --package-set=complete \
+              download
+
+          echo "Installing from the local package directory previously set up"
+          ./miktexsetup_standalone --verbose \
+              --local-package-repository=C:/MiKTeX-Repo \
+              --package-set=complete \
+              --shared=yes \
+              install
+
+          echo "Adding MiKTeX bin folder to PATH and to GITHUB_PATH"
+          echo "C:/Program Files/MiKTeX/miktex/bin/x64/" >> $GITHUB_PATH
+          export PATH="/c/Program Files/MiKTeX/miktex/bin/x64/:$PATH"
+
+          echo "Configuring MiKTeX to install missing packages on the fly"
+          initexmf --admin --verbose --set-config-value='[MPM]AutoInstall=1'
+
+          echo "Configure default mirror for packages"
+          mpm --admin --set-repository="https://ctan.math.illinois.edu/systems/win32/miktex/tm/packages/"
+          # Avoid annoying warning: "xelatex: major issue: So far, you have not checked for updates as a MiKTeX user."
+          mpm --find-updates
+          mpm --admin --find-updates
+
 
       - name: Install Python pandoc 
         run: python setup.py install
