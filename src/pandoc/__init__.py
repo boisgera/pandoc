@@ -7,6 +7,7 @@ import copy
 import inspect
 import json
 import os.path
+import pathlib
 import shlex
 import shutil
 import sys
@@ -29,7 +30,7 @@ from . import utils
 # Filesystem Helper
 # ------------------------------------------------------------------------------
 def rmtree(path):
-    """Deal with Windows 
+    """Deal with Windows
     (see e.g <https://www.gitmemory.com/issue/sdispater/poetry/1031/488759621>
     """
     retries = 10
@@ -217,40 +218,40 @@ def configure(
 #       still my preferences: it should be simpler; if you need files,
 #       use a proper keyword argument).
 
-# TODO: add ".py" / Python support
-
-_readers = {
-    ".xhtml": "html",
-    ".html": "html",
-    ".htm": "html",
-    ".md": "markdown",
-    ".markdown": "markdown",
-    ".muse": "muse",
-    ".tex": "latex",
-    ".latex": "latex",
-    ".ltx": "latex",
-    ".rst": "rst",
-    ".org": "org",
-    ".lhs": "markdown+lhs",
-    ".db": "docbook",
-    ".opml": "opml",
-    ".wiki": "mediawiki",
-    ".dokuwiki": "dokuwiki",
-    ".textile": "textile",
-    ".native": "native",
-    ".json": "json",
-    ".docx": "docx",
-    ".t2t": "t2t",
-    ".epub": "epub",
-    ".odt": "odt",
-    ".pdf": "pdf",
-    ".doc": "doc",
-}
-
-
-def default_reader_name(filename):
-    _, ext = os.path.splitext(filename)
-    return _readers.get(ext)
+# Deprecated in favor of format_from_filename
+# ------------------------------------------------------------------------------
+# _readers = {
+#     ".xhtml": "html",
+#     ".html": "html",
+#     ".htm": "html",
+#     ".md": "markdown",
+#     ".markdown": "markdown",
+#     ".muse": "muse",
+#     ".tex": "latex",
+#     ".latex": "latex",
+#     ".ltx": "latex",
+#     ".rst": "rst",
+#     ".org": "org",
+#     ".lhs": "markdown+lhs",
+#     ".db": "docbook",
+#     ".opml": "opml",
+#     ".wiki": "mediawiki",
+#     ".dokuwiki": "dokuwiki",
+#     ".textile": "textile",
+#     ".native": "native",
+#     ".json": "json",
+#     ".docx": "docx",
+#     ".t2t": "t2t",
+#     ".epub": "epub",
+#     ".odt": "odt",
+#     ".pdf": "pdf",
+#     ".doc": "doc",
+# }
+#
+#
+# def default_reader_name(filename):
+#     _, ext = os.path.splitext(filename)
+#     return _readers.get(ext)
 
 
 def read(source=None, file=None, format=None, options=None):
@@ -280,7 +281,7 @@ def read(source=None, file=None, format=None, options=None):
     input.close()
 
     if format is None and filename is not None:
-        format = default_reader_name(filename)
+        format = format_from_filename(filename)  # default_reader_name(filename)
     if format is None:
         format = "markdown"
     if format != "json" and _configuration["path"] is None:
@@ -311,59 +312,124 @@ def read(source=None, file=None, format=None, options=None):
         return read_json_v2(json_)
 
 
+# ------------------------------------------------------------------------------
 # TODO: add ".py" / Python support
 
-_writers = {
-    "": "markdown",
-    ".pdf": "latex",
-    ".tex": "latex",
-    ".latex": "latex",
-    ".ltx": "latex",
+_ext_to_file_format = {
+    ".adoc": "asciidoc",
+    ".asciidoc": "asciidoc",
     ".context": "context",
     ".ctx": "context",
-    ".rtf": "rtf",
-    ".rst": "rst",
-    ".s5": "s5",
-    ".native": "native",
+    ".db": "docbook",
+    ".doc": "doc",  # pandoc will generate an "unknown reader"
+    ".docx": "docx",
+    ".dokuwiki": "dokuwiki",
+    ".epub": "epub",
+    ".fb2": "fb2",
+    ".htm": "html",
+    ".html": "html",
+    ".icml": "icml",
     ".json": "json",
-    ".txt": "markdown",
-    ".text": "markdown",
-    ".md": "markdown",
-    ".muse": "muse",
-    ".markdown": "markdown",
-    ".textile": "textile",
+    ".latex": "latex",
     ".lhs": "markdown+lhs",
+    ".ltx": "latex",
+    ".markdown": "markdown",
+    ".mkdn": "markdown",
+    ".mkd": "markdown",
+    ".mdwn": "markdown",
+    ".mdown": "markdown",
+    ".Rmd": "markdown",
+    ".md": "markdown",
+    ".ms": "ms",
+    ".muse": "muse",
+    ".native": "native",
+    ".odt": "odt",
+    ".opml": "opml",
+    ".org": "org",
+    ".pdf": "pdf",  # pandoc will generate an "unknown reader"
+    ".pptx": "pptx",
+    ".roff": "ms",
+    ".rst": "rst",
+    ".rtf": "rtf",
+    ".s5": "s5",
+    ".t2t": "t2t",
+    ".tei": "tei",
+    ".tei.xml": "tei",  # won't work, see https://github.com/jgm/pandoc/issues/7630>
+    ".tex": "latex",
     ".texi": "texinfo",
     ".texinfo": "texinfo",
-    ".db": "docbook",
-    ".odt": "odt",
-    ".docx": "docx",
-    ".epub": "epub",
-    ".org": "org",
-    ".asciidoc": "asciidoc",
-    ".adoc": "asciidoc",
-    ".fb2": "fb2",
-    ".opml": "opml",
-    ".icml": "icml",
-    ".tei.xml": "tei",
-    ".tei": "tei",
-    ".ms": "ms",
-    ".roff": "ms",
-    ".pptx": "pptx",
+    ".text": "markdown",
+    ".textile": "textile",
+    ".txt": "markdown",
+    ".wiki": "mediawiki",
     ".xhtml": "html",
-    ".html": "html",
-    ".htm": "html",
+    ".ipynb": "ipynb",
+    ".csv": "csv",
+    ".bib": "biblatex",
 }
 
+for _i in range(1, 10):
+    _ext_to_file_format[f".{_i}"] = "man"
 
-def default_writer_name(filename):
-    if filename.endswith(".tei.xml"):
-        filename = filename[:-4]  # uhu ? test this.
-    _, ext = os.path.splitext(filename)
-    if len(ext) == 2 and ext[1] in "0123456789":
-        return "man"
-    else:
-        return _writers.get(ext)
+
+def format_from_filename(filename):
+    ext = pathlib.Path(filename.lower()).suffix
+    return _ext_to_file_format.get(ext)
+
+
+# Deprecated in favor of format_from_filename
+# ------------------------------------------------------------------------------
+# _writers = {
+#     "": "markdown",
+#     ".pdf": "latex",
+#     ".tex": "latex",
+#     ".latex": "latex",
+#     ".ltx": "latex",
+#     ".context": "context",
+#     ".ctx": "context",
+#     ".rtf": "rtf",
+#     ".rst": "rst",
+#     ".s5": "s5",
+#     ".native": "native",
+#     ".json": "json",
+#     ".txt": "markdown",
+#     ".text": "markdown",
+#     ".md": "markdown",
+#     ".muse": "muse",
+#     ".markdown": "markdown",
+#     ".textile": "textile",
+#     ".lhs": "markdown+lhs",
+#     ".texi": "texinfo",
+#     ".texinfo": "texinfo",
+#     ".db": "docbook",
+#     ".odt": "odt",
+#     ".docx": "docx",
+#     ".epub": "epub",
+#     ".org": "org",
+#     ".asciidoc": "asciidoc",
+#     ".adoc": "asciidoc",
+#     ".fb2": "fb2",
+#     ".opml": "opml",
+#     ".icml": "icml",
+#     ".tei.xml": "tei",
+#     ".tei": "tei",
+#     ".ms": "ms",
+#     ".roff": "ms",
+#     ".pptx": "pptx",
+#     ".xhtml": "html",
+#     ".html": "html",
+#     ".htm": "html",
+# }
+#
+#
+# def default_writer_name(filename):
+#     if filename.endswith(".tei.xml"):
+#         filename = filename[:-4]  # uhu ? test this.
+#     _, ext = os.path.splitext(filename)
+#     if len(ext) == 2 and ext[1] in "0123456789":
+#         return "man"
+#     else:
+#         return _writers.get(ext)
 
 
 # TODO: better management for pdf "format" which is not a format according
@@ -399,7 +465,7 @@ def write(doc, file=None, format=None, options=None):
         file = open(filename, "wb")
 
     if format is None and filename is not None:
-        format = default_writer_name(filename)
+        format = format_from_filename(filename)  # default_writer_name(filename)
     if format is None:
         format = "markdown"  # instead of html, yep.
     if format != "json" and _configuration["path"] is None:
@@ -612,7 +678,7 @@ def read_json_v2(json_, type_=None):
             constructors = data_type[1][1]
             constructors_names = [constructor[0] for constructor in constructors]
             constructor_name = json_["t"]
-            if constructor_name not in constructors_names: # shadowed
+            if constructor_name not in constructors_names:  # shadowed
                 constructor_name = constructor_name + "_"
                 assert constructor_name in constructors_names
             constructor = getattr(types, constructor_name)._def
@@ -686,7 +752,7 @@ def write_json_v2(object_):
         if not single_type_constructor:
             type_name = type(object_).__name__
             # If an underscore was used to in the type name to avoid a name
-            # collision between a constructor and its parent, remove it for 
+            # collision between a constructor and its parent, remove it for
             # the json representation.
             if type_name.endswith("_"):
                 type_name = type_name[:-1]
@@ -800,15 +866,17 @@ def iter_path(elt):
     for elt_ in iter(elt, enter=enter, exit=exit):
         yield path
 
+
 class Symbol(str):
     def __new__(cls, *args, **kw):
         return str.__new__(cls, *args, **kw)
+
     def __repr__(self):
         return str(self)
 
+
 ENTER = Symbol("ENTER")
 EXIT = Symbol("EXIT")
-
 
 
 # class Iter2:
@@ -829,7 +897,7 @@ EXIT = Symbol("EXIT")
 #             else:
 #                 parent, index = self.path[-1]
 #                 return parent[index], ENTER
-            
+
 #             else:
 #                 parent, index = self.path[-1]
 #                 if not hasattr(parent, "__getitem__") or isinstance(parent, str):
@@ -842,8 +910,6 @@ EXIT = Symbol("EXIT")
 #                 except IndexError:
 #                     self.way = EXIT
 #                     return parent, EXIT
-
-                
 
 
 def get_parent(doc, elt):
@@ -874,10 +940,11 @@ def _apply_children(f, elt):
         assert type(elt) in [bool, int, float, str]
         return elt
 
-def apply(f, elt=None): # apply the transform f bottom-up
+
+def apply(f, elt=None):  # apply the transform f bottom-up
     f_ = f
 
-    def f(elt): # sugar : no return value means no change 
+    def f(elt):  # sugar : no return value means no change
         new_elt = f_(elt)
         if new_elt is not None:
             return new_elt
