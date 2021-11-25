@@ -110,7 +110,9 @@ def collect_ghci_script_output():
             collect = False
             break
         elif collect == True:
-            lines.append(line)
+            sline = line.strip()
+            if not (sline.startswith("type") and sline.endswith(":: *")): # e.g. "type ListNumberStyle :: *"
+                lines.append(line)
     definitions = "".join(lines)
     return definitions
 

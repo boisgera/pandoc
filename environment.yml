@@ -2,16 +2,16 @@ name: pandoc
 channels:
   - conda-forge
 dependencies:
-  - python=3.9
-  - pandoc=2.14.2
+  - python=3.10
+  - pandoc=2.16.2
   - plumbum
   - ply
   - pip
   - setuptools
   - wheel
   - twine
-  - strictyaml
   - black
   - pip:
+    - strictyaml # conda version if 1.6.0 and doesn't solve https://github.com/crdoconnor/strictyaml/issues/151
     - mkdocs
     - mkdocs-material
