@@ -321,7 +321,7 @@ from pandoc.types import *
       - `version`: the `pandoc` command-line tool version, such as `"2.14.2"`.
 
       - `pandoc_types_version`: the [`pandoc-types`](https://hackage.haskell.org/package/pandoc-types)
-         version, such as `"1.22"`.
+         version, such as `"1.22.1"`.
 
       - `read`: a boolean; defaults to `False`. Return the configuration dictionary.
 
@@ -343,8 +343,8 @@ from pandoc.types import *
     >>> config # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': True, 
      'path': ..., 
-     'version': '2.14.2', 
-     'pandoc_types_version': '1.22'}
+     'version': '2.16.2', 
+     'pandoc_types_version': '1.22.1'}
     ```
     To avoid this, call `pandoc.configure(...)` yourself beforehand.
     Alternatively, select manually your pandoc executable afterwards:
@@ -358,8 +358,8 @@ from pandoc.types import *
     >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': False, 
      'path': ..., 
-     'version': '2.14.2', 
-     'pandoc_types_version': '1.22'}    
+     'version': '2.16.2', 
+     'pandoc_types_version': '1.22.1'}    
     ```
 
     <h5>See also</h5>
