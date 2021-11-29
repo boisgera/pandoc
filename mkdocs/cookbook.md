@@ -99,7 +99,7 @@ def get_first_header_title(doc):
 ### Structural checks
 
 The functions `get_date` and `get_first_header_title` may fail if they are
-use on a document which doesn't have the expected structure. 
+used on a document which doesn't have the expected structure. 
 For example, for the simple "Hello world!" document
 
 ``` pycon
