@@ -122,6 +122,20 @@ Meta({})
 world!
 ```
 
+### Pattern matching
+
+With Python 3.10 (or newer), pattern matching can be used for every
+Pandoc element:
+
+``` pycon
+>>> doc = pandoc.read("Hello world!")
+>>> match doc:
+...     case Pandoc(Meta(meta), [Para(inlines)]):
+...         assert meta == {}
+...         print(inlines)
+[Str('Hello'), Space(), Str('world!')]
+```
+
 Tree Iteration
 --------------------------------------------------------------------------------
 
