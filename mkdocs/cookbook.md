@@ -234,7 +234,7 @@ def get_first_header_title(doc):
             return pandoc.write(header_inlines).strip()
 ```
 
-is also identical to the previous one:
+is also unchanged:
 
 ``` pycon
 >>> get_first_header_title(commonmark_doc)
