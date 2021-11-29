@@ -4,8 +4,8 @@
 # Pip Package Manager
 # ------------------------------------------------------------------------------
 try:
-     import pip
-     import setuptools
+    import pip
+    import setuptools
 except ImportError:
     url = "http://pip.readthedocs.org"
     error = f"pip is not installed, refer to <{url}> for instructions."
@@ -15,17 +15,17 @@ except ImportError:
 # ------------------------------------------------------------------------------
 m = {}
 exec(open("src/pandoc/about.py").read(), m)
-metadata = dict((k, v) for (k, v) in m.items() if not k.startswith('_'))
+metadata = dict((k, v) for (k, v) in m.items() if not k.startswith("_"))
 
 # Setup Configuration
 # ------------------------------------------------------------------------------
 contents = {
-  "packages": setuptools.find_packages("src"),
-  "package_dir": {"": "src"},
-  "package_data": {"pandoc": ["pandoc-types.js", "tests.md"]},
+    "packages": setuptools.find_packages("src"),
+    "package_dir": {"": "src"},
+    "package_data": {"pandoc": ["pandoc-types.js", "tests.md"]},
 }
 requirements = {
-  "install_requires": ["plumbum", "ply"],
+    "install_requires": ["plumbum", "ply"],
 }
 
 info = {}
@@ -34,7 +34,7 @@ info.update(contents)
 info.update(requirements)
 
 info["long_description"] = open("README.md", encoding="utf-8").read()
-info["long_description_content_type"] = 'text/markdown'
+info["long_description_content_type"] = "text/markdown"
 
 if __name__ == "__main__":
     setuptools.setup(**info)

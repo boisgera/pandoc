@@ -69,14 +69,15 @@ def tweak(src):
     chunks = {}
     python, sep, start, end, code = False, None, None, None, []
     for i, line in enumerate(lines):
-        if ( # match at least three backquotes, optional space, then python or pycon
+        if (  # match at least three backquotes, optional space, then python or pycon
             re.match(r"\s*(`|~){3,}\s*py(c|th)on", line)
         ):
-            sep = line.strip()[0] ; assert sep in "`~"
+            sep = line.strip()[0]
+            assert sep in "`~"
             start = i
             code.append("")
             python = True
-        elif python is True and 3*sep in line:
+        elif python is True and 3 * sep in line:
             sep = None
             end = i + 1
             code.append("")
@@ -114,7 +115,7 @@ for filename in test_files:
         # and add the text = """ stuff.
         # Then add a ``` pycon block with repr stuff
 
-        pattern  = r'=== "Markdown"(?:(?:\n)|(?:[ ]{8}.*\n))*'
+        pattern = r'=== "Markdown"(?:(?:\n)|(?:[ ]{8}.*\n))*'
         pattern += r'=== "Python"(?:(?:\n)|(?:[ ]{8}.*\n))*'
 
         found = re.findall(pattern, src)
@@ -129,11 +130,11 @@ for filename in test_files:
             ritem = item.strip()
             ritem = re.sub("^[ ]{8}", "", ritem, flags=re.MULTILINE)
             ritem = ritem.replace(
-                '=== "Markdown"\n\n', 
-                f'=== "Markdown"\n\n{sep} python\ntext = \\\nr"""')
+                '=== "Markdown"\n\n', f'=== "Markdown"\n\n{sep} python\ntext = \\\nr"""'
+            )
             ritem = ritem.replace(
                 '\n=== "Python"\n',
-                f'"""\n{sep}\n\n=== "Python"\n\n{sep} pycon\n>>> pandoc.read(text)'
+                f'"""\n{sep}\n\n=== "Python"\n\n{sep} pycon\n>>> pandoc.read(text)',
             )
             ritem += f"\n{sep}\n\n"
             ritems.append(ritem)

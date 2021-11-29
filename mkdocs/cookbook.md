@@ -1,14 +1,162 @@
-
 # Cookbook
-
-⚠️ Random notes & TODOs.
 
 ``` python
 import pandoc
 from pandoc.types import *
 ```
 
-## Fetch
+We will use the commonmark spec as an example of a rather complex markdown document:
+
+``` python
+from urllib.request import urlopen
+PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
+HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" 
+URL = f"https://{PATH}/{HASH}/spec.txt"
+COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
+commonmark_doc = pandoc.read(COMMONMARK_SPEC)
+```
+
+## Match
+
+When we know the location and type of some information in a document,
+we can use either random access or pattern matching to retrieve it.
+
+### Random access
+
+A date is often included as inline text into a document's metadata; 
+in this case, we can access it and return it as a markdown string:
+
+``` python
+def get_date(doc):
+    meta = doc[0] # doc: Pandoc(Meta, Block)
+    meta_dict = meta[0] # meta: Meta({Text: MetaValue})
+    date = meta_dict["date"]
+    date_inlines = date[0] # date: MetaInlines([Inline])
+    return pandoc.write(date_inlines).strip()
+```
+
+The commonmark specification includes such a date:
+``` pycon
+>>> print(COMMONMARK_SPEC) # doctest: +ELLIPSIS
+---
+title: CommonMark Spec
+author: John MacFarlane
+version: '0.30'
+date: '2021-06-19'
+license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
+...
+```
+
+and therefore
+
+``` pycon
+>>> get_date(commonmark_doc)
+'2021-06-19'
+```
+
+Note that `get_date` may fail if the document doesn't have the expected 
+structure:
+
+``` pycon
+>>> hello_world_doc = pandoc.read("Hello world!")
+>>> hello_world_doc
+Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+>>> get_date(hello_world_doc)
+Traceback (most recent call last):
+...
+KeyError: 'date'
+```
+
+A more complete version of the `get_date` function, that returns `None` when
+the data metadata is not present or not of the expected type, is:
+
+``` python
+def get_date(doc):
+    meta = doc[0] # doc: Pandoc(Meta, Block)
+    meta_dict = meta[0] # meta: Meta({Text: MetaValue})
+    date = meta_dict.get("date")
+    if isinstance(date, MetaInlines):
+        date_inlines = date[0] # date: MetaInlines([Inline])
+        return pandoc.write(date_inlines).strip()
+```
+
+``` pycon
+>>> get_date(commonmark_doc)
+'2021-06-19'
+>>> get_date(hello_world_doc)
+```
+
+<!--
+We can also find the document's author name in the document metadata and 
+return it (as a markdown string).
+``` python
+def get_author(doc):
+    meta = doc[0] # doc: Pandoc(Meta, [Block])
+    meta_dict = meta[0] # meta: Meta({Text: MetaValue})
+    author = meta_dict.get("author")
+    if author:
+        if isinstance(author, MetaInlines): # author: MetaInlines([Inline])
+            author_inlines = author[0]
+            return pandoc.write(author_inlines).strip()
+        elif isinstance(author, MetaList): # author: MetaList([MetaValue])
+            authors_meta = author[0]
+            if all(isinstance(elt, MetaInlines) for elt in authors_meta):
+                authors_inlines = [elt[0] for elt in authors_meta]
+                return [pandoc.write(inline).strip() for inline in authors_inlines]
+```
+
+``` pycon
+>>> get_author(commonmark_doc)
+'John MacFarlane'
+```
+
+This `get_author` function is more complex than `get_date` but it can also 
+deal with multiple authors, specified as a list of inline texts. For example,
+with
+
+``` python
+doc = pandoc.read("""
+---
+author: 
+  - Author 1
+  - Author 2
+  - Author 3
+---
+""")
+```
+it yields
+``` pycon
+>>> get_author(doc)
+['Author 1', 'Author 2', 'Author 3']
+```
+
+-->
+
+### Pattern matching
+
+With Python 3.10 or later, [pattern matching] is an alternative to
+random access and type checks. The following implementation of `get_date`
+
+[pattern matching]: https://www.python.org/dev/peps/pep-0634/
+
+``` python
+def get_date(doc):
+    match doc:
+        case Pandoc(Meta({"date": MetaInlines(date_inlines)}), _):
+            return pandoc.write(date_inlines).strip()
+```
+
+and the previous one have identical behaviors:
+
+``` pycon
+>>> get_date(commonmark_doc)
+'2021-06-19'
+>>> get_date(hello_world_doc)
+```
+
+
+
+## Find
 
 ### Read
 
@@ -20,67 +168,42 @@ and optionally its contents. This "fetch" pattern,
 does not require any transformation of the document itself,
 often leads to rather straightforward implementations.
 
-We'll present some examples of this pattern based on the commonmark spec, 
-which is a rather rich markdown document. It is available on github:
-``` python
-from urllib.request import urlopen
-PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
-HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" 
-URL = f"https://{PATH}/{HASH}/spec.txt"
-COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
-```
 
-We read it as a pandoc document:
-```python
-commonmark_doc = pandoc.read(COMMONMARK_SPEC)
-```
 
-We can find the document's author name in the document metadata[^11]:
-``` python
-def author(doc):
-    metas = [elt for elt in pandoc.iter(doc) if isinstance(elt, Meta)]
-    assert len(metas) == 1
-    meta = metas[0]
-    metamap = meta[0] # Meta signature is Meta({Text: MetaValue})
-    author = metamap["author"]
-    assert isinstance(author, MetaInlines)
-    inlines = author[0] # MetaInlines signature: MetaInlines([Inline])
-    author_doc = Pandoc(Meta({}), [Plain(inlines)])
-    author_md = pandoc.write(author_doc).strip()
-    return author_md
-```
 
-``` pycon
->>> author(commonmark_doc)
-'John MacFarlane'
-```
-
-[^11]: using a pointlessly complicated method since the metadata is available
-as `doc[0]`.
-
-We can build the table of contents of the document:
+We can build a simple table of contents of the document:
 ``` python
 def table_of_contents(doc):
     headers = [elt for elt in pandoc.iter(doc) if isinstance(elt, Header)]
     toc_lines = []
     for header in headers:
-       level, _, inlines = header[:] # Header signature: Header(Int, Attr, [Inline]) 
-       header_title = pandoc.write(Pandoc(Meta({}), [Plain(inlines)])).strip()
-       toc_lines.append( (level - 1) * 2 * " " + header_title)
+       level, _, inlines = header[:] # header: Header(Int, Attr, [Inline]) 
+       header_title = pandoc.write(inlines).strip()
+       indent = (level - 1) * 4 * " "
+       toc_lines.append(f"{indent}  - {header_title}")
     return "\n".join(toc_lines)
 ```
 
 ``` pycon
 >>> print(table_of_contents(commonmark_doc)) # doctest: +ELLIPSIS
-Introduction
-  What is Markdown?
-  Why is a spec needed?
-  About this document
-Preliminaries
-  Characters and lines
-  Tabs
-  Insecure characters
+  - Introduction
+      - What is Markdown?
+      - Why is a spec needed?
+      - About this document
+  - Preliminaries
+      - Characters and lines
+      - Tabs
+      - Insecure characters
+      - Backslash escapes
+      - Entity and numeric character references
   ...
+  - Appendix: A parsing strategy
+      - Overview
+      - Phase 1: block structure
+      - Phase 2: inline structure
+          - An algorithm for parsing nested emphasis and links
+              - *look for link or image*
+              - *process emphasis*
 ```
 
 We can display all external link URLs used in the commonmark specification.
@@ -136,7 +259,7 @@ def fetch_code_types(doc):
 
 ### Write
 
-The "fetch" pattern is also valuable to get a list of (mutable) items and then 
+The "match" pattern is also valuable to get a list of (mutable) items and then 
 change their content. For example, to change all http links in the document to 
 their https counterpart:
 
@@ -144,8 +267,8 @@ their https counterpart:
 def to_https(doc):
     links = [elt for elt in pandoc.iter(doc) if isinstance(elt, Link)]
     for link in links:
-        target = link[2]    # Link signature is Link(Attr, [Inline], Target)
-        url, title = target # Target signature is (Text, Text)
+        target = link[2] # link: Link(Attr, [Inline], Target)
+        url, title = target # target: (Text, Text)
         if url.startswith("http:"):
             url = url.replace("http:", "https:")
             target = url, title

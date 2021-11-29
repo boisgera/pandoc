@@ -128,8 +128,8 @@ lexer = lex.lex()
 # ------------------------------------------------------------------------------
 def p_typedecl(p):
     """typedecl : typetypedecl
-                | datatypedecl
-                | newtypedecl"""
+    | datatypedecl
+    | newtypedecl"""
     p[0] = p[1]
 
 
@@ -172,9 +172,11 @@ def p_type_map(p):
     "type : MAP type type"
     p[0] = ["map", [p[2], p[3]]]
 
+
 def p_type_maybe(p):
     "type : MAYBE type"
     p[0] = ["maybe", [p[2]]]
+
 
 def p_assignment(p):
     """
@@ -196,7 +198,7 @@ def p_assignments(p):
 
 def p_record(p):
     """type_record : LBRACE RBRACE
-                   | LBRACE assignments RBRACE
+    | LBRACE assignments RBRACE
     """
     if len(p) == 3:
         p[0] = ["map", []]
@@ -206,7 +208,7 @@ def p_record(p):
 
 def p_types(p):
     """types : type
-             | type types
+    | type types
     """
     if len(p) == 2:
         p[0] = [p[1]]
@@ -216,8 +218,8 @@ def p_types(p):
 
 def p_constructor(p):
     """constructor : CONID types
-                   | CONID
-                   | CONID type_record
+    | CONID
+    | CONID type_record
     """
     if len(p) == 3 and p[2][0] == "map":
         p[0] = [p[1], p[2]]
@@ -230,7 +232,7 @@ def p_constructor(p):
 
 def p_constructors(p):
     """constructors : constructor
-                    | constructor BAR constructors
+    | constructor BAR constructors
     """
     if len(p) == 2:
         p[0] = [p[1]]

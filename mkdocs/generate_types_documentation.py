@@ -10,8 +10,10 @@ with open("api.md.template", encoding="utf-8") as file:
 
 doc = ""
 
+
 def indent(text):
-    return "\n".join(4*" " + line for line in text.splitlines())
+    return "\n".join(4 * " " + line for line in text.splitlines())
+
 
 def list_types(type_):
     _def = type_._def
@@ -20,6 +22,7 @@ def list_types(type_):
         if isinstance(elt, str) and elt[0].isupper():
             types_.add(elt)
     return sorted([x for x in types_ if x != type_.__name__])
+
 
 def see_also(type_):
     ts = list_types(type_)
@@ -31,6 +34,7 @@ def see_also(type_):
         return indent(s)
     else:
         return ""
+
 
 td = pandoc.types._types_dict
 
@@ -75,6 +79,3 @@ for key in sorted(td):
 src = src.replace("${types_documentation}", doc)
 with open("api.md", "w") as file:
     file.write(src)
-
-
-

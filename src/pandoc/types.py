@@ -95,6 +95,14 @@ def _make_builtin_types():
     td["map"] = dict
 
 
+def enable_pattern_matching(class_dict):
+    decl = class_dict["_def"]
+    num_args = len(decl[1][1])
+    class_dict["__match_args__"] = tuple([f"_arg{i}" for i in range(num_args)])
+    for i in range(num_args):
+        class_dict[f"_arg{i}"] = property(lambda self, i=i: self._args[i])
+
+
 def clear_types():
     """Uninstall Pandoc Types"""
     global _types_dict
@@ -157,6 +165,7 @@ def make_types():
                     "_def": constructor,
                     "__doc__": pandoc.utils.docstring(constructor),
                 }
+                enable_pattern_matching(_dict)
                 type_ = type(constructor_name, bases, _dict)
                 _types_dict[constructor_name] = type_
         elif decl_type == "type":
