@@ -13,10 +13,36 @@ PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
 HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" 
 URL = f"https://{PATH}/{HASH}/spec.txt"
 COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
+```
+
+``` pycon
+>>> print(COMMONMARK_SPEC[:583]) # excerpt
+---
+title: CommonMark Spec
+author: John MacFarlane
+version: '0.30'
+date: '2021-06-19'
+license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
+...
+<BLANKLINE>
+# Introduction
+<BLANKLINE>
+## What is Markdown?
+<BLANKLINE>
+Markdown is a plain text format for writing structured documents,
+based on conventions for indicating formatting in email
+and usenet posts.  It was developed by John Gruber (with
+help from Aaron Swartz) and released in 2004 in the form of a
+[syntax description](http://daringfireball.net/projects/markdown/syntax)
+and a Perl script (`Markdown.pl`) for converting Markdown to
+HTML.
+```
+
+``` python
 commonmark_doc = pandoc.read(COMMONMARK_SPEC)
 ```
 
-## Match
+## Access
 
 When we know the location and type of some information in a document,
 we can use either random access or pattern matching to retrieve it.
@@ -28,7 +54,7 @@ in this case, we can access it and return it as a markdown string:
 
 ``` python
 def get_date(doc):
-    meta = doc[0] # doc: Pandoc(Meta, Block)
+    meta = doc[0] # doc: Pandoc(Meta, [Block])
     meta_dict = meta[0] # meta: Meta({Text: MetaValue})
     date = meta_dict["date"]
     date_inlines = date[0] # date: MetaInlines([Inline])
@@ -54,25 +80,57 @@ and therefore
 '2021-06-19'
 ```
 
-Note that `get_date` may fail if the document doesn't have the expected 
-structure:
+After the metadata, the document starts with a header.
+To get its title, we can use
+
+``` python
+def get_first_header_title(doc):
+    blocks = doc[1] # doc: Pandoc(Meta, [Block])
+    header = blocks[0]
+    title_inlines = header[2] # header: Header(Int, Attr, [Inline])
+    return pandoc.write(title_inlines).strip()
+```
 
 ``` pycon
->>> hello_world_doc = pandoc.read("Hello world!")
->>> hello_world_doc
+>>> get_first_header_title(commonmark_doc)
+'Introduction'
+```
+
+### Structural checks
+
+The functions `get_date` and `get_first_header_title` may fail if they are
+use on a document which doesn't have the expected structure. 
+For example, for the simple "Hello world!" document
+
+``` pycon
+>>> helloworld_doc = pandoc.read("Hello world!")
+>>> helloworld_doc
 Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
->>> get_date(hello_world_doc)
+```
+
+which has no `date` metadata field, and doesn't start with a header,
+we end up with
+
+``` pycon
+>>> get_date(helloworld_doc)
 Traceback (most recent call last):
 ...
 KeyError: 'date'
 ```
 
-A more complete version of the `get_date` function, that returns `None` when
-the data metadata is not present or not of the expected type, is:
+``` pycon
+>>> get_first_header_title(helloworld_doc)
+Traceback (most recent call last):
+...
+IndexError: list index out of range
+```
+
+A more robust version of these functions may return `None` when
+the document does not have the expected structure:
 
 ``` python
 def get_date(doc):
-    meta = doc[0] # doc: Pandoc(Meta, Block)
+    meta = doc[0] # doc: Pandoc(Meta, [Block])
     meta_dict = meta[0] # meta: Meta({Text: MetaValue})
     date = meta_dict.get("date")
     if isinstance(date, MetaInlines):
@@ -83,7 +141,22 @@ def get_date(doc):
 ``` pycon
 >>> get_date(commonmark_doc)
 '2021-06-19'
->>> get_date(hello_world_doc)
+>>> get_date(helloworld_doc)
+```
+
+``` python
+def get_first_header_title(doc):
+    blocks = doc[1] # doc: Pandoc(Meta, [Block])
+    if blocks and isinstance(blocks[0], Header):
+        header = blocks[0]
+        title_inlines = header[2] # header: Header(Int, Attr, [Inline])
+        return pandoc.write(title_inlines).strip()
+```
+
+``` pycon
+>>> get_first_header_title(commonmark_doc)
+'Introduction'
+>>> get_first_header_title(helloworld_doc)
 ```
 
 <!--
@@ -134,10 +207,8 @@ it yields
 
 ### Pattern matching
 
-With Python 3.10 or later, [pattern matching] is an alternative to
-random access and type checks. The following implementation of `get_date`
-
-[pattern matching]: https://www.python.org/dev/peps/pep-0634/
+With Python 3.10 or later, [pattern matching] can be used to combine
+random access and structural checks. The implementation of `get_date`
 
 ``` python
 def get_date(doc):
@@ -151,10 +222,27 @@ and the previous one have identical behaviors:
 ``` pycon
 >>> get_date(commonmark_doc)
 '2021-06-19'
->>> get_date(hello_world_doc)
+>>> get_date(helloworld_doc)
 ```
 
+The behavior of the following `get_first_header_title` function
 
+``` python
+def get_first_header_title(doc):
+    match doc:
+        case Pandoc(_, [Header(_, _, header_inlines), *_]):
+            return pandoc.write(header_inlines).strip()
+```
+
+is also identical to the previous one:
+
+``` pycon
+>>> get_first_header_title(commonmark_doc)
+'Introduction'
+>>> get_first_header_title(helloworld_doc)
+```
+
+[pattern matching]: https://www.python.org/dev/peps/pep-0634/
 
 ## Find
 
