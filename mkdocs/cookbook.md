@@ -1,16 +1,24 @@
 # Cookbook
 
 ``` python
+import builtins
+import copy
 import pandoc
 from pandoc.types import *
 ```
 
-We will use the commonmark spec as an example of a rather complex markdown document:
+In this cookbook, we will use as reference the very simple "Hello world!" document
+
+``` python
+HELLOWORLD_DOC = pandoc.read("Hello world!")
+```
+
+and the longer and more complex commonmark spec:
 
 ``` python
 from urllib.request import urlopen
 PATH = "raw.githubusercontent.com/commonmark/commonmark-spec"
-HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" 
+HASH = "499ebbad90163881f51498c4c620652d0c66fb2e" # pinned version
 URL = f"https://{PATH}/{HASH}/spec.txt"
 COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
 ```
@@ -39,7 +47,7 @@ HTML.
 ```
 
 ``` python
-commonmark_doc = pandoc.read(COMMONMARK_SPEC)
+COMMONMARK_DOC = pandoc.read(COMMONMARK_SPEC)
 ```
 
 ## Access
@@ -76,7 +84,7 @@ license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 and therefore
 
 ``` pycon
->>> get_date(commonmark_doc)
+>>> get_date(COMMONMARK_DOC)
 '2021-06-19'
 ```
 
@@ -92,7 +100,7 @@ def get_first_header_title(doc):
 ```
 
 ``` pycon
->>> get_first_header_title(commonmark_doc)
+>>> get_first_header_title(COMMONMARK_DOC)
 'Introduction'
 ```
 
@@ -100,11 +108,10 @@ def get_first_header_title(doc):
 
 The functions `get_date` and `get_first_header_title` may fail if they are
 use on a document which doesn't have the expected structure. 
-For example, for the simple "Hello world!" document
+For example, for the "Hello world!" document
 
 ``` pycon
->>> helloworld_doc = pandoc.read("Hello world!")
->>> helloworld_doc
+>>> HELLOWORLD_DOC
 Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 ```
 
@@ -112,14 +119,14 @@ which has no `date` metadata field, and doesn't start with a header,
 we end up with
 
 ``` pycon
->>> get_date(helloworld_doc)
+>>> get_date(HELLOWORLD_DOC)
 Traceback (most recent call last):
 ...
 KeyError: 'date'
 ```
 
 ``` pycon
->>> get_first_header_title(helloworld_doc)
+>>> get_first_header_title(HELLOWORLD_DOC)
 Traceback (most recent call last):
 ...
 IndexError: list index out of range
@@ -139,9 +146,9 @@ def get_date(doc):
 ```
 
 ``` pycon
->>> get_date(commonmark_doc)
+>>> get_date(COMMONMARK_DOC)
 '2021-06-19'
->>> get_date(helloworld_doc)
+>>> get_date(HELLOWORLD_DOC)
 ```
 
 ``` python
@@ -154,9 +161,9 @@ def get_first_header_title(doc):
 ```
 
 ``` pycon
->>> get_first_header_title(commonmark_doc)
+>>> get_first_header_title(COMMONMARK_DOC)
 'Introduction'
->>> get_first_header_title(helloworld_doc)
+>>> get_first_header_title(HELLOWORLD_DOC)
 ```
 
 <!--
@@ -179,7 +186,7 @@ def get_author(doc):
 ```
 
 ``` pycon
->>> get_author(commonmark_doc)
+>>> get_author(COMMONMARK_DOC)
 'John MacFarlane'
 ```
 
@@ -208,7 +215,7 @@ it yields
 ### Pattern matching
 
 With Python 3.10 or later, [pattern matching] can be used to combine
-random access and structural checks. The implementation of `get_date`
+random access and structural checks. The following implementation of `get_date`
 
 ``` python
 def get_date(doc):
@@ -220,9 +227,9 @@ def get_date(doc):
 and the previous one have identical behaviors:
 
 ``` pycon
->>> get_date(commonmark_doc)
+>>> get_date(COMMONMARK_DOC)
 '2021-06-19'
->>> get_date(helloworld_doc)
+>>> get_date(HELLOWORLD_DOC)
 ```
 
 The behavior of the following `get_first_header_title` function
@@ -237,29 +244,25 @@ def get_first_header_title(doc):
 is also unchanged:
 
 ``` pycon
->>> get_first_header_title(commonmark_doc)
+>>> get_first_header_title(COMMONMARK_DOC)
 'Introduction'
->>> get_first_header_title(helloworld_doc)
+>>> get_first_header_title(HELLOWORLD_DOC)
 ```
 
 [pattern matching]: https://www.python.org/dev/peps/pep-0634/
 
 ## Find
 
-### Read
+When the items we are searching for are not in a known place in
+the document, we may use the tree iterator provided by `pandoc.iter`
+and a variety of filtering methods to fetch them. Here we focus on
+comprehensions first and then introduce a higher-level helper.
 
-Extraction of information from a document – a very common use case in
-the automatic processing of documents – requires usually to find the
-document fragments that meet some condition first and foremost. 
-This condition typically discriminates on the type of the fragment 
-and optionally its contents. This "fetch" pattern, 
-does not require any transformation of the document itself,
-often leads to rather straightforward implementations.
+### Comprehensions
 
+The pattern to use is `[elt for elt in pandoc.iter(root) if condition_is_met(elt)]`.
 
-
-
-We can build a simple table of contents of the document:
+With it, we can build a simple table of contents of the document:
 ``` python
 def table_of_contents(doc):
     headers = [elt for elt in pandoc.iter(doc) if isinstance(elt, Header)]
@@ -273,7 +276,7 @@ def table_of_contents(doc):
 ```
 
 ``` pycon
->>> print(table_of_contents(commonmark_doc)) # doctest: +ELLIPSIS
+>>> print(table_of_contents(COMMONMARK_DOC)) # doctest: +ELLIPSIS
   - Introduction
       - What is Markdown?
       - Why is a spec needed?
@@ -294,20 +297,20 @@ def table_of_contents(doc):
               - *process emphasis*
 ```
 
-We can display all external link URLs used in the commonmark specification.
+We can display all external link URLs used in the commonmark specification:
 
 ``` python
 def display_external_links(doc):
     links = [elt for elt in pandoc.iter(doc) if isinstance(elt, Link)]
     for link in links:
-        _, _, target = link # Link signature is Link(Attr, [Inline], Target)
-        url, title = target # Target signature is (Text, Text)
-        if url.startswith("http"):
+        target = link[2] # link: Link(Attr, [Inline], Target)
+        url = target[0] # target: (Text, Text)
+        if url.startswith("http:") or url.startswith("https:"):
             print(url)
 ```
 
 ``` pycon
->>> display_external_links(commonmark_doc)
+>>> display_external_links(COMMONMARK_DOC)
 http://creativecommons.org/licenses/by-sa/4.0/
 http://daringfireball.net/projects/markdown/syntax
 http://daringfireball.net/projects/markdown/
@@ -325,7 +328,8 @@ https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 http://www.w3.org/TR/html5/syntax.html#comments
 ```
 
-We can get the list of the code blocks types (registered as classes):
+We can get the list of all code blocks and then collec their types 
+(registered as code block classes):
 
 ``` python
 def fetch_code_types(doc):
@@ -339,17 +343,19 @@ def fetch_code_types(doc):
 ```
 
 ``` pycon
->>> code_types = fetch_code_types(commonmark_doc)
+>>> code_types = fetch_code_types(COMMONMARK_DOC)
 >>> code_types
 ['example', 'html', 'markdown', 'tree']
 
 ```
 
+<!--
 ### Write
 
-The "match" pattern is also valuable to get a list of (mutable) items and then 
-change their content. For example, to change all http links in the document to 
-their https counterpart:
+The "find" pattern can also be used to change the content of a document,
+as long as the items that are searched for are mutable.
+For example, to change all http links in the document to their https 
+counterpart:
 
 ``` python
 def to_https(doc):
@@ -366,6 +372,7 @@ def to_https(doc):
 We can check that this function performs the expected change in the document:
 
 ``` pycon
+>>> commonmark_doc = copy.deepcopy(COMMONMARK_DOC)
 >>> to_https(commonmark_doc)
 >>> display_external_links(commonmark_doc)
 https://creativecommons.org/licenses/by-sa/4.0/
@@ -385,7 +392,122 @@ https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 https://www.w3.org/TR/html5/syntax.html#comments
 ```
 
+-->
+
+### Finder
+
+If your code ends up being hard to read, it's not hard to wrap the more
+common search patterns into a `find` helper function, for example:
+
+``` python
+def is_type_or_types(item):
+    return isinstance(item, type) or (
+        isinstance(item, tuple) and all(isinstance(x, type) for x in item)
+    )
+
+def find(root, types_or_function, all=False):
+    function = None
+    if is_type_or_types(types_or_function):
+        function = lambda elt: isinstance(elt, types_or_function)
+    elif callable(types_or_function):
+        function = types_or_function
+    else:
+        error = "find 2nd arg should be a type, tuple of types or function"
+        error += f", not {types_or_function}"
+        raise TypeError(error)
+    elts = (elt for elt in pandoc.iter(root) if function(elt))
+    if all:
+        return list(elts)
+    else:
+        try:
+            return next(elts)
+        except StopIteration:
+            return None
+```
+
+This `find` helper finds the first elt in root that matches the pattern given
+in the second argument and returns it, or returns `None` if the condition was
+never met:
+
+``` pycon
+>>> find(HELLOWORLD_DOC, Meta)
+Meta({})
+>>> find(HELLOWORLD_DOC, Para)
+Para([Str('Hello'), Space(), Str('world!')])
+>>> find(HELLOWORLD_DOC, Str)
+Str('Hello')
+>>> find(HELLOWORLD_DOC, LineBreak)
+```
+
+With `all=True`, the list of all matching elements are returned instead:
+
+``` pycon
+>>> find(HELLOWORLD_DOC, Meta, all=True)
+[Meta({})]
+>>> find(HELLOWORLD_DOC, Para, all=True)
+[Para([Str('Hello'), Space(), Str('world!')])]
+>>> find(HELLOWORLD_DOC, Str, all=True)
+[Str('Hello'), Str('world!')]
+>>> find(HELLOWORLD_DOC, LineBreak, all=True)
+[]
+```
+
+Types or multiple types can be specified (this is similar to what `insinstance`
+does):
+
+``` pycon
+>>> find(HELLOWORLD_DOC, (Str, Space))
+Str('Hello')
+>>> find(HELLOWORLD_DOC, (Str, Space), all=True)
+[Str('Hello'), Space(), Str('world!')]
+```
+
+Complex conditions based on types and values should be factored out in 
+a meaningful predicate function, such as `is_http_or_https_link`:
+
+``` python
+def get_url(link):
+    target = link[2] # link: Link(Attr, [Inline], Target)
+    url = target[0] # target: (Text, Text)
+    return url
+
+def is_http_or_https_link(elt):
+    if isinstance(elt, Link):
+        url = get_url(link=elt)
+        return url.startswith("http:") or url.startswith("https:")
+    else:
+        return False
+```
+
+This results in a quite readable code:
+
+``` pycon
+>>> for link in find(COMMONMARK_DOC, is_http_or_https_link, all=True):
+...     print(get_url(link))
+http://creativecommons.org/licenses/by-sa/4.0/
+http://daringfireball.net/projects/markdown/syntax
+http://daringfireball.net/projects/markdown/
+http://www.methods.co.nz/asciidoc/
+http://daringfireball.net/projects/markdown/syntax
+http://article.gmane.org/gmane.text.markdown.general/1997
+http://article.gmane.org/gmane.text.markdown.general/2146
+http://article.gmane.org/gmane.text.markdown.general/2554
+https://html.spec.whatwg.org/entities.json
+http://www.aaronsw.com/2002/atx/atx.py
+http://docutils.sourceforge.net/rst.html
+http://daringfireball.net/projects/markdown/syntax#em
+http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags
+https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
+http://www.w3.org/TR/html5/syntax.html#comments
+```
+
 ## Locate
+
+**TODO.** *Need to work on simpler "modifiers" first: using access and find,
+THEN if it is not the right pattern (because of the mutability issue, or
+because we want to remove, delete or expand, then consider locate). So
+how do I split this (so far we've done read-only): spread in access and
+find sections ?*
 
 Another very common transformation pattern is when you need to locate the
 items meeting some condition in the document in order to replace them or 
