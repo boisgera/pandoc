@@ -505,7 +505,7 @@ http://www.w3.org/TR/html5/syntax.html#comments
 
 **TODO.** *Need to work on simpler "modifiers" first: using access and find,
 THEN if it is not the right pattern (because of the mutability issue, or
-because we want to remove, delete or expand, then consider locate). So
+because we want to replace, remove or expand, then consider locate). So
 how do I split this (so far we've done read-only): spread in access and
 find sections ?*
 
