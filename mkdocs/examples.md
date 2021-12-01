@@ -34,232 +34,165 @@ def T(function):
 Uppercase
 --------------------------------------------------------------------------------
 
+🚀 **Change all text to upper case.**
+
 ``` python
-def capitalize(doc):
+def uppercase(doc):
     for elt in pandoc.iter(doc):
         if isinstance(elt, Str):
-            elt[0] = elt[0].upper()
+            elt[0] = elt[0].upper() # elt: Str(Text)
 ```
 
 ``` pycon
->>> T(capitalize)("I can't feel my legs")
-I CAN'T FEEL MY LEGS
-<BLANKLINE>
+>>> doc = pandoc.read("Hello world!")
+>>> uppercase(doc)
+>>> print(pandoc.write(doc).strip())
+HELLO WORLD!
 ```
 
 De-emphasize
 --------------------------------------------------------------------------------
 
-!!! note "TODO"
-    De-emphasize example. In-place, with a lookahead or with a new pandoc document.
-    Documentation of why lookahead works would be nice (the stuff we are changing
-    is not iterated over *yet*)
+🚀 **Turn strong text into emphasized text and emphasized text into normal text.**
 
-!!! note "TODO"
-    think of the pattern: if something matches a condition, 
-    replace it with something (and stop the iteration in this
-    branch? Or iterate on the new object?). 
-    Pandoc-filters has the ability to let the 
-    "atomic transformation" control the rest of the iteration
-    by calling walk. See how this is done, study walk.
-
-Comments
---------------------------------------------------------------------------------
-
-Remove everything between `<!-- BEGIN COMMENT -->` and `<!-- END COMMENT -->`.
-The comment lines must appear on lines by themselves, 
-with blank lines surrounding them.
-
-``` python
-def begin_comment(elt):
-    return isinstance(elt, RawBlock) and \
-           elt[0] == Format(u"html") and \
-           "<!-- BEGIN COMMENT -->" in elt[1]
-
-def end_comment(elt):
-    return isinstance(elt, RawBlock) and \
-           elt[0] == Format(u"html") and \
-           "<!-- END COMMENT -->" in elt[1]
+```python
+def de_emphasize(doc):
+    locations = []
+    for elt, path in pandoc.iter(doc, path=True):
+        if isinstance(elt, (Strong, Emph)):
+            holder, index = path[-1]
+            locations.append((elt, holder, index))
+    for elt, holder, index in reversed(locations):
+        if isinstance(elt, Strong):
+            inlines = elt[0] # elt: Strong([Inline])
+            holder[index] = Emph(inlines)
+        elif isinstance(elt, Emph):
+            inlines = elt[0] # elt: Emph([Inline])
+            holder[index:index+1] = inlines
 ```
-
-And now
-
-``` python
-def ignore_comments(doc):
-    for elt in pandoc.iter(doc):
-        if isinstance(elt, list) and len(elt) > 0 and isinstance(elt[0], Block):            
-            children = []
-            in_comment = False
-            for child in elt[:]:
-                if begin_comment(child):
-                    in_comment = True
-                elif end_comment(child):
-                    in_comment = False
-                else:
-                    if not in_comment:
-                        children.append(child)
-            elt[:] = children
-```
-
-Leads to
 
 ``` pycon
->>> markdown = """\
-... Regular text
-...
-... <!-- BEGIN COMMENT -->
-... A comment
-...
-... <!-- END COMMENT -->
-... Moar regular text
-... """
->>> T(ignore_comments)(markdown)
-Regular text
-<BLANKLINE>
-Moar regular text
-<BLANKLINE>
+>>> doc = pandoc.read("**strong text**, *emphasized text*, normal text.")
+>>> de_emphasize(doc)
+>>> print(pandoc.write(doc).strip())
+*strong text*, emphasized text, normal text.
 ```
 
-
-Theorems
+LaTeX theorems
 --------------------------------------------------------------------------------
 
-Convert divs with class="theorem" to LaTeX theorem environments in LaTeX output,
-and to numbered theorems in HTML output.
+🚀 **Convert divs tagged as theorems into LaTeX theorems.**
 
-!!! note "TODO" 
-    to HTML version. Also export to LaTeX and HTML to see the outputs?
-    Can it be done with an option to the `T` function?
-
-!!! note "TODO"
-    think of some support for visitor patterns? 
-    We see a lot of "do this in-place if this condition is met". 
-    Or can we use the basic pandoc map/filter? Dunno. Think of it.
-    Arf with filter or map we have to deal with linearized data types?
-    We can linearize but can we reassemble. How are filter and map used
-    for hierarchial structures in functional programming? Have a look at
-    Haskell (e.g. <https://stackoverflow.com/questions/7624774/haskell-map-for-trees>).
-    So, define a `pandoc.map` helper?
+First we need to detect this kind of divs:
 
 ``` python
 def is_theorem(elt):
     if isinstance(elt, Div):
-        attrs = elt[0]
-        _, classes, _ = attrs
+        attrs = elt[0] # elt: Div(Attr, [Block])
+        classes = attrs[1] # attrs: (Text, [Text], [(Text, Text)])
         if "theorem" in classes:
             return True
     return False
 ```
 
+Or equivalenty, with Python 3.10 (or newer), using pattern matching:
+
+``` python
+def is_theorem(elt):
+    match elt:
+        case Div((_, classes, _), _) if "theorem" in classes:
+            return True
+        case _:
+            return False
+```
+
+Now we can implement the transformation itself:
+
 ``` python
 def LaTeX(text):
-    return RawBlock(Format('latex'), text)
+    return RawBlock(Format("latex"), text)
 ```
 
 ``` python
-def theorem_latex(doc):
+def theoremize(doc):
     for elt in pandoc.iter(doc):
         if is_theorem(elt):
-            id_ = elt[0][0]
-            label = ""
-            if id_:
-                label = r'\label{' + id_ + '}'
+            attr, blocks = elt # elt: Div(Attr, [Block])
+            id_ = attr[0] # attrs: (Text, [Text], [(Text, Text)])
+            label = r"\label{" + id_ + "}" if id_ else ""
             start_theorem = LaTeX(r'\begin{theorem}' + label)
             end_theorem   = LaTeX(r'\end{theorem}')
-            elt[1][:] = [start_theorem] + elt[1] + [end_theorem]
+            blocks[:] = [start_theorem] + blocks + [end_theorem]
 ```
+
+Here are the results:
 
 ``` python
 markdown = r"""
-I'd like to introduce the following theorem:
 <div id='cauchy-formula' class='theorem'>
-$$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
+$$f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw$$
 </div>
-Right?
 """
-```   
+```
 
-    >>> T(theorem_latex)(markdown)
-    I'd like to introduce the following theorem:
-    <BLANKLINE>
-    ::: {#cauchy-formula .theorem}
-    ```{=latex}
-    \begin{theorem}\label{cauchy-formula}
-    ```
-    $$f(z) = \frac{1}{i2\pi} \int \frac{f(w){w-z}\, dw$$
-    <BLANKLINE>
-    ```{=latex}
-    \end{theorem}
-    ```
-    :::
-    <BLANKLINE>
-    Right?
-    <BLANKLINE>
-
+``` pycon
+>>> doc = pandoc.read(markdown)
+>>> print(pandoc.write(doc, format="latex"))
+\leavevmode\vadjust pre{\hypertarget{cauchy-formula}{}}%
+\[f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw\]
+<BLANKLINE>
+>>> theoremize(doc)
+>>> print(pandoc.write(doc, format="latex"))
+\hypertarget{cauchy-formula}{}
+\begin{theorem}\label{cauchy-formula}
+<BLANKLINE>
+\[f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw\]
+<BLANKLINE>
+\end{theorem}
+<BLANKLINE>
+```
 
 Jupyter Notebooks
 --------------------------------------------------------------------------------
 
-Transform a markdown document with Python code blocks into a Jupyter notebook
-(proof of concept).
+🚀 **Transform a markdown document into a Jupyter notebook.**
 
-Source: [the notebook file format](http://nbformat.readthedocs.io/en/latest/format_description.html#the-notebook-file-format)
+📖 Reference: [the notebook file format](http://nbformat.readthedocs.io/en/latest/format_description.html#the-notebook-file-format)
 
-Jupyter notebook helpers (notebook metadata and building blocks):
+Jupyter notebook helpers (building blocks):
 
 ``` python
 import copy
+import uuid
 
 def Notebook():
-    return copy.deepcopy(
-        {
-        "cells": [],
-        "metadata": {
-            "kernelspec": {
-            "display_name": "Python 3",
-            "language": "python",
-            "name": "python3"
-            },
-            "language_info": {
-            "codemirror_mode": {
-                "name": "ipython",
-                "version": 3
-            },
-            "file_extension": ".py",
-            "mimetype": "text/x-python",
-            "name": "python",
-            "nbconvert_exporter": "python",
-            "pygments_lexer": "ipython3",
-            "version": "3.6.4"
-            }
-        },
+    return {
         "nbformat": 4,
-        "nbformat_minor": 2
-        }
-    )
+        "nbformat_minor": 5,
+        "cells": [],
+        "metadata": {},
+    }
 
 def CodeCell():
-    return copy.deepcopy(
-        {
+    return {
         "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
+        "source": [],
+        "execution_count": None,
         "outputs": [],
-        "source": []
-        }
-    )
+        "id": uuid.uuid4().hex,
+        "metadata": {},
+    }
 
 def MarkdownCell(): 
-    return copy.deepcopy(
-        {
+    return {
         "cell_type": "markdown",
+        "source": [],
+        "id": uuid.uuid4().hex,
         "metadata": {},
-        "source": []
-        }
-    )
+    }
 ```
 
-The core transformation code
+The core transformation code:
 
 ``` python
 import pandoc
@@ -267,153 +200,82 @@ from pandoc.types import Pandoc, Meta, CodeBlock
 
 def notebookify(doc):
     notebook = Notebook()
-    cells = notebook['cells']
-    blocks = doc[1]
-    execution_count = 1
+    cells = notebook["cells"]
+    blocks = doc[1] # doc: Pandoc(Meta, [Block])
     for block in blocks:
         if isinstance(block, CodeBlock):
-            source = block[1]
+            source = block[1] # block: CodeBlock(Attr, Text)
             code_cell = CodeCell()
-            code_cell['source'] = source
-            code_cell['execution_count'] = execution_count
-            execution_count += 1
+            code_cell["source"] = source.splitlines(keepends=True)
             cells.append(code_cell)
         else:
-            wrapper = Pandoc(Meta({}), [block])
-            source = pandoc.write(wrapper)
+            source = pandoc.write(block)
             markdown_cell = MarkdownCell()
-            markdown_cell['source'] = source
+            markdown_cell["source"] = source.splitlines(keepends=True)
             cells.append(markdown_cell)
     return notebook
 ```
 
-How to use `notebookify` in a script:
-
 ``` python
-# Python Standard Library
+doc = pandoc.read(
+"""
+# Hello world!
+Print `Hello world!`:
+
+    >>> print("Hello world!")
+"""
+)
+```
+
+``` pycon
+>>> doc
+Pandoc(Meta({}), [Header(1, ('hello-world', [], []), [Str('Hello'), Space(), Str('world!')]), Para([Str('Print'), Space(), Code(('', [], []), 'Hello world!'), Str(':')]), CodeBlock(('', [], []), '>>> print("Hello world!")')])
+>>> ipynb = notebookify(doc)
+>>> import pprint
+>>> pprint.pprint(ipynb) # doctest: +ELLIPSIS
+{'cells': [{'cell_type': 'markdown',
+            'id': ...,
+            'metadata': {},
+            'source': ['# Hello world!\n']},
+           {'cell_type': 'markdown',
+            'id': ...,
+            'metadata': {},
+            'source': ['Print `Hello world!`:\n']},
+           {'cell_type': 'code',
+            'execution_count': None,
+            'id': ...,
+            'metadata': {},
+            'outputs': [],
+            'source': ['>>> print("Hello world!")']}],
+ 'metadata': {},
+ 'nbformat': 4,
+ 'nbformat_minor': 5}
+```
+
+How to use the `notebookify` function in a script:
+
+``` skip
 import json
 import os.path
 import sys
 
-def main(): # invoke if __name__ == "__main__"
+def main():
     filename = sys.argv[1]
     doc = pandoc.read(file=filename)
     notebook = notebookify(doc)
     base, _ = os.path.splitext(filename)
-    output = open(base + '.ipynb', 'w')
-    output.write(json.dumps(notebook, indent=2))
-    output.close()
+    with open(base + ".ipynb", "w", encoding="utf-8") as output:
+        json.dump(notebook, output, ensure_ascii=False, indent=2)
+
+if __name__ == "__main__":
+    main()
 ```
 
-
-Save Web Documents
+Unpack divs
 --------------------------------------------------------------------------------
 
-When you find an interesting piece of content on the Web,
-you may want to archive it on your computer.
-Since you are only interested in the content 
-and not the full web page, 
-there are things in the HTML document 
-that you want probably want to remove in the process
-(ads, social media, etc.). 
-And while you're at it, 
-why not store the result as Markdown, 
-which is a simpler document description language?
-We know that thanks to pandoc, we can convert it 
-to something fancy like PDF if the need arises.
 
-Consider for example the ["Getting started"](https://pandoc.org/getting-started.html) 
-section of the the pandoc documentation. This is a useful document,
-I want to keep a copy of it in my hard drive.
-Downloading it and converting it to Markdown is easy:
-
-    $ curl https://pandoc.org/getting-started.html > getting-started.html
-    $ pandoc -o getting-started.md getting-started.html
-
-However, when you look at the result, this is very "noisy".
-Its starts with
-
-    ::: {#doc .container-fluid}
-    ::: {#flattr}
-    [](https://pandoc.org){.FlattrButton}
-
-    [![Flattr
-    this](https://api.flattr.com/button/flattr-badge-large.png "Flattr this")](https://flattr.com/thing/936364/Pandoc)
-    :::
-
-    ::: {#paypal}
-    ![](https://www.paypalobjects.com/en_US/i/scr/pixel.gif){width="1"
-    height="1"}
-    :::
-
-    [Pandoc]{.big}   [a universal document converter]{.small}
-
-    ::: {#bd}
-    ::: {.navbar-header}
-    [Toggle navigation]{.sr-only} []{.icon-bar} []{.icon-bar} []{.icon-bar}
-    :::
-
-    ::: {.navbar-collapse .collapse}
-    -   [About](index.html)
-    -   [Installing](installing.html)
-    -   ...
-    :::
-
-    ::: {.col-md-9 .col-sm-8 role="main"}
-    ::: {.row}
-    ::: {#toc}
-    -   [Step 1: Install pandoc](#step-1-install-pandoc)
-    -   [Step 2: Open a terminal](#step-2-open-a-terminal)
-    -   ...
-    :::
-
-[^1]: We could also disable the `native_divs` option in pandoc to get rid 
-of the div soup, but where would be the fun then?
-
-
-There are two different kind of things here:
-
-  - a "div soup", characterized by the sheer number of `:::` symbols[^1].
-    In pandoc-flavored Markdown, the `:::` syntax corresponds to
-    the `<div>` tag in HTML.
-    Div hierarchies are often used to style HTML elements, 
-    so this is something that we don't need anymore.
-
-  - components that don't make sense out of the web page: 
-    some buttons, a navigation bar, etc.
-
-It's only after this long and noisy preamble that you find the real content.
-It looks like this:
-
-    This document is for people who are unfamiliar with command line tools.
-    Command-line experts can go straight to the [User's Guide](README.html)
-    or the pandoc man page.
-
-    Step 1: Install pandoc
-    ======================
-
-    First, install pandoc, following the [instructions for your
-    platform](installing.html).
-
-    Step 2: Open a terminal
-    =======================
-
-    ...
-
-And finally, you close the four divs in which the content is nested:
-
-    :::
-    :::
-    :::
-    :::
-
-This is probably not the document that you want to store. 
-To simplify it, we are going to remove all the hierarchy 
-of divs and get rid of the preamble.
-
-
-
-### Unpack Divs
+### In-place & two-pass
 
 ``` python
 def unpack_divs(doc):
@@ -433,10 +295,49 @@ def unpack_divs(doc):
     for parent, index, contents in reversed(matches):
         del parent[index]
         parent[index:index] = contents
-    return doc
 ```
 
-### Unpack Divs (Variant)
+``` python
+doc = pandoc.read(
+"""
+<div>
+A
+<div>
+B
+<div>
+C
+</div>
+</div>
+</div>""", format="html"
+)
+```
+
+``` pycon
+>>> doc
+Pandoc(Meta({}), [Div(('', [], []), [Plain([Str('A')]), Div(('', [], []), [Plain([Str('B')]), Div(('', [], []), [Plain([Str('C')])])])])])
+>>> print(pandoc.write(doc, format="html").strip())
+<div>
+A
+<div>
+B
+<div>
+C
+</div>
+</div>
+</div>
+```
+
+``` pycon
+>>> unpack_divs(doc)
+>>> doc
+Pandoc(Meta({}), [Plain([Str('A')]), Plain([Str('B')]), Plain([Str('C')])])
+>>> print(pandoc.write(doc, format="html").strip())
+A
+B
+C
+```
+
+### Functional method
 
 You may find that the approach above is convoluted. 
 It's actually perfectly possible to achieve the same transformation 
@@ -520,130 +421,3 @@ def unpack_divs(elt):
     else: # Python atomic (immutable) types
         return elt 
 ```
-
-### Remove The Preamble
-
-At this stage, if you wrap any of the `unpack_divs` into
-
-    # file: simplify.py
-    if __name__ == "__main__":
-        url = 'https://pandoc.org/getting-started.html'
-        src = urllib.request.urlopen(url).read()
-        doc = pandoc.read(src, format="html")
-        doc = unpack_divs(doc)
-        print(pandoc.write(doc, format="markdown", options=["-s"]))
-
-This is what you get when you execute the script:
-
-    $ python simplify.py 
-    ---
-    lang: en
-    title: 'Pandoc - Getting started with pandoc'
-    viewport: 'width=device-width, initial-scale=1.0'
-    ---
-
-    [](https://pandoc.org){.FlattrButton}
-
-    [![Flattr
-    this](https://api.flattr.com/button/flattr-badge-large.png "Flattr this")](https://flattr.com/thing/936364/Pandoc)
-
-    ![](https://www.paypalobjects.com/en_US/i/scr/pixel.gif){width="1"
-    height="1"}
-
-    [Pandoc]{.big}   [a universal document converter]{.small}
-
-    [Toggle navigation]{.sr-only} []{.icon-bar} []{.icon-bar} []{.icon-bar}
-
-    -   [About](index.html)
-    -   [Installing](installing.html)
-    -   ...
-
-    -   [Step 1: Install pandoc](#step-1-install-pandoc)
-    -   [Step 2: Open a terminal](#step-2-open-a-terminal)
-    -   ...
-
-    This document is for people who are unfamiliar with command line tools.
-    Command-line experts can go straight to the [User's Guide](README.html)
-    or the pandoc man page.
-
-    Step 1: Install pandoc
-    ======================
-
-    First, install pandoc, following the [instructions for your
-    platform](installing.html).
-
-    Step 2: Open a terminal
-    =======================
-
-    ...
-
-    If you get stuck, you can always ask questions on the
-    [pandoc-discuss](http://groups.google.com/group/pandoc-discuss) mailing
-    list. But be sure to check the [FAQs](faqs.html) first, and search
-    through the mailing list to see if your question has been answered
-    before.
-
-This is better, since there is no more div, but we still need to get rid 
-of everything before the first real paragraph, 
-the one that starts with some plain text: "This document ...".
-So we can detect this first paragraph 
-– for example because it starts with an instance of `Str` – 
-and remove everything before it from the document:
-
-``` python
-def remove_preamble(doc):
-    "Remove everything before the first real paragraph"
-    blocks = doc[1]
-    for i, block in enumerate(blocks):
-        if isinstance(block, Para):
-            para = block
-            inlines = para[0]
-            if len(inlines) > 0 and isinstance(inlines[0], Str):
-                break
-    doc[1] = blocks[i:]
-    return doc
-```
-
-Now, change the main entry point accordingly:
-
-    # file: simplify.py
-    if __name__ == "__main__":
-        url = 'https://pandoc.org/getting-started.html'
-        src = urllib.request.urlopen(url).read()
-        doc = pandoc.read(src, format="html")
-        doc = unpack_divs(doc)
-        doc = remove_preamble(doc)
-        print(pandoc.write(doc, format="markdown", options=["-s"]))
-
-and this is what you get:
-
-    $ python simplify.py
-    ---
-    lang: en
-    title: 'Pandoc - Getting started with pandoc'
-    viewport: 'width=device-width, initial-scale=1.0'
-    ---
-
-    This document is for people who are unfamiliar with command line tools.
-    Command-line experts can go straight to the [User's Guide](README.html)
-    or the pandoc man page.
-
-    Step 1: Install pandoc
-    ======================
-
-    First, install pandoc, following the [instructions for your
-    platform](installing.html).
-
-    Step 2: Open a terminal
-    =======================
-
-    ...
-
-    If you get stuck, you can always ask questions on the
-    [pandoc-discuss](http://groups.google.com/group/pandoc-discuss) mailing
-    list. But be sure to check the [FAQs](faqs.html) first, and search
-    through the mailing list to see if your question has been answered
-    before.
-
-Mission accomplished!
-
