@@ -207,7 +207,10 @@ Print `Hello world!`:
 Pandoc(Meta({}), [Header(1, ('hello-world', [], []), [Str('Hello'), Space(), Str('world!')]), Para([Str('Print'), Space(), Code(('', [], []), 'Hello world!'), Str(':')]), CodeBlock(('', [], []), '>>> print("Hello world!")')])
 >>> ipynb = notebookify(doc)
 >>> import pprint
->>> pprint.pprint(ipynb) # doctest: +ELLIPSIS
+>>> import platform
+>>> system = platform.system()
+>>> if platform == "Linux":
+...     pprint.pprint(ipynb) # doctest: +ELLIPSIS
 {'cells': [{'cell_type': 'markdown',
             'id': ...,
             'metadata': {},
@@ -225,8 +228,26 @@ Pandoc(Meta({}), [Header(1, ('hello-world', [], []), [Str('Hello'), Space(), Str
  'metadata': {},
  'nbformat': 4,
  'nbformat_minor': 5}
+>>> if platform == "Windows":
+...     pprint.pprint(ipynb) # doctest: +ELLIPSIS
+{'cells': [{'cell_type': 'markdown',
+            'id': ...,
+            'metadata': {},
+            'source': ['# Hello world!\r\n']},
+           {'cell_type': 'markdown',
+            'id': ...,
+            'metadata': {},
+            'source': ['Print `Hello world!`:\r\n']},
+           {'cell_type': 'code',
+            'execution_count': None,
+            'id': ...,
+            'metadata': {},
+            'outputs': [],
+            'source': ['>>> print("Hello world!")']}],
+ 'metadata': {},
+ 'nbformat': 4,
+ 'nbformat_minor': 5}
 ```
-
 How to use the `notebookify` function in a script:
 
 ``` skip
