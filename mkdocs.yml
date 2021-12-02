@@ -7,7 +7,7 @@ site_dir: docs
 nav:
   - Overview: index.md
   - Getting started: getting-started.md
-  - Examples (wip): examples.md
+  - Examples: examples.md
   - CLI (wip): cli.md
   - Document structure: document.md
   - Pandoc's Markdown: markdown.md

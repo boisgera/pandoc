@@ -28,29 +28,109 @@ HELLO WORLD!
 De-emphasize
 --------------------------------------------------------------------------------
 
-🚀 **Turn strong text into emphasized text and emphasized text into normal text.**
+🚀 **Turn emphasized text into normal text.**
 
 ```python
 def de_emphasize(doc):
     locations = []
     for elt, path in pandoc.iter(doc, path=True):
-        if isinstance(elt, (Strong, Emph)):
+        if isinstance(elt, Emph):
             holder, index = path[-1]
             locations.append((elt, holder, index))
+    # Perform the change in reverse document order 
+    # not to invalidate the remaining matches.
     for elt, holder, index in reversed(locations):
-        if isinstance(elt, Strong):
-            inlines = elt[0] # elt: Strong([Inline])
-            holder[index] = Emph(inlines)
-        elif isinstance(elt, Emph):
-            inlines = elt[0] # elt: Emph([Inline])
-            holder[index:index+1] = inlines
+        assert isinstance(elt, Emph)
+        inlines = elt[0] # elt: Emph([Inline])
+        holder[index:index+1] = inlines
 ```
 
 ``` pycon
->>> doc = pandoc.read("**strong text**, *emphasized text*, normal text.")
+>>> doc = pandoc.read("**strong**, *emphasized*, normal")
 >>> de_emphasize(doc)
 >>> print(pandoc.write(doc).strip())
-*strong text*, emphasized text, normal text.
+**strong**, emphasized, normal
+```
+
+This implementation will remove nested layers of emphasis:
+
+``` pycon
+>>> doc = pandoc.read("0x _1x *2x*_")
+>>> de_emphasize(doc)
+>>> print(pandoc.write(doc).strip())
+0x 1x 2x
+```
+
+<!--
+The reversal of locations is necessary during the transformation phase since 
+a replacement in a document may invalidate the locations after it. Without it:
+
+```python
+def de_emphasize(doc):
+    locations = []
+    for elt, path in pandoc.iter(doc, path=True):
+        if isinstance(elt, Emph):
+            holder, index = path[-1]
+            locations.append((elt, holder, index))
+    for elt, holder, index in locations:
+        assert isinstance(elt, Emph)
+        inlines = elt[0] # elt: Emph([Inline])
+        holder[index:index+1] = inlines
+```
+
+``` pycon
+>>> doc = pandoc.read("0x _1x *2x*_")
+>>> de_emphasize(doc)
+>>> print(pandoc.write(doc).strip())
+0x 1x *2x*
+```
+Here the replacement of `*2x*` by `2x` takes place, but the holder of this
+content has been removed from the document during the removal of the outer
+emphasis.
+-->
+
+To remove only one layer of emphasis instead (the outer layer), 
+we can filter out all elements that are already emphasized.
+
+```python
+from math import inf
+
+def de_emphasize(doc):
+    locations = []
+    depth = inf
+    for elt, path in pandoc.iter(doc, path=True):
+        if len(path) <= depth: # not emphasized
+            depth = inf
+            if isinstance(elt, Emph):
+                holder, index = path[-1]
+                locations.append((elt, holder, index))
+                depth = len(path)
+    # Perform the change in reverse document order 
+    # not to invalidate the remaining matches.
+    for elt, holder, index in reversed(locations):
+        assert isinstance(elt, Emph)
+        inlines = elt[0] # elt: Emph([Inline])
+        holder[index:index+1] = inlines
+```
+
+The behavior with simply emphasized items is unchanged:
+
+``` pycon
+>>> doc = pandoc.read("**strong**, *emphasized*, normal")
+>>> de_emphasize(doc)
+>>> print(pandoc.write(doc).strip())
+**strong**, emphasized, normal
+```
+
+but differs for multiply emphasized text:
+
+``` pycon
+>>> doc = pandoc.read("0x _1x *2x*_")
+>>> doc
+Pandoc(Meta({}), [Para([Str('0x'), Space(), Emph([Str('1x'), Space(), Emph([Str('2x')])])])])
+>>> de_emphasize(doc)
+>>> print(pandoc.write(doc).strip())
+0x 1x *2x*
 ```
 
 LaTeX theorems
@@ -245,30 +325,31 @@ if __name__ == "__main__":
     main()
 ```
 
+<!--
 Unpack divs
 --------------------------------------------------------------------------------
 
+🚀 **Flatten a div hierarchy**
 
 ### In-place & two-pass
 
+
 ``` python
 def unpack_divs(doc):
-    "Unpack Divs - Two-pass, In-Place Algorithm"
+    "Unpack divs - Two-pass, in-Place algorithm"
     # Locate the divs and extract the relevant data
     matches = []
     for elt, path in pandoc.iter(doc, path=True):
         if isinstance(elt, Div):
-            div = elt
-            parent, index = path[-1]
-            contents = div[1]
-            # Blocks are always held in lists (cf. the document model).
-            assert isinstance(parent, list)
-            matches.append((parent, index, contents))
-    # We need to unpack the divs in reverse document order 
+            holder, index = path[-1]
+            # blocks are held in lists (cf. the document model).
+            assert isinstance(holder, list)
+            contents = elt[1] # elt: Div(Attr, [Block])
+            matches.append((holder, index, contents))
+    # Unpack the divs in reverse document order 
     # not to invalidate the remaining matches.
-    for parent, index, contents in reversed(matches):
-        del parent[index]
-        parent[index:index] = contents
+    for holder, index, contents in reversed(matches):
+        holder[index:index+1] = contents
 ```
 
 ``` python
@@ -311,6 +392,7 @@ B
 C
 ```
 
+<!--
 ### Functional method
 
 You may find that the approach above is convoluted. 
@@ -395,3 +477,4 @@ def unpack_divs(elt):
     else: # Python atomic (immutable) types
         return elt 
 ```
+-->
