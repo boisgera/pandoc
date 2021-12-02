@@ -8,12 +8,12 @@ nav:
   - Overview: index.md
   - Getting started: getting-started.md
   - Examples: examples.md
-  - CLI (wip): cli.md
   - Document structure: document.md
   - Pandoc's Markdown: markdown.md
   - Containers and iteration: iteration.md
   - Configuration: configuration.md
   - Cookbook (wip): cookbook.md
+  - CLI: cli.md
   - API reference: api.md
 
 theme: "material" 
