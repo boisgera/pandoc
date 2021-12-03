@@ -1,8 +1,11 @@
 # Cookbook
 
 ``` python
+# Python Standard Library
 import builtins
 import copy
+
+# Pandoc
 import pandoc
 from pandoc.types import *
 ```
@@ -258,7 +261,7 @@ the document, we may use the tree iterator provided by `pandoc.iter`
 and a variety of filtering methods to fetch them. Here we focus on
 comprehensions first and then introduce a higher-level helper.
 
-### Comprehensions
+### Filter
 
 The pattern to use is `[elt for elt in pandoc.iter(root) if condition_is_met(elt)]`.
 
@@ -328,7 +331,7 @@ https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 http://www.w3.org/TR/html5/syntax.html#comments
 ```
 
-We can get the list of all code blocks and then collec their types 
+We can get the list of all code blocks and collect their types 
 (registered as code block classes):
 
 ``` python
@@ -394,6 +397,77 @@ https://www.w3.org/TR/html5/syntax.html#comments
 
 -->
 
+
+### Exclude
+
+Some search patterns require to exclude some elements when one of their 
+ancestors meets some condition. For example, you may want to count the number 
+of words in your document (loosely defined as the number of `Str` instances)
+excluding those inside a `notes` div[^reveal].
+
+[^reveal]: a way to include speaker notes when reveal.js presentations are the target.
+
+Let's use the following example document:
+
+``` python
+words_doc = pandoc.read("""
+The words in this paragraph should be counted.
+
+::: notes ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+But these words should be excluded.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+""")
+```
+
+Counting all words is easy
+
+``` pycon
+>>> len([item for item in pandoc.iter(words_doc) if isinstance(item, Str)])
+14
+```
+
+But to exclude all words with a `notes` div, we need to detect when the iteration
+enters and exits such an element. The easiest way to do this is to record the
+depth of such divs[^99] when we enter them. As long as we iterate on items
+at a greater depth, we're still in the div scope ; when this depth becomes
+equal or smaller than this recorded depth, we're out of it. 
+Thus, a possible implementation of this pattern is:
+
+``` python
+def is_notes(elt):
+    if isinstance(elt, Div):
+        attr = elt[0] # elt: Div(Attr, [Block])
+        classes = attr[1] # attr :(Text, [Text], [(Text, Text)])
+        return "notes" in classes
+    else:
+        return False
+
+def count_words(doc):
+    in_notes, depth = False, None
+    count = 0
+    for elt, path in pandoc.iter(doc, path=True):
+        if in_notes and len(path) > depth:
+            pass
+        elif is_notes(elt):
+            in_notes, depth = True, len(path)
+        else:
+            in_notes, depth = False, None
+            if isinstance(elt, Str) and not in_notes:
+                count += 1
+    return count
+```
+
+
+It provides the expected result:
+``` pycon
+>>> count_words(words_doc)
+8
+```
+
+[^99]: or the depths if they can be nested.
+
 ### Finder
 
 If your code ends up being hard to read, it's not hard to wrap the more
@@ -405,17 +479,19 @@ def is_type_or_types(item):
         isinstance(item, tuple) and all(isinstance(x, type) for x in item)
     )
 
-def find(root, types_or_function, all=False):
-    function = None
-    if is_type_or_types(types_or_function):
-        function = lambda elt: isinstance(elt, types_or_function)
-    elif callable(types_or_function):
-        function = types_or_function
+def to_function(condition):
+    if is_type_or_types(condition):
+        return lambda elt: isinstance(elt, condition)
+    elif callable(condition):
+        return condition
     else:
-        error = "find 2nd arg should be a type, tuple of types or function"
-        error += f", not {types_or_function}"
+        error = "condition should be a type, tuple of types or function"
+        error += f", not {condition}"
         raise TypeError(error)
-    elts = (elt for elt in pandoc.iter(root) if function(elt))
+
+def find(root, condition, all=False):
+    condition = to_function(condition)
+    elts = (elt for elt in pandoc.iter(root) if condition(elt))
     if all:
         return list(elts)
     else:
@@ -425,9 +501,8 @@ def find(root, types_or_function, all=False):
             return None
 ```
 
-This `find` helper finds the first elt in root that matches the pattern given
-in the second argument and returns it, or returns `None` if the condition was
-never met:
+This `find` helper returns the first elt that matches the specified condition,
+or returns `None` if the condition was never met:
 
 ``` pycon
 >>> find(HELLOWORLD_DOC, Meta)
@@ -462,8 +537,8 @@ Str('Hello')
 [Str('Hello'), Space(), Str('world!')]
 ```
 
-Complex conditions based on types and values should be factored out in 
-a meaningful predicate function, such as `is_http_or_https_link`:
+Complex conditions based on types and values can be factored out in 
+a predicate function, such as `is_http_or_https_link`:
 
 ``` python
 def get_url(link):
@@ -478,8 +553,6 @@ def is_http_or_https_link(elt):
     else:
         return False
 ```
-
-This results in a quite readable code:
 
 ``` pycon
 >>> for link in find(COMMONMARK_DOC, is_http_or_https_link, all=True):
@@ -499,6 +572,41 @@ http://daringfireball.net/projects/markdown/syntax#em
 http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags
 https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 http://www.w3.org/TR/html5/syntax.html#comments
+```
+
+We can improve `find` to make it support the exclusion pattern:
+
+``` python
+def find(root, condition, exclude=None, all=False):
+    condition = to_function(condition)
+    exclude = exclude or (lambda elt: False)
+    def generator():
+        is_excluded, depth = False, None
+        for elt, path in pandoc.iter(root, path=True):
+            if is_excluded and len(path) > depth:
+                pass
+            elif exclude(elt):
+                is_excluded, depth = True, len(path)
+            else:
+                is_excluded, depth = False, None
+                if condition(elt):
+                    yield elt
+    if all:
+        return list(generator())
+    else:
+        try:
+            return next(generator())
+        except StopIteration:
+            return None
+```
+
+We can then count again the words in the `words_doc` document:
+
+``` pycon
+>>> len(find(words_doc, Str, all=True))
+14
+>>> len(find(words_doc, Str, exclude=is_notes, all=True))
+8
 ```
 
 ## Locate
@@ -617,69 +725,6 @@ surgery" that may invalidate the inner locations. Talk about (shallow) replaceme
 
 **TODO.**
 
-## Scoping
-
-Some patterns require to treat elements differently when one of their ancestors
-meet some condition. For example, to count the number of words in your document
-(defined as the number of `Str` instances), excluding those inside a `notes` div 
-(a way to inside speaker notes when reveal.js presentations are the target).
-
-Let's use the following example document:
-
-``` python
-doc = pandoc.read("""
-The words in this paragraph should be counted.
-
-::: notes ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-But these words should be excluded.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-""")
-```
-
-Counting all words is easy
-
-``` pycon
->>> len([item for item in pandoc.iter(doc) if isinstance(item, Str)])
-14
-```
-
-But to exclude all words with a `notes` div, we need to detect when the iteration
-enters and exits such an element. The easiest way to do this is to record the
-depth of such divs[^99] when we enter them. As long as we iterate on items
-at a greater depth, we're still in the div scope ; when this depth becomes
-equal or smaller than this recorded depth, we're out of it. 
-Thus, a possible implementation of this pattern is:
-
-``` python
-def count_words(doc):
-    in_notes, depth = False, None
-    count = 0
-    for elt, path in pandoc.iter(doc, path=True):
-        # Detect entry & exit from notes div
-        if not in_notes:
-            if isinstance(elt, Div):
-                attr = elt[0]     # Div(Attr, [Block])
-                classes = attr[1] # attr = (id, classes, kvs)
-                if "notes" in classes:
-                    in_notes, depth = True, len(path) 
-        else:
-            if len(path) <= depth:
-                in_notes, depth = False, None
-        # Count words outside of notes divs
-        if isinstance(elt, Str) and not in_notes:
-            count += 1
-    return count
-```
-
-It provides the expected result:
-``` pycon
->>> count_words(doc)
-8
-```
-
-[^99]: or the depths if they can be nested.
 
 ## Immutable data
 
@@ -942,32 +987,3 @@ and this transformation would result in:
 # Pandoc {#pandoc .header}
 [Link to pandoc.org](https://pandoc.org){#anonymous .link}
 ```
-
-
-## TODO: Move fragments
-
-(example: move some fragments to some annex)
-
-## Deletion
-
-**TODO.** start with a problem (either plain error or deletions that did no
-go as expected?)
-
-Deletion is conceptually similar to replacement, but a deletion may invalidate 
-the next location that you are willing to delete. Give a simple example and
-step by step what would happen if we were to delete the items in document 
-order?
-
-Merge with "complex replacement"? Or **before**, yes, more common use case.
-
-**TODO.** deal with immutable content? There are a limited number of use cases
-here: Attr, Target, Colspec, ListAttributes, that's all. Start with the
-list of such stuff ? Or even focus with Attr or Target (mutation or deletion).
-For `Target`, this is easy, the only parents are images or links ; `Attr` is 
-much more pervasive.
-
-## Transform (more extensively)
-
-### TODO. two-pass find / replace in reverse-order pattern.
-
-## TODO. functional style (copy / recreate, not in-place)
