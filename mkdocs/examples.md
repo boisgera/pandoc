@@ -126,8 +126,6 @@ but differs for multiply emphasized text:
 
 ``` pycon
 >>> doc = pandoc.read("0x _1x *2x*_")
->>> doc
-Pandoc(Meta({}), [Para([Str('0x'), Space(), Emph([Str('1x'), Space(), Emph([Str('2x')])])])])
 >>> de_emphasize(doc)
 >>> print(pandoc.write(doc).strip())
 0x 1x *2x*
@@ -192,19 +190,15 @@ $$f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw$$
 
 ``` pycon
 >>> doc = pandoc.read(markdown)
->>> print(pandoc.write(doc, format="latex"))
+>>> print(pandoc.write(doc, format="latex")) # doctest: +NORMALIZE_WHITESPACE
 \leavevmode\vadjust pre{\hypertarget{cauchy-formula}{}}%
 \[f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw\]
-<BLANKLINE>
 >>> theoremize(doc)
->>> print(pandoc.write(doc, format="latex"))
+>>> print(pandoc.write(doc, format="latex")) # doctest: +NORMALIZE_WHITESPACE
 \hypertarget{cauchy-formula}{}
 \begin{theorem}\label{cauchy-formula}
-<BLANKLINE>
 \[f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw\]
-<BLANKLINE>
 \end{theorem}
-<BLANKLINE>
 ```
 
 Jupyter Notebooks
@@ -250,36 +244,31 @@ def MarkdownCell():
 The core transformation code:
 
 ``` python
-import pandoc
-from pandoc.types import Pandoc, Meta, CodeBlock
-
 def notebookify(doc):
     notebook = Notebook()
     cells = notebook["cells"]
     blocks = doc[1] # doc: Pandoc(Meta, [Block])
     for block in blocks:
+        source, cell = None, None
         if isinstance(block, CodeBlock):
             source = block[1] # block: CodeBlock(Attr, Text)
-            code_cell = CodeCell()
-            code_cell["source"] = source.splitlines(keepends=True)
-            cells.append(code_cell)
+            cell = CodeCell()
         else:
             source = pandoc.write(block).strip()
-            markdown_cell = MarkdownCell()
-            markdown_cell["source"] = source.splitlines(keepends=True)
-            cells.append(markdown_cell)
+            cell = MarkdownCell()
+        cell["source"] = source.splitlines(keepends=True)
+        cells.append(cell)
     return notebook
 ```
 
 ``` python
-doc = pandoc.read(
-"""
+markdown = """
 # Hello world!
 Print `Hello world!`:
 
     >>> print("Hello world!")
 """
-)
+doc = pandoc.read(markdown)
 ```
 
 ``` pycon
@@ -306,23 +295,53 @@ Pandoc(Meta({}), [Header(1, ('hello-world', [], []), [Str('Hello'), Space(), Str
  'nbformat': 4,
  'nbformat_minor': 5}
 ```
-How to use the `notebookify` function in a script:
 
-``` skip
+To use `notebookify` from the command-line we may create a `main` entry point:
+
+``` python
 import json
-import os.path
+from pathlib import Path
 import sys
 
 def main():
     filename = sys.argv[1]
     doc = pandoc.read(file=filename)
     notebook = notebookify(doc)
-    base, _ = os.path.splitext(filename)
-    with open(base + ".ipynb", "w", encoding="utf-8") as output:
+    ipynb = Path(filename).with_suffix(".ipynb")
+    with open(ipynb, "w", encoding="utf-8") as output:
         json.dump(notebook, output, ensure_ascii=False, indent=2)
+```
 
-if __name__ == "__main__":
-    main()
+If we specify on the command-line a (temporary) markdown file, 
+`main()` creates the corresponding notebook:
+
+``` pycon
+>>> import tempfile
+>>> with tempfile.TemporaryDirectory() as tmp_dir: # doctest: +ELLIPSIS
+...     md_path = Path(tmp_dir).joinpath("doc.md")
+...     with open(md_path, "w", encoding="utf-8") as md_file:
+...         _ = md_file.write(markdown)
+...     sys.argv[:] = ["notebookify", str(md_path)]
+...     main()
+...     with open(md_path.with_suffix(".ipynb"), encoding="utf-8") as ipynb:
+...         pprint.pprint(json.load(ipynb))
+{'cells': [{'cell_type': 'markdown',
+            'id': ...,
+            'metadata': {},
+            'source': ['# Hello world!']},
+           {'cell_type': 'markdown',
+            'id': ...,
+            'metadata': {},
+            'source': ['Print `Hello world!`:']},
+           {'cell_type': 'code',
+            'execution_count': None,
+            'id': ...,
+            'metadata': {},
+            'outputs': [],
+            'source': ['>>> print("Hello world!")']}],
+ 'metadata': {},
+ 'nbformat': 4,
+ 'nbformat_minor': 5}
 ```
 
 <!--
