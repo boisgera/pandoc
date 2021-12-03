@@ -12,7 +12,7 @@ nav:
   - Pandoc's Markdown: markdown.md
   - Containers and iteration: iteration.md
   - Configuration: configuration.md
-  - Cookbook (wip): cookbook.md
+  - Cookbook: cookbook.md
   - Command-line interface: cli.md
   - API reference: api.md
 

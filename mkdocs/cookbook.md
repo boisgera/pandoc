@@ -403,9 +403,9 @@ https://www.w3.org/TR/html5/syntax.html#comments
 Some search patterns require to exclude some elements when one of their 
 ancestors meets some condition. For example, you may want to count the number 
 of words in your document (loosely defined as the number of `Str` instances)
-excluding those inside a `notes` div[^reveal].
+excluding those inside a div tagged as notes[^reveal].
 
-[^reveal]: a way to include speaker notes when reveal.js presentations are the target.
+[^reveal]: such divs are used to include speaker notes into reveal.js presentations.
 
 Let's use the following example document:
 
@@ -430,10 +430,10 @@ Counting all words is easy
 
 But to exclude all words with a `notes` div, we need to detect when the iteration
 enters and exits such an element. The easiest way to do this is to record the
-depth of such divs[^99] when we enter them. As long as we iterate on items
+depth of the div when we enter it. As long as we iterate on items
 at a greater depth, we're still in the div scope ; when this depth becomes
 equal or smaller than this recorded depth, we're out of it. 
-Thus, a possible implementation of this pattern is:
+Thus, we can implement this pattern with:
 
 ``` python
 def is_notes(elt):
@@ -465,8 +465,6 @@ It provides the expected result:
 >>> count_words(words_doc)
 8
 ```
-
-[^99]: or the depths if they can be nested.
 
 ### Finder
 
@@ -611,26 +609,23 @@ We can then count again the words in the `words_doc` document:
 
 ## Locate
 
-**TODO.** *Need to work on simpler "modifiers" first: using access and find,
-THEN if it is not the right pattern (because of the mutability issue, or
-because we want to replace, remove or expand, then consider locate). So
-how do I split this (so far we've done read-only): spread in access and
-find sections ?*
+We sometimes need to find some elements meeting some condition *and* to know
+at the same times *where* they are in the document hierarchy.
 
-Another very common transformation pattern is when you need to locate the
-items meeting some condition in the document in order to replace them or 
-to delete them. In this case, fetching a list of items is not enough;
-instead we should obtain the location of the item in the document,
-which is given as a pair of item `holder` and item `index`, such that
-`item` is `holder[index]`.
+### Holder and index
 
-This information is avaible as `path[-1]` where `elt, path` is yielded by
-`pandoc.iter` with the option `path=True`. For example:
+A way to locate an element `elt` is to provide the unique pair `holder`, `index` 
+such that `elt` is `holder[index]`[^except].
+To get this information during a depth-first iteration of `root`, we
+iterate on `pandoc.iter(root, path=True)`: the iteration then yields `elt, path` 
+and `holder, index` is the last item of `path`. For example:
+
+[^except]: or `elt` is `list(holder.items())[index]` if `holder` is a dict.
 
 ``` pycon
 >>> doc = pandoc.read("Hello world!")
 >>> for elt, path in pandoc.iter(doc, path=True):
-...     if elt != doc: # elt == doc is the document root, it has no holder
+...     if elt != doc: # when doc is the root, path == []
 ...          holder, index = path[-1]
 ...          print(f"elt: {elt!r}")
 ...          print(f"  -> holder: {holder}")
@@ -681,54 +676,150 @@ the element holder, then their holder and index, etc. up to the document root:
 -> Str('world!')[0]
 ```
 
-### Replace
+### Transforms
 
-"Find-and-replace" is a very frequent pattern in document transformations.
-In most use cases, the implementation is straightforward ; but some others
-require a bit more subtelty.
-
-**TODO.** Don't change while you iterate.
-
-For example, to replace all instances of emphasized text with strong text,
-you first need locate emphasized text instances, that is find the collections
-of holders `holder` and indices `i` such that `emph = holder[i]`.
+The location (`holder`, `index` pair) of elements is a must-have for many 
+(in-place) document transforms. We demonstrate in this section several
+typical use of this information on the document
 
 ``` python
-doc = pandoc.read("""
-# Title with *emphasis*
-Text with *emphasis*.
-""")
-```
-
-``` python
-emph_locations = []
-for elt, path in pandoc.iter(doc, path=True):
-    if isinstance(elt, Emph):
-        holder, i = path[-1]
-        emph_locations.append((holder, i))
+doc = pandoc.read("🏠, sweet 🏠.")
 ```
 
 ``` pycon
->>> for holder, i in emph_locations:
-...    emph = holder[i] 
-...    inlines = emph[0]        # Emph signature is Emph([Inline])
-...    strong = Strong(inlines) # Strong signature is Strong([Inline])
-...    holder[i] = strong
+>>> doc
+Pandoc(Meta({}), [Para([Str('🏠,'), Space(), Str('sweet'), Space(), Str('🏠.')])])
 ```
 
-**Question.** When is the "not-reversed-scheme" ok? When are the next locations
-still valid? Even with most recursive scheme, that should be ok. Think more of
-it here & document the stuff. Distinguish simple replacement with "extensive
-surgery" that may invalidate the inner locations. Talk about (shallow) replacement?
+#### Expand
 
-### Delete
+To easily locate the 🏠 symbol in the subsequent steps, 
+we expand every instance of `Str` where it appears.
+First, we define the helper function `split_home`
 
-**TODO.**
+``` python
+def split_home(string):
+    text = string[0] # string: Str(text)
+    texts = [t for t in text.split("🏠")]
+    parts = []
+    for text in texts:
+        parts.extend([Str(text), Str("🏠")])
+    parts = parts[:-1] # remove trailing Str("🏠")
+    return [elt for elt in parts if elt != Str("")]
+```
+
+``` pycon
+>>> split_home(Str("!🏠!"))
+[Str('!'), Str('🏠'), Str('!')]
+```
+
+then we use it to expand all `Str` inlines accordingly:
+
+``` python
+matches = [
+    (elt, path) for (elt, path) in pandoc.iter(doc, path=True) 
+    if isinstance(elt, Str)
+]
+for elt, path in reversed(matches): # reversed: subsequent matches stay valid
+    holder, index = path[-1]
+    holder[index:index+1] = split_home(elt)
+```
+
+This operation had no apparent impact when the document is converted to markdown
+
+``` pycon
+>>> print(pandoc.write(doc).strip())
+🏠, sweet 🏠.
+```
+
+but we can check that it has actually changed the document:
+ 
+``` pycon
+>>> doc
+Pandoc(Meta({}), [Para([Str('🏠'), Str(','), Space(), Str('sweet'), Space(), Str('🏠'), Str('.')])])
+```
+
+#### Replace
+
+We locate all locations of 🏠 in the text and wrap them into links.
+
+``` python
+matches = [
+    (elt, path) for (elt, path) in pandoc.iter(doc, path=True) 
+    if elt == Str("🏠")
+]
+for elt, path in reversed(matches):
+    holder, index = path[-1]
+    attr = ("", [], [])
+    target = ("https://github.com/boisgera/pandoc/", "")
+    holder[index] = Link(attr, [elt], target) 
+```
+
+``` pycon
+>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+[🏠](https://github.com/boisgera/pandoc/), sweet [🏠](https://github.com/boisgera/pandoc/).
+```
+
+``` pycon
+>>> doc
+Pandoc(Meta({}), [Para([Link(('', [], []), [Str('🏠')], ('https://github.com/boisgera/pandoc/', '')), Str(','), Space(), Str('sweet'), Space(), Link(('', [], []), [Str('🏠')], ('https://github.com/boisgera/pandoc/', '')), Str('.')])])
+```
+
+#### Insert
+
+We insert the text "home" just after the 🏠 symbols:
+
+``` python
+matches = [
+    (elt, path) for (elt, path) in pandoc.iter(doc, path=True) 
+    if elt == Str("🏠")
+]
+for elt, path in reversed(matches):
+    holder, index = path[-1]
+    attr = ("", [], [])
+    target = ("https://github.com/boisgera/pandoc/", "")
+    holder.insert(index + 1, Str("home"))
+```
+
+``` pycon
+>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+[🏠home](https://github.com/boisgera/pandoc/), sweet [🏠home](https://github.com/boisgera/pandoc/).
+```
+``` pycon
+>>> doc
+Pandoc(Meta({}), [Para([Link(('', [], []), [Str('🏠'), Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str(','), Space(), Str('sweet'), Space(), Link(('', [], []), [Str('🏠'), Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str('.')])])
+```
+
+#### Delete
+
+And finally, we get rid of the 🏠 symbols altogether.
+
+``` python
+matches = [
+    (elt, path) for (elt, path) in pandoc.iter(doc, path=True) 
+    if elt == Str("🏠")
+]
+for elt, path in reversed(matches):
+    holder, index = path[-1]
+    attr = ("", [], [])
+    target = ("https://github.com/boisgera/pandoc/", "")
+    del holder[index] 
+```
+
+``` pycon
+>>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
+[home](https://github.com/boisgera/pandoc/), sweet [home](https://github.com/boisgera/pandoc/).
+```
+
+``` pycon
+>>> doc
+Pandoc(Meta({}), [Para([Link(('', [], []), [Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str(','), Space(), Str('sweet'), Space(), Link(('', [], []), [Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str('.')])])
+```
 
 
 ## Immutable data
 
-Every non-trivial pandoc document contains data that is immutable.
+Every non-trivial pandoc document contains some data which is immutable.
 To perform in-place modifications of your document, 
 you have to deal with them specifically. And this is a good thing!
 
@@ -773,30 +864,31 @@ a custom Pandoc type, which is mutable.
 While the above approach may seem to be a workaround at first, 
 it is actually *a good thing*, because it helps you to carefully consider
 the type of data that you select and transform. Python strings for example
-are of course in documents to describe pieces of text, but also in many
+are of course in documents to describe fragments of text, but also in many
 other roles. 
 
 Consider the HTML fragment:
-``` pycon
->>> blocks = [ # <p>html rocks!</p>
-...     RawBlock(Format('html'), '<p>'), 
-...     Plain([Str('html'), Space(), Str('rocks!')]), 
-...     RawBlock(Format('html'), '</p>')
-... ]
+
+``` python
+blocks = [ # <p>html rocks!</p>
+    RawBlock(Format("html"), "<p>"), 
+    Plain([Str("html"), Space(), Str('rocks!')]), 
+    RawBlock(Format("html"), "<p/>")
+]
 ```
-Let's say that we want to replace `'html'` with `'pandoc'` in the document text.
-Notice that the string `'html'` is used in the `"html rocks!"`, 
+Let's say that we want to replace `"html"` with `"pandoc"` in the document text.
+Notice that the string `"html"` is used in the `"html rocks!"`, 
 but also as a type field in the `Format` instance. 
 If Python strings were mutable, you could carelessly try to replace all
-`'html'` strings in the document model regardless of their role. 
+`"html"` strings in the document model regardless of their role. 
 And you would end up with the (invalid) document fragment:
 
-``` pycon
->>> invalid_blocks = [
-...     RawBlock(Format('pandoc'), '<p>'), 
-...     Plain([Str('pandoc'), Space(), Str('rocks!')]),  
-...     RawBlock(Format('pandoc'), '</p>')
-... ]
+``` python
+invalid_blocks = [
+    RawBlock(Format("pandoc"), "<p>"), 
+    Plain([Str("pandoc"), Space(), Str('rocks!')]),  
+    RawBlock(Format("pandoc"), "<p/>")
+]
 ```
 
 Fortunately this approach will fail loudly:
@@ -818,9 +910,9 @@ A correct, type-safe, way to proceed is instead:
 ...         elt[0] = "pandoc"
 ... 
 >>> blocks == [
-...     RawBlock(Format('html'), '<p>'), 
-...     Plain([Str('pandoc'), Space(), Str('rocks!')]), 
-...     RawBlock(Format('html'), '</p>')
+...     RawBlock(Format("html"), "<p>"), 
+...     Plain([Str("pandoc"), Space(), Str('rocks!')]), 
+...     RawBlock(Format("html"), "<p/>")
 ... ]
 True
 ```
@@ -847,7 +939,7 @@ Target = (Text, Text)
 ```
 
 The first text represents an URL and the second a title.
-Targets are used in link and image elements and only there.
+Targets are used in link and image elements (and only there).
 
 Say that you want to find all links in your document whose target URL is
 `"https://pandoc.org"` and make sure that the associated title is 
@@ -877,7 +969,7 @@ pandoc's web site.
 >>> doc = pandoc.read("[Link to pandoc.org](https://pandoc.org)")
 >>> for elt in pandoc.iter(doc):
 ...     if isinstance(elt, Link):
-...         attr, inlines, target = elt[:]
+...         attr, inlines, target = elt[:] # elt: Link(Attr, [Inline], Target)
 ...         if target[0] == "https://pandoc.org":
 ...             new_target = (target[0], "Pandoc - About pandoc")
 ...             elt[2] = new_target
@@ -897,7 +989,7 @@ Attr = (Text, [Text], [(Text, Text)])
 
 `Attr` is composed of an identifier, a list of classes, and a list of
 key-value pairs. To transform `Attr` content, again the easiest way to
-proceed is to target their holders. Say that we want add a class tag 
+proceed is to target their holders. Say that we want to add a class tag 
 that described the type of the pandoc element for every element which 
 is a `Attr` holder. 
 The relevant type signatures – we display all `Attr` holders – are:

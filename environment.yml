@@ -11,6 +11,7 @@ dependencies:
   - wheel
   - twine
   - black
+  - emoji
   - pip:
     - strictyaml # conda version if 1.6.0 and doesn't solve https://github.com/crdoconnor/strictyaml/issues/151
     - mkdocs
