@@ -14,17 +14,19 @@ Pandoc – 🐍 Python Library
 🚀 Getting started
 --------------------------------------------------------------------------------
 
-Install the latest stable release with:
-
-    $ pip install --upgrade pandoc
-
-The [Pandoc] command-line tool is a also required dependency ;
-you may install it with:
+[Pandoc] – the general markup converter (and Haskell library) written by 
+[John MacFarlane] – needs to be available. 
+You may follow [the official installation instructions](https://pandoc.org/installing.html) which are OS-dependent, or if you are a [conda](https://www.google.com/search?client=firefox-b-d&q=conda+python) user, do
 
     $ conda install -c conda-forge pandoc
 
+Then, install the latest stable version of the pandoc Python library with pip:
 
-[Pandoc] is the general markup converter (and Haskell library) written by [John MacFarlane].
+    $ pip install --upgrade pandoc
+
+Install the latest stable release with:
+
+    $ pip install --upgrade pandoc
 
 🌌 Overview 
 --------------------------------------------------------------------------------
