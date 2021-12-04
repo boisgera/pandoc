@@ -4,11 +4,10 @@ Pandoc (Python Library)
 
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
 [![PyPI version](https://img.shields.io/pypi/v/pandoc.svg)](https://pypi.python.org/pypi/pandoc)
-[![Mkdocs](https://img.shields.io/badge/doc-mkdocs-blue.svg)](http://boisgera.github.io/pandoc)
+[![Mkdocs](https://img.shields.io/badge/doc-mkdocs-845ed7.svg)](http://boisgera.github.io/pandoc)
+[![GitHub discussions](https://img.shields.io/badge/discuss-online-845ef7)](https://github.com/boisgera/pandoc/discussions)
 [![Downloads](https://pepy.tech/badge/pandoc)](https://pepy.tech/project/pandoc)
 [![GitHub stars](https://img.shields.io/github/stars/boisgera/pandoc?style=flat)](https://github.com/boisgera/pandoc/stargazers)
-[![GitHub discussions](https://img.shields.io/badge/discuss-online-845ef7)](https://github.com/boisgera/pandoc/discussions)
-
 [![build](https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/build.yml)
 
 
