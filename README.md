@@ -19,7 +19,7 @@ Install the latest stable release with:
     $ pip install --upgrade pandoc
 
 The [Pandoc] command-line tool is a also required dependency ;
-you may install it with :
+you may install it with:
 
     $ conda install -c conda-forge pandoc
 
