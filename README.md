@@ -5,7 +5,7 @@ Pandoc (Python Library)
 [![build](https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/build.yml)
 [![Mkdocs](https://img.shields.io/badge/doc-mkdocs-blue.svg)](http://boisgera.github.io/pandoc)
 [![Downloads](https://pepy.tech/badge/pandoc)](https://pepy.tech/project/pandoc)
-[![GitHub stars](https://img.shields.io/github/stars/boisgera/pandoc?style=social)](https://github.com/boisgera/pandoc/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/boisgera/pandoc?style=flat)](https://github.com/boisgera/pandoc/stargazers)
 [![Gitter chat](https://badges.gitter.im/boisgera/python-pandoc.svg)](https://gitter.im/python-pandoc/community#) 
 
 *This README is about the 2.x branch of the library (alpha stage!). Only the 1.x branch is available on PyPi at the moment.*
