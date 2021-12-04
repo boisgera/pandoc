@@ -1,5 +1,5 @@
 
-Pandoc (Python Library)
+Pandoc (🐍 Python Library)
 ================================================================================
 
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
@@ -11,7 +11,7 @@ Pandoc (Python Library)
 [![build](https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/build.yml)
 
 
-Getting started
+🚀 Getting started
 --------------------------------------------------------------------------------
 
 Install the latest stable release with:
@@ -23,7 +23,10 @@ you may install it with :
 
     $ conda install -c conda-forge pandoc
 
-Overview 
+
+[Pandoc] is the general markup converter (and Haskell library) written by [John MacFarlane].
+
+🌌 Overview 
 --------------------------------------------------------------------------------
 
 This project brings [Pandoc]'s data model for markdown documents to Python:
@@ -48,7 +51,7 @@ It can be used to analyze, create and transform documents, in Python :
     >>> print(text)
     Hello Python!
 
-[Pandoc] is the general markup converter (and Haskell library) written by [John MacFarlane].
+For more information, refer to the  [📖 documentation](http://boisgera.github.io/pandoc).
 
 
 [Pandoc]: http://pandoc.org/
