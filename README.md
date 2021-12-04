@@ -1,5 +1,5 @@
 
-Pandoc (🐍 Python Library)
+Pandoc – 🐍 Python Library
 ================================================================================
 
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
