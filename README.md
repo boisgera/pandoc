@@ -16,7 +16,7 @@ Pandoc – 🐍 Python Library
 
 [Pandoc] – the general markup converter (and Haskell library) written by 
 [John MacFarlane] – needs to be available. 
-You may follow [the official installation instructions](https://pandoc.org/installing.html) which are OS-dependent, or if you are already familiar with [conda](https://www.google.com/search?client=firefox-b-d&q=conda+python), do
+You may follow [the official installation instructions](https://pandoc.org/installing.html) which are OS-dependent, or if you use [conda](https://www.google.com/search?client=firefox-b-d&q=conda+python), do
 
     $ conda install -c conda-forge pandoc
 
