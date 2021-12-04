@@ -7,16 +7,17 @@ Pandoc (Python Library)
 [![Mkdocs](https://img.shields.io/badge/doc-mkdocs-blue.svg)](http://boisgera.github.io/pandoc)
 [![Downloads](https://pepy.tech/badge/pandoc)](https://pepy.tech/project/pandoc)
 [![GitHub stars](https://img.shields.io/github/stars/boisgera/pandoc?style=flat)](https://github.com/boisgera/pandoc/stargazers)
-[![Gitter chat](https://badges.gitter.im/boisgera/python-pandoc.svg)](https://gitter.im/python-pandoc/community#) 
+[![GitHub discussions](https://img.shields.io/badge/discuss-online-845ef7)](https://github.com/boisgera/pandoc/discussions)
+
 [![build](https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/build.yml)
 
 
 Getting started
 --------------------------------------------------------------------------------
 
-Install the latest version with:
+Install the latest stable release with:
 
-    $ pip install --upgrade git+https://github.com/boisgera/pandoc.git
+    $ pip install --upgrade pandoc
 
 The [Pandoc] command-line tool is a also required dependency ;
 you may install it with :
