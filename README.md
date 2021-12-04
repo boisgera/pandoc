@@ -50,11 +50,11 @@ It can be used to analyze, create and transform documents, in Python :
     >>> print(text)
     Hello Python!
 
-For more information, refer to the  [📖 documentation](http://boisgera.github.io/pandoc).
+For more information, refer to the  [📖 documentation](https://boisgera.github.io/pandoc).
 
 
-[Pandoc]: http://pandoc.org/
-[John MacFarlane]: http://johnmacfarlane.net/
+[Pandoc]: https://pandoc.org/
+[John MacFarlane]: https://johnmacfarlane.net/
 [Haskell]: https://www.haskell.org/
 [Python]: https://www.python.org/
 [TPD]: https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html
