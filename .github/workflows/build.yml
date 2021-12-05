@@ -45,7 +45,7 @@ jobs:
           echo "Setting up the local package directory via download"
           ./miktexsetup_standalone --verbose \
               --local-package-repository=C:/MiKTeX-Repo \
-              --remote-package-repository="https://mirrors.ircam.fr/systems/win32/miktex/tm/packages/" \
+              --remote-package-repository="http://mirrors.ircam.fr/pub/CTAN/systems/windows/miktex/tm/packages/" \
               --package-set=complete \
               download
 
