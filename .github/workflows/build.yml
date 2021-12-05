@@ -6,7 +6,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest] # macos-latest fails
+        os: [ubuntu-latest, windows-latest, macos-latest]
     defaults:
       run:
         shell: bash -l {0} 
@@ -25,6 +25,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install texlive-full
+
+      - name: Install LaTeX (MacOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install caskroom/cask/brew-cask
+          brew cask install mactex
 
       - name: Install LaTeX (Windows)
         if: matrix.os == 'windows-latest'
