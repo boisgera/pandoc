@@ -30,7 +30,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install homebrew/brew-cask
+          # brew install homebrew/brew-cask
           brew cask install mactex
 
       - name: Install LaTeX (Windows)
