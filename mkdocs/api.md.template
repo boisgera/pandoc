@@ -79,11 +79,13 @@ from pandoc.types import *
     
 
 ??? note "`write(doc, file=None, format=None, options=None)`"
-    Write a pandoc document (or document fragment) to a file.
+    Write a pandoc document (or document fragment) to a file and return its contents.
 
-    The function always returns the file contents.
-    The output for document fragment has empty metadata; 
-    inlines are automatically wrapped into a `Plain` block before the write.
+
+    Inline document fragments are automatically wrapped into a `Plain` 
+    blocks; block document fragments are automatically wrapped into
+    a `Pandoc` element with no metadata. 
+
     Implicitly, the document format is inferred from the filename extension
     when possible[^heuristics], otherwise the markdown format is assumed
     by default; the output format can also be specified explicitly.
@@ -92,8 +94,9 @@ from pandoc.types import *
 
     <h5>Arguments</h5>
 
-      - `doc`: the document, as a `Pandoc` object, or document fragment 
-        (single inline or block or lists of such objects)
+      - `doc`: a `Pandoc` object or a document fragment 
+        (`Inline`, `[Inline]`, `MetaInlines`, 
+         `Block`, `[Block]` or `MetaBlocks`).
 
       - `file`: a file, filename or `None`.
 
@@ -121,31 +124,36 @@ from pandoc.types import *
     >>> doc = pandoc.read("Hello world!")
     >>> doc
     Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
-    >>> print(pandoc.write(doc)) # markdown output
+    >>> print(pandoc.write(doc))  # doctest: +NORMALIZE_WHITESPACE
     Hello world!
-    <BLANKLINE>
     ```
 
     Write document fragments to markdown strings:
 
     ``` pycon
-    >>> print(pandoc.write(Str("Hello!")))
+    >>> md = lambda elt: print(pandoc.write(elt))
+    >>> md(Str("Hello!")) # doctest: +NORMALIZE_WHITESPACE
     Hello!
-    <BLANKLINE>
-    >>> print(pandoc.write([Str('Hello'), Space(), Str('world!')]))
+    >>> md([Str('Hello'), Space(), Str('world!')]) # doctest: +NORMALIZE_WHITESPACE
+    Hello world!
+    >>> md(Para([Str('Hello'), Space(), Str('world!')])) # doctest: +NORMALIZE_WHITESPACE
+    Hello world!
+    >>> md([ # doctest: +NORMALIZE_WHITESPACE
+    ...     Para([Str('Hello'), Space(), Str('world!')]),
+    ...     Para([Str('Hello'), Space(), Str('world!')])
+    ... ])
     Hello world!
     <BLANKLINE>
-    >>> print(pandoc.write(Para([Str('Hello'), Space(), Str('world!')])))
     Hello world!
-    <BLANKLINE>
-    >>> print(pandoc.write([
+    >>> md(MetaInlines([Str('Hello'), Space(), Str('world!')])) # doctest: +NORMALIZE_WHITESPACE
+    Hello world!
+    >>> md(MetaBlocks([ # doctest: +NORMALIZE_WHITESPACE
     ...     Para([Str('Hello'), Space(), Str('world!')]),
     ...     Para([Str('Hello'), Space(), Str('world!')])
     ... ]))
     Hello world!
     <BLANKLINE>
     Hello world!
-    <BLANKLINE>
     ```
 
     Use alternate (text or binary) output formats:
