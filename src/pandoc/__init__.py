@@ -274,11 +274,13 @@ def format_from_filename(filename):
 #       extension)
 
 
-def write(elt, file=None, format=None, options=None):
+def write(doc, file=None, format=None, options=None):
     if options is None:
         options = []
 
     types = import_types()
+
+    elt = doc
 
     # wrap/unwrap Inline or MetaInlines into [Inline]
     if isinstance(elt, types.Inline):
