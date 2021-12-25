@@ -525,7 +525,7 @@ With `all=True`, the list of all matching elements are returned instead:
 []
 ```
 
-Types or multiple types can be specified (this is similar to what `insinstance`
+Types or multiple types can be specified (this is similar to what `isinstance`
 does):
 
 ``` pycon
