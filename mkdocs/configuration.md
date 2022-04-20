@@ -49,7 +49,7 @@ do not require the `pandoc` executable, but in this case
 we still need to know what version of pandoc you target,
 so specify for example:
 
-    pandoc.configure(version='2.17.1.1')
+    pandoc.configure(version=' 2.18')
 
 [^features]: typically conversion between json and Python object representations 
 of documents and analysis or transformations of documents as Python objects.
@@ -63,7 +63,7 @@ that you intend to use, or equivalently, the version of the
 Accordingly, you may configure `pandoc` with the 
 `pandoc_types_version` argument:
 
-    pandoc.configure(pandoc_types_version='1.22.1')
+    pandoc.configure(pandoc_types_version='1.22.2')
 
 [pt]: https://hackage.haskell.org/package/pandoc-types
 
@@ -82,8 +82,8 @@ but returns a dictionary whose keys are `auto`, `path`,
 >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 {'auto': True, 
  'path': ..., 
- 'version': '2.17.1.1', 
- 'pandoc_types_version': '1.22.1'}
+ 'version': '2.18', 
+ 'pandoc_types_version': '1.22.2'}
 ```
 
 The `read` option may be combined with other arguments, for example

@@ -29,20 +29,24 @@ def version_key(string):
 
 
 def update_version_mapping(pandoc_types):
-    pandoc_url = "http://hackage.haskell.org/package/pandoc"
-    html = requests.get(pandoc_url).content
-    soup = bs4.BeautifulSoup(html, "html.parser")
-    contents = soup.find(id="properties").table.tbody.tr.td.contents
-    strings = []
-    for content in contents:
-        try:
-            strings.append(content.string)
-        except AttributeError:
-            pass
-    versions = []
-    for string in strings:
-        if len(string) >= 1 and string[0] in "0123456789":
-            versions.append(string)
+    pandoc_url = "https://hackage.haskell.org/package/pandoc"
+    # html = requests.get(pandoc_url).content
+    # soup = bs4.BeautifulSoup(html, "html.parser")
+    # contents = soup.find(id="properties").table.tbody.tr.td.contents
+    # strings = []
+    # for content in contents:
+    #     try:
+    #         strings.append(content.string)
+    #     except AttributeError:
+    #         pass
+    # versions = []
+    # for string in strings:
+    #     if len(string) >= 1 and string[0] in "0123456789":
+    #         versions.append(string)
+
+    # Nowadays the request directly returns a dictionary (?!?)
+    dct = requests.get(pandoc_url).json()
+    versions = [k for k, v in dct.items() if v == "normal"]
 
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]
