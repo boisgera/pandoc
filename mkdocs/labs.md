@@ -25,13 +25,13 @@ COMMONMARK_DOC = pandoc.read(COMMONMARK_SPEC)
 <!--
 
 ``` pycon
->>> f(HELLOWORLD_DOC, Meta)
+#>>> f(HELLOWORLD_DOC, Meta)
 [Meta({})]
->>> f(HELLOWORLD_DOC, Para)
+#>>> f(HELLOWORLD_DOC, Para)
 [Para([Str('Hello'), Space(), Str('world!')])]
->>> f(HELLOWORLD_DOC, Str)
+#>>> f(HELLOWORLD_DOC, Str)
 [Str('Hello'), Str('world!')]
->>> f(HELLOWORLD_DOC, LineBreak)
+#>>> f(HELLOWORLD_DOC, LineBreak)
 []
 ```
 
@@ -39,7 +39,7 @@ Types or multiple types can be specified (this is similar to what `isinstance`
 does):
 
 ``` pycon
->>> f(HELLOWORLD_DOC, (Str, Space))
+#>>> f(HELLOWORLD_DOC, (Str, Space))
 [Str('Hello'), Space(), Str('world!')]
 ```
 
@@ -61,7 +61,7 @@ def is_http_or_https_link(elt):
 ```
 
 ``` pycon
->>> for link in f(COMMONMARK_DOC, is_http_or_https_link):
+#>>> for link in f(COMMONMARK_DOC, is_http_or_https_link):
 ...     print(get_url(link))
 http://creativecommons.org/licenses/by-sa/4.0/
 http://daringfireball.net/projects/markdown/syntax
@@ -84,20 +84,20 @@ http://www.w3.org/TR/html5/syntax.html#comments
 Calling the finder as a method works too:
 
 ``` pycon
->>> HELLOWORLD_DOC.f(Meta)
+#>>> HELLOWORLD_DOC.f(Meta)
 [Meta({})]
->>> HELLOWORLD_DOC.f(Para)
+#>>> HELLOWORLD_DOC.f(Para)
 [Para([Str('Hello'), Space(), Str('world!')])]
->>> HELLOWORLD_DOC.f(Str)
+#>>> HELLOWORLD_DOC.f(Str)
 [Str('Hello'), Str('world!')]
->>> HELLOWORLD_DOC.f(LineBreak)
+#>>> HELLOWORLD_DOC.f(LineBreak)
 []
 ```
 
 ``` pycon
->>> COMMONMARK_DOC.f(Meta)
+#>>> COMMONMARK_DOC.f(Meta)
 [Meta({'author': MetaInlines([Str('John'), Space(), Str('MacFarlane')]), 'date': MetaInlines([Str('2021-06-19')]), 'license': MetaInlines([Link(('', [], []), [Str('CC-BY-SA'), Space(), Str('4.0')], ('http://creativecommons.org/licenses/by-sa/4.0/', ''))]), 'title': MetaInlines([Str('CommonMark'), Space(), Str('Spec')]), 'version': MetaInlines([Str('0.30')])})]
->>> COMMONMARK_DOC.f(Meta)[0]
+#>>> COMMONMARK_DOC.f(Meta)[0]
 {'author': MetaInlines([Str('John'), Space(), Str('MacFarlane')]), 'date': MetaInlines([Str('2021-06-19')]), 'license': MetaInlines([Link(('', [], []), [Str('CC-BY-SA'), Space(), Str('4.0')], ('http://creativecommons.org/licenses/by-sa/4.0/', ''))]), 'title': MetaInlines([Str('CommonMark'), Space(), Str('Spec')]), 'version': MetaInlines([Str('0.30')])})
 ```
 
