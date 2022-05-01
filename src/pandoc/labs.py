@@ -65,14 +65,18 @@ def to_function(predicate):
         error += f", not {predicate!r}"
         raise TypeError(error)
 
-# 🚧 TODO: find a better name than Results
-# 🚧 TODO: make factories for Results, standalone (function) and 'embedded' 
-#          (method) in Pandoc.types.Type
-class Results: 
+# 🚧 TODO: find a better name than Query
+# 🚧 TODO: make factories for Query, standalone (function) and *maybe* 'embedded' 
+#          (method) in Pandoc.types.Type (nope, not right now)
+
+def query(root):
+    return Query([(root, [])])
+
+class Query: 
     def __init__(self, *results):
         self._elts = []
         for result in results:
-            if isinstance(result, Results):
+            if isinstance(result, Query):
                 self._elts.extend(result._elts) # Mmmm ownership issues
             else: # "raw results": list of (elt, path)
                 self._elts.extend(result)
@@ -84,7 +88,7 @@ class Results:
             for elt, path in pandoc.iter(root, path=True):
                 path = root_path + path
                 results.append((elt, path))
-        return Results(results)
+        return Query(results)
 
     def find(self, *predicates):
         return self._iter().filter(*predicates)
@@ -97,7 +101,7 @@ class Results:
                 if predicate(elt):
                     results.append((elt, path))
                     break
-        return Results(results)
+        return Query(results)
 
     def get_children(self):
         results = []
@@ -110,18 +114,16 @@ class Results:
                 for i, child in enumerate(elt):
                     child_path = path.copy() + [(elt, i)]
                     results.append((child, child_path))
-        return Results(results)
+        return Query(results)
 
     children = property(get_children)
 
-    # 🐛 Buggy
     def get_parent(self):
         results = []
         for _, path in self._elts:
             if path != []:
-                parent_elt, parent_path = path[-1]
-                results.append(path[-1])
-        return Results(results)
+                results.append((path[-1][0], path[:-1]))
+        return Query(results)
 
     parent = property(get_parent)
 
@@ -150,7 +152,7 @@ class Results:
                 for index in indices:
                     child = children[index]
                     results.append((child, elt_path.copy() + [(elt, index)]))
-        return Results(results)
+        return Query(results)
 
     # Unwrap paths
     def __iter__(self):
