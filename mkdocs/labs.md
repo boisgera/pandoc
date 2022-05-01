@@ -22,6 +22,7 @@ COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
 COMMONMARK_DOC = pandoc.read(COMMONMARK_SPEC)
 ```
 
+<!--
 
 ``` pycon
 >>> f(HELLOWORLD_DOC, Meta)
@@ -99,3 +100,5 @@ Calling the finder as a method works too:
 >>> COMMONMARK_DOC.f(Meta)[0]
 {'author': MetaInlines([Str('John'), Space(), Str('MacFarlane')]), 'date': MetaInlines([Str('2021-06-19')]), 'license': MetaInlines([Link(('', [], []), [Str('CC-BY-SA'), Space(), Str('4.0')], ('http://creativecommons.org/licenses/by-sa/4.0/', ''))]), 'title': MetaInlines([Str('CommonMark'), Space(), Str('Spec')]), 'version': MetaInlines([Str('0.30')])})
 ```
+
+-->
