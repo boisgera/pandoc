@@ -2,6 +2,8 @@
 Design
 ================================================================================
 
+TODO: first step: forget about lazyness.
+
 Fundamental object: Query.
 
   - Query defined independently of the root(s) it will be applied to.
@@ -46,69 +48,115 @@ Fundamental object: Query.
 
   - Iteration ? Query as a container "removes" path info by default so that
     we can deal with a list of "document items", make comprehensions, etc.
-
-
 """
 
 
 import pandoc
 import pandoc.types
 
-def is_type_or_types(item):
-    return isinstance(item, type) or (
-        isinstance(item, tuple) and all(isinstance(x, type) for x in item)
-    )
 
-def to_function(condition):
-    if is_type_or_types(condition):
-        return lambda elt: isinstance(elt, condition)
-    elif callable(condition):
-        return condition
+def to_function(predicate):
+    if isinstance(predicate, type):
+        return lambda elt: isinstance(elt, predicate)
+    elif callable(predicate):
+        return predicate
     else:
-        error = "condition should be a type, a tuple of types, or a function"
-        error += f", not {condition!r}"
+        error = "predicate should be a type or a function"
+        error += f", not {predicate!r}"
         raise TypeError(error)
 
-# Distinguish Query and (lazy) List
-class Query:
-    def __init__(self, *filters):
-        self._filters = []
-        self.add(*filters)
-    def add(self, *filters):
-        self._filters.extend(to_function(f) for f in filters)
-    def __call__(self, root):
-        output = (item for item in pandoc.iter(root, path=True))
-        for _filter in self._filters:
-            output = ((elt, path) for (elt, path) in output if _filter(elt))
-        return output
+# 🚧 TODO: find a better name than Results
+# 🚧 TODO: make factories for Results, standalone (function) and 'embedded' 
+#          (method) in Pandoc.types.Type
+class Results: 
+    def __init__(self, *results):
+        self._elts = []
+        for result in results:
+            if isinstance(result, Results):
+                self._elts.extend(result._elts) # Mmmm ownership issues
+            else: # "raw results": list of (elt, path)
+                self._elts.extend(result)
 
-# Nota: we have filters, transforms and "output/action" (the end of the stuff)
-# getitem if the first example of transform: List -> List.
-# Mmm actually filter is a special case of transform.
-# List should hold this list of transforms; Query is probably not
-# appropriate then as a chain of *filters*; what we have is a chain of
-# *transforms* (we can call that query too if we want)
+    # ℹ️ The call `find(object)` is public and equivalent to `_iter()`.
+    def _iter(self):
+        results = []
+        for root, root_path in self._elts:
+            for elt, path in pandoc.iter(root, path=True):
+                path = root_path + path
+                results.append((elt, path))
+        return Results(results)
 
-class List:
-    def __init__(self, root, query):
-        self._root = root
-        self._query = query
-    def __repr__(self):
-        it = iter(self)
-        return repr(list(it))
+    def find(self, *predicates):
+        return self._iter().filter(*predicates)
+    
+    def filter(self, *predicates):
+        predicates = [to_function(predicate) for predicate in predicates]
+        results = []
+        for elt, path in self._elts:
+            for predicate in predicates:
+                if predicate(elt):
+                    results.append((elt, path))
+                    break
+        return Results(results)
+
+    def get_children(self):
+        results = []
+        for elt, path in self._elts:
+            if isinstance(elt, dict):
+                for i, child in enumerate(elt.items()):
+                    child_path = path.copy() + [(elt, i)]
+                    results.append((child, child_path))
+            elif hasattr(elt, "__iter__") and not isinstance(elt, pandoc.types.String):
+                for i, child in enumerate(elt):
+                    child_path = path.copy() + [(elt, i)]
+                    results.append((child, child_path))
+        return Results(results)
+
+    children = property(get_children)
+
+    # 🐛 Buggy
+    def get_parent(self):
+        results = []
+        for _, path in self._elts:
+            if path != []:
+                parent_elt, parent_path = path[-1]
+                results.append(path[-1])
+        return Results(results)
+
+    parent = property(get_parent)
+
+    def __len__(self):
+        return len(self._elts)
+
+    def __getitem__(self, i):
+        results = []
+        for elt, elt_path in self._elts:
+            children = []
+            if isinstance(elt, pandoc.types.String) or not hasattr(elt, "__iter__"):
+                children = []
+            elif isinstance(elt, dict):
+                children = list(elt.items())
+            else:
+                children = elt[:]
+
+            if isinstance(i, int):
+                try:
+                    child = children[i]
+                    results.append((child, elt_path.copy() + [(elt, i)]))
+                except IndexError:
+                    pass
+            elif isinstance(i, slice):
+                indices = range(len(children))[i]
+                for index in indices:
+                    child = children[index]
+                    results.append((child, elt_path.copy() + [(elt, index)]))
+        return Results(results)
+
+    # Unwrap paths
     def __iter__(self):
-        return (elt for (elt, path) in self._query(self._root))
-    def __getitem__(self, index):
-        # not complete, need slice support (?) and also key support
-        # TODO !!!
-        pass
+        return (elt for elt, _ in self._elts)
 
-
-def f(root, condition):
-    query = Query(condition)
-    return List(root, query)
-
-# Tmp ; need some more dynamic hook into pandoc.types (think late loading,
-# reset, etc.)
-
-pandoc.types.Constructor.f = f
+    # TODO: use special separators?
+    def __repr__(self):
+        #return "⟨" +  repr(list(self))[1:-1] + "⟩"
+        return "\n".join("- " + repr(elt) for elt, path in self._elts)
