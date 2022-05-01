@@ -280,20 +280,38 @@ def write(doc, file=None, format=None, options=None):
 
     types = import_types()
 
-    if isinstance(doc, types.Inline):
-        inline = doc
-        doc = [inline]
-    if isinstance(doc, list) and all(isinstance(elt, types.Inline) for elt in doc):
-        inlines = doc
-        doc = types.Plain(inlines)
-    if isinstance(doc, types.Block):
-        block = doc
-        doc = [block]
-    if isinstance(doc, list) and all(isinstance(elt, types.Block) for elt in doc):
-        blocks = doc
-        doc = types.Pandoc(types.Meta({}), blocks)
-    if not isinstance(doc, types.Pandoc):
-        raise TypeError(f"{doc!r} is not a Pandoc, Block or Inline instance.")
+    elt = doc
+
+    # wrap/unwrap Inline or MetaInlines into [Inline]
+    if isinstance(elt, types.Inline):
+        inline = elt
+        elt = [inline]
+    elif isinstance(elt, types.MetaInlines):
+        meta_inlines = elt
+        elt = meta_inlines[0]
+
+    # wrap [Inline] into a Plain element
+    if isinstance(elt, list) and all(isinstance(elt_, types.Inline) for elt_ in elt):
+        inlines = elt
+        elt = types.Plain(inlines)
+
+    # wrap/unwrap Block or MetaBlocks into [Block]
+    if isinstance(elt, types.Block):
+        block = elt
+        elt = [block]
+    elif isinstance(elt, types.MetaBlocks):
+        meta_blocks = elt
+        elt = meta_blocks[0]
+
+    # wrap [Block] into a Pandoc element
+    if isinstance(elt, list) and all(isinstance(elt_, types.Block) for elt_ in elt):
+        blocks = elt
+        elt = types.Pandoc(types.Meta({}), blocks)
+
+    if not isinstance(elt, types.Pandoc):
+        raise TypeError(f"{elt!r} is not a Pandoc, Block or Inline instance.")
+    
+    doc = elt
 
     tmp_dir = tempfile.mkdtemp()
     filename = None

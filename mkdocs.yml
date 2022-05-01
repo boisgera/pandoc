@@ -16,6 +16,7 @@ nav:
   - Command-line interface: cli.md
   - API reference: api.md
   - Changelog: changelog.md
+  - "🧪 Labs": labs.md
 
 theme: "material" 
 
