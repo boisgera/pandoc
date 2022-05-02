@@ -52,8 +52,6 @@ Fundamental object: Query.
 
 
 import pandoc
-import pandoc.types
-
 
 def to_function(predicate):
     if isinstance(predicate, type):
@@ -64,10 +62,6 @@ def to_function(predicate):
         error = "predicate should be a type or a function"
         error += f", not {predicate!r}"
         raise TypeError(error)
-
-# 🚧 TODO: find a better name than Query
-# 🚧 TODO: make factories for Query, standalone (function) and *maybe* 'embedded' 
-#          (method) in Pandoc.types.Type (nope, not right now)
 
 def query(root):
     return Query([(root, [])])
@@ -110,7 +104,7 @@ class Query:
                 for i, child in enumerate(elt.items()):
                     child_path = path.copy() + [(elt, i)]
                     results.append((child, child_path))
-            elif hasattr(elt, "__iter__") and not isinstance(elt, pandoc.types.String):
+            elif hasattr(elt, "__iter__") and not isinstance(elt, str):
                 for i, child in enumerate(elt):
                     child_path = path.copy() + [(elt, i)]
                     results.append((child, child_path))
