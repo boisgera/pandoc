@@ -1,4 +1,4 @@
-name: build-windows
+name: windows
 on: [workflow_dispatch]
 
 jobs:

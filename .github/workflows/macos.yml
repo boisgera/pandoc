@@ -1,4 +1,4 @@
-name: build-macos
+name: macos
 on: [workflow_dispatch]
 
 jobs:
