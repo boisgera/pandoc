@@ -8,6 +8,7 @@ Pandoc – 🐍 Python Library
 [![GitHub discussions](https://img.shields.io/badge/discuss-online-845ef7)](https://github.com/boisgera/pandoc/discussions)
 [![Downloads](https://pepy.tech/badge/pandoc)](https://pepy.tech/project/pandoc)
 [![GitHub stars](https://img.shields.io/github/stars/boisgera/pandoc?style=flat)](https://github.com/boisgera/pandoc/stargazers)
+
 [![linux](https://github.com/boisgera/pandoc/actions/workflows/linux.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/linux.yml)
 [![macos](https://github.com/boisgera/pandoc/actions/workflows/macos.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/macos.yml)
 [![windows](https://github.com/boisgera/pandoc/actions/workflows/windows.yml/badge.svg)](https://github.com/boisgera/pandoc/actions/workflows/windows.yml)
