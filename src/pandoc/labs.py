@@ -184,7 +184,37 @@ class Query:
 
     parent = property(get_parent)
 
+    # 🚧 TODO: next and previous
+
     def get_next(self):
+        results = []
+        for elt, elt_path in self._elts:
+            try: # try to go inside elt first
+                first_child = _getitem(elt, 0)
+                results.append((first_child, elt_path + [(elt, 0)]))
+                continue
+            except (IndexError, TypeError):
+                pass
+
+            q = Query([(elt, elt_path)])
+            # Try the next sibling, if it doesn't exist the parent next sibling, etc.
+            while True:
+                next_ = q.next_sibling
+                if next_:
+                    results.append(next_._elts[0])
+                    break
+                else:
+                    parent = q.parent
+                    if not parent: # we're back at the root
+                        break
+                    else:
+                        q = parent
+
+        return Query(results)
+
+    next = property(get_next)
+
+    def get_next_sibling(self):
         indices = [path[-1][1] for elt, path in self._elts if path != []]
         results = []
         for (parent_elt, parent_path), index in zip(self.parent._elts, indices):
@@ -195,9 +225,9 @@ class Query:
                 pass
         return Query(results)
 
-    next = property(get_next)
+    next_sibling = property(get_next_sibling)
 
-    def get_prev(self):
+    def get_previous_sibling(self):
         indices = [path[-1][1] for elt, path in self._elts if path != []]
         results = []
         for (parent_elt, parent_path), index in zip(self.parent._elts, indices):
@@ -209,12 +239,15 @@ class Query:
                     pass
         return Query(results)
 
-    prev = property(get_prev)
+    prev_sibling = property(get_previous_sibling)
 
     # Query container (hide path info)
     # --------------------------------------------------------------------------
     def __len__(self):
         return len(self._elts)
+
+    def __bool__(self):
+        return len(self._elts) != 0
 
     def __getitem__(self, i):
         return Query([self._elts[i]])
