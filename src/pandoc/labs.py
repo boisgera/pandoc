@@ -2,7 +2,7 @@
 Design
 ================================================================================
 
-TODO: first step: forget about lazyness.
+TODO: first step: forget about lazyness and performance.
 
 Fundamental object: Query.
 
@@ -50,9 +50,23 @@ Fundamental object: Query.
     we can deal with a list of "document items", make comprehensions, etc.
 """
 
+# 🚧: Document that multiple arguments + `not_` + chaining calls allows to
+#     express arbitrary boolean logic in [conjunctive normal form][CNF].
+#
+#     [CNF]: https://en.wikipedia.org/wiki/Conjunctive_normal_form
 
+# Python Standard Library
+pass
+
+# Third-Party Libraries
+pass
+
+# Pandoc
 import pandoc
 
+
+# Logic
+# ------------------------------------------------------------------------------
 def to_function(predicate):
     if isinstance(predicate, type):
         return lambda elt: isinstance(elt, predicate)
@@ -63,8 +77,20 @@ def to_function(predicate):
         error += f", not {predicate!r}"
         raise TypeError(error)
 
+def not_(predicate):
+    return lambda *args, **kwargs: not predicate(*args, **kwargs)
+
+# Queries & Results
+# ------------------------------------------------------------------------------
 def query(root):
     return Query([(root, [])])
+
+def _getitem(sequence, indices):
+    if not hasattr(sequence, "__getitem__") or isinstance(sequence, str):
+        raise TypeError()
+    if isinstance(sequence, dict):
+        sequence = list(sequence.items())
+    return sequence[indices]
 
 class Query: 
     def __init__(self, *results):
@@ -84,6 +110,11 @@ class Query:
                 results.append((elt, path))
         return Query(results)
 
+    # 🚧 Think of a rename given that we now can expose this as a property
+    #    (optionally restricted with a call). We can keep find and the
+    #    "functionally flavor", but a more content-oriented alias would
+    #    be nice (descendants? But we also return the node itself. 
+    #    Subtree? Tree? Contents?)
     def find(self, *predicates):
         return self._iter().filter(*predicates)
     
@@ -97,7 +128,15 @@ class Query:
                     break
         return Query(results)
 
+    # ✨ This is sweet! The intended usage is `.property(test)`, 
+    #    which emulates the jquery API where functions can restrict the match. 
+    #    It also allows us call the "functions" without parentheses 
+    #    when no restriction is needed.
+    def __call__(self, *predicates):
+        return self.filter(*predicates)
+
     def get_children(self):
+        # 🚧 TODO: use _getitem
         results = []
         for elt, path in self._elts:
             if isinstance(elt, dict):
@@ -112,19 +151,7 @@ class Query:
 
     children = property(get_children)
 
-    def get_parent(self):
-        results = []
-        for _, path in self._elts:
-            if path != []:
-                results.append((path[-1][0], path[:-1]))
-        return Query(results)
-
-    parent = property(get_parent)
-
-    def __len__(self):
-        return len(self._elts)
-
-    def __getitem__(self, i):
+    def get_child(self, i):
         results = []
         for elt, elt_path in self._elts:
             children = []
@@ -148,11 +175,52 @@ class Query:
                     results.append((child, elt_path.copy() + [(elt, index)]))
         return Query(results)
 
-    # Unwrap paths
+    def get_parent(self):
+        results = []
+        for _, path in self._elts:
+            if path != []:
+                results.append((path[-1][0], path[:-1]))
+        return Query(results)
+
+    parent = property(get_parent)
+
+    def get_next(self):
+        indices = [path[-1][1] for elt, path in self._elts if path != []]
+        results = []
+        for (parent_elt, parent_path), index in zip(self.parent._elts, indices):
+            try: # 🚧 TODO: adaptation of [] for dicts and strings (use _getitem).             
+                next_element = parent_elt[index + 1]
+                results.append((next_element, parent_path.copy() + [(parent_elt, index+1)]))
+            except IndexError:
+                pass
+        return Query(results)
+
+    next = property(get_next)
+
+    def get_prev(self):
+        indices = [path[-1][1] for elt, path in self._elts if path != []]
+        results = []
+        for (parent_elt, parent_path), index in zip(self.parent._elts, indices):
+            if index > 0:
+                try: # 🚧 TODO: adaptation of [] for dicts and strings (& factor out).
+                    next_element = parent_elt[index - 1]
+                    results.append((next_element, parent_path.copy() + [(parent_elt, index-1)]))
+                except IndexError:
+                    pass
+        return Query(results)
+
+    prev = property(get_prev)
+
+    # Query container (hide path info)
+    # --------------------------------------------------------------------------
+    def __len__(self):
+        return len(self._elts)
+
+    def __getitem__(self, i):
+        return Query([self._elts[i]])
+
     def __iter__(self):
         return (elt for elt, _ in self._elts)
 
-    # TODO: use special separators?
     def __repr__(self):
-        #return "⟨" +  repr(list(self))[1:-1] + "⟩"
         return "\n".join("- " + repr(elt) for elt, path in self._elts)
