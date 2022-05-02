@@ -1,0 +1,51 @@
+name: build-linux
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  main:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    defaults:
+      run:
+        shell: bash -l {0} 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Activate Conda environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: pandoc
+          environment-file: environment.yml
+
+      - name: Install LaTeX (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install texlive-full
+
+      - name: Install Python pandoc 
+        run: python setup.py install
+
+      - name: Test Python pandoc
+        run: python test.py && python test.py -v
+
+      - name: Build documentation (Ubuntu)
+        run: mkdocs build
+
+      - name: Prepare documentation deployment (Ubuntu)
+        run: rm .gitignore
+
+      - name: Deploy documentation (Ubuntu)
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: "docs"
+          SINGLE_COMMIT: true
+          PRESERVE: true

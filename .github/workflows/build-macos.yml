@@ -1,0 +1,36 @@
+name: build
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  main:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+    defaults:
+      run:
+        shell: bash -l {0} 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Activate Conda environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: pandoc
+          environment-file: environment.yml
+
+      - name: Install LaTeX (MacOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install --cask mactex
+
+      - name: Install Python pandoc 
+        run: python setup.py install
+
+      - name: Test Python pandoc
+        run: python test.py && python test.py -v
