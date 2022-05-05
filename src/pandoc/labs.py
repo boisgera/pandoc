@@ -78,6 +78,7 @@ def to_function(predicate):
         raise TypeError(error)
 
 def not_(predicate):
+    predicate = to_function(predicate)
     return lambda *args, **kwargs: not predicate(*args, **kwargs)
 
 # Queries & Results

@@ -1,11 +1,17 @@
 
-🧪 Labs
+Labs 🧪
 ================================================================================
+
+!!! warning
+
+    The `pandoc.labs` module is an experiment ; its interface is highly
+    unstable. Don't build anything serious on top of it!
+
 
 ``` python
 import pandoc
 from pandoc.types import *
-#from pandoc.labs import f
+from pandoc.labs import *
 ```
 
 
@@ -21,6 +27,159 @@ URL = f"https://{PATH}/{HASH}/spec.txt"
 COMMONMARK_SPEC = urlopen(URL).read().decode("utf-8")
 COMMONMARK_DOC = pandoc.read(COMMONMARK_SPEC)
 ```
+
+```python
+>>> HELLOWORLD_DOC
+Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+>>> query(HELLOWORLD_DOC)
+- Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+```
+
+**TODO.** Explain what query does: a collection which 
+stores multiple document elements on which parallel operations can be applied
+and that "automagically" know their location within the root document.
+
+```python
+>>> q = query(HELLOWORLD_DOC)
+```
+
+```python
+>>> isinstance(q, Query)
+True
+```
+
+**TODO:** consider a change of name for `Query`: `Results`, `Match`, `Collection`,
+etc?
+
+At this stage, the query only contains the document itself.
+
+```python
+>>> q
+- Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+```
+
+The `find` method allows to select items within the initial collection.
+To begin with, we can search items by type:
+
+
+```python
+>>> q.find(Meta)
+- Meta({})
+>>> q.find(Para)
+- Para([Str('Hello'), Space(), Str('world!')])
+```
+
+Abstract types can also be used:
+
+```python
+>>> q.find(Block)
+- Para([Str('Hello'), Space(), Str('world!')])
+>>> q.find(Inline)
+- Str('Hello')
+- Space()
+- Str('world!')
+```
+
+To find all pandoc elements:
+
+```python
+>>> q.find(Type)
+- Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+- Meta({})
+- Para([Str('Hello'), Space(), Str('world!')])
+- Str('Hello')
+- Space()
+- Str('world!')
+```
+
+Finding python builtin types works too:
+
+```python
+>>> q.find(dict)
+- {}
+>>> q.find(list)
+- [Para([Str('Hello'), Space(), Str('world!')])]
+- [Str('Hello'), Space(), Str('world!')]
+>>> q.find(str)
+- 'Hello'
+- 'world!'
+```
+
+To get every possible item, in document order, we can search for Python objects:
+
+```python
+>>> q.find(object)
+- Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+- Meta({})
+- {}
+- [Para([Str('Hello'), Space(), Str('world!')])]
+- Para([Str('Hello'), Space(), Str('world!')])
+- [Str('Hello'), Space(), Str('world!')]
+- Str('Hello')
+- 'Hello'
+- Space()
+- Str('world!')
+- 'world!'
+```
+
+### Logic
+
+We can search for items that match one of several conditions:
+```
+>>> q.find(Str, Space)
+- Str('Hello')
+- Space()
+- Str('world!')
+```
+
+If the list of arguments is empty, there is no match:
+```python
+>>> q.find()
+
+```
+
+To add match several conditions at once, the `filter` method can be used:
+
+```python
+>>> q.find(Inline).filter(Str)
+- Str('Hello')
+- Str('world!')
+```
+
+We can also match the negation of a condition
+
+```python
+>>> q.find(Inline).filter(not_(Space))
+- Str('Hello')
+- Str('world!')
+```
+
+### Predicates
+
+Type are not the only conditions we can check, predicates can be used too:
+
+```python
+>>> def startswith_H(elt):
+...     return isinstance(elt, Str) and elt[0].startswith("H")
+... 
+>>> q.find(startswith_H)
+- Str('Hello')
+```
+
+
+
+
+
+
+
+
+
+
+
+Nota: finding lists of inlines is difficult; finding *non-empty* lists of
+inlines is easy, but empty lists is harder, we need to use some knowledge
+of the type hierarchy.
+
 
 <!--
 
