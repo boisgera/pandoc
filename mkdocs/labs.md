@@ -125,7 +125,7 @@ To get every possible item, in document order, we can search for Python objects:
 ### Logic
 
 We can search for items that match one of several conditions:
-```
+```python
 >>> q.find(Str, Space)
 - Str('Hello')
 - Space()
