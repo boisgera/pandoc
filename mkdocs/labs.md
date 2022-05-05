@@ -135,7 +135,7 @@ We can search for items that match one of several conditions:
 If the list of arguments is empty, there is no match:
 ```python
 >>> q.find()
-
+<BLANKLINE>
 ```
 
 To add match several conditions at once, the `filter` method can be used:
