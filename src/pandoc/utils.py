@@ -1,7 +1,6 @@
-# Python 2.7 Standard Library
-from __future__ import absolute_import
-from __future__ import print_function
+# Python Standard Library
 import json
+import warnings
 
 # Third-Party Libraries
 import pkg_resources
@@ -50,18 +49,24 @@ def match(spec, version):
         raise ValueError("invalid version spec {0}".format(spec))
 
 
-def resolve(version):
-    try:
-        pt_spec = version_mapping[version]
-    except KeyError:
-        error = "pandoc {0} is not registered"
-        raise ValueError(error.format(version))
+def resolve(version, warn=True):
+    pandoc_versions = sorted(version_mapping.keys(), key=version_key)
+    latest_pandoc_version = pandoc_versions[-1]
     pandoc_types_versions = sorted(definitions.keys(), key=version_key)
+    try:
+        pandoc_types_version_spec = version_mapping[version]
+    except KeyError:
+        error = f"""
+Pandoc version {version} is not supported, we proceed as if pandoc {latest_pandoc_version} was used. 
+The behavior of the library is undefined if the document models of these versions differ."""
+        warnings.warn(error)
+        version = latest_pandoc_version
+        pandoc_types_version_spec = version_mapping[version]
 
     matches = []
-    for pt_version in pandoc_types_versions:
-        if match(pt_spec, pt_version):
-            matches.append(pt_version)
+    for pandoc_types_version in pandoc_types_versions:
+        if match(pandoc_types_version_spec, pandoc_types_version):
+            matches.append(pandoc_types_version)
     return matches
 
 

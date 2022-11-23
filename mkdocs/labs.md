@@ -36,8 +36,10 @@ Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 ```
 
 **TODO.** Explain what query does: a collection which 
-stores multiple document elements on which parallel operations can be applied
-and that "automagically" know their location within the root document.
+stores single or multiple document elements on which parallel operations 
+can be applied and that "automagically" know their location within the root 
+document. Also "no-failure" flavor (operations don't fail, they return the
+empty collection)
 
 ```python
 >>> q = query(HELLOWORLD_DOC)
@@ -58,7 +60,7 @@ At this stage, the query only contains the document itself.
 - Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 ```
 
-### Types
+### Search by type
 
 The `find` method allows to select items within the initial collection.
 To begin with, we can search items by type:
@@ -124,7 +126,35 @@ To get every possible item, in document order, we can search for Python objects:
 - 'world!'
 ```
 
-### Logic
+### Selectors
+
+Types are not the only possible selectors. Predicates -- functions that take
+a pandoc element and return a boolean value -- can be used too:
+
+```python
+>>> def startswith_H(elt):
+...     return isinstance(elt, Str) and elt[0].startswith("H")
+... 
+>>> q.find(startswith_H)
+- Str('Hello')
+```
+
+You can use predicate to define and select "virtual types" in a document.
+For example,
+
+```python
+def AttrHolder(elt):
+    return isinstance(elt, (Code, Link, Image, Span, Div, CodeBlock, Header, Table))
+```
+
+**TODO:** match by attributes (id, classes, key-values); use keyword arguments 
+in find with "or" semantics for lists; allow for predicates. For key values
+match, match for key existence, key-value pair, predicate as a whole or just
+for value.
+
+
+
+### Combine requirements
 
 We can search for items that match one of several conditions:
 ```python
@@ -170,32 +200,6 @@ We can also match the negation of a condition
 - Str('Hello')
 - Str('world!')
 ```
-
-### Tests
-
-Types are not the only possible selectors, predicates -- functions that take
-a pandoc element and return a boolean value -- can be used too:
-
-```python
->>> def startswith_H(elt):
-...     return isinstance(elt, Str) and elt[0].startswith("H")
-... 
->>> q.find(startswith_H)
-- Str('Hello')
-```
-
-You can use predicate to define and select "virtual types" in a document.
-For example,
-
-```python
-def AttrHolder(elt):
-    return isinstance(elt, (Code, Link, Image, Span, Div, CodeBlock, Header, Table))
-```
-
-**TODO:** match by attributes (id, classes, key-values); use keyword arguments 
-in find with "or" semantics for lists; allow for predicates. For key values
-match, match for key existence, key-value pair, predicate as a whole or just
-for value.
 
 
 ### Navigation

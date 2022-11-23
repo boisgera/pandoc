@@ -30,23 +30,26 @@ def version_key(string):
 
 def update_version_mapping(pandoc_types):
     pandoc_url = "https://hackage.haskell.org/package/pandoc"
-    # html = requests.get(pandoc_url).content
-    # soup = bs4.BeautifulSoup(html, "html.parser")
-    # contents = soup.find(id="properties").table.tbody.tr.td.contents
-    # strings = []
-    # for content in contents:
-    #     try:
-    #         strings.append(content.string)
-    #     except AttributeError:
-    #         pass
-    # versions = []
-    # for string in strings:
-    #     if len(string) >= 1 and string[0] in "0123456789":
-    #         versions.append(string)
+    html = requests.get(pandoc_url).content
+    soup = bs4.BeautifulSoup(html, "html.parser")
+    contents = soup.find(id="properties").table.tbody.tr.td.contents
+    strings = []
+    for content in contents:
+        try:
+            strings.append(content.string)
+        except AttributeError:
+            pass
+    versions = []
+    for string in strings:
+        if len(string) >= 1 and string[0] in "0123456789":
+            versions.append(string)
+
+    print(versions)
 
     # Nowadays the request directly returns a dictionary (?!?)
-    dct = requests.get(pandoc_url).json()
-    versions = [k for k, v in dct.items() if v == "normal"]
+    # dct = requests.get(pandoc_url).json()
+
+    # versions = [k for k, v in dct.items() if v == "normal"]
 
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]
@@ -89,7 +92,7 @@ def setup():
     sh.rm("-rf", "pandoc-types")
     sh.git("clone", "https://github.com/jgm/pandoc-types.git")
     sh.cd("pandoc-types")
-    #sh.rm("-rf", ".git") # don't want to see the folder as a git submodule
+    # sh.rm("-rf", ".git") # don't want to see the folder as a git submodule
 
     # install the GHCI script
     script = open(".ghci", "w")
@@ -115,16 +118,20 @@ def collect_ghci_script_output():
             break
         elif collect == True:
             sline = line.strip()
-            if not (sline.startswith("type") and sline.endswith(":: *")): # e.g. "type ListNumberStyle :: *"
+            if not (
+                sline.startswith("type") and sline.endswith(":: *")
+            ):  # e.g. "type ListNumberStyle :: *"
                 lines.append(line)
     definitions = "".join(lines)
     return definitions
+
 
 # def ansi_escape(string):
 #     ansi_escape_8bit = re.compile(
 #       r'(?:\x1B[@-Z\\-_]|[\x80-\x9A\x9C-\x9F]|(?:\x1B\[|\x9B)[0-?]*[ -/]*[@-~])'
 #     )
 #     return re.compile(ansi_escape_8bit).sub("", string)
+
 
 def update_type_definitions(pandoc_types):
     # registered definitions
@@ -147,9 +154,9 @@ def update_type_definitions(pandoc_types):
     sh.cd("pandoc-types")
 
     # get the version tags, write the (ordered) list down
-    version_string = str(sh.git("--no-pager", "tag")) # no ANSI escape codes
+    version_string = str(sh.git("--no-pager", "tag"))  # no ANSI escape codes
     versions = version_string.split()
-    #print("****", versions)
+    # print("****", versions)
     versions.sort(key=version_key)
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 name = "pandoc"
-version = "2.3.alpha0"
+version = "2.3"
 license = "MIT License"
 description = "Pandoc Documents for Python"
 author = "Sébastien Boisgérault"

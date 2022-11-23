@@ -110,7 +110,7 @@ def configure(
             raise ValueError(error.format(found_version, version))
 
     if version is not None:
-        found_pandoc_types_versions = utils.resolve(version)
+        found_pandoc_types_versions = utils.resolve(version, warn=True)
         if pandoc_types_version is None:
             if len(found_pandoc_types_versions) >= 1:
                 # pick latest (ignore the real one that may be unknown)
@@ -310,7 +310,7 @@ def write(doc, file=None, format=None, options=None):
 
     if not isinstance(elt, types.Pandoc):
         raise TypeError(f"{elt!r} is not a Pandoc, Block or Inline instance.")
-    
+
     doc = elt
 
     tmp_dir = tempfile.mkdtemp()
