@@ -4,7 +4,7 @@ Design
 
 TODO: first step: forget about lazyness and performance.
 
-Fundamental object: Query.
+Fundamental object: Query. NO, see below
 
   - Query defined independently of the root(s) it will be applied to.
 
@@ -48,6 +48,42 @@ Fundamental object: Query.
 
   - Iteration ? Query as a container "removes" path info by default so that
     we can deal with a list of "document items", make comprehensions, etc.
+
+
+New Take
+--------------------------------------------------------------------------------
+
+  - We have PREDICATES first: stuff that takes an elt and returns a bool.
+
+  - We have a list of "fancy", parametrized predicates (match the id, match
+    the type, etc.).
+
+  - Predicates are functions (elt -> True) that have some extra support for
+    |, & and ~ (and/or the or_, and_ and not_ methods?). But not that a
+    "filter" method (or __call__) on Elements/Collections could/does work
+    as a "and", so multiple args in () could work has a "or" and we merely
+    need a not to be complete (we have a conjonctive normal form).
+
+  - On an elt or a collection of elements, we can either query using a 
+    predicate or filter using a predicate. Query is get everything + filter.
+    Have a look at rethinkdb for the terminology? And/or pandas?
+    Terminology: "run" a query. Rethinkdb uses a chain with "." + final "run()"
+    to get the results of a query that runs.
+    In db-land, there is an iteration by default?
+    But not a recursive structure ... JQuery would be a better reference I 
+    guess, because of its tree structure.
+
+    The find vs filter distinction is more JQuery-ish.
+
+
+  - Anyway, we have a elts + predicates -> elts function, that we should be
+    able to chain.
+
+  - Also, transforms (elts -> elts, such a .children) and apply (returns
+    anything).
+
+
+
 """
 
 # 🚧: Document that multiple arguments + `not_` + chaining calls allows to
