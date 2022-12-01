@@ -20,8 +20,8 @@ jobs:
           activate-environment: pandoc
           environment-file: environment.yml
 
-      - name: Install Scoop
-        uses: MinoruSekine/setup-scoop@v1      
+      # - name: Install Scoop
+      #   uses: MinoruSekine/setup-scoop@v1      
 
       # - name: Install LaTeX (Windows) # Broken
       #   if: matrix.os == 'windows-latest'
