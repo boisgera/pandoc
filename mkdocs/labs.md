@@ -164,17 +164,27 @@ We can search for items that match one of several conditions:
 - Str('world!')
 ```
 
-If the list of arguments is empty, there is no match:
+If the list of arguments is empty, everything is a match:
 ```python
 >>> q.find()
-<BLANKLINE>
+- Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
+- Meta({})
+- {}
+- [Para([Str('Hello'), Space(), Str('world!')])]
+- Para([Str('Hello'), Space(), Str('world!')])
+- [Str('Hello'), Space(), Str('world!')]
+- Str('Hello')
+- 'Hello'
+- Space()
+- Str('world!')
+- 'world!'
 ```
 In a boolean context, a query with no results is considered `False`
 
 ```python
->>> bool(q.find())
+>>> bool(q.find(float))
 False
->>> if not q.find():
+>>> if not q.find(float):
 ...     print("no result")
 no result
 ```

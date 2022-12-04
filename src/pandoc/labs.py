@@ -103,20 +103,47 @@ import pandoc
 
 # Logic
 # ------------------------------------------------------------------------------
-def to_function(predicate):
-    if isinstance(predicate, type):
-        return lambda elt: isinstance(elt, predicate)
-    elif callable(predicate):
-        return predicate
+
+# 🤔 Consider support for:
+#
+#      - Typing.Union (supported by | in Python >=3.10) ?
+#        We probably should support whatever isinstance supports.
+#        That means tuples too? Yes, see the concept of "classinfo" here:
+#        <https://docs.python.org/3/library/functions.html#isinstance>.
+#        Note: tuples can be recursively !!!
+#        Note: if we support tuples, we need to unpack them (do we? We may
+#        also consider that a tuple means a classinfo and defer the error
+#        management to isinstance).
+#
+def to_function(*predicates):
+    """
+    🚧 Document:
+
+        - pass-through for function
+
+        - type to isinstance(., type) conversion
+
+        - vectorization by disjunction of the predicates
+    """
+    if not predicates:
+        predicates = [lambda _: True]
+    if len(predicates) == 1:
+        predicate = predicates[0]
+        if isinstance(predicate, type):
+            return lambda elt: isinstance(elt, predicate)
+        elif callable(predicate):
+            return predicate
+        else:
+            error = "predicate should be a type or a function"
+            error += f", not {predicate!r}"
+            raise TypeError(error)
     else:
-        error = "predicate should be a type or a function"
-        error += f", not {predicate!r}"
-        raise TypeError(error)
+        return lambda elt: any(to_function(p)(elt) for p in predicates)
 
 
 def not_(predicate):
     predicate = to_function(predicate)
-    return lambda *args, **kwargs: not predicate(*args, **kwargs)
+    return lambda elt: not predicate(elt)
 
 
 # Queries & Results
@@ -134,8 +161,11 @@ def _getitem(sequence, indices):
 
 
 # 💭 "Query" probably inappropriate since the queries are the method calls,
-# not the object itself. The object would be a "collection", "elements",
-# "forest", "results", that kind of thing.
+#    not the object itself.
+#    The object itself would be a "collection", "elements",
+#    "forest", "results", that kind of thing. "Library", "Fragments", anything
+#     like that is cool. I like "Library", as a collection of documents
+#     (and doc fragments). The branding/concept would be quite nice.
 
 
 class Query:
@@ -157,22 +187,22 @@ class Query:
                 results.append((elt, path))
         return Query(results)
 
-    # 🚧 Think of a rename given that we now can expose this as a property
+    # 🤔 Think of a rename given that we now can expose this as a property
     #    (optionally restricted with a call). We can keep find and the
     #    "functionally flavor", but a more content-oriented alias would
     #    be nice (descendants? But we also return the node itself.
     #    Subtree? Tree? Contents?)
+    #
+    # 🤔 Replace "find" with "search"?
     def find(self, *predicates):
         return self._iter().filter(*predicates)
 
     def filter(self, *predicates):
-        predicates = [to_function(predicate) for predicate in predicates]
+        predicate = to_function(*predicates)
         results = []
         for elt, path in self._elts:
-            for predicate in predicates:
-                if predicate(elt):
-                    results.append((elt, path))
-                    break
+            if predicate(elt):
+                results.append((elt, path))
         return Query(results)
 
     # ✨ This is sweet! The intended usage is `.property(test)`,
