@@ -166,6 +166,7 @@ def _getitem(sequence, indices):
 #    "forest", "results", that kind of thing. "Library", "Fragments", anything
 #     like that is cool. I like "Library", as a collection of documents
 #     (and doc fragments). The branding/concept would be quite nice.
+#    "Corpus" would also work pretty well.
 
 
 class Query:
