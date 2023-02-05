@@ -85,6 +85,7 @@ tokens = [
     "RBRACKET",
     "LBRACE",
     "RBRACE",
+    "EXCLAMATION",
 ]
 keywords = {
     "data": "DATA",
@@ -118,6 +119,7 @@ t_LBRACKET = r"\["
 t_RBRACKET = r"\]"
 t_LBRACE = r"\{"
 t_RBRACE = r"\}"
+t_EXCLAMATION = r"\!"
 
 t_ignore = " \t\n"
 
@@ -145,6 +147,11 @@ def p_typetypedecl(p):
 
 def p_type_paren(p):
     "type : LPAREN type RPAREN"
+    p[0] = p[2]
+
+
+def p_type_exclamation(p):
+    "type : EXCLAMATION type"
     p[0] = p[2]
 
 
