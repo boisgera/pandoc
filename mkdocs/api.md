@@ -351,8 +351,8 @@ from pandoc.types import *
     >>> config # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': True, 
      'path': ..., 
-     'version': '2.19.2', 
-     'pandoc_types_version': '1.22.2.1'}
+     'version': '3.1.1', 
+     'pandoc_types_version': '1.23'}
     ```
     To avoid this, call `pandoc.configure(...)` yourself beforehand.
     Alternatively, select manually your pandoc executable afterwards:
@@ -366,8 +366,8 @@ from pandoc.types import *
     >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': False, 
      'path': ..., 
-     'version': '2.19.2', 
-     'pandoc_types_version': '1.22.2.1'}    
+     'version': '3.1.1', 
+     'pandoc_types_version': '1.23'}    
     ```
 
     <h5>See also</h5>
@@ -505,13 +505,13 @@ from pandoc.types import *
           | Header(Int, Attr, [Inline])
           | HorizontalRule()
           | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+          | Figure(Attr, Caption, [Block])
           | Div(Attr, [Block])
-          | Null()
     ```
 
     <h5>See also</h5>
     
-    <a href="#Attr"><code>Attr</code></a>, <a href="#BlockQuote"><code>BlockQuote</code></a>, <a href="#BulletList"><code>BulletList</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#CodeBlock"><code>CodeBlock</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#DefinitionList"><code>DefinitionList</code></a>, <a href="#Div"><code>Div</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Header"><code>Header</code></a>, <a href="#HorizontalRule"><code>HorizontalRule</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#LineBlock"><code>LineBlock</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>, <a href="#Null"><code>Null</code></a>, <a href="#OrderedList"><code>OrderedList</code></a>, <a href="#Para"><code>Para</code></a>, <a href="#Plain"><code>Plain</code></a>, <a href="#RawBlock"><code>RawBlock</code></a>, <a href="#Table"><code>Table</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>, <a href="#Text"><code>Text</code></a>.
+    <a href="#Attr"><code>Attr</code></a>, <a href="#BlockQuote"><code>BlockQuote</code></a>, <a href="#BulletList"><code>BulletList</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#CodeBlock"><code>CodeBlock</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#DefinitionList"><code>DefinitionList</code></a>, <a href="#Div"><code>Div</code></a>, <a href="#Figure"><code>Figure</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Header"><code>Header</code></a>, <a href="#HorizontalRule"><code>HorizontalRule</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#LineBlock"><code>LineBlock</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>, <a href="#OrderedList"><code>OrderedList</code></a>, <a href="#Para"><code>Para</code></a>, <a href="#Plain"><code>Plain</code></a>, <a href="#RawBlock"><code>RawBlock</code></a>, <a href="#Table"><code>Table</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>, <a href="#Text"><code>Text</code></a>.
 
 <div id="BlockQuote"></div>
 
@@ -897,6 +897,22 @@ from pandoc.types import *
     ```
 
 
+
+<div id="Figure"></div>
+
+??? note "`Figure`"
+
+    Concrete data type
+
+    <h5>Signature</h5>
+
+    ``` skip
+    Figure(Attr, Caption, [Block])
+    ```
+
+    <h5>See also</h5>
+    
+    <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#Caption"><code>Caption</code></a>.
 
 <div id="Format"></div>
 
@@ -1349,20 +1365,6 @@ from pandoc.types import *
     <h5>See also</h5>
     
     <a href="#Block"><code>Block</code></a>.
-
-<div id="Null"></div>
-
-??? note "`Null`"
-
-    Concrete data type
-
-    <h5>Signature</h5>
-
-    ``` skip
-    Null()
-    ```
-
-
 
 <div id="OneParen"></div>
 

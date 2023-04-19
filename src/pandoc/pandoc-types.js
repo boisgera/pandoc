@@ -1523,7 +1523,27 @@
         "<",
         "1.24"
       ]
-    ]    
+    ],
+    "3.1.0": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.1": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ]            
   },
   "definitions": {
     "1.8": "data Pandoc = Pandoc Meta [Block]\ndata Meta\n  = Meta {docTitle :: [Inline],\n docAuthors :: [[Inline]],\n docDate :: [Inline]}\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (String, [String], [(String, String)])\nnullAttr :: Attr\ntype TableCell = [Block]\ntype Format = String\ndata Block\n  = Plain [Inline]\n  | Para [Inline]\n  | CodeBlock Attr String\n  | RawBlock Format String\n  | BlockQuote [Block]\n  | OrderedList ListAttributes [[Block]]\n  | BulletList [[Block]]\n  | DefinitionList [([Inline], [[Block]])]\n  | Header Int [Inline]\n  | HorizontalRule\n  | Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]\n  | Null\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (String, String)\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str String\n  | Emph [Inline]\n  | Strong [Inline]\n  | Strikeout [Inline]\n  | Superscript [Inline]\n  | Subscript [Inline]\n  | SmallCaps [Inline]\n  | Quoted QuoteType [Inline]\n  | Cite [Citation] [Inline]\n  | Code Attr String\n  | Space\n  | EmDash\n  | EnDash\n  | Apostrophe\n  | Ellipses\n  | LineBreak\n  | Math MathType String\n  | RawInline Format String\n  | Link [Inline] Target\n  | Image [Inline] Target\n  | Note [Block]\ndata Citation\n  = Citation {citationId :: String,\n     citationPrefix :: [Inline],\n     citationSuffix :: [Inline],\n     citationMode :: CitationMode,\n     citationNoteNum :: Int,\n     citationHash :: Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\n",

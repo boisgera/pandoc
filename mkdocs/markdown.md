@@ -1,12 +1,12 @@
 # Pandoc's Markdown
 
 **Source:**
-<https://raw.githubusercontent.com/jgm/pandoc/2.14.2/MANUAL.txt>
+<https://raw.githubusercontent.com/jgm/pandoc/3.1.1/MANUAL.txt>
 
 Pandoc understands an extended and slightly revised version of John
 Gruber's [Markdown](https://daringfireball.net/projects/markdown/)
 syntax. This document explains the syntax, noting differences from
-standard Markdown. Except where noted, these differences can be
+original Markdown. Except where noted, these differences can be
 suppressed by using the `markdown_strict` format instead of `markdown`.
 Extensions can be enabled or disabled to specify the behavior more
 granularly. They are described in the following. See also
@@ -105,7 +105,7 @@ As with setext-style headings, the heading text can contain formatting:
 
 #### Extension: `blank_before_header`
 
-Standard Markdown syntax does not require a blank line before a heading.
+Original Markdown syntax does not require a blank line before a heading.
 Pandoc does require this (except, of course, at the beginning of the
 document). The reason for the requirement is that it is all too easy for
 a `#` to end up at the beginning of a line by accident (perhaps through
@@ -139,9 +139,15 @@ above.
 Headings can be assigned attributes using this syntax at the end of the
 line containing the heading text:
 
-``` skip
-{#identifier .class .class key=value key=value}
-```
+=== "Markdown"
+
+        {#identifier .class .class key=value key=value}
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Str('{#identifier'), Space(), Str('.class'), Space(), Str('.class'), Space(), Str('key=value'), Space(), Str('key=value}')])])
+
+<!-- prevent container tabs merge -->
 
 Thus, for example, the following headings will all be assigned the
 identifier `foo`:
@@ -222,12 +228,11 @@ you can simply write
 
 === "Markdown"
 
-        # Heading identifiers in HTML
         [Heading identifiers in HTML]
 
 === "Python"
 
-        Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')]), Para([Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))])])
+        Pandoc(Meta({}), [Para([Str('[Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML]')])])
 
 <!-- prevent container tabs merge -->
 
@@ -235,12 +240,11 @@ or
 
 === "Markdown"
 
-        # Heading identifiers in HTML
         [Heading identifiers in HTML][]
 
 === "Python"
 
-        Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')]), Para([Link(('', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')], ('#heading-identifiers-in-html', ''))])])
+        Pandoc(Meta({}), [Para([Str('[Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML][]')])])
 
 <!-- prevent container tabs merge -->
 
@@ -248,13 +252,12 @@ or
 
 === "Markdown"
 
-        # Heading identifiers in HTML
         [the section on heading identifiers][heading identifiers in
         HTML]
 
 === "Python"
 
-        Pandoc(Meta({}), [Header(1, ('heading-identifiers-in-html', [], []), [Str('Heading'), Space(), Str('identifiers'), Space(), Str('in'), Space(), Str('HTML')]), Para([Link(('', [], []), [Str('the'), Space(), Str('section'), Space(), Str('on'), Space(), Str('heading'), Space(), Str('identifiers')], ('#heading-identifiers-in-html', ''))])])
+        Pandoc(Meta({}), [Para([Str('[the'), Space(), Str('section'), Space(), Str('on'), Space(), Str('heading'), Space(), Str('identifiers][heading'), Space(), Str('identifiers'), Space(), Str('in'), SoftBreak(), Str('HTML]')])])
 
 <!-- prevent container tabs merge -->
 
@@ -365,7 +368,7 @@ block quote, you need five spaces after the `>`:
 
 #### Extension: `blank_before_blockquote`
 
-Standard Markdown syntax does not require a blank line before a block
+Original Markdown syntax does not require a blank line before a block
 quote. Pandoc does require this (except, of course, at the beginning of
 the document). The reason for the requirement is that it is all too easy
 for a `>` to end up at the beginning of a line by accident (perhaps
@@ -375,11 +378,11 @@ the following does not produce a nested block quote in pandoc:
 === "Markdown"
 
         > This is a block quote.
-        >> Nested.
+        >> Not nested, since `blank_before_blockquote` is enabled by default
 
 === "Python"
 
-        Pandoc(Meta({}), [BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), SoftBreak(), Str('>'), Space(), Str('Nested.')])])])
+        Pandoc(Meta({}), [BlockQuote([Para([Str('This'), Space(), Str('is'), Space(), Str('a'), Space(), Str('block'), Space(), Str('quote.'), SoftBreak(), Str('>'), Space(), Str('Not'), Space(), Str('nested,'), Space(), Str('since'), Space(), Code(('', [], []), 'blank_before_blockquote'), Space(), Str('is'), Space(), Str('enabled'), Space(), Str('by'), Space(), Str('default')])])])
 
 <!-- prevent container tabs merge -->
 
@@ -479,20 +482,26 @@ using this syntax:
 Here `mycode` is an identifier, `haskell` and `numberLines` are classes,
 and `startFrom` is an attribute with value `100`. Some output formats
 can use this information to do syntax highlighting. Currently, the only
-output formats that uses this information are HTML, LaTeX, Docx, Ms, and
+output formats that use this information are HTML, LaTeX, Docx, Ms, and
 PowerPoint. If highlighting is supported for your output format and
 language, then the code block above will appear highlighted, with
 numbered lines. (To see which languages are supported, type
 `pandoc --list-highlight-languages`.) Otherwise, the code block above
 will appear as follows:
 
-``` skip
-<pre id="mycode" class="haskell numberLines" startFrom="100">
-    <code>
-    ...
-    </code>
-</pre>
-```
+=== "Markdown"
+
+        <pre id="mycode" class="haskell numberLines" startFrom="100">
+          <code>
+          ...
+          </code>
+        </pre>
+
+=== "Python"
+
+        Pandoc(Meta({}), [RawBlock(Format('html'), '<pre id="mycode" class="haskell numberLines" startFrom="100">\n  <code>\n  ...\n  </code>\n</pre>')])
+
+<!-- prevent container tabs merge -->
 
 The `numberLines` (or `number-lines`) class will cause the lines of the
 code block to be numbered, starting with `1` or the value of the
@@ -525,6 +534,34 @@ This is equivalent to:
 === "Python"
 
         Pandoc(Meta({}), [CodeBlock(('', ['haskell'], []), 'qsort [] = []')])
+
+<!-- prevent container tabs merge -->
+
+This shortcut form may be combined with attributes:
+
+=== "Markdown"
+
+        ```haskell {.numberLines}
+        qsort [] = []
+        ```
+
+=== "Python"
+
+        Pandoc(Meta({}), [CodeBlock(('', ['haskell', 'numberLines'], []), 'qsort [] = []')])
+
+<!-- prevent container tabs merge -->
+
+Which is equivalent to:
+
+=== "Markdown"
+
+        ``` {.haskell .numberLines}
+        qsort [] = []
+        ```
+
+=== "Python"
+
+        Pandoc(Meta({}), [CodeBlock(('', ['haskell', 'numberLines'], []), 'qsort [] = []')])
 
 <!-- prevent container tabs merge -->
 
@@ -743,7 +780,7 @@ be indented.
 Ordered lists work just like bulleted lists, except that the items begin
 with enumerators rather than bullets.
 
-In standard Markdown, enumerators are decimal numbers followed by a
+In original Markdown, enumerators are decimal numbers followed by a
 period and a space. The numbers themselves are ignored, so there is no
 difference between this list:
 
@@ -775,10 +812,10 @@ and this one:
 
 #### Extension: `fancy_lists`
 
-Unlike standard Markdown, pandoc allows ordered list items to be marked
+Unlike original Markdown, pandoc allows ordered list items to be marked
 with uppercase and lowercase letters and roman numerals, in addition to
 Arabic numerals. List markers may be enclosed in parentheses or followed
-by a single right-parentheses or period. They must be separated from the
+by a single right-parenthesis or period. They must be separated from the
 text that follows by at least one space, and, if the list marker is a
 capital letter with a period, by at least two spaces.[^1]
 
@@ -900,11 +937,10 @@ two spaces.
 
 A term may have multiple definitions, and each definition may consist of
 one or more block elements (paragraph, code block, list, etc.), each
-indented four spaces or one tab stop. The body of the definition
-(including the first line, aside from the colon or tilde) should be
-indented four spaces. However, as with other Markdown lists, you can
-"lazily" omit indentation except at the beginning of a paragraph or
-other block element:
+indented four spaces or one tab stop. The body of the definition (not
+including the first line) should be indented four spaces. However, as
+with other Markdown lists, you can "lazily" omit indentation except at
+the beginning of a paragraph or other block element:
 
 === "Markdown"
 
@@ -944,8 +980,8 @@ definition:
 
 Note that space between items in a definition list is required. (A
 variant that loosens this requirement, but disallows "lazy" hard
-wrapping, can be activated with `compact_definition_lists`: see
-[Non-default extensions](#non-default-extensions), below.)
+wrapping, can be activated with the [`compact_definition_lists`
+extension](#extension-compact_definition_lists).)
 
 ### Numbered example lists
 
@@ -1075,6 +1111,11 @@ A line containing a row of three or more `*`, `-`, or `_` characters
 
 <!-- prevent container tabs merge -->
 
+We strongly recommend that horizontal rules be separated from
+surrounding text by blank lines. If a horizontal rule is not followed by
+a blank line, pandoc may try to interpret the lines that follow as a
+YAML metadata block or a table.
+
 ## Tables
 
 Four kinds of tables may be used. The first three kinds presuppose the
@@ -1086,8 +1127,8 @@ columns.
 
 A caption may optionally be provided with all 4 kinds of tables (as
 illustrated in the examples below). A caption is a paragraph beginning
-with the string `Table:` (or just `:`), which will be stripped off. It
-may appear either before or after the table.
+with the string `Table:` (or `table:` or just `:`), which will be
+stripped off. It may appear either before or after the table.
 
 #### Extension: `simple_tables`
 
@@ -1239,9 +1280,48 @@ Grid tables look like this:
 The row of `=`s separates the header from the table body, and can be
 omitted for a headerless table. The cells of grid tables may contain
 arbitrary block elements (multiple paragraphs, code blocks, lists,
-etc.). Cells that span multiple columns or rows are not supported. Grid
-tables can be created easily using Emacs' table-mode
-(`M-x table-insert`).
+etc.).
+
+Cells can span multiple columns or rows:
+
+=== "Markdown"
+
+        +---------------------+----------+
+        | Property            | Earth    |
+        +=============+=======+==========+
+        |             | min   | -89.2 °C |
+        | Temperature +-------+----------+
+        | 1961-1990   | mean  | 14 °C    |
+        |             +-------+----------+
+        |             | min   | 56.7 °C  |
+        +-------------+-------+----------+
+
+=== "Python"
+
+        Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignDefault(), ColWidth_(0.19444444444444445)), (AlignDefault(), ColWidth_(0.1111111111111111)), (AlignDefault(), ColWidth_(0.1527777777777778))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(2), [Plain([Str('Property')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Earth')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(3), ColSpan(1), [Plain([Str('Temperature'), SoftBreak(), Str('1961-1990')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('min')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('-89.2'), Space(), Str('°C')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('mean')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('14'), Space(), Str('°C')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('min')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('56.7'), Space(), Str('°C')])])])])], TableFoot(('', [], []), []))])
+
+<!-- prevent container tabs merge -->
+
+A table header may contain more than one row:
+
+=== "Markdown"
+
+        +---------------------+-----------------------+
+        | Location            | Temperature 1961-1990 |
+        |                     | in degree Celsius     |
+        |                     +-------+-------+-------+
+        |                     | min   | mean  | max   |
+        +=====================+=======+=======+=======+
+        | Antarctica          | -89.2 | N/A   | 19.8  |
+        +---------------------+-------+-------+-------+
+        | Earth               | -89.2 | 14    | 56.7  |
+        +---------------------+-------+-------+-------+
+
+=== "Python"
+
+        Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignDefault(), ColWidth_(0.3055555555555556)), (AlignDefault(), ColWidth_(0.1111111111111111)), (AlignDefault(), ColWidth_(0.1111111111111111)), (AlignDefault(), ColWidth_(0.1111111111111111))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(2), ColSpan(1), [Plain([Str('Location')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(3), [Plain([Str('Temperature'), Space(), Str('1961-1990'), SoftBreak(), Str('in'), Space(), Str('degree'), Space(), Str('Celsius')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('min')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('mean')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('max')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Antarctica')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('-89.2')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('N/A')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('19.8')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Earth')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('-89.2')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('14')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('56.7')])])])])], TableFoot(('', [], []), []))])
+
+<!-- prevent container tabs merge -->
 
 Alignments can be specified as with pipe tables, by putting colons at
 the boundaries of the separator line after the header:
@@ -1274,15 +1354,31 @@ For headerless tables, the colons go on the top line instead:
 
 <!-- prevent container tabs merge -->
 
-##### Grid Table Limitations
+A table foot can be defined by enclosing it with separator lines that
+use `=` instead of `-`:
 
-Pandoc does not support grid tables with row spans or column spans. This
-means that neither variable numbers of columns across rows nor variable
-numbers of rows across columns are supported by Pandoc. All grid tables
-must have the same number of columns in each row, and the same number of
-rows in each column. For example, the Docutils [sample grid
-tables](https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#grid-tables)
-will not render as expected with Pandoc.
+=== "Markdown"
+
+         +---------------+---------------+
+         | Fruit         | Price         |
+         +===============+===============+
+         | Bananas       | $1.34         |
+         +---------------+---------------+
+         | Oranges       | $2.10         |
+         +===============+===============+
+         | Sum           | $3.44         |
+         +===============+===============+
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Str('+—————+—————+'), SoftBreak(), Str('|'), Space(), Str('Fruit'), Space(), Str('|'), Space(), Str('Price'), Space(), Str('|'), SoftBreak(), Str('+===============+===============+'), SoftBreak(), Str('|'), Space(), Str('Bananas'), Space(), Str('|'), Space(), Str('$1.34'), Space(), Str('|'), SoftBreak(), Str('+—————+—————+'), SoftBreak(), Str('|'), Space(), Str('Oranges'), Space(), Str('|'), Space(), Str('$2.10'), Space(), Str('|'), SoftBreak(), Str('+===============+===============+'), SoftBreak(), Str('|'), Space(), Str('Sum'), Space(), Str('|'), Space(), Str('$3.44'), Space(), Str('|'), SoftBreak(), Str('+===============+===============+')])])
+
+<!-- prevent container tabs merge -->
+
+The foot must always be placed at the very bottom of the table.
+
+Grid tables can be created easily using Emacs' table-mode
+(`M-x table-insert`).
 
 #### Extension: `pipe_tables`
 
@@ -1330,15 +1426,15 @@ perfectly legal (though ugly) pipe table:
 <!-- prevent container tabs merge -->
 
 The cells of pipe tables cannot contain block elements like paragraphs
-and lists, and cannot span multiple lines. If a pipe table contains a
-row whose Markdown content is wider than the column width (see
-`--columns`), then the table will take up the full text width and the
-cell contents will wrap, with the relative cell widths determined by the
-number of dashes in the line separating the table header from the table
-body. (For example `---|-` would make the first column 3/4 and the
-second column 1/4 of the full text width.) On the other hand, if no
-lines are wider than column width, then cell contents will not be
-wrapped, and the cells will be sized to their contents.
+and lists, and cannot span multiple lines. If any line of the markdown
+source is longer than the column width (see `--columns`), then the table
+will take up the full text width and the cell contents will wrap, with
+the relative cell widths determined by the number of dashes in the line
+separating the table header from the table body. (For example `---|-`
+would make the first column 3/4 and the second column 1/4 of the full
+text width.) On the other hand, if no lines are wider than column width,
+then cell contents will not be wrapped, and the cells will be sized to
+their contents.
 
 Note: pandoc also recognizes pipe tables of the following form, as can
 be produced by Emacs' orgtbl-mode:
@@ -1427,36 +1523,33 @@ of the following are equivalent:
 
 === "Markdown"
 
-        %
         % Author One
           Author Two
 
 === "Python"
 
-        Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])])}), [])
+        Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One'), SoftBreak(), Str('Author'), Space(), Str('Two')])}), [])
 
 <!-- prevent container tabs merge -->
 
 === "Markdown"
 
-        %
         % Author One; Author Two
 
 === "Python"
 
-        Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])])}), [])
+        Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One;'), Space(), Str('Author'), Space(), Str('Two')])}), [])
 
 <!-- prevent container tabs merge -->
 
 === "Markdown"
 
-        %
         % Author One;
           Author Two
 
 === "Python"
 
-        Pandoc(Meta({'author': MetaList([MetaInlines([Str('Author'), Space(), Str('One')]), MetaInlines([Str('Author'), Space(), Str('Two')])])}), [])
+        Pandoc(Meta({'title': MetaInlines([Str('Author'), Space(), Str('One;'), SoftBreak(), Str('Author'), Space(), Str('Two')])}), [])
 
 <!-- prevent container tabs merge -->
 
@@ -1525,19 +1618,27 @@ will also have "Version 4.0" in the header.
 A [YAML](https://yaml.org/spec/1.2/spec.html "YAML v1.2 Spec") metadata
 block is a valid YAML object, delimited by a line of three hyphens
 (`---`) at the top and a line of three hyphens (`---`) or three dots
-(`...`) at the bottom. A YAML metadata block may occur anywhere in the
-document, but if it is not at the beginning, it must be preceded by a
-blank line. (Note that, because of the way pandoc concatenates input
-files when several are provided, you may also keep the metadata in a
-separate YAML file and pass it to pandoc as an argument, along with your
-Markdown files:
+(`...`) at the bottom. The initial line `---` must not be followed by a
+blank line. A YAML metadata block may occur anywhere in the document,
+but if it is not at the beginning, it must be preceded by a blank line.
 
-``` skip
-pandoc chap1.md chap2.md chap3.md metadata.yaml -s -o book.html
-```
+Note that, because of the way pandoc concatenates input files when
+several are provided, you may also keep the metadata in a separate YAML
+file and pass it to pandoc as an argument, along with your Markdown
+files:
+
+=== "Markdown"
+
+        pandoc chap1.md chap2.md chap3.md metadata.yaml -s -o book.html
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Str('pandoc'), Space(), Str('chap1.md'), Space(), Str('chap2.md'), Space(), Str('chap3.md'), Space(), Str('metadata.yaml'), Space(), Str('-s'), Space(), Str('-o'), Space(), Str('book.html')])])
+
+<!-- prevent container tabs merge -->
 
 Just be sure that the YAML file begins with `---` and ends with `---` or
-`...`.) Alternatively, you can use the `--metadata-file` option. Using
+`...`. Alternatively, you can use the `--metadata-file` option. Using
 that approach however, you cannot reference content (like footnotes)
 from the main markdown input document.
 
@@ -1595,16 +1696,22 @@ The literal block after the `|` must be indented relative to the line
 containing the `|`. If it is not, the YAML will be invalid and pandoc
 will not interpret it as metadata. For an overview of the complex rules
 governing YAML, see the [Wikipedia entry on YAML
-syntax](https://en.m.wikipedia.org/wiki/YAML#Syntax).
+syntax](https://en.wikipedia.org/wiki/YAML#Syntax).
 
 Template variables will be set automatically from the metadata. Thus,
 for example, in writing HTML, the variable `abstract` will be set to the
 HTML equivalent of the Markdown in the `abstract` field:
 
-``` skip
-<p>This is the abstract.</p>
-<p>It consists of two paragraphs.</p>
-```
+=== "Markdown"
+
+        <p>This is the abstract.</p>
+        <p>It consists of two paragraphs.</p>
+
+=== "Python"
+
+        Pandoc(Meta({}), [RawBlock(Format('html'), '<p>'), Plain([Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('abstract.')]), RawBlock(Format('html'), '</p>'), RawBlock(Format('html'), '<p>'), Plain([Str('It'), Space(), Str('consists'), Space(), Str('of'), Space(), Str('two'), Space(), Str('paragraphs.')]), RawBlock(Format('html'), '</p>')])
+
+<!-- prevent container tabs merge -->
 
 Variables can contain arbitrary YAML structures, but the template must
 match this structure. The `author` variable in the default templates
@@ -1632,36 +1739,40 @@ add an affiliation to the author if one is given:
 To use the structured authors in the example above, you would need a
 custom template:
 
-``` skip
-$for(author)$
-$if(author.name)$
-$author.name$$if(author.affiliation)$ ($author.affiliation$)$endif$
-$else$
-$author$
-$endif$
-$endfor$
-```
+=== "Markdown"
+
+        $for(author)$
+        $if(author.name)$
+        $author.name$$if(author.affiliation)$ ($author.affiliation$)$endif$
+        $else$
+        $author$
+        $endif$
+        $endfor$
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Math(InlineMath(), 'for(author)'), SoftBreak(), Math(InlineMath(), 'if(author.name)'), SoftBreak(), Math(InlineMath(), 'author.name'), Math(InlineMath(), 'if(author.affiliation)'), Space(), Str('('), Math(InlineMath(), 'author.affiliation'), Str(')'), Math(InlineMath(), 'endif'), SoftBreak(), Math(InlineMath(), 'else'), SoftBreak(), Math(InlineMath(), 'author'), SoftBreak(), Math(InlineMath(), 'endif'), SoftBreak(), Math(InlineMath(), 'endfor')])])
+
+<!-- prevent container tabs merge -->
 
 Raw content to include in the document's header may be specified using
 `header-includes`; however, it is important to mark up this content as
 raw code for a particular output format, using the [`raw_attribute`
-extension](#extension-raw_attribute)), or it will be interpreted as
+extension](#extension-raw_attribute), or it will be interpreted as
 markdown. For example:
 
 === "Markdown"
 
-        ---
         header-includes:
         - |
           ```{=latex}
           \let\oldsection\section
           \renewcommand{\section}[1]{\clearpage\oldsection{#1}}
           ```
-        ...
 
 === "Python"
 
-        Pandoc(Meta({'header-includes': MetaList([MetaBlocks([RawBlock(Format('latex'), '\\let\\oldsection\\section\n\\renewcommand{\\section}[1]{\\clearpage\\oldsection{#1}}')])])}), [])
+        Pandoc(Meta({}), [Para([Str('header-includes:'), SoftBreak(), Str('-'), Space(), Str('|'), SoftBreak(), Code(('', [], []), '{=latex}   \\let\\oldsection\\section   \\renewcommand{\\section}[1]{\\clearpage\\oldsection{#1}}')])])
 
 <!-- prevent container tabs merge -->
 
@@ -1699,24 +1810,42 @@ would normally indicate formatting. Thus, for example, if one writes
 
 one will get
 
-``` skip
-<em>*hello*</em>
-```
+=== "Markdown"
+
+        <em>*hello*</em>
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([RawInline(Format('html'), '<em>'), Emph([Str('hello')]), RawInline(Format('html'), '</em>')])])
+
+<!-- prevent container tabs merge -->
 
 instead of
 
-``` skip
-<strong>hello</strong>
-```
+=== "Markdown"
 
-This rule is easier to remember than standard Markdown's rule, which
+        <strong>hello</strong>
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([RawInline(Format('html'), '<strong>'), Str('hello'), RawInline(Format('html'), '</strong>')])])
+
+<!-- prevent container tabs merge -->
+
+This rule is easier to remember than original Markdown's rule, which
 allows only the following characters to be backslash-escaped:
 
-``` skip
-\`*_{}[]()>#+-.!
-```
+=== "Markdown"
 
-(However, if the `markdown_strict` format is used, the standard Markdown
+        \`*_{}[]()>#+-.!
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Str('`*_{}'), Link(('', [], []), [], ('', '')), Str('>#+-.!')])])
+
+<!-- prevent container tabs merge -->
+
+(However, if the `markdown_strict` format is used, the original Markdown
 rule will be used.)
 
 A backslash-escaped space is parsed as a nonbreaking space. In TeX
@@ -1792,11 +1921,39 @@ marker. If you want to emphasize just part of a word, use `*`:
 
 <!-- prevent container tabs merge -->
 
+### Highlighting
+
+To highlight text, use the `mark` class:
+
+=== "Markdown"
+
+        [Mark]{.mark}
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Span(('', ['mark'], []), [Str('Mark')])])])
+
+<!-- prevent container tabs merge -->
+
+Or, without the `bracketed_spans` extension (but with `native_spans`):
+
+=== "Markdown"
+
+        <span class="mark">Mark</span>
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Span(('', ['mark'], []), [Str('Mark')])])])
+
+<!-- prevent container tabs merge -->
+
+This will work in html output.
+
 ### Strikeout
 
 #### Extension: `strikeout`
 
-To strikeout a section of text with a horizontal line, begin and end it
+To strike out a section of text with a horizontal line, begin and end it
 with `~~`. Thus, for example,
 
 === "Markdown"
@@ -1977,7 +2134,7 @@ they won't be treated as math delimiters.
 
 For display math, use `$$` delimiters. (In this case, the delimiters may
 be separated from the formula by whitespace. However, there can be no
-blank lines betwen the opening and closing `$$` delimiters.)
+blank lines between the opening and closing `$$` delimiters.)
 
 TeX math will be printed in all output formats. How it is rendered
 depends on the output format:
@@ -1997,7 +2154,7 @@ depends on the output format:
     For AsciiDoc output format (`-t asciidoc`) it will appear verbatim
     surrounded by `latexmath:[$...$]` (for inline math) or
     `[latexmath]++++\[...\]+++` (for display math). For AsciiDoctor
-    output format (`-t asciidoctor`) the LaTex delimiters (`$..$` and
+    output format (`-t asciidoctor`) the LaTeX delimiters (`$..$` and
     `\[..\]`) are omitted.
 -   **Texinfo.**
     It will be rendered inside a `@math` command.
@@ -2016,7 +2173,7 @@ depends on the output format:
     If the `--mathml` flag is used, it will be rendered using MathML in
     an `inlineequation` or `informalequation` tag. Otherwise it will be
     rendered, if possible, using Unicode characters.
--   **Docx.**
+-   **Docx and PowerPoint.**
     It will be rendered using OMML math markup.
 -   **FictionBook2.**
     If the `--webtex` option is used, formulas are rendered as images
@@ -2052,7 +2209,7 @@ cannot use pipe syntax.
 
 #### Extension: `markdown_in_html_blocks`
 
-Standard Markdown allows you to include HTML "blocks": blocks of HTML
+Original Markdown allows you to include HTML "blocks": blocks of HTML
 between balanced tags that are separated from the surrounding text with
 blank lines, and start and end at the left margin. Within these blocks,
 everything is interpreted as HTML, not Markdown; so (for example), `*`
@@ -2079,21 +2236,27 @@ Markdown. Thus, for example, pandoc will turn
 
 into
 
-``` skip
-<table>
-<tr>
-<td><em>one</em></td>
-<td><a href="https://google.com">a link</a></td>
-</tr>
-</table>
-```
+=== "Markdown"
+
+        <table>
+        <tr>
+        <td><em>one</em></td>
+        <td><a href="https://google.com">a link</a></td>
+        </tr>
+        </table>
+
+=== "Python"
+
+        Pandoc(Meta({}), [RawBlock(Format('html'), '<table>'), RawBlock(Format('html'), '<tr>'), RawBlock(Format('html'), '<td>'), Plain([RawInline(Format('html'), '<em>'), Str('one'), RawInline(Format('html'), '</em>')]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '<td>'), Plain([RawInline(Format('html'), '<a href="https://google.com">'), Str('a'), Space(), Str('link'), RawInline(Format('html'), '</a>')]), RawBlock(Format('html'), '</td>'), RawBlock(Format('html'), '</tr>'), RawBlock(Format('html'), '</table>')])
+
+<!-- prevent container tabs merge -->
 
 whereas `Markdown.pl` will preserve it as is.
 
 There is one exception to this rule: text between `<script>`, `<style>`,
 and `<textarea>` tags is not interpreted as Markdown.
 
-This departure from standard Markdown should make it easier to mix
+This departure from original Markdown should make it easier to mix
 Markdown with HTML block elements. For example, one can surround a block
 of Markdown text with `<div>` tags without preventing it from being
 interpreted as Markdown.
@@ -2325,16 +2488,14 @@ Here are some examples:
 
 === "Markdown"
 
-        [blah][my label 1], [blah][my label 2], [blah][my label 3], [blah][my label 4].
-        
         [my label 1]: /foo/bar.html  "My title, optional"
         [my label 2]: /foo
-        [my label 3]: https://fsf.org (The free software foundation)
+        [my label 3]: https://fsf.org (The Free Software Foundation)
         [my label 4]: /bar#special  'A title in single quotes'
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Link(('', [], []), [Str('blah')], ('/foo/bar.html', 'My title, optional')), Str(','), Space(), Link(('', [], []), [Str('blah')], ('/foo', '')), Str(','), Space(), Link(('', [], []), [Str('blah')], ('https://fsf.org', 'The free software foundation')), Str(','), Space(), Link(('', [], []), [Str('blah')], ('/bar#special', 'A title in single quotes')), Str('.')])])
+        Pandoc(Meta({}), [])
 
 <!-- prevent container tabs merge -->
 
@@ -2342,13 +2503,11 @@ The URL may optionally be surrounded by angle brackets:
 
 === "Markdown"
 
-        [blah][my label 5]
-        
         [my label 5]: <http://foo.bar.baz>
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Link(('', [], []), [Str('blah')], ('http://foo.bar.baz', ''))])])
+        Pandoc(Meta({}), [])
 
 <!-- prevent container tabs merge -->
 
@@ -2356,14 +2515,12 @@ The title may go on the next line:
 
 === "Markdown"
 
-        [blah][my label 3]
-        
         [my label 3]: https://fsf.org
-          "The free software foundation"
+          "The Free Software Foundation"
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Link(('', [], []), [Str('blah')], ('https://fsf.org', 'The free software foundation'))])])
+        Pandoc(Meta({}), [])
 
 <!-- prevent container tabs merge -->
 
@@ -2397,7 +2554,7 @@ In an *implicit* reference link, the second pair of brackets is empty:
 
 Note: In `Markdown.pl` and most other Markdown implementations,
 reference link definitions cannot occur in nested constructions such as
-list items or block quotes. Pandoc lifts this arbitrary seeming
+list items or block quotes. Pandoc lifts this arbitrary-seeming
 restriction. So the following is fine in pandoc, though not in most
 other implementations:
 
@@ -2478,7 +2635,7 @@ link text will be used as the image's alt text:
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Image(('', [], []), [Str('la'), Space(), Str('lune')], ('lalune.jpg', 'fig:Voyage to the moon'))]), Para([Image(('', [], []), [Str('movie'), Space(), Str('reel')], ('movie.gif', 'fig:'))])])
+        Pandoc(Meta({}), [Figure(('', [], []), Caption(None, [Plain([Str('la'), Space(), Str('lune')])]), [Plain([Image(('', [], []), [Str('la'), Space(), Str('lune')], ('lalune.jpg', 'Voyage to the moon'))])]), Figure(('', [], []), Caption(None, [Plain([Str('movie'), Space(), Str('reel')])]), [Plain([Image(('', [], []), [Str('movie'), Space(), Str('reel')], ('movie.gif', ''))])])])
 
 <!-- prevent container tabs merge -->
 
@@ -2494,7 +2651,7 @@ be used as the caption.
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Image(('', [], []), [Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('caption')], ('/url/of/image.png', 'fig:'))])])
+        Pandoc(Meta({}), [Figure(('', [], []), Caption(None, [Plain([Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('caption')])]), [Plain([Image(('', [], []), [Str('This'), Space(), Str('is'), Space(), Str('the'), Space(), Str('caption')], ('/url/of/image.png', ''))])])])
 
 <!-- prevent container tabs merge -->
 
@@ -2517,7 +2674,7 @@ nonbreaking space after the image:
 <!-- prevent container tabs merge -->
 
 Note that in reveal.js slide shows, an image in a paragraph by itself
-that has the `stretch` class will fill the screen, and the caption and
+that has the `r-stretch` class will fill the screen, and the caption and
 figure tags will be omitted.
 
 #### Extension: `link_attributes`
@@ -2711,13 +2868,13 @@ cannot contain multiple paragraphs). The syntax is as follows:
 
 === "Markdown"
 
-        Here is an inline note.^[Inlines notes are easier to write, since
+        Here is an inline note.^[Inline notes are easier to write, since
         you don't have to pick an identifier and move down to type the
         note.]
 
 === "Python"
 
-        Pandoc(Meta({}), [Para([Str('Here'), Space(), Str('is'), Space(), Str('an'), Space(), Str('inline'), Space(), Str('note.'), Note([Para([Str('Inlines'), Space(), Str('notes'), Space(), Str('are'), Space(), Str('easier'), Space(), Str('to'), Space(), Str('write,'), Space(), Str('since'), SoftBreak(), Str('you'), Space(), Str('don’t'), Space(), Str('have'), Space(), Str('to'), Space(), Str('pick'), Space(), Str('an'), Space(), Str('identifier'), Space(), Str('and'), Space(), Str('move'), Space(), Str('down'), Space(), Str('to'), Space(), Str('type'), Space(), Str('the'), SoftBreak(), Str('note.')])])])])
+        Pandoc(Meta({}), [Para([Str('Here'), Space(), Str('is'), Space(), Str('an'), Space(), Str('inline'), Space(), Str('note.'), Note([Para([Str('Inline'), Space(), Str('notes'), Space(), Str('are'), Space(), Str('easier'), Space(), Str('to'), Space(), Str('write,'), Space(), Str('since'), SoftBreak(), Str('you'), Space(), Str('don’t'), Space(), Str('have'), Space(), Str('to'), Space(), Str('pick'), Space(), Str('an'), Space(), Str('identifier'), Space(), Str('and'), Space(), Str('move'), Space(), Str('down'), Space(), Str('to'), Space(), Str('type'), Space(), Str('the'), SoftBreak(), Str('note.')])])])])
 
 <!-- prevent container tabs merge -->
 
@@ -2773,7 +2930,7 @@ In a footnote style, it might render as
 See the [CSL user documentation](https://citationstyles.org/authors/)
 for more information about CSL styles and how they affect rendering.
 
-Unless a citation key start with a letter, digit, or `_`, and contains
+Unless a citation key starts with a letter, digit, or `_`, and contains
 only alphanumerics and single internal punctuation characters
 (`:.#$%&-+?<>~/`), it must be surrounded by curly braces, which are not
 considered part of the key. In `@Foo_bar.baz.`, the key is `Foo_bar.baz`
@@ -2797,7 +2954,7 @@ In
 
 <!-- prevent container tabs merge -->
 
-The first item (`doe99`) has prefix `see`, locator `pp.  33-35`, and
+the first item (`doe99`) has prefix `see`, locator `pp.  33-35`, and
 suffix `and *passim*`. The second item (`smith04`) has locator `chap. 1`
 and no prefix or suffix.
 

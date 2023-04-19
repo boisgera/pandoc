@@ -1,3 +1,7 @@
+### Version 2.4 (to be released)
+
+  - Add support for Pandoc 3.0.1, 3.1.0 and 3.1.1.
+
 ### Version 2.3 (11/23/2022)
 
   - If the version of Pandoc is not supported, dont throw an error but warn,
@@ -7,7 +11,6 @@
   - Add support for Pandoc 2.19, 2.19.1 and 2.19.2.
 
 ### Version 2.2 (04/20/2022)
-
 
   - Add support for Pandoc 2.18.
 

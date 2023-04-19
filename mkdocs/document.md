@@ -163,8 +163,8 @@ Block = Plain([Inline])
       | Header(Int, Attr, [Inline])
       | HorizontalRule()
       | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+      | Figure(Attr, Caption, [Block])
       | Div(Attr, [Block])
-      | Null()
 ```
 
 Each `"|"` symbol in the signature represents an alternative: blocks are 

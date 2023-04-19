@@ -1,5 +1,5 @@
 
-Pandoc – 🐍 Python Library
+The Pandoc Python Library (PPL)
 ================================================================================
 
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
@@ -17,14 +17,11 @@ Pandoc – 🐍 Python Library
 🚀 Getting started
 --------------------------------------------------------------------------------
 
-[Pandoc] – the general markup converter (and Haskell library) written by 
-[John MacFarlane] – needs to be available. 
-You may follow the official [installation instructions][pandoc-install] 
-or use [conda]:
+Install [Pandoc] first, for example with [conda]:
 
     $ conda install -c conda-forge pandoc
 
-Then, install the latest stable version of the pandoc Python library with pip:
+Then, install the Pandoc Python Library with pip:
 
     $ pip install --upgrade pandoc
 
@@ -32,12 +29,16 @@ Then, install the latest stable version of the pandoc Python library with pip:
 🌌 Overview 
 --------------------------------------------------------------------------------
 
-This project brings [Pandoc]'s data model for markdown documents to Python:
+[Pandoc] is the awesome open-source command-line tool that converts documents 
+from one format to another. The project was initiated by [John MacFarlane]; 
+under the hood, it's a [Haskell] library.
+
+The Pandoc Python Library (PPL) brings [Pandoc]'s document model to Python:
 
     $ echo "Hello world!" | python -m pandoc read 
     Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 
-It can be used to analyze, create and transform documents, in Python :
+It can be used to analyze, create and transform documents, in Python:
 
     >>> import pandoc
     >>> text = "Hello world!"
@@ -55,7 +56,6 @@ It can be used to analyze, create and transform documents, in Python :
     Hello Python!
 
 For more information, refer to the  [📖 documentation][doc].
-
 
 [Pandoc]: https://pandoc.org/
 [John MacFarlane]: https://johnmacfarlane.net/

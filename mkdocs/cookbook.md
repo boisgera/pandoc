@@ -1015,8 +1015,8 @@ Block = ...
       | Header(Int, Attr, [Inline])
       ...
       | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
-      | Div(Attr, [Block])
       ...
+      | Div(Attr, [Block])
 ```
 
 So we need to target `Code`, `Link`, `Image`, `Span`, `Div`,`CodeBlock`,

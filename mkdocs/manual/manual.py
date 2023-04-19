@@ -24,15 +24,17 @@ from pandoc.types import (
 )
 
 # ------------------------------------------------------------------------------
-URL = "https://raw.githubusercontent.com/jgm/pandoc/2.14.2/MANUAL.txt"
-# src = urlopen(URL).read().decode("utf-8")
-src = open("MANUAL-patched.txt").read()
+URL = "https://raw.githubusercontent.com/jgm/pandoc/3.1.1/MANUAL.txt"
+src = urlopen(URL).read().decode("utf-8")
+with open("MANUAL-3.1.1.txt", "tw", encoding="utf-8") as f:
+    f.write(src)
+# src = open("MANUAL-patched.txt").read()
 
 ### TODO: create and insert diff here?
 
 # Hack to avoid having the "links" header title repeated
 # ------------------------------------------------------------------------------
-src = src.replace("#### Links", "#### ???") # remove the links h4 title
+src = src.replace("#### Links", "#### ???")  # remove the links h4 title
 
 # Extract the "Pandoc's Markdown" section
 # ------------------------------------------------------------------------------
@@ -51,8 +53,11 @@ for block in blocks:
                     in_section = True
                     new_doc[1].append(header)
     else:
-        if isinstance(block, Header) and \
-            block[2] == [Str("Non-default"), Space(), Str("extensions")]:
+        if isinstance(block, Header) and block[2] == [
+            Str("Non-default"),
+            Space(),
+            Str("extensions"),
+        ]:
             in_section = False
             break
         else:
@@ -75,7 +80,7 @@ for holder, i in reversed(found):
     list_of_blocks = []
     for term, definitions in definition_list[0]:
         # definitions is a list of list of blocks (several defs are possible)
-        assert len(definitions) == 1 # document-dependent
+        assert len(definitions) == 1  # document-dependent
         blocks = [Plain([Strong(term + [Str(".")])])] + definitions[0]
         list_of_blocks.append(blocks)
 
@@ -86,11 +91,12 @@ for holder, i in reversed(found):
 locations = [
     path[-1]
     for elt, path in pandoc.iter(new_doc, path=True)
-    if isinstance(elt, CodeBlock) and "skip" not in elt[0][1] # classes
+    if isinstance(elt, CodeBlock) and "skip" not in elt[0][1]  # classes
 ]
 
+
 def indent(text, lvl=4):
-    return "\n".join(lvl*" " + line for line in text.splitlines)
+    return "\n".join(lvl * " " + line for line in text.splitlines)
 
 
 for holder, i in reversed(locations):
@@ -113,4 +119,4 @@ for holder, i in reversed(locations):
 
 # ------------------------------------------------------------------------------
 
-pandoc.write(new_doc, "../mkdocs/markdown.md", format="markdown-raw_attribute")
+pandoc.write(new_doc, "../markdown.md", format="markdown-raw_attribute")

@@ -1,4 +1,4 @@
-site_name: Pandoc (Python)
+site_name: Pandoc (Python Library)
 
 docs_dir: mkdocs
 
@@ -18,7 +18,7 @@ nav:
   - Changelog: changelog.md
   - "Labs 🧪": labs.md
 
-theme: "material" 
+theme: "material"
 
 markdown_extensions:
   - admonition
@@ -33,5 +33,3 @@ markdown_extensions:
 repo_name: "pandoc"
 repo_url: "https://github.com/boisgera/pandoc"
 edit_uri: edit/master/mkdocs/
-
-
