@@ -1,5 +1,5 @@
 
-The Pandoc Python Library (PPL)
+Pandoc (Python Library)
 ================================================================================
 
 ![Python](https://img.shields.io/pypi/pyversions/pandoc.svg)
@@ -33,7 +33,7 @@ Then, install the Pandoc Python Library with pip:
 from one format to another. The project was initiated by [John MacFarlane]; 
 under the hood, it's a [Haskell] library.
 
-The Pandoc Python Library (PPL) brings [Pandoc]'s document model to Python:
+The Pandoc Python Library brings [Pandoc]'s document model to Python:
 
     $ echo "Hello world!" | python -m pandoc read 
     Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
