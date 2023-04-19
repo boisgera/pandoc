@@ -6,7 +6,7 @@ Overview
 from one format to another. The project was initiated by [John MacFarlane]; 
 under the hood, it's a [Haskell] library.
 
-The Pandoc Python Library (PPL) brings [Pandoc]'s document model to Python:
+The Pandoc Python Library brings [Pandoc]'s document model to Python:
 
     $ echo "Hello world!" | python -m pandoc read 
     Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
