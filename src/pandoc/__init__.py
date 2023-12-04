@@ -370,7 +370,7 @@ def write(doc, file=None, format=None, options=None):
 # JSON Reader v1
 # ------------------------------------------------------------------------------
 def read_json_v1(json_, type_=None):
-    types = import_types
+    types = import_types()
 
     if type_ is None:
         type_ = types.Pandoc
