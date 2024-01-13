@@ -18,7 +18,7 @@ set of rules which defines the document meta-model[^1].
 meta-model represents the document model itself, i.e. the set of all valid 
 documents.
 
-Pandoc can be used a converter between different document formats;
+Pandoc can be used as a converter between different document formats;
 this usage requires very little knowledge about the document structure. 
 However, if one wishes to analyze, create or transform documents,
 some working knowledge of this meta-model becomes necessary.
@@ -33,7 +33,7 @@ is described in [the documentation of the `Text.Pandoc.Definition` module](<http
 
 However, this source of information requires some understanding of the Haskell
 programming language. The pandoc Python library brings to Python this hierarchy 
-of types ; it also offers an alternate and interactive way to become familiar 
+of types; it also offers an alternate and interactive way to become familiar 
 with the meta-model. This is what we describe in the following sections.
 
 Documents
@@ -42,11 +42,11 @@ Documents
 ### Explore
 The basic idea here is that you can create markdown documents that feature
 exactly the kind of document constructs that you are interested in, and
-then read them as pandoc documents to see how they look like. 
+then read them as pandoc documents to see how they look. 
 By construction, these documents converted from markdown will be valid, 
 i.e. consistent with the pandoc meta-model. 
 And since you can display them, it's a great way to build some understanding
-on how things work.
+of how things work.
 
 For example, the plain text `"Hello World!"` is represented in
 the following manner:
@@ -116,7 +116,7 @@ Types
 ### Explore
 
 The insights gathered in the previous sections were a good starting point to
-get a feel of the possible document structure. Now, to be certain that we
+get a feel for the possible document structure. Now, to be certain that we
 always deal with valid documents, we need to explore the document meta-model 
 itself, i.e. the hierarchy of pandoc types, such as
 `Pandoc`, `Meta`, `Para`, `Str`, `Space`, etc.
