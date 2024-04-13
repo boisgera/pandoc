@@ -1,0 +1,4 @@
+black
+beautifulsoup4
+requests
+sh
