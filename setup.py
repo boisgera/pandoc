@@ -14,7 +14,7 @@ metadata = dict((k, v) for (k, v) in m.items() if not k.startswith("_"))
 contents = {
     "packages": setuptools.find_packages("src"),
     "package_dir": {"": "src"},
-    "package_data": {"pandoc": ["pandoc-types.js", "tests.md"]},
+    "package_data": {"pandoc": ["pandoc-types.json", "tests.md"]},
 }
 requirements = {
     "install_requires": ["plumbum", "ply"],

@@ -182,12 +182,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     pandoc_types_path = os.path.join(
-        os.path.dirname(__file__), "../src/pandoc/pandoc-types.js"
+        os.path.dirname(__file__), "../src/pandoc/pandoc-types.json"
     )
     pandoc_types = json.load(open(pandoc_types_path))
 
     update_type_definitions(pandoc_types)
     update_version_mapping(pandoc_types)
 
-    with open("pandoc-types.js", "w") as f:
+    with open("pandoc-types.json", "w") as f:
         json.dump(pandoc_types, f, indent=2)
