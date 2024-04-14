@@ -637,14 +637,14 @@ def write_json_v2(object_: Any) -> Any:
 
 # Iteration
 # ------------------------------------------------------------------------------
-def iter(elt, path=False):
-    if path is not False:
-        if not isinstance(path, list):  # e.g. path = True
-            path = []
-
-    args = [elt]
-    if path is not False:
-        args.append(path)
+def iter(
+    elt: Any, path: Union[bool, List[Any]] = False
+) -> Union[Any, Tuple[Any, List[Any]]]:
+    if path is True:
+        path = []
+    elif path is not False and not isinstance(path, list):
+        warnings.warn(f"Invalid path={path!r}, defaulting to []")
+        path = []
 
     if path is False:
         yield elt
@@ -653,6 +653,7 @@ def iter(elt, path=False):
 
     if isinstance(elt, dict):
         elt = elt.items()
+
     if hasattr(elt, "__iter__") and not isinstance(elt, types.String):
         for i, child in enumerate(elt):
             if path is False:
