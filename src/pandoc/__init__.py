@@ -3,36 +3,19 @@
 # Python 3 Standard Library
 import argparse
 import collections
-import copy
+import io
 import json
 import os.path
-import pathlib
+import subprocess
 import shutil
 import sys
-import time
-import tempfile
+import warnings
 
-# Third-Party Libraries
-import plumbum
+from typing import Any, cast, Dict, IO, List, Optional, Tuple, Union
 
 # Pandoc
 import pandoc.about
 from . import utils
-
-# Filesystem Helper
-# ------------------------------------------------------------------------------
-def rmtree(path):
-    """Deal with Windows
-    (see e.g <https://www.gitmemory.com/issue/sdispater/poetry/1031/488759621>
-    """
-    retries = 10
-    for i in range(retries - 1):
-        try:
-            shutil.rmtree(path)
-            return
-        except OSError:
-            time.sleep(0.1)
-    shutil.rmtree(path)
 
 
 # Configuration
@@ -49,13 +32,13 @@ def import_types():
 
 
 def configure(
-    auto=False,
-    path=None,
-    version=None,
-    pandoc_types_version=None,
-    read=False,
-    reset=False,
-):
+    auto: bool = False,
+    path: Optional[str] = None,
+    version: Optional[str] = None,
+    pandoc_types_version: Optional[str] = None,
+    read: bool = False,
+    reset: bool = False,
+) -> Optional[Dict[str, Any]]:
     global _configuration
 
     default = (
@@ -67,8 +50,8 @@ def configure(
         and reset is False
     )
     if default:
-        error = "configure expects at least one argument."
-        raise ValueError(error)
+        error_msg = "configure expects at least one argument"
+        raise ValueError(error_msg)
 
     if reset is True:
         _configuration = None  # TODO: clean the types
@@ -83,31 +66,30 @@ def configure(
     )
 
     if auto:
-        try:
-            pandoc = plumbum.local["pandoc"]
-            found_path = str(pandoc.executable)
-        except plumbum.CommandNotFound as error:
-            message = "cannot find the pandoc program.\n"
-            paths = [str(p) for p in error.path]
-            message += "paths:" + str(paths)
-            raise RuntimeError(message)
+        found_path = shutil.which("pandoc")
+        if found_path is None:
+            raise RuntimeError("cannot find the pandoc program")
+
         if path is None:
             path = found_path
         elif path != found_path:
-            error = "found path {0!r} with auto=True "
-            error += "but it doesn't match path={1!r}."
-            raise ValueError(error.format(found_path, path))
+            error_msg = (
+                f"found path {found_path!r} with auto=True "
+                f"but it doesn't match path={path!r}"
+            )
+            raise ValueError(error_msg)
 
     if path is not None:
-        # TODO: manage invalid path
-        pandoc = plumbum.machines.LocalCommand(path, "utf-8")
-        found_version = pandoc("--version").splitlines()[0].split(" ")[1]
+        result = subprocess.run([path, "--version"], capture_output=True)
+        found_version = result.stdout.decode("utf-8").splitlines()[0].split(" ")[1]
         if version is None:
             version = found_version
         elif version != found_version:
-            error = "the version of the pandoc program is {0!r}"
-            error += "but it doesn't match version={1!r}."
-            raise ValueError(error.format(found_version, version))
+            error_msg = (
+                f"the version of the pandoc program is {found_version!r} "
+                f"but it doesn't match version={version!r}"
+            )
+            raise ValueError(error_msg)
 
     if version is not None:
         found_pandoc_types_versions = utils.resolve(version, warn=True)
@@ -116,16 +98,19 @@ def configure(
                 # pick latest (ignore the real one that may be unknown)
                 pandoc_types_version = found_pandoc_types_versions[-1]
             else:
-                error = "cannot find a version of pandoc-types "
-                error += "matching pandoc {0}"
-                raise ValueError(error.format(version))
+                error_msg = (
+                    "cannot find a version of pandoc-types "
+                    f"matching pandoc {version}"
+                )
+                raise ValueError(error_msg)
         elif pandoc_types_version not in found_pandoc_types_versions:
-            error = "the version of pandoc is {0!r}"
-            error += "but it doesn't match pandoc_types_version={1!r}."
-            raise ValueError(error.format(version, pandoc_types_version))
+            error_msg = (
+                f"the version of the pandoc program is {version!r} "
+                f"but it doesn't match pandoc_types_version={pandoc_types_version!r}"
+            )
+            raise ValueError(error_msg)
 
     if not read_only:  # set the configuration, update pandoc.types
-
         try:
             from . import types
         except ImportError:  # only sensible explanation:
@@ -143,64 +128,80 @@ def configure(
         types.make_types()
 
     if read:
-        return copy.copy(_configuration)
+        return _configuration
 
 
 # JSON Reader / Writer
 # ------------------------------------------------------------------------------
-def read(source=None, file=None, format=None, options=None):
-    if configure(read=True) is None:
-        configure(auto=True)
+def read(
+    source: Optional[Union[str, bytes, bytearray]] = None,
+    file: Optional[Union[str, IO]] = None,
+    format: Optional[str] = None,
+    options: Optional[List[str]] = None,
+) -> Any:
+    configuration = configure(read=True)
+    if configuration is None:
+        configuration = configure(auto=True, read=True)
+
+    assert configuration is not None
+
     if options is None:
         options = []
 
     filename = None
-    if source is None:
-        if file is None:
-            raise ValueError("source or file should be defined.")
-        if not hasattr(file, "read"):
+    if source is None and file is None:
+        raise ValueError("one of source or file must be defined.")
+    elif source is not None and file is not None:
+        raise ValueError("only one of source or file must be defined, not both.")
+    elif file is not None:
+        if isinstance(file, io.IOBase):
+            source = file.read()
+        elif isinstance(file, str):
             filename = file
-            file = open(filename, "rb")
-        source = file.read()
-    else:
-        if file is not None:
-            raise ValueError("source or file should be defined, not both.")
-
-    tmp_dir = tempfile.mkdtemp()
-    if not isinstance(source, bytes):
-        source = source.encode("utf-8")
-    input_path = os.path.join(tmp_dir, "input")
-    input = open(input_path, "wb")
-    input.write(source)
-    input.close()
+            with open(filename, "rb") as f:
+                source = f.read()
+        else:
+            raise ValueError("file must be a string or file like object")
 
     if format is None and filename is not None:
         format = format_from_filename(filename)
-    if format is None:
+        if format is None:
+            warnings.warn(
+                "Could not infer format from file extension, defaulting to markdown"
+            )
+            format = "markdown"
+    elif format is None:
         format = "markdown"
-    if format != "json" and _configuration["path"] is None:
-        error = "reading the {0!r} format requires the pandoc program"
-        raise RuntimeError(error.format(format))
+
+    if format != "json" and configuration["path"] is None:
+        error_msg = f"reading the {format!r} format requires the pandoc program"
+        raise RuntimeError(error_msg)
 
     if format == "json":
-        json_file = open(input_path, "r", encoding="utf-8")
+        if isinstance(source, (bytes, bytearray)):
+            json_str = source.decode("utf-8")
+        else:
+            json_str = cast(str, source)
     else:
-        if _configuration["path"] is None:
-            error = "reading the {0!r} format requires the pandoc program"
-            raise RuntimeError(error.format(format))
-        pandoc = plumbum.machines.LocalCommand(_configuration["path"])
-        output_path = os.path.join(tmp_dir, "output.js")
-        options = (
-            ["-t", "json", "-o", output_path]
-            + list(options)
-            + ["-f", format, input_path]
+        if isinstance(source, str):
+            source = source.encode("utf-8")
+
+        pandoc_path = configuration["path"]
+        options = ["-t", "json"] + options + ["-f", format]
+        result = subprocess.run(
+            [pandoc_path] + options, input=source, capture_output=True
         )
-        pandoc(options)
-        json_file = open(output_path, "r", encoding="utf-8")
-    json_ = json.load(json_file)
-    json_file.close()
-    rmtree(tmp_dir)
-    if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
+
+        if result.returncode != 0:
+            raise RuntimeError("pandoc error: " + result.stderr.decode("utf-8"))
+        if len(result.stdout) == 0:
+            raise RuntimeError("pandoc did not write any output to stdout")
+
+        json_str = result.stdout.decode("utf-8")
+
+    json_ = json.loads(json_str)
+
+    if utils.version_key(configuration["pandoc_types_version"]) < [1, 17]:
         return read_json_v1(json_)
     else:
         return read_json_v2(json_)
@@ -264,9 +265,12 @@ for _i in range(1, 10):
     _ext_to_file_format[f".{_i}"] = "man"
 
 
-def format_from_filename(filename):
-    ext = pathlib.Path(filename.lower()).suffix
+def format_from_filename(filename: str) -> Optional[str]:
+    ext = os.path.splitext(filename)[1].lower()
     return _ext_to_file_format.get(ext)
+
+
+_binary_formats = ["docx", "epub", "epub2", "epub3", "odt", "pdf", "pptx"]
 
 
 # TODO: better management for pdf "format" which is not a format according
@@ -274,11 +278,18 @@ def format_from_filename(filename):
 #       extension)
 
 
-def write(doc, file=None, format=None, options=None):
+def write(
+    doc: Any,
+    file: Optional[Union[str, IO]] = None,
+    format: Optional[str] = None,
+    options: Optional[List[str]] = None,
+) -> Union[str, bytes]:
     if options is None:
         options = []
 
     types = import_types()
+
+    assert _configuration is not None
 
     elt = doc
 
@@ -309,61 +320,59 @@ def write(doc, file=None, format=None, options=None):
         elt = types.Pandoc(types.Meta({}), blocks)
 
     if not isinstance(elt, types.Pandoc):
-        raise TypeError(f"{elt!r} is not a Pandoc, Block or Inline instance.")
+        raise TypeError(f"{elt!r} is not a Pandoc, Block, or Inline instance.")
 
     doc = elt
 
-    tmp_dir = tempfile.mkdtemp()
-    filename = None
-    if file is not None and not hasattr(file, "write"):
-        filename = file
-        file = open(filename, "wb")
+    filename = file if isinstance(file, str) else None
 
     if format is None and filename is not None:
         format = format_from_filename(filename)
-    if format is None:
-        format = "markdown"  # instead of html, yep.
-    if format != "json" and _configuration["path"] is None:
-        error = "writing the {0!r} format requires the pandoc program"
+        if format is None:
+            warnings.warn(
+                "Could not infer format from file extension, defaulting to markdown"
+            )
+            format = "markdown"
+    elif format is None:
+        format = "markdown"
 
-    configuration = configure(read=True)
-    if utils.version_key(configuration["pandoc_types_version"]) < [1, 17]:
+    if format != "json" and _configuration["path"] is None:
+        error_msg = f"writing the {format!r} format requires the pandoc program"
+        raise RuntimeError(error_msg)
+
+    if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
         json_ = write_json_v1(doc)
     else:
         json_ = write_json_v2(doc)
+
     json_str = json.dumps(json_)
-    input_path = os.path.join(tmp_dir, "input.js")
-    input = open(input_path, "wb")
-    input.write(json_str.encode("utf-8"))
-    input.close()
 
     if format == "json":
-        output_path = input_path
+        output = json_str
     else:
-        if filename is not None:
-            # preserve file extensions (for output format inference)
-            tmp_filename = os.path.basename(filename)
-        else:
-            tmp_filename = "output"
-        pandoc = plumbum.machines.LocalCommand(_configuration["path"])
-        output_path = os.path.join(tmp_dir, tmp_filename)
-        options = (
-            ["-t", format, "-o", output_path]
-            + list(options)
-            + ["-f", "json", input_path]
+        pandoc_path = configuration["path"]
+        options = ["-t", format] + options + ["-f", "json"]
+        result = subprocess.run(
+            [pandoc_path] + options, input=json_str.encode("utf-8"), capture_output=True
         )
-        pandoc(options)
 
-    output_bytes = open(output_path, "rb").read()
-    binary_formats = ["docx", "epub", "epub2", "epub3", "odt", "pdf", "pptx"]
-    if format in binary_formats or output_path.endswith(".pdf"):
-        output = output_bytes
-    else:  # text format
-        output = output_bytes.decode("utf-8")
-    rmtree(tmp_dir)
+        if result.returncode != 0:
+            raise RuntimeError("pandoc error: " + result.stderr.decode("utf-8"))
+        if len(result.stdout) == 0:
+            raise RuntimeError("pandoc did not write any output to stdout")
 
-    if file is not None:
-        file.write(output_bytes)
+        if format in _binary_formats:
+            output = result.stdout
+        else:
+            output = result.stdout.decode("utf-8")
+
+    if isinstance(file, str):
+        mode = "wb" if isinstance(output, bytes) else "w"
+        with open(file, mode) as f:
+            f.write(output)
+    elif isinstance(file, io.IOBase):
+        file.write(output)
+
     return output
 
 
