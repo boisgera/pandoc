@@ -661,47 +661,29 @@ def iter(
 
 # Functional Transformation Patterns (Scrap-Your-Boilerplate-ish)
 # ------------------------------------------------------------------------------
-def _apply_children(f, elt):
-    types = import_types()
-    _init_types()
-    children = None
+def _apply_post_order(f: Callable[[Any], Any], elt: Any) -> Any:
     if isinstance(elt, types.Type):
-        children = elt[:]
-        new_children = [f(child) for child in children]
-        return type(elt)(*new_children)
+        new_children = [_apply_post_order(f, child) for child in elt]
+        return f(type(elt)(*new_children))
     elif isinstance(elt, dict):
-        children = elt.items()
-        return dict([f(child) for child in children])
+        new_children = [_apply_post_order(f, child) for child in elt.items()]
+        return f(dict(new_children))
     elif hasattr(elt, "__iter__") and not isinstance(elt, types.String):
         assert isinstance(elt, list) or isinstance(elt, tuple)
-        new_children = [f(child) for child in elt]
-        return type(elt)(new_children)
+        new_children = [_apply_post_order(f, child) for child in elt]
+        return f(type(elt)(new_children))
     else:
-        assert type(elt) in [bool, int, float, str]
-        return elt
+        return f(elt)
 
 
 def apply(f: Callable[[Any], Any], elt: Any = None) -> Any:
     """apply the transform f bottom-up"""
     import_types()
 
-    def f(elt):  # sugar : no return value means no change
-        new_elt = f_(elt)
-        if new_elt is not None:
-            return new_elt
-        else:
-            return elt
+    def f_(elt):  # sugar: no return value means no change
+        return new_elt if (new_elt := f(elt)) is not None else elt
 
-    def apply_(f, elt=None):
-        if elt is None:  # functional style / decorator
-            return lambda elt: apply_(f, elt)
-
-        def apply_descendants(elt):
-            return _apply_children(apply_(f), elt)
-
-        return f(apply_descendants(elt))
-
-    return apply_(f, elt)
+    return _apply_post_order(f_, elt)
 
 
 # Main Entry Point
