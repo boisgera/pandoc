@@ -79,6 +79,7 @@ class TypeDef(Type):
 # Pandoc Types
 # ------------------------------------------------------------------------------
 
+_types_version = None
 _types_dict = {}
 
 
@@ -105,26 +106,31 @@ def enable_pattern_matching(class_dict):
 
 def clear_types():
     """Uninstall Pandoc Types"""
+    global _types_version
     global _types_dict
     globs = globals()
 
     # Uninstall registered types
     for type_name in _types_dict:
         del globs[type_name]
+    _types_version = None
     _types_dict = {}
 
 
-def make_types():
+def make_types(version: str):
     """Create Pandoc Types"""
+
+    global _types_version
+
+    if version == _types_version:
+        # types already initialized for the indicated version
+        return
 
     global _types_dict
     globs = globals()
 
     # Uninstall existing types (if any)
     clear_types()
-
-    # Get the pandoc types version
-    version = pandoc._configuration["pandoc_types_version"]
 
     # Create builtin types
     _make_builtin_types()
@@ -175,12 +181,10 @@ def make_types():
 
     # Install the types
     globs.update(_types_dict)
+    _types_version = version
 
 
 # Create Types
 # ------------------------------------------------------------------------------
-_configuration = pandoc.configure(read=True)
-if _configuration is None:
+if pandoc.configure(read=True) is None:
     pandoc.configure(auto=True)
-else:
-    pandoc.configure(**_configuration)

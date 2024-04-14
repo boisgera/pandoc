@@ -12,6 +12,7 @@ import sys
 import warnings
 
 from collections.abc import Callable
+from types import ModuleType
 from typing import Any, cast, Dict, IO, List, Optional, Tuple, Union
 
 # Pandoc
@@ -24,10 +25,18 @@ from . import utils
 _configuration = None
 
 
-def import_types():
-    if configure(read=True) is None:
-        configure(auto=True)
-    import pandoc.types as types
+def _get_configuration() -> Dict[str, Any]:
+    """Gets configuration, does initialization if necessary"""
+    configuration = configure(read=True)
+    if configuration is None:
+        configuration = configure(auto=True, read=True)
+    assert configuration is not None
+    return configuration
+
+
+def import_types() -> ModuleType:
+    """Loads the types module and returns it"""
+    from . import types  # this also sets pandoc.types
 
     return types
 
@@ -112,21 +121,13 @@ def configure(
             raise ValueError(error_msg)
 
     if not read_only:  # set the configuration, update pandoc.types
-        try:
-            from . import types
-        except ImportError:  # only sensible explanation:
-            # the types module is actually being imported (interpreted)
-            # and is calling configure.
-            types = sys.modules["pandoc.types"]
-
         _configuration = {
             "auto": auto,
             "path": path,
             "version": version,
             "pandoc_types_version": pandoc_types_version,
         }
-
-        types.make_types()
+        import_types().make_types(pandoc_types_version)
 
     if read:
         return _configuration
@@ -140,11 +141,7 @@ def read(
     format: Optional[str] = None,
     options: Optional[List[str]] = None,
 ) -> Any:
-    configuration = configure(read=True)
-    if configuration is None:
-        configuration = configure(auto=True, read=True)
-
-    assert configuration is not None
+    configuration = _get_configuration()
 
     if options is None:
         options = []
@@ -285,12 +282,10 @@ def write(
     format: Optional[str] = None,
     options: Optional[List[str]] = None,
 ) -> Union[str, bytes]:
+    configuration = _get_configuration()
+
     if options is None:
         options = []
-
-    types = import_types()
-
-    assert _configuration is not None
 
     elt = doc
 
@@ -337,11 +332,11 @@ def write(
     elif format is None:
         format = "markdown"
 
-    if format != "json" and _configuration["path"] is None:
+    if format != "json" and configuration["path"] is None:
         error_msg = f"writing the {format!r} format requires the pandoc program"
         raise RuntimeError(error_msg)
 
-    if utils.version_key(_configuration["pandoc_types_version"]) < [1, 17]:
+    if utils.version_key(configuration["pandoc_types_version"]) < [1, 17]:
         json_ = write_json_v1(doc)
     else:
         json_ = write_json_v2(doc)
@@ -380,7 +375,7 @@ def write(
 # JSON Reader v1
 # ------------------------------------------------------------------------------
 def read_json_v1(json_: Any, type_=None) -> Any:
-    types = import_types
+    import_types()
 
     if type_ is None:
         type_ = types.Pandoc
@@ -453,7 +448,7 @@ def read_json_v1(json_: Any, type_=None) -> Any:
 # JSON Writer v1
 # ------------------------------------------------------------------------------
 def write_json_v1(object_: Any) -> Any:
-    types = import_types()
+    import_types()
 
     odict = collections.OrderedDict
 
@@ -493,7 +488,7 @@ def write_json_v1(object_: Any) -> Any:
 # JSON Reader v2
 # ------------------------------------------------------------------------------
 def read_json_v2(json_, type_=None) -> Any:
-    types = import_types()
+    import_types()
 
     if type_ is None:
         type_ = types.Pandoc
@@ -586,7 +581,7 @@ def read_json_v2(json_, type_=None) -> Any:
 # JSON Writer v2
 # ------------------------------------------------------------------------------
 def write_json_v2(object_: Any) -> Any:
-    types = import_types()
+    import_types()
 
     odict = collections.OrderedDict
 
@@ -668,6 +663,7 @@ def iter(
 # ------------------------------------------------------------------------------
 def _apply_children(f, elt):
     types = import_types()
+    _init_types()
     children = None
     if isinstance(elt, types.Type):
         children = elt[:]
@@ -685,8 +681,9 @@ def _apply_children(f, elt):
         return elt
 
 
-def apply(f, elt=None):  # apply the transform f bottom-up
-    f_ = f
+def apply(f: Callable[[Any], Any], elt: Any = None) -> Any:
+    """apply the transform f bottom-up"""
+    import_types()
 
     def f(elt):  # sugar : no return value means no change
         new_elt = f_(elt)
@@ -765,7 +762,7 @@ def main():
         else:
             file = open(args.file, mode="r", encoding="utf-8")
             doc_string = file.read()
-        types = import_types()
+        import_types()
         globs = types.__dict__.copy()
         doc = eval(doc_string, globs)
         if args.output is None:
