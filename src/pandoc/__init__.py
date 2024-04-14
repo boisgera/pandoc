@@ -11,6 +11,7 @@ import shutil
 import sys
 import warnings
 
+from collections.abc import Callable
 from typing import Any, cast, Dict, IO, List, Optional, Tuple, Union
 
 # Pandoc
@@ -378,7 +379,7 @@ def write(
 
 # JSON Reader v1
 # ------------------------------------------------------------------------------
-def read_json_v1(json_, type_=None):
+def read_json_v1(json_: Any, type_=None) -> Any:
     types = import_types
 
     if type_ is None:
@@ -421,7 +422,7 @@ def read_json_v1(json_, type_=None):
             constructor = constructors[0]
         else:
             constructor = getattr(types, json_["t"])._def
-    elif type_[0][0] == type_[0][0].upper():
+    elif type_[0][0].isupper():
         constructor = type_
         constructor_type = getattr(types, constructor[0])
         data_type = constructor_type.__mro__[2]._def
@@ -451,11 +452,11 @@ def read_json_v1(json_, type_=None):
 
 # JSON Writer v1
 # ------------------------------------------------------------------------------
-def write_json_v1(object_):
+def write_json_v1(object_: Any) -> Any:
     types = import_types()
 
     odict = collections.OrderedDict
-    type_ = type(object_)
+
     if not isinstance(object_, types.Type):
         if isinstance(object_, (list, tuple)):
             json_ = [write_json_v1(item) for item in object_]
@@ -491,12 +492,14 @@ def write_json_v1(object_):
 
 # JSON Reader v2
 # ------------------------------------------------------------------------------
-def read_json_v2(json_, type_=None):
+def read_json_v2(json_, type_=None) -> Any:
     types = import_types()
+
     if type_ is None:
         type_ = types.Pandoc
-    if isinstance(type_, str):
+    elif isinstance(type_, str):
         type_ = getattr(types, type_)
+
     if not isinstance(type_, list):  # not a type def (yet).
         if issubclass(type_, types.Type):
             type_ = type_._def
@@ -524,10 +527,10 @@ def read_json_v2(json_, type_=None):
             ]
         )
     if type_[0] == "maybe":
-        value_type = type_[1][0]
-        if json_ == None:
+        if json_ is None:
             return None
         else:
+            value_type = type_[1][0]
             return read_json_v2(json_, value_type)
 
     data_type = None
@@ -538,14 +541,13 @@ def read_json_v2(json_, type_=None):
         if len(constructors) == 1:
             constructor = constructors[0]
         else:
-            constructors = data_type[1][1]
             constructors_names = [constructor[0] for constructor in constructors]
             constructor_name = json_["t"]
             if constructor_name not in constructors_names:  # shadowed
                 constructor_name = constructor_name + "_"
                 assert constructor_name in constructors_names
             constructor = getattr(types, constructor_name)._def
-    elif type_[0][0] == type_[0][0].upper():
+    elif type_[0][0].isupper():
         constructor = type_
         constructor_type = getattr(types, constructor[0])
         data_type = constructor_type.__mro__[2]._def
@@ -573,8 +575,8 @@ def read_json_v2(json_, type_=None):
             json_args = [json_args]
         args = [read_json_v2(jarg, t) for jarg, t in zip(json_args, constructor[1][1])]
     else:
-        keys = [k for k, t in constructor[1][1]]
-        types_ = [t for k, t in constructor[1][1]]
+        keys = [k for k, _ in constructor[1][1]]
+        types_ = [t for _, t in constructor[1][1]]
         json_args = [json_[k] for k in keys]
         args = [read_json_v2(jarg, t) for jarg, t in zip(json_args, types_)]
     C = getattr(types, constructor[0])
@@ -583,11 +585,11 @@ def read_json_v2(json_, type_=None):
 
 # JSON Writer v2
 # ------------------------------------------------------------------------------
-def write_json_v2(object_):
+def write_json_v2(object_: Any) -> Any:
     types = import_types()
 
     odict = collections.OrderedDict
-    type_ = type(object_)
+
     if not isinstance(object_, types.Type):
         if isinstance(object_, (list, tuple)):
             json_ = [write_json_v2(item) for item in object_]
@@ -601,8 +603,8 @@ def write_json_v2(object_):
         blocks = object_[1]
         json_ = odict()
         json_["pandoc-api-version"] = [int(n) for n in version.split(".")]
-        json_["meta"] = write_json_v2(object_[0][0])
-        json_["blocks"] = write_json_v2(object_[1])
+        json_["meta"] = write_json_v2(metadata[0])
+        json_["blocks"] = write_json_v2(blocks)
     else:
         constructor = type(object_)._def
         data_type = type(object_).__mro__[2]._def
@@ -617,18 +619,15 @@ def write_json_v2(object_):
             # If an underscore was used to in the type name to avoid a name
             # collision between a constructor and its parent, remove it for
             # the json representation.
-            if type_name.endswith("_"):
-                type_name = type_name[:-1]
-            json_["t"] = type_name
+            json_["t"] = type_name.removesuffix("_")
         if not is_record:
             c = [write_json_v2(arg) for arg in object_]
             if single_constructor_argument:
                 c = c[0]
             if single_type_constructor:
                 json_ = c
-            else:
-                if has_constructor_arguments:
-                    json_["c"] = c
+            elif has_constructor_arguments:
+                json_["c"] = c
         else:
             keys = [kt[0] for kt in constructor[1][1]]
             for key, arg in zip(keys, object_):
