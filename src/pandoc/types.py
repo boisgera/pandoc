@@ -1,18 +1,116 @@
 # coding: utf-8
 
 # Python 3 Standard Library
-import builtins
-import collections
-import inspect
-import pydoc
-import sys
+import dataclasses
+import re
 
-# Third-Party Libraries
-import pkg_resources
+from abc import ABCMeta
+from collections import Counter
+from collections.abc import Sequence
+from functools import partial
+from typing import Any, Dict, List, Tuple
 
 # Pandoc
 import pandoc
 import pandoc.utils
+
+
+def to_snake_case(x: str):
+    # https://stackoverflow.com/questions/1175208
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", x).lower()
+
+
+def to_plural(word: str):
+    # https://en.wikipedia.org/wiki/English_plurals
+    if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
+        return word[:-1] + "ies"
+    elif word.endswith(("s", "x", "z", "ch", "sh")):
+        return word + "es"
+    else:
+        return word + "s"
+
+
+def rename_duplicate_fields(fields: List[str]):
+    counter = Counter(fields)
+
+    counter_max = 0
+    for k, v in counter.items():
+        if v > counter_max:
+            counter_max = v
+        if v == 1:
+            # We set to 0 the entries we do not want to process
+            counter[k] = 0
+
+    if counter_max == 1:
+        return fields
+
+    # For each duplicated entry concatenate and decrease the counter value
+    ret = list(fields)
+    for i, r in reversed(list(enumerate(ret))):
+        if (c := counter.get(r, 0)) > 0:
+            ret[i] += str(c)
+            counter[r] -= 1
+
+    return ret
+
+
+def get_data_fields(decl: List[Any]) -> List[str]:
+    type_name = decl[0]
+    type_def = decl[1]
+    fields = []
+
+    def field_type_name(field_type, field):
+        if (
+            isinstance(field, list)
+            and field[0] == field_type
+            and isinstance(field[1], list)
+            and len(field[1]) == 1
+            and isinstance(field[1][0], str)
+        ):
+            return field[1][0]
+        else:
+            return None
+
+    if type_def[0] == "map":
+        for x in type_def[1]:
+            field = x[0]
+            if field == "unMeta":
+                # Field of the Meta type, rename it to table
+                field = "table"
+            else:
+                field = to_snake_case(field).lower()
+                field = field.removeprefix(type_name.lower()).lstrip("_")
+            fields.append(field)
+    else:
+        for x in type_def[1]:
+            if isinstance(x, str):
+                if x == "Int" or x == "Double":
+                    if type_name == "Header":
+                        field = "level"
+                    else:
+                        field = "value"
+                else:
+                    field = to_snake_case(x.removeprefix(type_name))
+            elif field := field_type_name("maybe", x):
+                field = to_snake_case(field).lower()
+                field = field.removeprefix(type_name.lower()).lstrip("_")
+            elif field := field_type_name("list", x):
+                if (
+                    type_name != "Pandoc"
+                    and not type_name.startswith("Meta")
+                    and (field == "Block" or field == "Inline")
+                ):
+                    field = "content"
+                else:
+                    field = to_snake_case(field).lower()
+                    field = field.removeprefix(type_name.lower()).lstrip("_")
+                    field = to_plural(field)
+            else:
+                field = "content"
+
+            fields.append(field)
+
+    return rename_duplicate_fields(fields)
 
 
 # Haskell Type Constructs
@@ -23,7 +121,7 @@ def _fail_init(self, *args, **kwargs):
     raise TypeError(error.format(type=type_name))
 
 
-class MetaType(type):
+class MetaType(ABCMeta):
     def __repr__(cls):
         doc = getattr(cls, "__doc__", None)
         if doc is not None:
@@ -39,41 +137,109 @@ class Data(Type):
     pass
 
 
-class Constructor(Data):
-    def __init__(self, *args):
-        if type(self) is Constructor:
-            _fail_init(self, *args)
-        else:
-            self._args = list(args)
-
-    def __iter__(self):
-        return iter(self._args)
-
-    def __getitem__(self, key):
-        return self._args[key]
-
-    def __setitem__(self, key, value):
-        self._args[key] = value
-
-    def __len__(self):
-        return len(self._args)
-
-    def __eq__(self, other):
-        return type(self) == type(other) and self[:] == other[:]
-
-    def __neq__(self, other):
-        return not (self == other)
-
-    def __repr__(self):
-        typename = type(self).__name__
-        args = ", ".join(repr(arg) for arg in self)
-        return "{0}({1})".format(typename, args)
-
-    __str__ = __repr__
-
-
 class TypeDef(Type):
     pass
+
+
+class Constructor(Sequence):
+    pass
+
+
+def _data_get_attr(self, key):
+    return self.attr[key]
+
+
+def _data_set_attr(self, value, key):
+    self.attr = self.attr[:key] + (value,) + self.attr[key + 1 :]
+
+
+_data_property_identifier = property(
+    partial(_data_get_attr, key=0), partial(_data_set_attr, key=0)
+)
+_data_property_classes = property(
+    partial(_data_get_attr, key=1), partial(_data_set_attr, key=1)
+)
+_data_property_attributes = property(
+    partial(_data_get_attr, key=2), partial(_data_set_attr, key=2)
+)
+
+
+def _data_getitem(self, key):
+    if isinstance(key, int):
+        return getattr(self, self._fields[key])
+    elif isinstance(key, slice):
+        return [
+            getattr(self, self._fields[i])
+            for i in range(*key.indices(len(self._fields)))
+        ]
+    else:
+        raise ValueError("Invalid argument type.")
+
+
+def _data_setitem(self, key, value):
+    if isinstance(key, int):
+        setattr(self, self._fields[key], value)
+    elif isinstance(key, slice):
+        if not isinstance(value, Sequence):
+            raise ValueError("Can only assign a sequence.")
+        else:
+            slice_indices = list(range(*key.indices(len(self._fields))))
+            if len(slice_indices) != len(value):
+                raise ValueError(
+                    "The number of elements to assign must be the same as "
+                    "the number of elements of the slice."
+                )
+            for i in slice_indices:
+                setattr(self, self._fields[i], value[i])
+    else:
+        raise ValueError("Invalid argument type.")
+
+
+def _data_len(self):
+    return len(self._fields)
+
+
+def _data_iter(self):
+    return (getattr(self, f) for f in self._fields)
+
+
+def make_constructor_class(
+    name: str, fields: List[str], bases: Tuple[type, ...], attrs: Dict[str, Any]
+):
+    assert "tag" not in fields and "t" not in fields
+
+    namespace = {
+        "__getitem__": _data_getitem,
+        "__iter__": _data_iter,
+        "__len__": _data_len,
+        "__setitem__": _data_setitem,
+        "_fields": fields,
+        "t": name,
+        "tag": name,
+    }
+
+    namespace.update(attrs)
+
+    if "attr" in fields:
+        assert (
+            "identifier" not in fields
+            and "classes" not in fields
+            and "attributes" not in fields
+        )
+
+        namespace.update(
+            {
+                "identifier": _data_property_identifier,
+                "classes": _data_property_classes,
+                "attributes": _data_property_attributes,
+            }
+        )
+
+    c = dataclasses.make_dataclass(
+        name, [(f, Any, None) for f in fields], bases=bases, namespace=namespace
+    )
+
+    return c
 
 
 # Pandoc Types
@@ -94,14 +260,6 @@ def _make_builtin_types():
     td["list"] = list
     td["tuple"] = tuple
     td["map"] = dict
-
-
-def enable_pattern_matching(class_dict):
-    decl = class_dict["_def"]
-    num_args = len(decl[1][1])
-    class_dict["__match_args__"] = tuple([f"_arg{i}" for i in range(num_args)])
-    for i in range(num_args):
-        class_dict[f"_arg{i}"] = property(lambda self, i=i: self._args[i])
 
 
 def clear_types():
@@ -164,15 +322,17 @@ def make_types(version: str):
             _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
             data_type = type(type_name, (Data,), _dict)
             _types_dict[type_name] = data_type
+
             for constructor in constructors:
                 constructor_name = constructor[0]
+                fields = get_data_fields(constructor)
                 bases = (Constructor, data_type)
                 _dict = {
                     "_def": constructor,
                     "__doc__": pandoc.utils.docstring(constructor),
                 }
-                enable_pattern_matching(_dict)
-                type_ = type(constructor_name, bases, _dict)
+                type_ = make_constructor_class(constructor_name, fields, bases, _dict)
+
                 _types_dict[constructor_name] = type_
         elif decl_type == "type":
             _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}

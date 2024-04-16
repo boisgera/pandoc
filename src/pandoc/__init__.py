@@ -16,7 +16,7 @@ from types import ModuleType
 from typing import Any, cast, Dict, IO, List, Optional, Tuple, Union
 
 # Pandoc
-import pandoc.about
+from . import about
 from . import utils
 
 
@@ -420,7 +420,7 @@ def read_json_v1(json_: Any, type_=None) -> Any:
     elif type_[0][0].isupper():
         constructor = type_
         constructor_type = getattr(types, constructor[0])
-        data_type = constructor_type.__mro__[2]._def
+        data_type = constructor_type.__bases__[1]._def
 
     single_type_constructor = len(data_type[1][1]) == 1
     single_constructor_argument = len(constructor[1][1]) == 1
@@ -461,7 +461,7 @@ def write_json_v1(object_: Any) -> Any:
             json_ = object_
     else:
         constructor = type(object_)._def
-        data_type = type(object_).__mro__[2]._def
+        data_type = type(object_).__bases__[1]._def
         single_type_constructor = len(data_type[1][1]) == 1
         single_constructor_argument = len(constructor[1][1]) == 1
         is_record = constructor[1][0] == "map"
@@ -545,7 +545,7 @@ def read_json_v2(json_, type_=None) -> Any:
     elif type_[0][0].isupper():
         constructor = type_
         constructor_type = getattr(types, constructor[0])
-        data_type = constructor_type.__mro__[2]._def
+        data_type = constructor_type.__bases__[1]._def
 
     single_type_constructor = len(data_type[1][1]) == 1
     single_constructor_argument = len(constructor[1][1]) == 1
@@ -602,7 +602,7 @@ def write_json_v2(object_: Any) -> Any:
         json_["blocks"] = write_json_v2(blocks)
     else:
         constructor = type(object_)._def
-        data_type = type(object_).__mro__[2]._def
+        data_type = type(object_).__bases__[1]._def
         single_type_constructor = len(data_type[1][1]) == 1
         has_constructor_arguments = len(constructor[1][1]) >= 1
         single_constructor_argument = len(constructor[1][1]) == 1
