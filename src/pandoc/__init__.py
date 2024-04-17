@@ -654,7 +654,7 @@ def iter(
             if path is False:
                 child_path = False
             else:
-                child_path = path.copy() + [(elt, i)]
+                child_path = path + [(elt, i)]
             for subelt in iter(child, path=child_path):
                 yield subelt
 
