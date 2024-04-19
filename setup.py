@@ -17,7 +17,7 @@ contents = {
     "package_data": {"pandoc": ["pandoc-types.json", "tests.md"]},
 }
 requirements = {
-    "install_requires": ["plumbum", "ply"],
+    "install_requires": ["ply"],
 }
 
 info = {}
