@@ -15,12 +15,12 @@ import pandoc
 import pandoc.utils
 
 
-def to_snake_case(x: str):
+def _to_snake_case(x: str):
     # https://stackoverflow.com/questions/1175208
     return re.sub(r"(?<!^)(?=[A-Z])", "_", x).lower()
 
 
-def to_plural(word: str):
+def _to_plural(word: str):
     # https://en.wikipedia.org/wiki/English_plurals
     if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
         return word[:-1] + "ies"
@@ -30,7 +30,7 @@ def to_plural(word: str):
         return word + "s"
 
 
-def rename_duplicate_fields(fields: List[str]):
+def _rename_duplicate_fields(fields: List[str]):
     counter = Counter(fields)
 
     counter_max = 0
@@ -54,7 +54,7 @@ def rename_duplicate_fields(fields: List[str]):
     return ret
 
 
-def field_type_name(field_type, field):
+def _field_type_name(field_type, field):
     if (
         isinstance(field, list)
         and field[0] == field_type
@@ -67,7 +67,7 @@ def field_type_name(field_type, field):
         return None
 
 
-def rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
+def _rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
     result = fields.copy()
 
     for old_name, new_name in names.items():
@@ -79,14 +79,14 @@ def rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
     return result
 
 
-def get_data_fields(decl: List[Any]) -> List[str]:
+def _get_data_fields(decl: List[Any]) -> List[Field]:
     type_name = decl[0]
     type_def = decl[1]
     fields = []
 
     if type_def[0] == "map":
         for x in type_def[1]:
-            field = to_snake_case(x[0]).lower()
+            field = _to_snake_case(x[0]).lower()
             field = field.removeprefix(type_name.lower()).lstrip("_")
             fields.append(field)
     else:
@@ -95,11 +95,11 @@ def get_data_fields(decl: List[Any]) -> List[str]:
                 if x == "Int" or x == "Double":
                     field = "value"
                 else:
-                    field = to_snake_case(x.removeprefix(type_name))
-            elif field := field_type_name("maybe", x):
-                field = to_snake_case(field).lower()
+                    field = _to_snake_case(x.removeprefix(type_name))
+            elif field := _field_type_name("maybe", x):
+                field = _to_snake_case(field).lower()
                 field = field.removeprefix(type_name.lower()).lstrip("_")
-            elif field := field_type_name("list", x):
+            elif field := _field_type_name("list", x):
                 if (
                     type_name != "Pandoc"
                     and not type_name.startswith("Meta")
@@ -107,23 +107,23 @@ def get_data_fields(decl: List[Any]) -> List[str]:
                 ):
                     field = "content"
                 else:
-                    field = to_snake_case(field).lower()
+                    field = _to_snake_case(field).lower()
                     field = field.removeprefix(type_name.lower()).lstrip("_")
-                    field = to_plural(field)
+                    field = _to_plural(field)
             else:
                 field = "content"
 
             fields.append(field)
 
-    fields = rename_duplicate_fields(fields)
+    fields = _rename_duplicate_fields(fields)
 
     # Handle special cases
     if type_name == "Meta":
-        fields = rename_fields(fields, {"un_meta": "map"})
+        fields = _rename_fields(fields, {"un_meta": "map"})
     elif type_name == "Header":
-        fields = rename_fields(fields, {"value": "level"})
+        fields = _rename_fields(fields, {"value": "level"})
     elif type_name == "TableBody":
-        fields = rename_fields(fields, {"rows1": "head", "rows2": "body"})
+        fields = _rename_fields(fields, {"rows1": "head", "rows2": "body"})
 
     return fields
 
@@ -218,7 +218,7 @@ def _data_iter(self):
     return (getattr(self, f) for f in self._fields)
 
 
-def make_constructor_class(
+def _make_constructor_class(
     name: str, fields: List[str], bases: Tuple[type, ...], attrs: Dict[str, Any]
 ):
     assert "tag" not in fields and "t" not in fields
@@ -340,13 +340,13 @@ def make_types(version: str):
 
             for constructor in constructors:
                 constructor_name = constructor[0]
-                fields = get_data_fields(constructor)
+                fields = _get_data_fields(constructor)
                 bases = (Constructor, data_type)
                 _dict = {
                     "_def": constructor,
                     "__doc__": pandoc.utils.docstring(constructor),
                 }
-                type_ = make_constructor_class(constructor_name, fields, bases, _dict)
+                type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
 
                 _types_dict[constructor_name] = type_
         elif decl_type == "type":
