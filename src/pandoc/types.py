@@ -8,7 +8,7 @@ from abc import ABCMeta
 from collections import Counter
 from collections.abc import Sequence
 from functools import partial
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Pandoc
 import pandoc
@@ -254,6 +254,10 @@ def _make_constructor_class(
         name, [(f, Any, None) for f in fields], bases=bases, namespace=namespace
     )
 
+    # Save the __repr__ method in another field, so that we are able
+    # to restore it we change the print options
+    setattr(c, "_default_repr", c.__repr__)
+
     return c
 
 
@@ -357,6 +361,34 @@ def make_types(version: str):
     # Install the types
     globs.update(_types_dict)
     _types_version = version
+
+
+# Print options
+# ------------------------------------------------------------------------------
+
+
+def _dataclass_no_keyword_repr(self) -> str:
+    field_repr = (repr(getattr(self, f.name)) for f in dataclasses.fields(self))
+    return self.__class__.__name__ + "(" + ", ".join(field_repr) + ")"
+
+
+def _dataclass_no_keyword_rich_repr(self):
+    for f in (getattr(self, f.name) for f in dataclasses.fields(self)):
+        yield f
+
+
+def print_options(show_fields: bool = False, types: Optional[List[Type]] = None):
+    types = types or [v for _, v in _types_dict.items()]
+    for t in types:
+        if issubclass(t, Constructor):
+            if show_fields:
+                if hasattr(t, "_default_repr"):
+                    setattr(t, "__repr__", t._default_repr)
+                if hasattr(t, "__rich_repr__"):
+                    delattr(t, "__rich_repr__")
+            else:
+                setattr(t, "__repr__", _dataclass_no_keyword_repr)
+                setattr(t, "__rich_repr__", _dataclass_no_keyword_rich_repr)
 
 
 # Create Types

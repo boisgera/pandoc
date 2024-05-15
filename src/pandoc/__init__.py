@@ -127,7 +127,13 @@ def configure(
             "version": version,
             "pandoc_types_version": pandoc_types_version,
         }
-        import_types().make_types(pandoc_types_version)
+
+        # create types
+        types = import_types()
+        types.make_types(pandoc_types_version)
+
+        # set default print options for types
+        types.print_options()
 
     if read:
         return _configuration
