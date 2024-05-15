@@ -54,41 +54,46 @@ def rename_duplicate_fields(fields: List[str]):
     return ret
 
 
+def field_type_name(field_type, field):
+    if (
+        isinstance(field, list)
+        and field[0] == field_type
+        and isinstance(field[1], list)
+        and len(field[1]) == 1
+        and isinstance(field[1][0], str)
+    ):
+        return field[1][0]
+    else:
+        return None
+
+
+def rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
+    result = fields.copy()
+
+    for old_name, new_name in names.items():
+        try:
+            result[result.index(old_name)] = new_name
+        except ValueError:
+            pass
+
+    return result
+
+
 def get_data_fields(decl: List[Any]) -> List[str]:
     type_name = decl[0]
     type_def = decl[1]
     fields = []
 
-    def field_type_name(field_type, field):
-        if (
-            isinstance(field, list)
-            and field[0] == field_type
-            and isinstance(field[1], list)
-            and len(field[1]) == 1
-            and isinstance(field[1][0], str)
-        ):
-            return field[1][0]
-        else:
-            return None
-
     if type_def[0] == "map":
         for x in type_def[1]:
-            field = x[0]
-            if field == "unMeta":
-                # Field of the Meta type, rename it to table
-                field = "table"
-            else:
-                field = to_snake_case(field).lower()
-                field = field.removeprefix(type_name.lower()).lstrip("_")
+            field = to_snake_case(x[0]).lower()
+            field = field.removeprefix(type_name.lower()).lstrip("_")
             fields.append(field)
     else:
         for x in type_def[1]:
             if isinstance(x, str):
                 if x == "Int" or x == "Double":
-                    if type_name == "Header":
-                        field = "level"
-                    else:
-                        field = "value"
+                    field = "value"
                 else:
                     field = to_snake_case(x.removeprefix(type_name))
             elif field := field_type_name("maybe", x):
@@ -110,7 +115,17 @@ def get_data_fields(decl: List[Any]) -> List[str]:
 
             fields.append(field)
 
-    return rename_duplicate_fields(fields)
+    fields = rename_duplicate_fields(fields)
+
+    # Handle special cases
+    if type_name == "Meta":
+        fields = rename_fields(fields, {"un_meta": "map"})
+    elif type_name == "Header":
+        fields = rename_fields(fields, {"value": "level"})
+    elif type_name == "TableBody":
+        fields = rename_fields(fields, {"rows1": "head", "rows2": "body"})
+
+    return fields
 
 
 # Haskell Type Constructs
