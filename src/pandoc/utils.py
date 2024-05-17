@@ -293,7 +293,7 @@ def parse(src):
     return [parser.parse(type_decl) for type_decl in split(src)]
 
 
-def docstring(decl):
+def docstring(decl, constructor_fields=None):
     if isinstance(decl, str):
         return decl
     else:
@@ -329,13 +329,17 @@ def docstring(decl):
             type_name = decl[0]
             args_type = decl[1][0]
             args = decl[1][1]
-            if args_type == "list":
-                return "{0}({1})".format(
-                    type_name, ", ".join(docstring(t) for t in args)
-                )
-            else:
-                assert args_type == "map"
+
+            if args_type == "map":
                 args = [item for _, item in args]
-                return "{0}({1})".format(
-                    type_name, ", ".join(docstring(t) for t in args)
-                )
+            else:
+                assert args_type == "list"
+
+            if constructor_fields:
+                args_docstring = [
+                    f"{f}: {docstring(t)}" for f, t in zip(constructor_fields, args)
+                ]
+            else:
+                args_docstring = [docstring(t) for t in args]
+
+            return "{0}({1})".format(type_name, ", ".join(args_docstring))

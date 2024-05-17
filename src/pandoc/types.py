@@ -346,10 +346,9 @@ def make_types(version: str):
                 constructor_name = constructor[0]
                 fields = _get_data_fields(constructor)
                 bases = (Constructor, data_type)
-                _dict = {
-                    "_def": constructor,
-                    "__doc__": pandoc.utils.docstring(constructor),
-                }
+                # Note: __doc__ will be set by the print_options function, which
+                # is called by configure, so there is no need to set it here.
+                _dict = {"_def": constructor}
                 type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
 
                 _types_dict[constructor_name] = type_
@@ -377,7 +376,11 @@ def _dataclass_no_keyword_rich_repr(self):
         yield f
 
 
-def print_options(show_fields: bool = False, types: Optional[List[Type]] = None):
+def print_options(
+    show_fields: bool = False,
+    show_type_fields: bool = True,
+    types: Optional[List[Type]] = None,
+):
     types = types or [v for _, v in _types_dict.items()]
     for t in types:
         if issubclass(t, Constructor):
@@ -389,6 +392,11 @@ def print_options(show_fields: bool = False, types: Optional[List[Type]] = None)
             else:
                 setattr(t, "__repr__", _dataclass_no_keyword_repr)
                 setattr(t, "__rich_repr__", _dataclass_no_keyword_rich_repr)
+
+            if show_type_fields:
+                t.__doc__ = pandoc.utils.docstring(t._def, t._fields)
+            else:
+                t.__doc__ = pandoc.utils.docstring(t._def)
 
 
 # Create Types
