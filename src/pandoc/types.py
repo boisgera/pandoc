@@ -8,7 +8,7 @@ from abc import ABCMeta
 from collections import Counter
 from collections.abc import Sequence
 from functools import partial
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # Pandoc
 import pandoc
@@ -79,27 +79,35 @@ def _rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
     return result
 
 
+@dataclasses.dataclass
+class Field:
+    name: str
+    type: Union[str, List[Any]]
+
+
 def _get_data_fields(decl: List[Any]) -> List[Field]:
     type_name = decl[0]
     type_def = decl[1]
-    fields = []
+    field_names = []  # field names
+    field_types = []  # field types
 
     if type_def[0] == "map":
-        for x in type_def[1]:
-            field = _to_snake_case(x[0]).lower()
+        for field, type in type_def[1]:
+            field = _to_snake_case(field).lower()
             field = field.removeprefix(type_name.lower()).lstrip("_")
-            fields.append(field)
+            field_names.append(field)
+            field_types.append(type)
     else:
-        for x in type_def[1]:
-            if isinstance(x, str):
-                if x == "Int" or x == "Double":
+        for type in type_def[1]:
+            if isinstance(type, str):
+                if type == "Int" or type == "Double":
                     field = "value"
                 else:
-                    field = _to_snake_case(x.removeprefix(type_name))
-            elif field := _field_type_name("maybe", x):
+                    field = _to_snake_case(type.removeprefix(type_name))
+            elif field := _field_type_name("maybe", type):
                 field = _to_snake_case(field).lower()
                 field = field.removeprefix(type_name.lower()).lstrip("_")
-            elif field := _field_type_name("list", x):
+            elif field := _field_type_name("list", type):
                 if (
                     type_name != "Pandoc"
                     and not type_name.startswith("Meta")
@@ -113,19 +121,20 @@ def _get_data_fields(decl: List[Any]) -> List[Field]:
             else:
                 field = "content"
 
-            fields.append(field)
+            field_names.append(field)
+            field_types.append(type)
 
-    fields = _rename_duplicate_fields(fields)
+    field_names = _rename_duplicate_fields(field_names)
 
     # Handle special cases
     if type_name == "Meta":
-        fields = _rename_fields(fields, {"un_meta": "map"})
+        field_names = _rename_fields(field_names, {"un_meta": "map"})
     elif type_name == "Header":
-        fields = _rename_fields(fields, {"value": "level"})
+        field_names = _rename_fields(field_names, {"value": "level"})
     elif type_name == "TableBody":
-        fields = _rename_fields(fields, {"rows1": "head", "rows2": "body"})
+        field_names = _rename_fields(field_names, {"rows1": "head", "rows2": "body"})
 
-    return fields
+    return [Field(n, t) for n, t in zip(field_names, field_types)]
 
 
 # Haskell Type Constructs
@@ -158,6 +167,44 @@ class TypeDef(Type):
 
 class Constructor(Sequence):
     pass
+
+
+def _get_default_value(type_def: Union[str, List[Any]]) -> Any:
+    if isinstance(type_def, str):
+        try:
+            type = globals()[type_def]
+        except KeyError:
+            raise ValueError("Unknown type")
+
+        if issubclass(type, TypeDef):
+            assert type._def[0] == "type" and type._def[1][0] == type.__name__
+            return _get_default_value(type._def[1][1])
+        elif issubclass(type, Constructor):
+            return type()
+        elif issubclass(type, Data):
+            # if a subclass name has the 'default' string return an instance
+            for sc in type.__subclasses__():
+                if "default" in sc.__name__.lower():
+                    return sc()
+            # if no subclass name has a 'default' string just use the first one
+            return type.__subclasses__()[0]()
+        else:
+            # builtin type
+            return type()
+    elif isinstance(type_def, list):
+        type = type_def[0]
+        if type == "maybe":
+            return None
+        elif type == "map":
+            return {}
+        elif type == "list":
+            return []
+        elif type == "tuple":
+            return tuple(_get_default_value(t) for t in type_def[1])
+        else:
+            raise ValueError("Unknown type")
+    else:
+        raise ValueError("type_def must be a string or a list")
 
 
 def _data_get_attr(self, key):
@@ -219,7 +266,7 @@ def _data_iter(self):
 
 
 def _make_constructor_class(
-    name: str, fields: List[str], bases: Tuple[type, ...], attrs: Dict[str, Any]
+    name: str, fields: List[Field], bases: Tuple[type, ...], attrs: Dict[str, Any]
 ):
     assert "tag" not in fields and "t" not in fields
 
@@ -228,18 +275,19 @@ def _make_constructor_class(
         "__iter__": _data_iter,
         "__len__": _data_len,
         "__setitem__": _data_setitem,
-        "_fields": fields,
+        "_fields": [f.name for f in fields],
         "t": name,
         "tag": name,
     }
 
     namespace.update(attrs)
 
-    if "attr" in fields:
+    field_names = [f.name for f in fields]
+    if "attr" in field_names:
         assert (
-            "identifier" not in fields
-            and "classes" not in fields
-            and "attributes" not in fields
+            "identifier" not in field_names
+            and "classes" not in field_names
+            and "attributes" not in field_names
         )
 
         namespace.update(
@@ -250,8 +298,19 @@ def _make_constructor_class(
             }
         )
 
+    # Note: we need to add a default argument in the lambda function to capture
+    # the current value of f, else the last f would be used for all items
+    dataclass_fields = [
+        (
+            f.name,
+            Any,
+            dataclasses.field(default_factory=lambda f=f: _get_default_value(f.type)),
+        )
+        for f in fields
+    ]
+
     c = dataclasses.make_dataclass(
-        name, [(f, Any, None) for f in fields], bases=bases, namespace=namespace
+        name, dataclass_fields, bases=bases, namespace=namespace
     )
 
     # Save the __repr__ method in another field, so that we are able
