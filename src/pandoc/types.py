@@ -1,16 +1,4 @@
 # coding: utf-8
-
-# Python 3 Standard Library
-import builtins
-import collections
-import inspect
-import pydoc
-import sys
-
-# Third-Party Libraries
-import pkg_resources
-
-# Pandoc
 import pandoc
 import pandoc.utils
 
