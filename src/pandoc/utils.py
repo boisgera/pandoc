@@ -3,14 +3,14 @@ import json
 import warnings
 
 # Third-Party Libraries
-import pkg_resources
+import importlib.resources as resources
 import ply.lex as lex
 import ply.yacc as yacc
 
 
 # Pandoc-Types Version Mapping and Type Info
 # ------------------------------------------------------------------------------
-_json_data = pkg_resources.resource_string("pandoc", "pandoc-types.js")
+_json_data = resources.read_text("pandoc", "pandoc-types.js")
 if not isinstance(_json_data, str):  # resource loaded as bytes in Python 3
     _json_data = _json_data.decode("utf-8")
 _data = json.loads(_json_data)
