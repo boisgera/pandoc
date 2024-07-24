@@ -132,9 +132,6 @@ def configure(
         types = import_types()
         types.make_types(pandoc_types_version)
 
-        # set default print options for types
-        types.print_options()
-
     if read:
         return _configuration
 

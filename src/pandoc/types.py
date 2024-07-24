@@ -6,7 +6,7 @@ import re
 
 from abc import ABCMeta
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from functools import partial
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -353,7 +353,11 @@ def clear_types():
     _types_dict = {}
 
 
-def make_types(version: str):
+def make_types(
+    version: str,
+    data_show_fields: bool = False,  # whether to show field names in the data repr
+    types_show_field: bool = True,  # whether to show field names in the types docstring
+):
     """Create Pandoc Types"""
 
     global _types_version
@@ -397,7 +401,10 @@ def make_types(version: str):
                     if constructor_name == type_name:
                         constructor[0] = constructor_name + "_"
 
-            _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
+            _dict = {
+                "_def": decl,
+                "__doc__": pandoc.utils.docstring(decl, types_show_field),
+            }
             data_type = type(type_name, (Data,), _dict)
             _types_dict[type_name] = data_type
 
@@ -405,23 +412,32 @@ def make_types(version: str):
                 constructor_name = constructor[0]
                 fields = _get_data_fields(constructor)
                 bases = (Constructor, data_type)
-                # Note: __doc__ will be set by the print_options function, which
-                # is called by configure, so there is no need to set it here.
-                _dict = {"_def": constructor}
+                _dict = {
+                    "_def": constructor,
+                    "__doc__": pandoc.utils.docstring(constructor, types_show_field),
+                }
                 type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
 
                 _types_dict[constructor_name] = type_
         elif decl_type == "type":
-            _dict = {"_def": decl, "__doc__": pandoc.utils.docstring(decl)}
+            _dict = {
+                "_def": decl,
+                "__doc__": pandoc.utils.docstring(decl, types_show_field),
+            }
             type_ = type(type_name, (TypeDef,), _dict)
             _types_dict[type_name] = type_
+
+    # When the data types are created, their repr will show the field names,
+    # if data_show_fields is False we update the data repr functions
+    if not data_show_fields:
+        set_data_repr(show_fields=data_show_fields, types=_types_dict.values())
 
     # Install the types
     globs.update(_types_dict)
     _types_version = version
 
 
-# Print options
+# Data and types representation options
 # ------------------------------------------------------------------------------
 
 
@@ -435,10 +451,22 @@ def _dataclass_no_keyword_rich_repr(self):
         yield f
 
 
-def print_options(
+def set_types_docstring(
+    show_fields: bool = True,
+    types: Optional[Iterable[object]] = None,
+):
+    types = types or [v for _, v in _types_dict.items()]
+    for t in types:
+        if issubclass(t, Type):
+            if show_fields:
+                t.__doc__ = pandoc.utils.docstring(t._def, True)
+            else:
+                t.__doc__ = pandoc.utils.docstring(t._def)
+
+
+def set_data_repr(
     show_fields: bool = False,
-    show_type_fields: bool = True,
-    types: Optional[List[Type]] = None,
+    types: Optional[Iterable[object]] = None,
 ):
     types = types or [v for _, v in _types_dict.items()]
     for t in types:
@@ -451,11 +479,6 @@ def print_options(
             else:
                 setattr(t, "__repr__", _dataclass_no_keyword_repr)
                 setattr(t, "__rich_repr__", _dataclass_no_keyword_rich_repr)
-
-            if show_type_fields:
-                t.__doc__ = pandoc.utils.docstring(t._def, t._fields)
-            else:
-                t.__doc__ = pandoc.utils.docstring(t._def)
 
 
 # Create Types
