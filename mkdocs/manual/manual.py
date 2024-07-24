@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Python Standard Library
+import os
 from urllib.request import urlopen
 
 # Pandoc
@@ -24,9 +25,9 @@ from pandoc.types import (
 )
 
 # ------------------------------------------------------------------------------
-URL = "https://raw.githubusercontent.com/jgm/pandoc/3.1.1/MANUAL.txt"
+URL = "https://raw.githubusercontent.com/jgm/pandoc/main/MANUAL.txt"
 src = urlopen(URL).read().decode("utf-8")
-with open("MANUAL-3.1.1.txt", "tw", encoding="utf-8") as f:
+with open("MANUAL.txt", "tw", encoding="utf-8") as f:
     f.write(src)
 # src = open("MANUAL-patched.txt").read()
 
@@ -119,4 +120,5 @@ for holder, i in reversed(locations):
 
 # ------------------------------------------------------------------------------
 
-pandoc.write(new_doc, "../markdown.md", format="markdown-raw_attribute")
+doc_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../markdown.md")
+pandoc.write(new_doc, doc_path, format="markdown-raw_attribute")
