@@ -19,8 +19,10 @@ However, if you need more control on this configuration step,
 you can import `pandoc` and call `configure`
 before you do anything else with the library:
 
-    import pandoc
-    pandoc.configure(...)
+```python
+import pandoc
+pandoc.configure(...)
+```
 
 If you do this, the implicit configuration does not take place;
 it is triggered only when no configuration is specified when
@@ -35,20 +37,26 @@ Options
 To have the library find a `pandoc` executable in your path,
 and configure itself accordingly, enable the `auto` option
 
-    pandoc.configure(auto=True)
+```python
+pandoc.configure(auto=True)
+```
 
 This is the method used by the implicit configuration.
 If instead you want to specify manually the pandoc executable,
 use the `path` argument, for example:
 
-    pandoc.configure(path='/usr/bin/pandoc')
+```python
+pandoc.configure(path='/usr/bin/pandoc')
+```
 
 Some features[^features] of the Python `pandoc` library
 do not require the `pandoc` executable, but in this case
 we still need to know what version of pandoc you target,
 so specify for example:
 
-    pandoc.configure(version=' 2.18')
+```python
+pandoc.configure(version=' 2.18')
+```
 
 [^features]: typically conversion between json and Python object representations
 of documents and analysis or transformations of documents as Python objects.
@@ -62,7 +70,9 @@ that you intend to use, or equivalently, the version of the
 Accordingly, you may configure `pandoc` with the
 `pandoc_types_version` argument:
 
-    pandoc.configure(pandoc_types_version='1.22.2')
+```python
+pandoc.configure(pandoc_types_version='1.22.2')
+```
 
 [pt]: https://hackage.haskell.org/package/pandoc-types
 
@@ -86,11 +96,15 @@ but returns a dictionary whose keys are `auto`, `path`,
 
 The `read` option may be combined with other arguments, for example
 
-    config = pandoc.configure(auto=True, read=True)
+```python
+config = pandoc.configure(auto=True, read=True)
+```
 
 This is actually a good way to know where the pandoc executable has been
 found, what is its version and the corresponding version of `pandoc-types`.
 
 When it is needed, it is also possible to restore the unconfigured state:
 
-    pandoc.configure(reset=True)
+```python
+pandoc.configure(reset=True)
+```
