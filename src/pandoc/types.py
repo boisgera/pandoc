@@ -137,6 +137,61 @@ def _get_data_fields(decl: List[Any]) -> List[Field]:
     return [Field(n, t) for n, t in zip(field_names, field_types)]
 
 
+def docstring(decl, show_fields: bool = False):
+    if isinstance(decl, str):
+        return decl
+    else:
+        assert isinstance(decl, list)
+        if decl[0] == "data" or decl[0] == "newtype":
+            type_name = decl[1][0]
+            constructors = decl[1][1]
+            _docstring = ""
+            for i, constructor in enumerate(constructors):
+                if i == 0:
+                    prefix = type_name + " = "
+                else:
+                    prefix = " " * len(type_name) + " | "
+                if i > 0:
+                    _docstring += "\n"
+                _docstring += prefix + docstring(constructor, show_fields)
+            return _docstring
+        elif decl[0] == "type":
+            return "{0} = {1}".format(decl[1][0], docstring(decl[1][1], show_fields))
+        elif decl[0] == "list":
+            return "[{0}]".format(docstring(decl[1][0], show_fields))
+        elif decl[0] == "tuple":
+            _types = [docstring(_type, show_fields) for _type in decl[1]]
+            _types = ", ".join(_types)
+            return "({0})".format(_types)
+        elif decl[0] == "map":
+            key_type, value_type = decl[1]
+            return "{{{0}: {1}}}".format(
+                docstring(key_type, show_fields), docstring(value_type, show_fields)
+            )
+        elif decl[0] == "maybe":
+            maybe_type = decl[1][0]
+            return f"{maybe_type} or None"
+        else:  # constructor, distinguish normal and record types
+            type_name = decl[0]
+            args_type = decl[1][0]
+            args = decl[1][1]
+
+            if args_type == "map":
+                args = [item for _, item in args]
+            else:
+                assert args_type == "list"
+
+            if show_fields:
+                fields = [f.name for f in _get_data_fields(decl)]
+                args_docstring = [
+                    f"{f}: {docstring(t, show_fields)}" for f, t in zip(fields, args)
+                ]
+            else:
+                args_docstring = [docstring(t) for t in args]
+
+            return "{0}({1})".format(type_name, ", ".join(args_docstring))
+
+
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
 def _fail_init(self, *args, **kwargs):
@@ -403,7 +458,7 @@ def make_types(
 
             _dict = {
                 "_def": decl,
-                "__doc__": pandoc.utils.docstring(decl, types_show_field),
+                "__doc__": docstring(decl, types_show_field),
             }
             data_type = type(type_name, (Data,), _dict)
             _types_dict[type_name] = data_type
@@ -414,7 +469,7 @@ def make_types(
                 bases = (Constructor, data_type)
                 _dict = {
                     "_def": constructor,
-                    "__doc__": pandoc.utils.docstring(constructor, types_show_field),
+                    "__doc__": docstring(constructor, types_show_field),
                 }
                 type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
 
@@ -422,7 +477,7 @@ def make_types(
         elif decl_type == "type":
             _dict = {
                 "_def": decl,
-                "__doc__": pandoc.utils.docstring(decl, types_show_field),
+                "__doc__": docstring(decl, types_show_field),
             }
             type_ = type(type_name, (TypeDef,), _dict)
             _types_dict[type_name] = type_
@@ -459,9 +514,9 @@ def set_types_docstring(
     for t in types:
         if issubclass(t, Type):
             if show_fields:
-                t.__doc__ = pandoc.utils.docstring(t._def, True)
+                t.__doc__ = docstring(t._def, True)
             else:
-                t.__doc__ = pandoc.utils.docstring(t._def)
+                t.__doc__ = docstring(t._def)
 
 
 def set_data_repr(

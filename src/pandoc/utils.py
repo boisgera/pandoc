@@ -2,9 +2,6 @@
 import json
 import warnings
 
-# Pandoc
-import pandoc
-
 # Third-Party Libraries
 import pkg_resources
 import ply.lex as lex
@@ -295,58 +292,3 @@ def parse(src):
     if not isinstance(src, str):  # unicode in Python 2
         src = str(src)
     return [parser.parse(type_decl) for type_decl in split(src)]
-
-
-def docstring(decl, show_fields: bool = False):
-    if isinstance(decl, str):
-        return decl
-    else:
-        assert isinstance(decl, list)
-        if decl[0] == "data" or decl[0] == "newtype":
-            type_name = decl[1][0]
-            constructors = decl[1][1]
-            _docstring = ""
-            for i, constructor in enumerate(constructors):
-                if i == 0:
-                    prefix = type_name + " = "
-                else:
-                    prefix = " " * len(type_name) + " | "
-                if i > 0:
-                    _docstring += "\n"
-                _docstring += prefix + docstring(constructor, show_fields)
-            return _docstring
-        elif decl[0] == "type":
-            return "{0} = {1}".format(decl[1][0], docstring(decl[1][1], show_fields))
-        elif decl[0] == "list":
-            return "[{0}]".format(docstring(decl[1][0], show_fields))
-        elif decl[0] == "tuple":
-            _types = [docstring(_type, show_fields) for _type in decl[1]]
-            _types = ", ".join(_types)
-            return "({0})".format(_types)
-        elif decl[0] == "map":
-            key_type, value_type = decl[1]
-            return "{{{0}: {1}}}".format(
-                docstring(key_type, show_fields), docstring(value_type, show_fields)
-            )
-        elif decl[0] == "maybe":
-            maybe_type = decl[1][0]
-            return f"{maybe_type} or None"
-        else:  # constructor, distinguish normal and record types
-            type_name = decl[0]
-            args_type = decl[1][0]
-            args = decl[1][1]
-
-            if args_type == "map":
-                args = [item for _, item in args]
-            else:
-                assert args_type == "list"
-
-            if show_fields:
-                fields = [f.name for f in pandoc.types._get_data_fields(decl)]
-                args_docstring = [
-                    f"{f}: {docstring(t, show_fields)}" for f, t in zip(fields, args)
-                ]
-            else:
-                args_docstring = [docstring(t) for t in args]
-
-            return "{0}({1})".format(type_name, ", ".join(args_docstring))
