@@ -11,7 +11,7 @@ Container
 --------------------------------------------------------------------------------
 
 All concrete[^1] Pandoc element (of type `Pandoc`, `Para`, `Str`, etc.) are list-like ;
-their items are the arguments passed to their constructor. 
+their items are the arguments passed to their constructor.
 We present here several familiar methods to access this content.
 
 [^1]: any custom pandoc type that can be instantiated. If needed, refer to the [kind of types](document/#kinds-of-types) section of the documentation for additional explanations.
@@ -67,8 +67,8 @@ True
 
 ### Equality
 
-Pandoc elements can be compared. 
-The equality test checks for equality of type, 
+Pandoc elements can be compared.
+The equality test checks for equality of type,
 then (recusively if needed) for equality of contents:
 
 ``` pycon
@@ -93,7 +93,6 @@ True
 ```
 
 ### Iteration
-
 
 All pandoc item can be iterated. Consider
 
@@ -141,15 +140,15 @@ Tree Iteration
 
 ### Depth-first traversal
 
-Python's built-in `iter` – which is used implicitly in the for loops – 
-yields the children of the pandoc element, that is the arguments 
+Python's built-in `iter` – which is used implicitly in the for loops –
+yields the children of the pandoc element, that is the arguments
 that were given to its constructor ;
-it is non-recursive: the contents of these children are not explored. 
+it is non-recursive: the contents of these children are not explored.
 
-On the contrary, `pandoc.iter` iterates a pandoc item recursively, 
+On the contrary, `pandoc.iter` iterates a pandoc item recursively,
 in document order. It performs a (preoder) depth-first traversal:
 the iteration first yields the element given as argument to `pandoc.iter`
-(the root), then its first child (if any), then the first child of this child 
+(the root), then its first child (if any), then the first child of this child
 (if any), etc. recursively, before it yields the second child of the root (if
 any), then the first child of this child, etc.
 
@@ -206,7 +205,6 @@ are not usually considered containers and thus are not iterable with the
 built-in `iter` function. The `Bool`, `Int` and `Double` primitive types
 (that is `bool`, `int` and `float`) fall in this case:
 
-
 ``` pycon
 >>> assert isinstance(True, Bool)
 >>> iter(True)
@@ -249,7 +247,7 @@ True
 #### Strings
 
 Python strings are iterable, but in the context of tree iteration, we consider
-them as atomic objects like booleans, integers and doubles. Thus `pandoc.iter` 
+them as atomic objects like booleans, integers and doubles. Thus `pandoc.iter`
 will not iterate on characters like the built-in `iter` function:
 
 ``` pycon
@@ -331,23 +329,23 @@ b
 2
 ```
 
-### Path 
+### Path
 
 #### Principles
 
 The function `pandoc.iter` accepts an optional boolean argument `path`.
 When it is set to `True`, the iteration returns `elt, path` pairs.
 In this pair, `elt` is equal to what the iteration with `path` set to
-`False` would have yielded and `path` contains additional 
+`False` would have yielded and `path` contains additional
 information about the location of `elt` in the iteration root.
 
 Path is a list of `(holder, i)` pairs which is not empty unless `elt` is `root` and such that:
 
-  - the first holder in the path is the root of the iteration,
+- the first holder in the path is the root of the iteration,
   
-  - the i-th item in holder is the next holder in the path ...
+- the i-th item in holder is the next holder in the path ...
 
-  - or `elt` if we are at the end of the path.
+- or `elt` if we are at the end of the path.
 
 Here i-th item in holder should be understood as `holder[i]` unless `holder`
 is a dict. In this special case, it would be its i-th key-value pair:
@@ -390,7 +388,6 @@ the check works at any level:
 >>> for elt, path in pandoc.iter(doc, path=True):
 ...     check(doc, elt, path)
 ```
-
 
 #### Use cases
 

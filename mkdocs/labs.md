@@ -7,13 +7,11 @@ Labs 🧪
     The `pandoc.labs` module is an experiment ; its interface is highly
     unstable. Don't build anything serious on top of it!
 
-
 ``` python
 import pandoc
 from pandoc.types import *
 from pandoc.labs import *
 ```
-
 
 ``` python
 HELLOWORLD_DOC = pandoc.read("Hello world!")
@@ -35,9 +33,9 @@ Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 - Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
 ```
 
-**TODO.** Explain what query does: a collection which 
-stores single or multiple document elements on which parallel operations 
-can be applied and that "automagically" know their location within the root 
+**TODO.** Explain what query does: a collection which
+stores single or multiple document elements on which parallel operations
+can be applied and that "automagically" know their location within the root
 document. Also "no-failure" flavor (operations don't fail, they return the
 empty collection)
 
@@ -64,7 +62,6 @@ At this stage, the query only contains the document itself.
 
 The `find` method allows to select items within the initial collection.
 To begin with, we can search items by type:
-
 
 ```python
 >>> q.find(Meta)
@@ -147,16 +144,15 @@ def AttrHolder(elt):
     return isinstance(elt, (Code, Link, Image, Span, Div, CodeBlock, Header, Table))
 ```
 
-**TODO:** match by attributes (id, classes, key-values); use keyword arguments 
+**TODO:** match by attributes (id, classes, key-values); use keyword arguments
 in find with "or" semantics for lists; allow for predicates. For key values
 match, match for key existence, key-value pair, predicate as a whole or just
 for value.
 
-
-
 ### Combine requirements
 
 We can search for items that match one of several conditions:
+
 ```python
 >>> q.find(Str, Space)
 - Str('Hello')
@@ -165,6 +161,7 @@ We can search for items that match one of several conditions:
 ```
 
 If the list of arguments is empty, everything is a match:
+
 ```python
 >>> q.find()
 - Pandoc(Meta({}), [Para([Str('Hello'), Space(), Str('world!')])])
@@ -179,6 +176,7 @@ If the list of arguments is empty, everything is a match:
 - Str('world!')
 - 'world!'
 ```
+
 In a boolean context, a query with no results is considered `False`
 
 ```python
@@ -196,7 +194,9 @@ To add match several conditions at once, the `filter` method can be used:
 - Str('Hello')
 - Str('world!')
 ```
+
 The `filter` method can be used implicitly: a query is callable
+
 ```python
 >>> q.find(Inline)(Str)
 - Str('Hello')
@@ -211,9 +211,7 @@ We can also match the negation of a condition
 - Str('world!')
 ```
 
-
 ### Navigation
-
 
 **TODO.** Parent, children, next, previous, next_sibling, previous_sibling.
 
@@ -275,14 +273,11 @@ We can also match the negation of a condition
 <BLANKLINE>
 ```
 
-
 --------------------------------------------------------------------------------
-
 
 Nota: finding lists of inlines is difficult; finding *non-empty* lists of
 inlines is easy, but empty lists is harder, we need to use some knowledge
 of the type hierarchy.
-
 
 <!--
 
@@ -341,7 +336,6 @@ a predicate function, such as `is_http_or_https_link`:
 #https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 #http://www.w3.org/TR/html5/syntax.html#comments
 ```
-
 
 Calling the finder as a method works too:
 

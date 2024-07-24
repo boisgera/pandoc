@@ -89,7 +89,7 @@ content has been removed from the document during the removal of the outer
 emphasis.
 -->
 
-To remove only one layer of emphasis instead (the outer layer), 
+To remove only one layer of emphasis instead (the outer layer),
 we can filter out all elements that are already emphasized.
 
 ```python
@@ -312,7 +312,7 @@ def main():
         json.dump(notebook, output, ensure_ascii=False, indent=2)
 ```
 
-If we specify on the command-line a (temporary) markdown file, 
+If we specify on the command-line a (temporary) markdown file,
 `main()` creates the corresponding notebook:
 
 ``` pycon
@@ -351,7 +351,6 @@ Unpack divs
 🚀 **Flatten a div hierarchy**
 
 ### In-place & two-pass
-
 
 ``` python
 def unpack_divs(doc):

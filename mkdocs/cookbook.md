@@ -60,7 +60,7 @@ we can use either random access or pattern matching to retrieve it.
 
 ### Random access
 
-A date is often included as inline text into a document's metadata; 
+A date is often included as inline text into a document's metadata;
 in this case, we can access it and return it as a markdown string:
 
 ``` python
@@ -73,6 +73,7 @@ def get_date(doc):
 ```
 
 The commonmark specification includes such a date:
+
 ``` pycon
 >>> print(COMMONMARK_SPEC) # doctest: +ELLIPSIS
 ---
@@ -110,7 +111,7 @@ def get_first_header_title(doc):
 ### Structural checks
 
 The functions `get_date` and `get_first_header_title` may fail if they are
-use on a document which doesn't have the expected structure. 
+use on a document which doesn't have the expected structure.
 For example, for the "Hello world!" document
 
 ``` pycon
@@ -266,6 +267,7 @@ comprehensions first and then introduce a higher-level helper.
 The pattern to use is `[elt for elt in pandoc.iter(root) if condition_is_met(elt)]`.
 
 With it, we can build a simple table of contents of the document:
+
 ``` python
 def table_of_contents(doc):
     headers = [elt for elt in pandoc.iter(doc) if isinstance(elt, Header)]
@@ -331,7 +333,7 @@ https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)
 http://www.w3.org/TR/html5/syntax.html#comments
 ```
 
-We can get the list of all code blocks and collect their types 
+We can get the list of all code blocks and collect their types
 (registered as code block classes):
 
 ``` python
@@ -397,11 +399,10 @@ https://www.w3.org/TR/html5/syntax.html#comments
 
 -->
 
-
 ### Exclude
 
-Some search patterns require to exclude some elements when one of their 
-ancestors meets some condition. For example, you may want to count the number 
+Some search patterns require to exclude some elements when one of their
+ancestors meets some condition. For example, you may want to count the number
 of words in your document (loosely defined as the number of `Str` instances)
 excluding those inside a div tagged as notes[^reveal].
 
@@ -432,7 +433,7 @@ But to exclude all words with a `notes` div, we need to detect when the iteratio
 enters and exits such an element. The easiest way to do this is to record the
 depth of the div when we enter it. As long as we iterate on items
 at a greater depth, we're still in the div scope ; when this depth becomes
-equal or smaller than this recorded depth, we're out of it. 
+equal or smaller than this recorded depth, we're out of it.
 Thus, we can implement this pattern with:
 
 ``` python
@@ -459,8 +460,8 @@ def count_words(doc):
     return count
 ```
 
-
 It provides the expected result:
+
 ``` pycon
 >>> count_words(words_doc)
 8
@@ -535,7 +536,7 @@ Str('Hello')
 [Str('Hello'), Space(), Str('world!')]
 ```
 
-Complex conditions based on types and values can be factored out in 
+Complex conditions based on types and values can be factored out in
 a predicate function, such as `is_http_or_https_link`:
 
 ``` python
@@ -614,10 +615,10 @@ at the same times *where* they are in the document hierarchy.
 
 ### Holder and index
 
-A way to locate an element `elt` is to provide the unique pair `holder`, `index` 
+A way to locate an element `elt` is to provide the unique pair `holder`, `index`
 such that `elt` is `holder[index]`[^except].
 To get this information during a depth-first iteration of `root`, we
-iterate on `pandoc.iter(root, path=True)`: the iteration then yields `elt, path` 
+iterate on `pandoc.iter(root, path=True)`: the iteration then yields `elt, path`
 and `holder, index` is the last item of `path`. For example:
 
 [^except]: or `elt` is `list(holder.items())[index]` if `holder` is a dict.
@@ -664,6 +665,7 @@ elt: 'world!'
 
 The previous components of the path contain the holder and index that locate
 the element holder, then their holder and index, etc. up to the document root:
+
 ``` pycon
 >>> for elt, path in pandoc.iter(doc, path=True):
 ...     if elt == "world!":
@@ -678,7 +680,7 @@ the element holder, then their holder and index, etc. up to the document root:
 
 ### Transforms
 
-The location (`holder`, `index` pair) of elements is a must-have for many 
+The location (`holder`, `index` pair) of elements is a must-have for many
 (in-place) document transforms. We demonstrate in this section several
 typical use of this information on the document
 
@@ -693,7 +695,7 @@ Pandoc(Meta({}), [Para([Str('🏠,'), Space(), Str('sweet'), Space(), Str('🏠.
 
 #### Expand
 
-To easily locate the 🏠 symbol in the subsequent steps, 
+To easily locate the 🏠 symbol in the subsequent steps,
 we expand every instance of `Str` where it appears.
 First, we define the helper function `split_home`
 
@@ -733,7 +735,7 @@ This operation had no apparent impact when the document is converted to markdown
 ```
 
 but we can check that it has actually changed the document:
- 
+
 ``` pycon
 >>> doc
 Pandoc(Meta({}), [Para([Str('🏠'), Str(','), Space(), Str('sweet'), Space(), Str('🏠'), Str('.')])])
@@ -785,6 +787,7 @@ for elt, path in reversed(matches):
 >>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
 [🏠home](https://github.com/boisgera/pandoc/), sweet [🏠home](https://github.com/boisgera/pandoc/).
 ```
+
 ``` pycon
 >>> doc
 Pandoc(Meta({}), [Para([Link(('', [], []), [Str('🏠'), Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str(','), Space(), Str('sweet'), Space(), Link(('', [], []), [Str('🏠'), Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str('.')])])
@@ -816,14 +819,14 @@ for elt, path in reversed(matches):
 Pandoc(Meta({}), [Para([Link(('', [], []), [Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str(','), Space(), Str('sweet'), Space(), Link(('', [], []), [Str('home')], ('https://github.com/boisgera/pandoc/', '')), Str('.')])])
 ```
 
-
 ## Immutable data
 
 Every non-trivial pandoc document contains some data which is immutable.
-To perform in-place modifications of your document, 
+To perform in-place modifications of your document,
 you have to deal with them specifically. And this is a good thing!
 
-### Hello world!
+### Hello world
+
 Consider the most basic "Hello world!" paragraph:
 
 ``` pycon
@@ -861,11 +864,11 @@ a custom Pandoc type, which is mutable.
 
 ### Type safety
 
-While the above approach may seem to be a workaround at first, 
+While the above approach may seem to be a workaround at first,
 it is actually *a good thing*, because it helps you to carefully consider
 the type of data that you select and transform. Python strings for example
 are of course in documents to describe fragments of text, but also in many
-other roles. 
+other roles.
 
 Consider the HTML fragment:
 
@@ -876,11 +879,12 @@ blocks = [ # <p>html rocks!</p>
     RawBlock(Format("html"), "<p/>")
 ]
 ```
+
 Let's say that we want to replace `"html"` with `"pandoc"` in the document text.
-Notice that the string `"html"` is used in the `"html rocks!"`, 
-but also as a type field in the `Format` instance. 
+Notice that the string `"html"` is used in the `"html rocks!"`,
+but also as a type field in the `Format` instance.
 If Python strings were mutable, you could carelessly try to replace all
-`"html"` strings in the document model regardless of their role. 
+`"html"` strings in the document model regardless of their role.
 And you would end up with the (invalid) document fragment:
 
 ``` python
@@ -920,11 +924,11 @@ True
 ### Use cases
 
 Python strings is an example of primitive type which is immutable and thus
-require special handling when in-place algorithms are used. 
+require special handling when in-place algorithms are used.
 Boolean, integers and floating-point numbers are also found in document
 and can be handled similarly.
 The other immutable types that appears in documents are based on tuples.
-We illustrate how to deal with them on the two most common use cases: 
+We illustrate how to deal with them on the two most common use cases:
 targets and attributes.
 
 #### Targets
@@ -942,7 +946,7 @@ The first text represents an URL and the second a title.
 Targets are used in link and image elements (and only there).
 
 Say that you want to find all links in your document whose target URL is
-`"https://pandoc.org"` and make sure that the associated title is 
+`"https://pandoc.org"` and make sure that the associated title is
 `"Pandoc - About pandoc"`. The relevant type signature is:
 
 ```pycon
@@ -951,18 +955,18 @@ Link(Attr, [Inline], Target)
 ```
 
 You may be tempted to iterate the document to find all pairs of text,
-then select those whose first item is "`https://pandoc.org`" and modify them. 
+then select those whose first item is "`https://pandoc.org`" and modify them.
 But this approach will not work: we know by now that it is unsafe, since
 you may find some items which are not really targets[^1] ; and additionally,
 you cannot modify the targets in-place since tuples are immutable.
 
-[^1]: These items would simply happen to share the same structure. 
-      For example, this can happen with attributes: 
+[^1]: These items would simply happen to share the same structure.
+      For example, this can happen with attributes:
       since `Attr = (Text, [Text], [(Text, Text)])`,
-      the third component of every attribute – its list of key-value pairs – 
+      the third component of every attribute – its list of key-value pairs –
       will contain some pairs of `Text` if it's not empty.
 
-The easiest way to handle this situation is to search for links that target 
+The easiest way to handle this situation is to search for links that target
 pandoc's web site.
 
 ``` pycon
@@ -989,9 +993,9 @@ Attr = (Text, [Text], [(Text, Text)])
 
 `Attr` is composed of an identifier, a list of classes, and a list of
 key-value pairs. To transform `Attr` content, again the easiest way to
-proceed is to target their holders. Say that we want to add a class tag 
-that described the type of the pandoc element for every element which 
-is a `Attr` holder. 
+proceed is to target their holders. Say that we want to add a class tag
+that described the type of the pandoc element for every element which
+is a `Attr` holder.
 The relevant type signatures – we display all `Attr` holders – are:
 
 ``` pycon
@@ -1005,7 +1009,7 @@ Inline = ...
        | Span(Attr, [Inline])
 ```
 
-and 
+and
 
 ``` pycon
 >>> Block  # doctest: +ELLIPSIS
@@ -1020,7 +1024,7 @@ Block = ...
 ```
 
 So we need to target `Code`, `Link`, `Image`, `Span`, `Div`,`CodeBlock`,
-`Header`, `Table` and `Div` instances. `Header` is a special case here 
+`Header`, `Table` and `Div` instances. `Header` is a special case here
 since its attributes are its second item ; for every other type,
 the attributes come first. The transformation can be implemented as follows:
 

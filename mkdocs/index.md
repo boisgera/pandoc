@@ -2,8 +2,8 @@
 Overview
 ================================================================================
 
-[Pandoc] is the awesome open-source command-line tool that converts documents 
-from one format to another. The project was initiated by [John MacFarlane]; 
+[Pandoc] is the awesome open-source command-line tool that converts documents
+from one format to another. The project was initiated by [John MacFarlane];
 under the hood, it's a [Haskell] library.
 
 The Pandoc Python Library brings [Pandoc]'s document model to Python:
@@ -30,18 +30,14 @@ Para([Str('Hello'), Space(), Str('world!')])
 Hello Python!
 ```
 
-
-
 [Pandoc]: http://pandoc.org/
 [John MacFarlane]: http://johnmacfarlane.net/
 [Haskell]: https://www.haskell.org/
-[Python]: https://www.python.org/
-[TPD]: https://hackage.haskell.org/package/pandoc-types-1.23/docs/Text-Pandoc-Definition.html
 
 !!! warning
     This documentation is dedicated to the [latest version of the project
-    available on github](https://github.com/boisgera/pandoc). 
+    available on github](https://github.com/boisgera/pandoc).
     It is automatically tested with Python 3.10 against pandoc 2.1.1.
     At the moment I am writing this,
-    [the latest release of pandoc for conda](https://anaconda.org/conda-forge/pandoc) 
+    [the latest release of pandoc for conda](https://anaconda.org/conda-forge/pandoc)
     is pandoc 3.1.1.
