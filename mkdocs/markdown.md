@@ -1,7 +1,7 @@
 # Pandoc's Markdown
 
 **Source:**
-<https://raw.githubusercontent.com/jgm/pandoc/3.1.1/MANUAL.txt>
+<https://raw.githubusercontent.com/jgm/pandoc/main/MANUAL.txt>
 
 Pandoc understands an extended and slightly revised version of John
 Gruber's [Markdown](https://daringfireball.net/projects/markdown/)
@@ -20,7 +20,8 @@ easy to read:
 
 > A Markdown-formatted document should be publishable as-is, as plain
 > text, without looking like it's been marked up with tags or formatting
-> instructions. -- [John
+> instructions.\
+> -- [John
 > Gruber](https://daringfireball.net/projects/markdown/syntax#philosophy)
 
 This principle has guided pandoc's decisions in finding syntax for
@@ -41,7 +42,7 @@ lines. Newlines are treated as spaces, so you can reflow your paragraphs
 as you like. If you need a hard line break, put two or more spaces at
 the end of a line.
 
-#### Extension: `escaped_line_breaks`
+### Extension: `escaped_line_breaks`
 
 A backslash followed by a newline is also a hard line break. Note: in
 multiline and grid table cells, this is the only way to create a hard
@@ -103,7 +104,7 @@ As with setext-style headings, the heading text can contain formatting:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `blank_before_header`
+### Extension: `blank_before_header`
 
 Original Markdown syntax does not require a blank line before a heading.
 Pandoc does require this (except, of course, at the beginning of the
@@ -122,7 +123,7 @@ line wrapping). Consider, for example:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `space_in_atx_header`
+### Extension: `space_in_atx_header`
 
 Many Markdown implementations do not require a space between the opening
 `#`s of an ATX heading and the heading text, so that `#5 bolt` and
@@ -134,7 +135,7 @@ the space.
 See also the [`auto_identifiers` extension](#extension-auto_identifiers)
 above.
 
-#### Extension: `header_attributes`
+### Extension: `header_attributes`
 
 Headings can be assigned attributes using this syntax at the end of the
 line containing the heading text:
@@ -209,7 +210,7 @@ heading will not be included in a table of contents. (Currently this
 feature is only implemented for certain formats: those based on LaTeX
 and HTML, PowerPoint, and RTF.)
 
-#### Extension: `implicit_header_references`
+### Extension: `implicit_header_references`
 
 Pandoc behaves as if reference links have been defined for each heading.
 So, to link to a heading
@@ -366,7 +367,7 @@ block quote, you need five spaces after the `>`:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `blank_before_blockquote`
+### Extension: `blank_before_blockquote`
 
 Original Markdown syntax does not require a blank line before a block
 quote. Pandoc does require this (except, of course, at the beginning of
@@ -413,7 +414,7 @@ Note: blank lines in the verbatim text need not begin with four spaces.
 
 ### Fenced code blocks
 
-#### Extension: `fenced_code_blocks`
+### Extension: `fenced_code_blocks`
 
 In addition to standard indented code blocks, pandoc supports *fenced*
 code blocks. These begin with a row of three or more tildes (`~`) and
@@ -455,12 +456,12 @@ longer row of tildes or backticks at the start and end:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `backtick_code_blocks`
+### Extension: `backtick_code_blocks`
 
 Same as `fenced_code_blocks`, but uses backticks (`` ` ``) instead of
 tildes (`~`).
 
-#### Extension: `fenced_code_attributes`
+### Extension: `fenced_code_attributes`
 
 Optionally, you may attach attributes to fenced or backtick code block
 using this syntax:
@@ -575,7 +576,7 @@ highlighting, see [Syntax highlighting](#syntax-highlighting), below.
 
 ## Line blocks
 
-#### Extension: `line_blocks`
+### Extension: `line_blocks`
 
 A line block is a sequence of lines beginning with a vertical bar (`|`)
 followed by a space. The division into lines will be preserved in the
@@ -615,8 +616,9 @@ begin with a space.
 
 <!-- prevent container tabs merge -->
 
-Inline formatting (such as emphasis) is allowed in the content, but not
-block-level formatting (such as block quotes or lists).
+Inline formatting (such as emphasis) is allowed in the content (though
+it can't cross line boundaries). Block-level formatting (such as block
+quotes or lists) is not recognized.
 
 This syntax is borrowed from
 [reStructuredText](https://docutils.sourceforge.io/docs/ref/rst/introduction.html).
@@ -810,7 +812,7 @@ and this one:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `fancy_lists`
+### Extension: `fancy_lists`
 
 Unlike original Markdown, pandoc allows ordered list items to be marked
 with uppercase and lowercase letters and roman numerals, in addition to
@@ -833,7 +835,9 @@ list marker in place of a numeral:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `startnum`
+Note: the '`#`' ordered list marker doesn't work with `commonmark`.
+
+### Extension: `startnum`
 
 Pandoc also pays attention to the type of list marker used, and to the
 starting number, and both of these are preserved where possible in the
@@ -886,7 +890,7 @@ If default list markers are desired, use `#.`:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `task_lists`
+### Extension: `task_lists`
 
 Pandoc supports task lists, using the syntax of GitHub-Flavored
 Markdown.
@@ -904,7 +908,7 @@ Markdown.
 
 ### Definition lists
 
-#### Extension: `definition_lists`
+### Extension: `definition_lists`
 
 Pandoc supports definition lists, using the syntax of [PHP Markdown
 Extra](https://michelf.ca/projects/php-markdown/extra/) with some
@@ -985,7 +989,7 @@ extension](#extension-compact_definition_lists).)
 
 ### Numbered example lists
 
-#### Extension: `example_lists`
+### Extension: `example_lists`
 
 The special list marker `@` can be used for sequentially numbered
 examples. The first list item with a `@` marker will be numbered '1',
@@ -1026,12 +1030,33 @@ document:
 The label can be any string of alphanumeric characters, underscores, or
 hyphens.
 
-Note: continuation paragraphs in example lists must always be indented
-four spaces, regardless of the length of the list marker. That is,
-example lists always behave as if the `four_space_rule` extension is
-set. This is because example labels tend to be long, and indenting
-content to the first non-space character after the label would be
-awkward.
+Continuation paragraphs in example lists must always be indented four
+spaces, regardless of the length of the list marker. That is, example
+lists always behave as if the `four_space_rule` extension is set. This
+is because example labels tend to be long, and indenting content to the
+first non-space character after the label would be awkward.
+
+You can repeat an earlier numbered example by re-using its label:
+
+=== "Markdown"
+
+        (@foo) Sample sentence.
+        
+        Intervening text...
+        
+        This theory can explain the case we saw earlier (repeated):
+        
+        (@foo) Sample sentence.
+
+=== "Python"
+
+        Pandoc(Meta({}), [OrderedList((1, Example(), TwoParens()), [[Plain([Str('Sample'), Space(), Str('sentence.')])]]), Para([Str('Intervening'), Space(), Str('text…')]), Para([Str('This'), Space(), Str('theory'), Space(), Str('can'), Space(), Str('explain'), Space(), Str('the'), Space(), Str('case'), Space(), Str('we'), Space(), Str('saw'), Space(), Str('earlier'), Space(), Str('(repeated):')]), OrderedList((2, Example(), TwoParens()), [[Plain([Str('Sample'), Space(), Str('sentence.')])]])])
+
+<!-- prevent container tabs merge -->
+
+This only works reliably, though, if the repeated item is in a list by
+itself, because each numbered example list will be numbered continuously
+from its starting number.
 
 ### Ending a list
 
@@ -1123,14 +1148,14 @@ use of a fixed-width font, such as Courier. The fourth kind can be used
 with proportionally spaced fonts, as it does not require lining up
 columns.
 
-#### Extension: `table_captions`
+### Extension: `table_captions`
 
 A caption may optionally be provided with all 4 kinds of tables (as
 illustrated in the examples below). A caption is a paragraph beginning
 with the string `Table:` (or `table:` or just `:`), which will be
 stripped off. It may appear either before or after the table.
 
-#### Extension: `simple_tables`
+### Extension: `simple_tables`
 
 Simple tables look like this:
 
@@ -1187,7 +1212,7 @@ When the header row is omitted, column alignments are determined on the
 basis of the first line of the table body. So, in the tables above, the
 columns would be right, left, center, and right aligned, respectively.
 
-#### Extension: `multiline_tables`
+### Extension: `multiline_tables`
 
 Multiline tables allow header and table rows to span multiple lines of
 text (but cells that span multiple columns or rows of the table are not
@@ -1253,7 +1278,7 @@ It is possible for a multiline table to have just one row, but the row
 should be followed by a blank line (and then the row of dashes that ends
 the table), or the table may be interpreted as a simple table.
 
-#### Extension: `grid_tables`
+### Extension: `grid_tables`
 
 Grid tables look like this:
 
@@ -1293,12 +1318,12 @@ Cells can span multiple columns or rows:
         | Temperature +-------+----------+
         | 1961-1990   | mean  | 14 °C    |
         |             +-------+----------+
-        |             | min   | 56.7 °C  |
+        |             | max   | 56.7 °C  |
         +-------------+-------+----------+
 
 === "Python"
 
-        Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignDefault(), ColWidth_(0.19444444444444445)), (AlignDefault(), ColWidth_(0.1111111111111111)), (AlignDefault(), ColWidth_(0.1527777777777778))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(2), [Plain([Str('Property')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Earth')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(3), ColSpan(1), [Plain([Str('Temperature'), SoftBreak(), Str('1961-1990')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('min')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('-89.2'), Space(), Str('°C')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('mean')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('14'), Space(), Str('°C')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('min')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('56.7'), Space(), Str('°C')])])])])], TableFoot(('', [], []), []))])
+        Pandoc(Meta({}), [Table(('', [], []), Caption(None, []), [(AlignDefault(), ColWidth_(0.19444444444444445)), (AlignDefault(), ColWidth_(0.1111111111111111)), (AlignDefault(), ColWidth_(0.1527777777777778))], TableHead(('', [], []), [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(2), [Plain([Str('Property')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('Earth')])])])]), [TableBody(('', [], []), RowHeadColumns(0), [], [Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(3), ColSpan(1), [Plain([Str('Temperature'), SoftBreak(), Str('1961-1990')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('min')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('-89.2'), Space(), Str('°C')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('mean')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('14'), Space(), Str('°C')])])]), Row(('', [], []), [Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('max')])]), Cell(('', [], []), AlignDefault(), RowSpan(1), ColSpan(1), [Plain([Str('56.7'), Space(), Str('°C')])])])])], TableFoot(('', [], []), []))])
 
 <!-- prevent container tabs merge -->
 
@@ -1380,7 +1405,7 @@ The foot must always be placed at the very bottom of the table.
 Grid tables can be created easily using Emacs' table-mode
 (`M-x table-insert`).
 
-#### Extension: `pipe_tables`
+### Extension: `pipe_tables`
 
 Pipe tables look like this:
 
@@ -1426,7 +1451,7 @@ perfectly legal (though ugly) pipe table:
 <!-- prevent container tabs merge -->
 
 The cells of pipe tables cannot contain block elements like paragraphs
-and lists, and cannot span multiple lines. If any line of the markdown
+and lists, and cannot span multiple lines. If any line of the Markdown
 source is longer than the column width (see `--columns`), then the table
 will take up the full text width and the cell contents will wrap, with
 the relative cell widths determined by the number of dashes in the line
@@ -1458,7 +1483,7 @@ you'll need to add colons as above.
 
 ## Metadata blocks
 
-#### Extension: `pandoc_title_block`
+### Extension: `pandoc_title_block`
 
 If the file begins with a title block
 
@@ -1560,8 +1585,8 @@ All three metadata fields may contain standard inline formatting
 
 Title blocks will always be parsed, but they will affect the output only
 when the `--standalone` (`-s`) option is chosen. In HTML output, titles
-will appear twice: once in the document head -- this is the title that
-will appear at the top of the window in a browser -- and once at the
+will appear twice: once in the document head---this is the title that
+will appear at the top of the window in a browser---and once at the
 beginning of the document body. The title in the document head can have
 an optional prefix attached (`--title-prefix` or `-T` option). The title
 in the body appears as an H1 element with class "title", so it can be
@@ -1613,7 +1638,7 @@ will also have "Pandoc User Manuals" in the footer.
 
 will also have "Version 4.0" in the header.
 
-#### Extension: `yaml_metadata_block`
+### Extension: `yaml_metadata_block`
 
 A [YAML](https://yaml.org/spec/1.2/spec.html "YAML v1.2 Spec") metadata
 block is a valid YAML object, delimited by a line of three hyphens
@@ -1640,7 +1665,7 @@ files:
 Just be sure that the YAML file begins with `---` and ends with `---` or
 `...`. Alternatively, you can use the `--metadata-file` option. Using
 that approach however, you cannot reference content (like footnotes)
-from the main markdown input document.
+from the main Markdown input document.
 
 Metadata will be taken from the fields of the YAML object and added to
 any existing document metadata. Metadata can contain lists and objects
@@ -1759,7 +1784,7 @@ Raw content to include in the document's header may be specified using
 `header-includes`; however, it is important to mark up this content as
 raw code for a particular output format, using the [`raw_attribute`
 extension](#extension-raw_attribute), or it will be interpreted as
-markdown. For example:
+Markdown. For example:
 
 === "Markdown"
 
@@ -1792,7 +1817,7 @@ apply:
 
 ## Backslash escapes
 
-#### Extension: `all_symbols_escapable`
+### Extension: `all_symbols_escapable`
 
 Except inside a code block or inline code, any punctuation or space
 character preceded by a backslash will be treated literally, even if it
@@ -1905,7 +1930,7 @@ not trigger emphasis:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `intraword_underscores`
+### Extension: `intraword_underscores`
 
 Because `_` is sometimes used inside words and identifiers, pandoc does
 not interpret a `_` surrounded by alphanumeric characters as an emphasis
@@ -1921,37 +1946,9 @@ marker. If you want to emphasize just part of a word, use `*`:
 
 <!-- prevent container tabs merge -->
 
-### Highlighting
-
-To highlight text, use the `mark` class:
-
-=== "Markdown"
-
-        [Mark]{.mark}
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Span(('', ['mark'], []), [Str('Mark')])])])
-
-<!-- prevent container tabs merge -->
-
-Or, without the `bracketed_spans` extension (but with `native_spans`):
-
-=== "Markdown"
-
-        <span class="mark">Mark</span>
-
-=== "Python"
-
-        Pandoc(Meta({}), [Para([Span(('', ['mark'], []), [Str('Mark')])])])
-
-<!-- prevent container tabs merge -->
-
-This will work in html output.
-
 ### Strikeout
 
-#### Extension: `strikeout`
+### Extension: `strikeout`
 
 To strike out a section of text with a horizontal line, begin and end it
 with `~~`. Thus, for example,
@@ -1968,7 +1965,7 @@ with `~~`. Thus, for example,
 
 ### Superscripts and subscripts
 
-#### Extension: `superscript`, `subscript`
+### Extension: `superscript`, `subscript`
 
 Superscripts may be written by surrounding the superscripted text by `^`
 characters; subscripts may be written by surrounding the subscripted
@@ -2037,7 +2034,7 @@ in verbatim contexts:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `inline_code_attributes`
+### Extension: `inline_code_attributes`
 
 Attributes can be attached to verbatim text, just as with [fenced code
 blocks](#fenced-code-blocks):
@@ -2120,9 +2117,37 @@ For compatibility with other Markdown flavors, CSS is also supported:
 
 This will work in all output formats that support small caps.
 
+### Highlighting
+
+To highlight text, use the `mark` class:
+
+=== "Markdown"
+
+        [Mark]{.mark}
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Span(('', ['mark'], []), [Str('Mark')])])])
+
+<!-- prevent container tabs merge -->
+
+Or, without the `bracketed_spans` extension (but with `native_spans`):
+
+=== "Markdown"
+
+        <span class="mark">Mark</span>
+
+=== "Python"
+
+        Pandoc(Meta({}), [Para([Span(('', ['mark'], []), [Str('Mark')])])])
+
+<!-- prevent container tabs merge -->
+
+This will work in all output formats that support highlighting.
+
 ## Math
 
-#### Extension: `tex_math_dollars`
+### Extension: `tex_math_dollars`
 
 Anything between two `$` characters will be treated as TeX math. The
 opening `$` must have a non-space character immediately to its right,
@@ -2151,11 +2176,9 @@ depends on the output format:
     It will be rendered using an [interpreted text role
     `:math:`](https://docutils.sourceforge.io/docs/ref/rst/roles.html#math).
 -   **AsciiDoc.**
-    For AsciiDoc output format (`-t asciidoc`) it will appear verbatim
-    surrounded by `latexmath:[$...$]` (for inline math) or
-    `[latexmath]++++\[...\]+++` (for display math). For AsciiDoctor
-    output format (`-t asciidoctor`) the LaTeX delimiters (`$..$` and
-    `\[..\]`) are omitted.
+    For AsciiDoc output math will appear verbatim surrounded by
+    `latexmath:[...]`. For `asciidoc_legacy` the bracketed material will
+    also include inline or display math delimiters.
 -   **Texinfo.**
     It will be rendered inside a `@math` command.
 -   **roff man, Jira markup.**
@@ -2186,7 +2209,7 @@ depends on the output format:
 
 ## Raw HTML
 
-#### Extension: `raw_html`
+### Extension: `raw_html`
 
 Markdown allows you to insert raw HTML (or DocBook) anywhere in a
 document (except verbatim contexts, where `<`, `>`, and `&` are
@@ -2207,7 +2230,7 @@ Otherwise, plain-text fallbacks will be used. Note that even if
 `raw_html` is disabled, tables will be rendered with HTML syntax if they
 cannot use pipe syntax.
 
-#### Extension: `markdown_in_html_blocks`
+### Extension: `markdown_in_html_blocks`
 
 Original Markdown allows you to include HTML "blocks": blocks of HTML
 between balanced tags that are separated from the surrounding text with
@@ -2254,27 +2277,27 @@ into
 whereas `Markdown.pl` will preserve it as is.
 
 There is one exception to this rule: text between `<script>`, `<style>`,
-and `<textarea>` tags is not interpreted as Markdown.
+`<pre>`, and `<textarea>` tags is not interpreted as Markdown.
 
 This departure from original Markdown should make it easier to mix
 Markdown with HTML block elements. For example, one can surround a block
 of Markdown text with `<div>` tags without preventing it from being
 interpreted as Markdown.
 
-#### Extension: `native_divs`
+### Extension: `native_divs`
 
 Use native pandoc `Div` blocks for content inside `<div>` tags. For the
 most part this should give the same output as `markdown_in_html_blocks`,
 but it makes it easier to write pandoc filters to manipulate groups of
 blocks.
 
-#### Extension: `native_spans`
+### Extension: `native_spans`
 
 Use native pandoc `Span` blocks for content inside `<span>` tags. For
 the most part this should give the same output as `raw_html`, but it
 makes it easier to write pandoc filters to manipulate groups of inlines.
 
-#### Extension: `raw_tex`
+### Extension: `raw_tex`
 
 In addition to raw HTML, pandoc allows raw LaTeX, TeX, and ConTeXt to be
 included in a document. Inline TeX commands will be preserved and passed
@@ -2319,7 +2342,7 @@ Emacs Org mode, and ConTeXt.
 
 ### Generic raw attribute
 
-#### Extension: `raw_attribute`
+### Extension: `raw_attribute`
 
 Inline spans and fenced code blocks with a special kind of attribute
 will be parsed as raw content with the designated format. For example,
@@ -2383,7 +2406,7 @@ The raw attribute cannot be combined with regular attributes.
 
 ## LaTeX macros
 
-#### Extension: `latex_macros`
+### Extension: `latex_macros`
 
 When this extension is enabled, pandoc will parse LaTeX macro
 definitions and apply the resulting macros to all LaTeX math and raw
@@ -2570,7 +2593,7 @@ other implementations:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `shortcut_reference_links`
+### Extension: `shortcut_reference_links`
 
 In a *shortcut* reference link, the second pair of brackets may be
 omitted entirely:
@@ -2639,7 +2662,7 @@ link text will be used as the image's alt text:
 
 <!-- prevent container tabs merge -->
 
-#### Extension: `implicit_figures`
+### Extension: `implicit_figures`
 
 An image with nonempty alt text, occurring by itself in a paragraph,
 will be rendered as a figure with a caption. The image's alt text will
@@ -2677,7 +2700,7 @@ Note that in reveal.js slide shows, an image in a paragraph by itself
 that has the `r-stretch` class will fill the screen, and the caption and
 figure tags will be omitted.
 
-#### Extension: `link_attributes`
+### Extension: `link_attributes`
 
 Attributes can be set on links and images:
 
@@ -2745,16 +2768,21 @@ unit. For example:
 
 Using the `native_divs` and `native_spans` extensions (see
 [above](#extension-native_divs)), HTML syntax can be used as part of
-markdown to create native `Div` and `Span` elements in the pandoc AST
+Markdown to create native `Div` and `Span` elements in the pandoc AST
 (as opposed to raw HTML). However, there is also nicer syntax available:
 
-#### Extension: `fenced_divs`
+### Extension: `fenced_divs`
 
 Allow special fenced syntax for native `Div` blocks. A Div starts with a
 fence containing at least three consecutive colons plus some attributes.
 The attributes may optionally be followed by another string of
-consecutive colons. The attribute syntax is exactly as in fenced code
-blocks (see [Extension:
+consecutive colons.
+
+Note: the `commonmark` parser doesn't permit colons after the
+attributes.
+
+The attribute syntax is exactly as in fenced code blocks (see
+[Extension:
 `fenced_code_attributes`](#extension-fenced_code_attributes)). As with
 fenced code blocks, one can use either attributes in curly braces or a
 single unbraced word, which will be treated as a class name. The Div
@@ -2803,7 +2831,7 @@ the number in the opening fence. However, it can be helpful for visual
 clarity to use fences of different lengths to distinguish nested divs
 from their parents.
 
-#### Extension: `bracketed_spans`
+### Extension: `bracketed_spans`
 
 A bracketed sequence of inlines, as one would use to begin a link, will
 be treated as a `Span` with attributes if it is followed immediately by
@@ -2821,7 +2849,7 @@ attributes:
 
 ## Footnotes
 
-#### Extension: `footnotes`
+### Extension: `footnotes`
 
 Pandoc's Markdown allows footnotes, using the following syntax:
 
@@ -2851,17 +2879,17 @@ Pandoc's Markdown allows footnotes, using the following syntax:
 
 <!-- prevent container tabs merge -->
 
-The identifiers in footnote references may not contain spaces, tabs, or
-newlines. These identifiers are used only to correlate the footnote
-reference with the note itself; in the output, footnotes will be
-numbered sequentially.
+The identifiers in footnote references may not contain spaces, tabs,
+newlines, or the characters `^`, `[`, or `]`. These identifiers are used
+only to correlate the footnote reference with the note itself; in the
+output, footnotes will be numbered sequentially.
 
 The footnotes themselves need not be placed at the end of the document.
 They may appear anywhere except inside other block elements (lists,
 block quotes, tables, etc.). Each footnote should be separated from
 surrounding content (including other footnotes) by blank lines.
 
-#### Extension: `inline_notes`
+### Extension: `inline_notes`
 
 Inline footnotes are also allowed (though, unlike regular notes, they
 cannot contain multiple paragraphs). The syntax is as follows:
@@ -2882,7 +2910,7 @@ Inline and regular footnotes may be mixed freely.
 
 ## Citation syntax
 
-#### Extension: `citations`
+### Extension: `citations`
 
 To cite a bibliographic item with an identifier foo, use the syntax
 `@foo`. Normal citations should be included in square brackets, with
@@ -3032,11 +3060,11 @@ the author-in-text style inside notes when using a note style.
 
     === "Markdown"
 
-            B. Russell was an English philosopher.
+            B. Russell won a Nobel Prize (but not for "On Denoting").
 
     === "Python"
 
-            Pandoc(Meta({}), [Para([Str('B.'), Space(), Str('Russell'), Space(), Str('was'), Space(), Str('an'), Space(), Str('English'), Space(), Str('philosopher.')])])
+            Pandoc(Meta({}), [Para([Str('B.'), Space(), Str('Russell'), Space(), Str('won'), Space(), Str('a'), Space(), Str('Nobel'), Space(), Str('Prize'), Space(), Str('(but'), Space(), Str('not'), Space(), Str('for'), Space(), Quoted(DoubleQuote(), [Str('On'), Space(), Str('Denoting')]), Str(').')])])
 
     <!-- prevent container tabs merge -->
 
