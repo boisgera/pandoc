@@ -12,10 +12,11 @@ jobs:
       run:
         shell: bash -l {0} 
     steps:
-      - name: Checkout experimental branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: my-branch
+        
+      - name: Branch experimental
+        run: git checkout experimental
 
       - name: Activate Conda environment
         uses: conda-incubator/setup-miniconda@v3
