@@ -1,4 +1,4 @@
-name: experimentak
+name: experimental
 on: [workflow_dispatch]
 
 
