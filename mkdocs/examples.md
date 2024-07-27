@@ -191,13 +191,15 @@ $$f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw$$
 ``` pycon
 >>> doc = pandoc.read(markdown)
 >>> print(pandoc.write(doc, format="latex")) # doctest: +NORMALIZE_WHITESPACE
-\leavevmode\vadjust pre{\hypertarget{cauchy-formula}{}}%
+\phantomsection\label{cauchy-formula}
 \[f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw\]
 >>> theoremize(doc)
 >>> print(pandoc.write(doc, format="latex")) # doctest: +NORMALIZE_WHITESPACE
-\hypertarget{cauchy-formula}{}
+\phantomsection\label{cauchy-formula}
 \begin{theorem}\label{cauchy-formula}
+<BLANKLINE>
 \[f(z) = \frac{1}{i2\pi} \int \frac{f(w)}{w-z}\, dw\]
+<BLANKLINE>
 \end{theorem}
 ```
 

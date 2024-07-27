@@ -351,7 +351,7 @@ from pandoc.types import *
     >>> config # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': True, 
      'path': ..., 
-     'version': '3.2', 
+     'version': '3.2.1', 
      'pandoc_types_version': '1.23.1'}
     ```
     To avoid this, call `pandoc.configure(...)` yourself beforehand.
@@ -366,7 +366,7 @@ from pandoc.types import *
     >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': False, 
      'path': ..., 
-     'version': '3.2', 
+     'version': '3.2.1', 
      'pandoc_types_version': '1.23.1'}    
     ```
 

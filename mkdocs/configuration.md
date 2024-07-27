@@ -82,7 +82,7 @@ but returns a dictionary whose keys are `auto`, `path`,
 >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 {'auto': True, 
  'path': ..., 
- 'version': '3.2', 
+ 'version': '3.2.1', 
  'pandoc_types_version': '1.23.1'}
 ```
 
