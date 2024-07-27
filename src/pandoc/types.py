@@ -137,93 +137,6 @@ def _get_data_fields(decl: List[Any]) -> List[Field]:
     return [Field(n, t) for n, t in zip(field_names, field_types)]
 
 
-def docstring(decl, show_fields: bool = False):
-    if isinstance(decl, str):
-        return decl
-    else:
-        assert isinstance(decl, list)
-        if decl[0] == "data" or decl[0] == "newtype":
-            type_name = decl[1][0]
-            constructors = decl[1][1]
-            _docstring = ""
-            for i, constructor in enumerate(constructors):
-                if i == 0:
-                    prefix = type_name + " = "
-                else:
-                    prefix = " " * len(type_name) + " | "
-                if i > 0:
-                    _docstring += "\n"
-                _docstring += prefix + docstring(constructor, show_fields)
-            return _docstring
-        elif decl[0] == "type":
-            return "{0} = {1}".format(decl[1][0], docstring(decl[1][1], show_fields))
-        elif decl[0] == "list":
-            return "[{0}]".format(docstring(decl[1][0], show_fields))
-        elif decl[0] == "tuple":
-            _types = [docstring(_type, show_fields) for _type in decl[1]]
-            _types = ", ".join(_types)
-            return "({0})".format(_types)
-        elif decl[0] == "map":
-            key_type, value_type = decl[1]
-            return "{{{0}: {1}}}".format(
-                docstring(key_type, show_fields), docstring(value_type, show_fields)
-            )
-        elif decl[0] == "maybe":
-            maybe_type = decl[1][0]
-            return f"{maybe_type} or None"
-        else:  # constructor, distinguish normal and record types
-            type_name = decl[0]
-            args_type = decl[1][0]
-            args = decl[1][1]
-
-            if args_type == "map":
-                args = [item for _, item in args]
-            else:
-                assert args_type == "list"
-
-            if show_fields:
-                fields = [f.name for f in _get_data_fields(decl)]
-                args_docstring = [
-                    f"{f}: {docstring(t, show_fields)}" for f, t in zip(fields, args)
-                ]
-            else:
-                args_docstring = [docstring(t) for t in args]
-
-            return "{0}({1})".format(type_name, ", ".join(args_docstring))
-
-
-# Haskell Type Constructs
-# ------------------------------------------------------------------------------
-def _fail_init(self, *args, **kwargs):
-    type_name = type(self).__name__
-    error = "Can't instantiate abstract class {type}"
-    raise TypeError(error.format(type=type_name))
-
-
-class MetaType(ABCMeta):
-    def __repr__(cls):
-        doc = getattr(cls, "__doc__", None)
-        if doc is not None:
-            return doc
-        else:
-            return type.__repr__(cls)
-
-
-Type = MetaType("Type", (object,), {"__init__": _fail_init})
-
-
-class Data(Type):
-    pass
-
-
-class TypeDef(Type):
-    pass
-
-
-class Constructor(Sequence):
-    pass
-
-
 def _get_default_value(type_def: Union[str, List[Any]]) -> Any:
     if isinstance(type_def, str):
         try:
@@ -260,6 +173,109 @@ def _get_default_value(type_def: Union[str, List[Any]]) -> Any:
             raise ValueError("Unknown type")
     else:
         raise ValueError("type_def must be a string or a list")
+
+
+def docstring(decl, show_fields: bool = False, show_default_values: bool = False):
+    if isinstance(decl, str):
+        return decl
+    else:
+        assert isinstance(decl, list)
+        if decl[0] == "data" or decl[0] == "newtype":
+            type_name = decl[1][0]
+            constructors = decl[1][1]
+            _docstring = ""
+            for i, constructor in enumerate(constructors):
+                if i == 0:
+                    prefix = type_name + " = "
+                else:
+                    prefix = " " * len(type_name) + " | "
+                if i > 0:
+                    _docstring += "\n"
+                _docstring += prefix + docstring(
+                    constructor, show_fields, show_default_values
+                )
+            return _docstring
+        elif decl[0] == "type":
+            return "{0} = {1}".format(
+                decl[1][0], docstring(decl[1][1], show_fields, show_default_values)
+            )
+        elif decl[0] == "list":
+            return "[{0}]".format(
+                docstring(decl[1][0], show_fields, show_default_values)
+            )
+        elif decl[0] == "tuple":
+            _types = [
+                docstring(_type, show_fields, show_default_values) for _type in decl[1]
+            ]
+            _types = ", ".join(_types)
+            return "({0})".format(_types)
+        elif decl[0] == "map":
+            key_type, value_type = decl[1]
+            return "{{{0}: {1}}}".format(
+                docstring(key_type, show_fields, show_default_values),
+                docstring(value_type, show_fields, show_default_values),
+            )
+        elif decl[0] == "maybe":
+            maybe_type = decl[1][0]
+            return f"{maybe_type} or None"
+        else:  # constructor, distinguish normal and record types
+            type_name = decl[0]
+            args_type = decl[1][0]
+            args = decl[1][1]
+            fields = _get_data_fields(decl)
+
+            if args_type == "map":
+                args = [item for _, item in args]
+            else:
+                assert args_type == "list"
+
+            if show_fields:
+                fields_str = [f.name for f in fields]
+                args_docstring = [
+                    f"{f}: {docstring(t)}" for f, t in zip(fields_str, args)
+                ]
+            else:
+                args_docstring = [docstring(t) for t in args]
+
+            if show_default_values:
+                args_docstring = [
+                    f"{f} = {repr(_get_default_value(decl.type))}"
+                    for f, decl in zip(args_docstring, fields)
+                ]
+
+            return "{0}({1})".format(type_name, ", ".join(args_docstring))
+
+
+# Haskell Type Constructs
+# ------------------------------------------------------------------------------
+def _fail_init(self, *args, **kwargs):
+    type_name = type(self).__name__
+    error = "Can't instantiate abstract class {type}"
+    raise TypeError(error.format(type=type_name))
+
+
+class MetaType(ABCMeta):
+    def __repr__(cls):
+        doc = getattr(cls, "__doc__", None)
+        if doc is not None:
+            return doc
+        else:
+            return type.__repr__(cls)
+
+
+Type = MetaType("Type", (object,), {"__init__": _fail_init})
+
+
+class Data(Type):
+    pass
+
+
+class TypeDef(Type):
+    pass
+
+
+class Constructor(Sequence):
+    pass
 
 
 def _data_get_attr(self, key):
@@ -412,6 +428,7 @@ def make_types(
     version: str,
     data_show_fields: bool = False,  # whether to show field names in the data repr
     types_show_field: bool = True,  # whether to show field names in the types docstring
+    types_show_default_values: bool = True,  # whether to show default values in the data repr
 ):
     """Create Pandoc Types"""
 
@@ -456,10 +473,7 @@ def make_types(
                     if constructor_name == type_name:
                         constructor[0] = constructor_name + "_"
 
-            _dict = {
-                "_def": decl,
-                "__doc__": docstring(decl, types_show_field),
-            }
+            _dict = {"_def": decl}
             data_type = type(type_name, (Data,), _dict)
             _types_dict[type_name] = data_type
 
@@ -467,18 +481,12 @@ def make_types(
                 constructor_name = constructor[0]
                 fields = _get_data_fields(constructor)
                 bases = (Constructor, data_type)
-                _dict = {
-                    "_def": constructor,
-                    "__doc__": docstring(constructor, types_show_field),
-                }
+                _dict = {"_def": constructor}
                 type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
 
                 _types_dict[constructor_name] = type_
         elif decl_type == "type":
-            _dict = {
-                "_def": decl,
-                "__doc__": docstring(decl, types_show_field),
-            }
+            _dict = {"_def": decl}
             type_ = type(type_name, (TypeDef,), _dict)
             _types_dict[type_name] = type_
 
@@ -490,6 +498,11 @@ def make_types(
     # Install the types
     globs.update(_types_dict)
     _types_version = version
+
+    # Add docstrings
+    # This should be run after installing the types, since the docstring
+    # function uses the types when types_show_default_values=True.
+    set_types_docstring(types_show_field, types_show_default_values)
 
 
 # Data and types representation options
@@ -508,20 +521,18 @@ def _dataclass_no_keyword_rich_repr(self):
 
 def set_types_docstring(
     show_fields: bool = True,
-    types: Optional[Iterable[object]] = None,
+    show_default_values: bool = True,
+    types: Optional[Iterable[type]] = None,
 ):
-    types = types or [v for _, v in _types_dict.items()]
+    types = types or _types_dict.values()
     for t in types:
         if issubclass(t, Type):
-            if show_fields:
-                t.__doc__ = docstring(t._def, True)
-            else:
-                t.__doc__ = docstring(t._def)
+            t.__doc__ = docstring(t._def, show_fields, show_default_values)
 
 
 def set_data_repr(
     show_fields: bool = False,
-    types: Optional[Iterable[object]] = None,
+    types: Optional[Iterable[type]] = None,
 ):
     types = types or [v for _, v in _types_dict.items()]
     for t in types:
