@@ -1543,7 +1543,217 @@
         "<",
         "1.24"
       ]
-    ]            
+    ],
+    "3.1": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.2": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.3": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.4": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.5": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.6": [
+      [
+        ">=",
+        "1.23"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.6.1": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.6.2": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.7": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.8": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.9": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.10": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.11": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.11.1": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.12": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.12.1": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.12.2": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.12.3": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.1.13": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.2": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ],
+    "3.2.1": [
+      [
+        ">=",
+        "1.23.1"
+      ],
+      [
+        "<",
+        "1.24"
+      ]
+    ]
   },
   "definitions": {
     "1.8": "data Pandoc = Pandoc Meta [Block]\ndata Meta\n  = Meta {docTitle :: [Inline],\n docAuthors :: [[Inline]],\n docDate :: [Inline]}\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (String, [String], [(String, String)])\nnullAttr :: Attr\ntype TableCell = [Block]\ntype Format = String\ndata Block\n  = Plain [Inline]\n  | Para [Inline]\n  | CodeBlock Attr String\n  | RawBlock Format String\n  | BlockQuote [Block]\n  | OrderedList ListAttributes [[Block]]\n  | BulletList [[Block]]\n  | DefinitionList [([Inline], [[Block]])]\n  | Header Int [Inline]\n  | HorizontalRule\n  | Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]\n  | Null\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (String, String)\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str String\n  | Emph [Inline]\n  | Strong [Inline]\n  | Strikeout [Inline]\n  | Superscript [Inline]\n  | Subscript [Inline]\n  | SmallCaps [Inline]\n  | Quoted QuoteType [Inline]\n  | Cite [Citation] [Inline]\n  | Code Attr String\n  | Space\n  | EmDash\n  | EnDash\n  | Apostrophe\n  | Ellipses\n  | LineBreak\n  | Math MathType String\n  | RawInline Format String\n  | Link [Inline] Target\n  | Image [Inline] Target\n  | Note [Block]\ndata Citation\n  = Citation {citationId :: String,\n     citationPrefix :: [Inline],\n     citationSuffix :: [Inline],\n     citationMode :: CitationMode,\n     citationNoteNum :: Int,\n     citationHash :: Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\n",
@@ -1597,6 +1807,8 @@
     "1.22.1": "data Pandoc = Pandoc Meta [Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap (Map Text MetaValue)\n  | MetaList [MetaValue]\n  | MetaBool Bool\n  | MetaString Text\n  | MetaInlines [Inline]\n  | MetaBlocks [Block]\nnullMeta :: Meta\nisNullMeta :: Meta -> Bool\nlookupMeta :: Text -> Meta -> Maybe MetaValue\ndocTitle :: Meta -> [Inline]\ndocAuthors :: Meta -> [[Inline]]\ndocDate :: Meta -> [Inline]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnullAttr :: Attr\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row Attr [Cell]\ndata TableHead = TableHead Attr [Row]\ndata TableBody = TableBody Attr RowHeadColumns [Row] [Row]\ndata TableFoot = TableFoot Attr [Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption (Maybe ShortCaption) [Block]\ndata Cell = Cell Attr Alignment RowSpan ColSpan [Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain [Inline]\n  | Para [Inline]\n  | LineBlock [[Inline]]\n  | CodeBlock Attr Text\n  | RawBlock Format Text\n  | BlockQuote [Block]\n  | OrderedList ListAttributes [[Block]]\n  | BulletList [[Block]]\n  | DefinitionList [([Inline], [[Block]])]\n  | Header Int Attr [Inline]\n  | HorizontalRule\n  | Table Attr Caption [ColSpec] TableHead [TableBody] TableFoot\n  | Div Attr [Block]\n  | Null\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\npattern SimpleFigure :: Attr -> [Inline] -> Target -> Block\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str Text\n  | Emph [Inline]\n  | Underline [Inline]\n  | Strong [Inline]\n  | Strikeout [Inline]\n  | Superscript [Inline]\n  | Subscript [Inline]\n  | SmallCaps [Inline]\n  | Quoted QuoteType [Inline]\n  | Cite [Citation] [Inline]\n  | Code Attr Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math MathType Text\n  | RawInline Format Text\n  | Link Attr [Inline] Target\n  | Image Attr [Inline] Target\n  | Note [Block]\n  | Span Attr [Inline]\ndata Citation\n  = Citation {citationId :: Text,\n     citationPrefix :: [Inline],\n     citationSuffix :: [Inline],\n     citationMode :: CitationMode,\n     citationNoteNum :: Int,\n     citationHash :: Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\npandocTypesVersion :: Version\n",
     "1.22.2": "data Pandoc = Pandoc Meta [Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap (Map Text MetaValue)\n  | MetaList [MetaValue]\n  | MetaBool Bool\n  | MetaString Text\n  | MetaInlines [Inline]\n  | MetaBlocks [Block]\nnullMeta :: Meta\nisNullMeta :: Meta -> Bool\nlookupMeta :: Text -> Meta -> Maybe MetaValue\ndocTitle :: Meta -> [Inline]\ndocAuthors :: Meta -> [[Inline]]\ndocDate :: Meta -> [Inline]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnullAttr :: Attr\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row Attr [Cell]\ndata TableHead = TableHead Attr [Row]\ndata TableBody = TableBody Attr RowHeadColumns [Row] [Row]\ndata TableFoot = TableFoot Attr [Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption (Maybe ShortCaption) [Block]\ndata Cell = Cell Attr Alignment RowSpan ColSpan [Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain [Inline]\n  | Para [Inline]\n  | LineBlock [[Inline]]\n  | CodeBlock Attr Text\n  | RawBlock Format Text\n  | BlockQuote [Block]\n  | OrderedList ListAttributes [[Block]]\n  | BulletList [[Block]]\n  | DefinitionList [([Inline], [[Block]])]\n  | Header Int Attr [Inline]\n  | HorizontalRule\n  | Table Attr Caption [ColSpec] TableHead [TableBody] TableFoot\n  | Div Attr [Block]\n  | Null\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\npattern SimpleFigure :: Attr -> [Inline] -> Target -> Block\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str Text\n  | Emph [Inline]\n  | Underline [Inline]\n  | Strong [Inline]\n  | Strikeout [Inline]\n  | Superscript [Inline]\n  | Subscript [Inline]\n  | SmallCaps [Inline]\n  | Quoted QuoteType [Inline]\n  | Cite [Citation] [Inline]\n  | Code Attr Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math MathType Text\n  | RawInline Format Text\n  | Link Attr [Inline] Target\n  | Image Attr [Inline] Target\n  | Note [Block]\n  | Span Attr [Inline]\ndata Citation\n  = Citation {citationId :: Text,\n     citationPrefix :: [Inline],\n     citationSuffix :: [Inline],\n     citationMode :: CitationMode,\n     citationNoteNum :: Int,\n     citationHash :: Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\npandocTypesVersion :: Version\n",
     "1.22.2.1": "data Pandoc = Pandoc Meta [Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap (Map Text MetaValue)\n  | MetaList [MetaValue]\n  | MetaBool Bool\n  | MetaString Text\n  | MetaInlines [Inline]\n  | MetaBlocks [Block]\nnullMeta :: Meta\nisNullMeta :: Meta -> Bool\nlookupMeta :: Text -> Meta -> Maybe MetaValue\ndocTitle :: Meta -> [Inline]\ndocAuthors :: Meta -> [[Inline]]\ndocDate :: Meta -> [Inline]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnullAttr :: Attr\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row Attr [Cell]\ndata TableHead = TableHead Attr [Row]\ndata TableBody = TableBody Attr RowHeadColumns [Row] [Row]\ndata TableFoot = TableFoot Attr [Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption (Maybe ShortCaption) [Block]\ndata Cell = Cell Attr Alignment RowSpan ColSpan [Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain [Inline]\n  | Para [Inline]\n  | LineBlock [[Inline]]\n  | CodeBlock Attr Text\n  | RawBlock Format Text\n  | BlockQuote [Block]\n  | OrderedList ListAttributes [[Block]]\n  | BulletList [[Block]]\n  | DefinitionList [([Inline], [[Block]])]\n  | Header Int Attr [Inline]\n  | HorizontalRule\n  | Table Attr Caption [ColSpec] TableHead [TableBody] TableFoot\n  | Div Attr [Block]\n  | Null\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\npattern SimpleFigure :: Attr -> [Inline] -> Target -> Block\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str Text\n  | Emph [Inline]\n  | Underline [Inline]\n  | Strong [Inline]\n  | Strikeout [Inline]\n  | Superscript [Inline]\n  | Subscript [Inline]\n  | SmallCaps [Inline]\n  | Quoted QuoteType [Inline]\n  | Cite [Citation] [Inline]\n  | Code Attr Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math MathType Text\n  | RawInline Format Text\n  | Link Attr [Inline] Target\n  | Image Attr [Inline] Target\n  | Note [Block]\n  | Span Attr [Inline]\ndata Citation\n  = Citation {citationId :: Text,\n     citationPrefix :: [Inline],\n     citationSuffix :: [Inline],\n     citationMode :: CitationMode,\n     citationNoteNum :: Int,\n     citationHash :: Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\npandocTypesVersion :: Version\n",
-    "1.23": "data Pandoc = Pandoc !Meta ![Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap !(Map Text MetaValue)\n  | MetaList ![MetaValue]\n  | MetaBool !Bool\n  | MetaString !Text\n  | MetaInlines ![Inline]\n  | MetaBlocks ![Block]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth !Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row !Attr ![Cell]\ndata TableHead = TableHead !Attr ![Row]\ndata TableBody = TableBody !Attr !RowHeadColumns ![Row] ![Row]\ndata TableFoot = TableFoot !Attr ![Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption !(Maybe ShortCaption) ![Block]\ndata Cell = Cell !Attr !Alignment !RowSpan !ColSpan ![Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain ![Inline]\n  | Para ![Inline]\n  | LineBlock ![[Inline]]\n  | CodeBlock !Attr !Text\n  | RawBlock !Format !Text\n  | BlockQuote ![Block]\n  | OrderedList !ListAttributes ![[Block]]\n  | BulletList ![[Block]]\n  | DefinitionList ![([Inline], [[Block]])]\n  | Header !Int !Attr ![Inline]\n  | HorizontalRule\n  | Table !Attr\n          !Caption\n          ![ColSpec]\n          !TableHead\n          ![TableBody]\n          !TableFoot\n  | Figure !Attr !Caption ![Block]\n  | Div !Attr ![Block]\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str !Text\n  | Emph ![Inline]\n  | Underline ![Inline]\n  | Strong ![Inline]\n  | Strikeout ![Inline]\n  | Superscript ![Inline]\n  | Subscript ![Inline]\n  | SmallCaps ![Inline]\n  | Quoted !QuoteType ![Inline]\n  | Cite ![Citation] ![Inline]\n  | Code !Attr !Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math !MathType !Text\n  | RawInline !Format !Text\n  | Link !Attr ![Inline] !Target\n  | Image !Attr ![Inline] !Target\n  | Note ![Block]\n  | Span !Attr ![Inline]\ndata Citation\n  = Citation {citationId :: !Text,\n              citationPrefix :: ![Inline],\n              citationSuffix :: ![Inline],\n              citationMode :: !CitationMode,\n              citationNoteNum :: !Int,\n              citationHash :: !Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\n"
+    "1.23": "data Pandoc = Pandoc !Meta ![Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap !(Map Text MetaValue)\n  | MetaList ![MetaValue]\n  | MetaBool !Bool\n  | MetaString !Text\n  | MetaInlines ![Inline]\n  | MetaBlocks ![Block]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth !Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row !Attr ![Cell]\ndata TableHead = TableHead !Attr ![Row]\ndata TableBody = TableBody !Attr !RowHeadColumns ![Row] ![Row]\ndata TableFoot = TableFoot !Attr ![Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption !(Maybe ShortCaption) ![Block]\ndata Cell = Cell !Attr !Alignment !RowSpan !ColSpan ![Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain ![Inline]\n  | Para ![Inline]\n  | LineBlock ![[Inline]]\n  | CodeBlock !Attr !Text\n  | RawBlock !Format !Text\n  | BlockQuote ![Block]\n  | OrderedList !ListAttributes ![[Block]]\n  | BulletList ![[Block]]\n  | DefinitionList ![([Inline], [[Block]])]\n  | Header !Int !Attr ![Inline]\n  | HorizontalRule\n  | Table !Attr\n          !Caption\n          ![ColSpec]\n          !TableHead\n          ![TableBody]\n          !TableFoot\n  | Figure !Attr !Caption ![Block]\n  | Div !Attr ![Block]\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str !Text\n  | Emph ![Inline]\n  | Underline ![Inline]\n  | Strong ![Inline]\n  | Strikeout ![Inline]\n  | Superscript ![Inline]\n  | Subscript ![Inline]\n  | SmallCaps ![Inline]\n  | Quoted !QuoteType ![Inline]\n  | Cite ![Citation] ![Inline]\n  | Code !Attr !Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math !MathType !Text\n  | RawInline !Format !Text\n  | Link !Attr ![Inline] !Target\n  | Image !Attr ![Inline] !Target\n  | Note ![Block]\n  | Span !Attr ![Inline]\ndata Citation\n  = Citation {citationId :: !Text,\n              citationPrefix :: ![Inline],\n              citationSuffix :: ![Inline],\n              citationMode :: !CitationMode,\n              citationNoteNum :: !Int,\n              citationHash :: !Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\n",
+    "1.23.0.1": "data Pandoc = Pandoc !Meta ![Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap !(Map Text MetaValue)\n  | MetaList ![MetaValue]\n  | MetaBool !Bool\n  | MetaString !Text\n  | MetaInlines ![Inline]\n  | MetaBlocks ![Block]\nnullMeta :: Meta\nisNullMeta :: Meta -> Bool\nlookupMeta :: Text -> Meta -> Maybe MetaValue\ndocTitle :: Meta -> [Inline]\ndocAuthors :: Meta -> [[Inline]]\ndocDate :: Meta -> [Inline]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnullAttr :: Attr\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth !Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row !Attr ![Cell]\ndata TableHead = TableHead !Attr ![Row]\ndata TableBody = TableBody !Attr !RowHeadColumns ![Row] ![Row]\ndata TableFoot = TableFoot !Attr ![Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption !(Maybe ShortCaption) ![Block]\ndata Cell = Cell !Attr !Alignment !RowSpan !ColSpan ![Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain ![Inline]\n  | Para ![Inline]\n  | LineBlock ![[Inline]]\n  | CodeBlock !Attr !Text\n  | RawBlock !Format !Text\n  | BlockQuote ![Block]\n  | OrderedList !ListAttributes ![[Block]]\n  | BulletList ![[Block]]\n  | DefinitionList ![([Inline], [[Block]])]\n  | Header !Int !Attr ![Inline]\n  | HorizontalRule\n  | Table !Attr\n          !Caption\n          ![ColSpec]\n          !TableHead\n          ![TableBody]\n          !TableFoot\n  | Figure !Attr !Caption ![Block]\n  | Div !Attr ![Block]\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\npattern SimpleFigure :: Attr -> [Inline] -> Target -> Block\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str !Text\n  | Emph ![Inline]\n  | Underline ![Inline]\n  | Strong ![Inline]\n  | Strikeout ![Inline]\n  | Superscript ![Inline]\n  | Subscript ![Inline]\n  | SmallCaps ![Inline]\n  | Quoted !QuoteType ![Inline]\n  | Cite ![Citation] ![Inline]\n  | Code !Attr !Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math !MathType !Text\n  | RawInline !Format !Text\n  | Link !Attr ![Inline] !Target\n  | Image !Attr ![Inline] !Target\n  | Note ![Block]\n  | Span !Attr ![Inline]\ndata Citation\n  = Citation {citationId :: !Text,\n              citationPrefix :: ![Inline],\n              citationSuffix :: ![Inline],\n              citationMode :: !CitationMode,\n              citationNoteNum :: !Int,\n              citationHash :: !Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\npandocTypesVersion :: Version\n",
+    "1.23.1": "data Pandoc = Pandoc !Meta ![Block]\nnewtype Meta = Meta {unMeta :: Map Text MetaValue}\ndata MetaValue\n  = MetaMap !(Map Text MetaValue)\n  | MetaList ![MetaValue]\n  | MetaBool !Bool\n  | MetaString !Text\n  | MetaInlines ![Inline]\n  | MetaBlocks ![Block]\nnullMeta :: Meta\nisNullMeta :: Meta -> Bool\nlookupMeta :: Text -> Meta -> Maybe MetaValue\ndocTitle :: Meta -> [Inline]\ndocAuthors :: Meta -> [[Inline]]\ndocDate :: Meta -> [Inline]\ntype ListAttributes = (Int, ListNumberStyle, ListNumberDelim)\ndata ListNumberStyle\n  = DefaultStyle\n  | Example\n  | Decimal\n  | LowerRoman\n  | UpperRoman\n  | LowerAlpha\n  | UpperAlpha\ndata ListNumberDelim = DefaultDelim | Period | OneParen | TwoParens\ntype Attr = (Text, [Text], [(Text, Text)])\nnullAttr :: Attr\nnewtype Format = Format Text\nnewtype RowHeadColumns = RowHeadColumns Int\ndata Alignment\n  = AlignLeft | AlignRight | AlignCenter | AlignDefault\ndata ColWidth = ColWidth !Double | ColWidthDefault\ntype ColSpec = (Alignment, ColWidth)\ndata Row = Row !Attr ![Cell]\ndata TableHead = TableHead !Attr ![Row]\ndata TableBody = TableBody !Attr !RowHeadColumns ![Row] ![Row]\ndata TableFoot = TableFoot !Attr ![Row]\ntype ShortCaption = [Inline]\ndata Caption = Caption !(Maybe ShortCaption) ![Block]\ndata Cell = Cell !Attr !Alignment !RowSpan !ColSpan ![Block]\nnewtype RowSpan = RowSpan Int\nnewtype ColSpan = ColSpan Int\ndata Block\n  = Plain ![Inline]\n  | Para ![Inline]\n  | LineBlock ![[Inline]]\n  | CodeBlock !Attr !Text\n  | RawBlock !Format !Text\n  | BlockQuote ![Block]\n  | OrderedList !ListAttributes ![[Block]]\n  | BulletList ![[Block]]\n  | DefinitionList ![([Inline], [[Block]])]\n  | Header !Int !Attr ![Inline]\n  | HorizontalRule\n  | Table !Attr\n          !Caption\n          ![ColSpec]\n          !TableHead\n          ![TableBody]\n          !TableFoot\n  | Figure !Attr !Caption ![Block]\n  | Div !Attr ![Block]\ndata QuoteType = SingleQuote | DoubleQuote\ntype Target = (Text, Text)\npattern SimpleFigure :: Attr -> [Inline] -> Target -> Block\ndata MathType = DisplayMath | InlineMath\ndata Inline\n  = Str !Text\n  | Emph ![Inline]\n  | Underline ![Inline]\n  | Strong ![Inline]\n  | Strikeout ![Inline]\n  | Superscript ![Inline]\n  | Subscript ![Inline]\n  | SmallCaps ![Inline]\n  | Quoted !QuoteType ![Inline]\n  | Cite ![Citation] ![Inline]\n  | Code !Attr !Text\n  | Space\n  | SoftBreak\n  | LineBreak\n  | Math !MathType !Text\n  | RawInline !Format !Text\n  | Link !Attr ![Inline] !Target\n  | Image !Attr ![Inline] !Target\n  | Note ![Block]\n  | Span !Attr ![Inline]\ndata Citation\n  = Citation {citationId :: !Text,\n              citationPrefix :: ![Inline],\n              citationSuffix :: ![Inline],\n              citationMode :: !CitationMode,\n              citationNoteNum :: !Int,\n              citationHash :: !Int}\ndata CitationMode = AuthorInText | SuppressAuthor | NormalCitation\npandocTypesVersion :: Version\n"
   }
 }
