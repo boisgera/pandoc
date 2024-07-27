@@ -14,7 +14,7 @@ All concrete[^1] Pandoc element (of type `Pandoc`, `Para`, `Str`, etc.) are list
 their items are the arguments passed to their constructor. 
 We present here several familiar methods to access this content.
 
-[^1]: any custom pandoc type that can be instantiated. If needed, refer to the [kind of types](document/#kinds-of-types) section of the documentation for additional explanations.
+[^1]: any custom pandoc type that can be instantiated. If needed, refer to the [kind of types](../document/#kinds-of-types) section of the documentation for additional explanations.
 
 We illustrate this interface with the `"Hello world!"` document:
 

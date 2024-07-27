@@ -2,8 +2,8 @@ name: pandoc
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
-  - pandoc=3.1.1
+  - python=3.12.4
+  - pandoc=3.2
   - plumbum
   - ply
   - pip
@@ -12,7 +12,6 @@ dependencies:
   - twine
   - black
   - emoji
-  - pip:
-      - strictyaml # conda version if 1.6.0 and doesn't solve https://github.com/crdoconnor/strictyaml/issues/151
-      - mkdocs
-      - mkdocs-material==9.1.6
+  - strictyaml
+  - mkdocs
+  - mkdocs-material=9.1.6

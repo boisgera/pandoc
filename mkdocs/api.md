@@ -314,7 +314,7 @@ from pandoc.types import *
 
     <h5>See also</h5>
 
-    Refer to the [Tree iteration section](#tree-iteration).
+    Refer to the [Tree iteration section](../iteration#tree-iteration).
 
 
 ??? note "`configure(auto=False, path=None, version=None, pandoc_types_version=None, read=False, reset=False)`"
@@ -372,7 +372,7 @@ from pandoc.types import *
 
     <h5>See also</h5>
 
-    Refer to the [Configuration section](#configuration).
+    Refer to the [Configuration section](../configuration).
 
 
 `pandoc.types`
