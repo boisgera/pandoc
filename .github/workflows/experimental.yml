@@ -1,0 +1,35 @@
+name: experimental
+on: push
+
+
+jobs:
+  main:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    defaults:
+      run:
+        shell: bash -l {0} 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Activate Conda environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: pandoc
+          environment-file: environment.yml
+
+      - name: Install LaTeX (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install texlive-full
+
+      - name: Install Python pandoc 
+        run: python setup.py install
+
+      - name: Test Python pandoc
+        run: python test.py && python test.py -v
+
