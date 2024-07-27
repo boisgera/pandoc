@@ -87,11 +87,12 @@ but returns a dictionary whose keys are `auto`, `path`,
 `version` and `pandoc_types_version`, such as
 
 ``` pycon
->>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+>>> pandoc.configure(auto=True)
+>>> pandoc.configure(read=True)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 {'auto': True, 
  'path': ..., 
- 'version': '3.1.1', 
- 'pandoc_types_version': '1.23'}
+ 'version': ..., 
+ 'pandoc_types_version': ...}
 ```
 
 The `read` option may be combined with other arguments, for example

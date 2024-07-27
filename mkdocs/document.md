@@ -63,7 +63,8 @@ We can see that this document is an instance of the `Pandoc` type,
 which contains some (empty) metadata and whose contents are a single
 paragraph which contains strings and spaces.
 
-It's possible to explore interactively this document in a more precise manner:
+We can access the Pandoc document contents by index, this way it's possible to
+explore interactively this document in a more precise manner:
 
 ``` pycon
 >>> doc
@@ -86,9 +87,59 @@ Para([Str('Hello,'), Space(), Str('World!')])
 Str('World!')
 ```
 
+We can also access the Pandoc document contents by field name. By default the
+field names are not shown when printing the document, but we can enable this
+with the following command:
+
+```python
+pandoc.types.set_data_repr(show_fields=True)
+```
+
+If we print again the document the field names of the different elements of the
+document will be displayed:
+
+```pycon
+>>> doc
+Pandoc(meta=Meta(map={}), blocks=[Para(content=[Str(text='Hello,'), Space(), Str(text='World!')])])
+```
+
+This way we can explore interactively the document as before but using field names:
+
+``` pycon
+>>> doc
+Pandoc(meta=Meta(map={}), blocks=[Para(content=[Str(text='Hello,'), Space(), Str(text='World!')])])
+>>> meta = doc.meta
+>>> meta
+Meta(map={})
+>>> meta.map
+{}
+>>> contents = doc.blocks
+>>> contents
+[Para(content=[Str(text='Hello,'), Space(), Str(text='World!')])]
+>>> paragraph = contents[0]
+>>> paragraph
+Para(content=[Str(text='Hello,'), Space(), Str(text='World!')])
+>>> paragraph.content
+[Str(text='Hello,'), Space(), Str(text='World!')]
+>>> world = paragraph.content[2]
+>>> world
+Str(text='World!')
+```
+
+Finally, we can reset the default behavior of displaying the field names with the command:
+
+```python
+pandoc.types.set_data_repr(show_fields=False)
+```
+
 I recommend that you try to reproduce the process above for small documents
 that feature titles, headers, emphasized text, lists, etc. to become familiar
 with the way that these constructs are described in pandoc documents.
+
+!!! note
+    The field names are derived automatically from the pandoc types to be as close
+    as possible to the Pandoc Lua filters API (<https://pandoc.org/lua-filters.html>).
+    Note however that there are some differences.
 
 ### Create
 
@@ -129,79 +180,83 @@ For example, the top-level type `Pandoc` is represented as:
 
 ``` pycon
 >>> Pandoc
-Pandoc(Meta, [Block])
+Pandoc(meta: Meta = Meta({}), blocks: [Block] = [])
 ```
 
-which means that a `Pandoc` instance is defined by an instance of `Meta`
-(the document metadata) and a list of blocks. In our exemple above,
-the metadata was not very interesting: `Meta({})`. Still, we can make
-sure that this fragment is valid: the `Meta` type signature is
+which means that the `Pandoc` type is defined by two fields:
+
+- `meta`: an instance of `Meta` (the document metadata), with a default value of `Meta({})`.
+- `blocks`: a list of blocks, with a default value of `[]`.
+
+In our example above, the metadata was not very interesting:
+`Meta({})`. Still, we can make sure that this fragment is valid: the `Meta`
+type signature is
 
 ``` pycon
 >>> Meta
-Meta({Text: MetaValue})
+Meta(map: {Text: MetaValue} = {})
 ```
 
-which reads as: metadata instances contain a dictionary of `Text` keys and
-`MetaValue` values. In our example, this dictionary was empty, hence we
-don't need to explore the structure of `Text` and `MetaValue` any further
-to conclude that the fragment is valid.
+which reads as: metadata instances have a single field `map` containing a
+dictionary of `Text` keys and `MetaValue` values. In our example, this
+dictionary was empty, hence we don't need to explore the structure of `Text`
+and `MetaValue` any further to conclude that the fragment is valid.
 
 Now, let's explore the content of the document which is defined as a list of
 blocks. The `Block` type signature is
 
 ``` pycon
 >>> Block
-Block = Plain([Inline])
-      | Para([Inline])
-      | LineBlock([[Inline]])
-      | CodeBlock(Attr, Text)
-      | RawBlock(Format, Text)
-      | BlockQuote([Block])
-      | OrderedList(ListAttributes, [[Block]])
-      | BulletList([[Block]])
-      | DefinitionList([([Inline], [[Block]])])
-      | Header(Int, Attr, [Inline])
+Block = Plain(content: [Inline] = [])
+      | Para(content: [Inline] = [])
+      | LineBlock(content: [[Inline]] = [])
+      | CodeBlock(attr: Attr = ('', [], []), text: Text = '')
+      | RawBlock(format: Format = Format(''), text: Text = '')
+      | BlockQuote(content: [Block] = [])
+      | OrderedList(list_attributes: ListAttributes = (0, DefaultStyle(), DefaultDelim()), content: [[Block]] = [])
+      | BulletList(content: [[Block]] = [])
+      | DefinitionList(content: [([Inline], [[Block]])] = [])
+      | Header(level: Int = 0, attr: Attr = ('', [], []), content: [Inline] = [])
       | HorizontalRule()
-      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
-      | Figure(Attr, Caption, [Block])
-      | Div(Attr, [Block])
+      | Table(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), col_specs: [ColSpec] = [], head: TableHead = TableHead(('', [], []), []), bodies: [TableBody] = [], foot: TableFoot = TableFoot(('', [], []), []))
+      | Figure(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), content: [Block] = [])
+      | Div(attr: Attr = ('', [], []), content: [Block] = [])
 ```
 
-Each `"|"` symbol in the signature represents an alternative: blocks are
-either instances of `Plain` or `Para` or `LineBlock`, etc. In our example
-document, the only type of block that was used is the paragraph type `Para`,
-whose signature is:
+Each `"|"` symbol in the signature represents an alternative: blocks may
+be instances of `Plain`, `Para`, `LineBlock`, etc. In our example document, the
+only type of block that was used is the paragraph type `Para`, whose signature
+is:
 
 ``` pycon
 >>> Para
-Para([Inline])
+Para(content: [Inline] = [])
 ```
 
 Paragraphs contain a list of inlines. An inline is
 
 ``` pycon
 >>> Inline
-Inline = Str(Text)
-       | Emph([Inline])
-       | Underline([Inline])
-       | Strong([Inline])
-       | Strikeout([Inline])
-       | Superscript([Inline])
-       | Subscript([Inline])
-       | SmallCaps([Inline])
-       | Quoted(QuoteType, [Inline])
-       | Cite([Citation], [Inline])
-       | Code(Attr, Text)
+Inline = Str(text: Text = '')
+       | Emph(content: [Inline] = [])
+       | Underline(content: [Inline] = [])
+       | Strong(content: [Inline] = [])
+       | Strikeout(content: [Inline] = [])
+       | Superscript(content: [Inline] = [])
+       | Subscript(content: [Inline] = [])
+       | SmallCaps(content: [Inline] = [])
+       | Quoted(quote_type: QuoteType = SingleQuote(), content: [Inline] = [])
+       | Cite(citations: [Citation] = [], content: [Inline] = [])
+       | Code(attr: Attr = ('', [], []), text: Text = '')
        | Space()
        | SoftBreak()
        | LineBreak()
-       | Math(MathType, Text)
-       | RawInline(Format, Text)
-       | Link(Attr, [Inline], Target)
-       | Image(Attr, [Inline], Target)
-       | Note([Block])
-       | Span(Attr, [Inline])
+       | Math(type: MathType = DisplayMath(), text: Text = '')
+       | RawInline(format: Format = Format(''), text: Text = '')
+       | Link(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
+       | Image(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
+       | Note(content: [Block] = [])
+       | Span(attr: Attr = ('', [], []), content: [Inline] = [])
 ```
 
 In our plain text example, only two types of inlines where used: strings
@@ -209,7 +264,7 @@ In our plain text example, only two types of inlines where used: strings
 
 ``` pycon
 >>> Str
-Str(Text)
+Str(text: Text = '')
 >>> Text
 <class 'str'>
 ```
@@ -250,10 +305,10 @@ data types lists the collection of concrete types they correspond to:
 
 ``` pycon
 >>> Inline # doctest: +ELLIPSIS
-Inline = Str(Text)
-       | Emph([Inline])
-       | Underline([Inline])
-       | Strong([Inline])
+Inline = Str(text: Text = '')
+       | Emph(content: [Inline] = [])
+       | Underline(content: [Inline] = [])
+       | Strong(content: [Inline] = [])
 ...
 >>> issubclass(Inline, Type)
 True
@@ -336,10 +391,10 @@ For example, with typedefs, the `Link` signature is:
 
 ``` pycon
 >>> Link
-Link(Attr, [Inline], Target)
+Link(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
 ```
 
-instead of `Link((Text, [Text], [(Text, Text)]), [Inline], (Text, Text))`
+instead of `Link(attr: (Text, [Text], [(Text, Text)]), content: [Inline], target: (Text, Text))`
 without them.
 
 <!--
@@ -353,13 +408,13 @@ without them.
     `isinstance(("text", "text"), Target)` ???
 -->
 
-To mimick closely the original Haskell type hierarchy, we also define aliases
+To mimic closely the original Haskell type hierarchy, we also define aliases
 for some Python primitive types. For example, the `Text` type used in the `Str`
 data constructor is not a custom Pandoc type:
 
 ``` pycon
 >>> Str
-Str(Text)
+Str(text: Text = '')
 >>> issubclass(Text, Type)
 False
 ```

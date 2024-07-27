@@ -65,10 +65,10 @@ in this case, we can access it and return it as a markdown string:
 
 ``` python
 def get_date(doc):
-    meta = doc[0] # doc: Pandoc(Meta, [Block])
-    meta_dict = meta[0] # meta: Meta({Text: MetaValue})
+    meta = doc.meta  # doc: Pandoc(meta: Meta, blocks: [Block])
+    meta_dict = meta.map  # meta: Meta(map: {Text: MetaValue})
     date = meta_dict["date"]
-    date_inlines = date[0] # date: MetaInlines([Inline])
+    date_inlines = date.inlines  # date: MetaInlines(inlines: [Inline])
     return pandoc.write(date_inlines).strip()
 ```
 
@@ -97,9 +97,9 @@ To get its title, we can use
 
 ``` python
 def get_first_header_title(doc):
-    blocks = doc[1] # doc: Pandoc(Meta, [Block])
+    blocks = doc.blocks  # doc: Pandoc(meta: Meta, blocks: [Block])
     header = blocks[0]
-    title_inlines = header[2] # header: Header(Int, Attr, [Inline])
+    title_inlines = header.content  # header: Header(level: Int, attr: Attr, content: [Inline])
     return pandoc.write(title_inlines).strip()
 ```
 
@@ -110,9 +110,9 @@ def get_first_header_title(doc):
 
 ### Structural checks
 
-The functions `get_date` and `get_first_header_title` may fail if they are
-use on a document which doesn't have the expected structure.
-For example, for the "Hello world!" document
+The functions `get_date` and `get_first_header_title` may fail or return an
+incorrect result if they are use on a document which doesn't have the expected
+structure. For example, for the "Hello world!" document
 
 ``` pycon
 >>> HELLOWORLD_DOC
@@ -131,9 +131,7 @@ KeyError: 'date'
 
 ``` pycon
 >>> get_first_header_title(HELLOWORLD_DOC)
-Traceback (most recent call last):
-...
-IndexError: list index out of range
+'Hello world!'
 ```
 
 A more robust version of these functions may return `None` when
@@ -141,11 +139,11 @@ the document does not have the expected structure:
 
 ``` python
 def get_date(doc):
-    meta = doc[0] # doc: Pandoc(Meta, [Block])
-    meta_dict = meta[0] # meta: Meta({Text: MetaValue})
+    meta = doc.meta  # doc: Pandoc(meta: Meta, blocks: [Block])
+    meta_dict = meta.map  # meta: Meta(map: {Text: MetaValue})
     date = meta_dict.get("date")
     if isinstance(date, MetaInlines):
-        date_inlines = date[0] # date: MetaInlines([Inline])
+        date_inlines = date.inlines  # date: MetaInlines(inlines: [Inline])
         return pandoc.write(date_inlines).strip()
 ```
 
@@ -157,10 +155,10 @@ def get_date(doc):
 
 ``` python
 def get_first_header_title(doc):
-    blocks = doc[1] # doc: Pandoc(Meta, [Block])
+    blocks = doc.blocks  # doc: Pandoc(meta: Meta, blocks: [Block])
     if blocks and isinstance(blocks[0], Header):
         header = blocks[0]
-        title_inlines = header[2] # header: Header(Int, Attr, [Inline])
+        title_inlines = header.content  # header: Header(level: Int, attr: Attr, content: [Inline])
         return pandoc.write(title_inlines).strip()
 ```
 
@@ -273,7 +271,7 @@ def table_of_contents(doc):
     headers = [elt for elt in pandoc.iter(doc) if isinstance(elt, Header)]
     toc_lines = []
     for header in headers:
-       level, _, inlines = header[:] # header: Header(Int, Attr, [Inline]) 
+       level, _, inlines = header[:]  # header: Header(level: Int, attr: Attr, content: [Inline])
        header_title = pandoc.write(inlines).strip()
        indent = (level - 1) * 4 * " "
        toc_lines.append(f"{indent}  - {header_title}")
@@ -308,8 +306,8 @@ We can display all external link URLs used in the commonmark specification:
 def display_external_links(doc):
     links = [elt for elt in pandoc.iter(doc) if isinstance(elt, Link)]
     for link in links:
-        target = link[2] # link: Link(Attr, [Inline], Target)
-        url = target[0] # target: (Text, Text)
+        target = link.target  # link: Link(attr: Attr, content: [Inline], target: Target)
+        url = target[0]  # target: (Text, Text)
         if url.startswith("http:") or url.startswith("https:"):
             print(url)
 ```
@@ -341,8 +339,8 @@ def fetch_code_types(doc):
     code_blocks = [elt for elt in pandoc.iter(doc) if isinstance(elt, CodeBlock)]
     types = set()
     for code_block in code_blocks:
-        attr = code_block[0] # CodeBlock(Attr, Text)
-        _, classes, _ = attr # Attr = (Text, [Text], [(Text, Text)])
+        attr = code_block.attr  # CodeBlock(attr: Attr, text: Text)
+        _, classes, _ = attr  # Attr = (Text, [Text], [(Text, Text)])
         types.update(classes)
     return sorted(list(types))
 ```
@@ -439,8 +437,8 @@ Thus, we can implement this pattern with:
 ``` python
 def is_notes(elt):
     if isinstance(elt, Div):
-        attr = elt[0] # elt: Div(Attr, [Block])
-        classes = attr[1] # attr :(Text, [Text], [(Text, Text)])
+        attr = elt.attr  # elt: Div(attr: Attr, content: [Block])
+        classes = attr[1]  # attr :(Text, [Text], [(Text, Text)])
         return "notes" in classes
     else:
         return False
@@ -541,8 +539,8 @@ a predicate function, such as `is_http_or_https_link`:
 
 ``` python
 def get_url(link):
-    target = link[2] # link: Link(Attr, [Inline], Target)
-    url = target[0] # target: (Text, Text)
+    target = link.target  # link: Link(attr: Attr, content: [Inline], target: Target)
+    url = target[0]  # target: (Text, Text)
     return url
 
 def is_http_or_https_link(elt):
@@ -701,12 +699,12 @@ First, we define the helper function `split_home`
 
 ``` python
 def split_home(string):
-    text = string[0] # string: Str(text)
-    texts = [t for t in text.split("🏠")]
+    text = string.text  # string: Str(text: Text)
     parts = []
-    for text in texts:
-        parts.extend([Str(text), Str("🏠")])
-    parts = parts[:-1] # remove trailing Str("🏠")
+    for t in text.split("🏠"):
+        parts.append(Str(t))
+        parts.append(Str("🏠"))
+    parts.pop()  # remove trailing Str("🏠")
     return [elt for elt in parts if elt != Str("")]
 ```
 
@@ -778,8 +776,6 @@ matches = [
 ]
 for elt, path in reversed(matches):
     holder, index = path[-1]
-    attr = ("", [], [])
-    target = ("https://github.com/boisgera/pandoc/", "")
     holder.insert(index + 1, Str("home"))
 ```
 
@@ -804,8 +800,6 @@ matches = [
 ]
 for elt, path in reversed(matches):
     holder, index = path[-1]
-    attr = ("", [], [])
-    target = ("https://github.com/boisgera/pandoc/", "")
     del holder[index] 
 ```
 
@@ -831,10 +825,10 @@ Consider the most basic "Hello world!" paragraph:
 
 ``` pycon
 >>> paragraph = Para([Str('Hello'), Space(), Str('world!')])
->>> string = paragraph[0][2]
+>>> string = paragraph.content[2]
 >>> string
 Str('world!')
->>> text = string[0]
+>>> text = string.text
 >>> text
 'world!'
 ```
@@ -854,7 +848,7 @@ Absolutely not! Because instead of modifying the Python string,
 we can *replace it* in its container instead:
 
 ``` pycon
->>> string[0] = "pandoc!"
+>>> string.text = "pandoc!"
 >>> paragraph
 Para([Str('Hello'), Space(), Str('pandoc!')])
 ```
@@ -910,8 +904,8 @@ A correct, type-safe, way to proceed is instead:
 
 ``` pycon
 >>> for elt in pandoc.iter(blocks):
-...     if isinstance(elt, Str) and elt[0] == "html":
-...         elt[0] = "pandoc"
+...     if isinstance(elt, Str) and elt.text == "html":
+...         elt.text = "pandoc"
 ... 
 >>> blocks == [
 ...     RawBlock(Format("html"), "<p>"), 
@@ -951,7 +945,7 @@ Say that you want to find all links in your document whose target URL is
 
 ```pycon
 >>> Link
-Link(Attr, [Inline], Target)
+Link(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
 ```
 
 You may be tempted to iterate the document to find all pairs of text,
@@ -973,11 +967,10 @@ pandoc's web site.
 >>> doc = pandoc.read("[Link to pandoc.org](https://pandoc.org)")
 >>> for elt in pandoc.iter(doc):
 ...     if isinstance(elt, Link):
-...         attr, inlines, target = elt[:] # elt: Link(Attr, [Inline], Target)
+...         attr, inlines, target = elt[:]  # elt: Link(attr: Attr, content: [Inline], target: Target)
 ...         if target[0] == "https://pandoc.org":
-...             new_target = (target[0], "Pandoc - About pandoc")
-...             elt[2] = new_target
-... 
+...             elt.target = (target[0], "Pandoc - About pandoc")
+...
 >>> print(pandoc.write(doc)) # doctest: +NORMALIZE_WHITESPACE
 [Link to pandoc.org](https://pandoc.org "Pandoc - About pandoc")
 ```
@@ -991,7 +984,7 @@ The other most notable immutable type in documents is `Attr`:
 Attr = (Text, [Text], [(Text, Text)])
 ```
 
-`Attr` is composed of an identifier, a list of classes, and a list of
+`Attr` is a tuple composed of an identifier, a list of classes, and a list of
 key-value pairs. To transform `Attr` content, again the easiest way to
 proceed is to target their holders. Say that we want to add a class tag
 that described the type of the pandoc element for every element which
@@ -1001,12 +994,12 @@ The relevant type signatures – we display all `Attr` holders – are:
 ``` pycon
 >>> Inline # doctest: +ELLIPSIS
 Inline = ...
-       | Code(Attr, Text)
+       | Code(attr: Attr = ('', [], []), text: Text = '')
        ...
-       | Link(Attr, [Inline], Target)
-       | Image(Attr, [Inline], Target)
+       | Link(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
+       | Image(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
        ...
-       | Span(Attr, [Inline])
+       | Span(attr: Attr = ('', [], []), content: [Inline] = [])
 ```
 
 and
@@ -1014,28 +1007,26 @@ and
 ``` pycon
 >>> Block  # doctest: +ELLIPSIS
 Block = ...
-      | CodeBlock(Attr, Text)
+      | CodeBlock(attr: Attr = ('', [], []), text: Text = '')
       ...
-      | Header(Int, Attr, [Inline])
+      | Header(level: Int = 0, attr: Attr = ('', [], []), content: [Inline] = [])
       ...
-      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
-      ...
-      | Div(Attr, [Block])
+      | Table(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), col_specs: [ColSpec] = [], head: TableHead = TableHead(('', [], []), []), bodies: [TableBody] = [], foot: TableFoot = TableFoot(('', [], []), []))
+      | Figure(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), content: [Block] = [])
+      | Div(attr: Attr = ('', [], []), content: [Block] = [])
 ```
 
 So we need to target `Code`, `Link`, `Image`, `Span`, `Div`,`CodeBlock`,
-`Header`, `Table` and `Div` instances. `Header` is a special case here
-since its attributes are its second item ; for every other type,
-the attributes come first. The transformation can be implemented as follows:
+`Header`, `Table`, `Figure`, and `Div` instances. The transformation can be
+implemented as follows:
 
 ``` python
-AttrHolder = (Code, Link, Image, Span, Div, CodeBlock, Header, Table, Div)
+AttrHolder = (Code, Link, Image, Span, Div, CodeBlock, Header, Table, Figure, Div)
 
 def add_class(doc):
     for elt in pandoc.iter(doc):
         if isinstance(elt, AttrHolder):
-            attr_index = 0 if not isinstance(elt, Header) else 1
-            identifier, classes, key_value_pairs = elt[attr_index]
+            identifier, classes, key_value_pairs = elt.attr
             typename = type(elt).__name__.lower()
             classes.append(typename)
 ```
@@ -1068,11 +1059,10 @@ identifier, we can do:
 def add_id(doc):
     for elt in pandoc.iter(doc):
         if isinstance(elt, AttrHolder):
-            attr_index = 0 if not isinstance(elt, Header) else 1
-            identifier, classes, key_value_pairs = elt[attr_index]
+            identifier, classes, key_value_pairs = elt.attr
             if not identifier:
                 identifier = "anonymous"
-                elt[attr_index] = identifier, classes, key_value_pairs
+                elt.attr = (identifier, classes, key_value_pairs)
 ```
 
 and this transformation would result in:

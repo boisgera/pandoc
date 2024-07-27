@@ -37,7 +37,7 @@ Hello Python!
 !!! warning
     This documentation is dedicated to the [latest version of the project
     available on github](https://github.com/boisgera/pandoc).
-    It is automatically tested with Python 3.10 against pandoc 2.1.1.
+    It is automatically tested with Python 3.12 against pandoc 3.1.3.
     At the moment I am writing this,
     [the latest release of pandoc for conda](https://anaconda.org/conda-forge/pandoc)
-    is pandoc 3.1.1.
+    is pandoc 3.2.1.

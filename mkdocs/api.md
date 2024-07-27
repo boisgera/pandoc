@@ -351,8 +351,8 @@ from pandoc.types import *
     >>> config # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': True, 
      'path': ..., 
-     'version': '3.1.1', 
-     'pandoc_types_version': '1.23'}
+     'version': ..., 
+     'pandoc_types_version': ...}
     ```
     To avoid this, call `pandoc.configure(...)` yourself beforehand.
     Alternatively, select manually your pandoc executable afterwards:
@@ -366,8 +366,8 @@ from pandoc.types import *
     >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': False, 
      'path': ..., 
-     'version': '3.1.1', 
-     'pandoc_types_version': '1.23'}    
+     'version': ..., 
+     'pandoc_types_version': ...}
     ```
 
     <h5>See also</h5>
@@ -493,20 +493,20 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Block = Plain([Inline])
-          | Para([Inline])
-          | LineBlock([[Inline]])
-          | CodeBlock(Attr, Text)
-          | RawBlock(Format, Text)
-          | BlockQuote([Block])
-          | OrderedList(ListAttributes, [[Block]])
-          | BulletList([[Block]])
-          | DefinitionList([([Inline], [[Block]])])
-          | Header(Int, Attr, [Inline])
+    Block = Plain(content: [Inline] = [])
+          | Para(content: [Inline] = [])
+          | LineBlock(content: [[Inline]] = [])
+          | CodeBlock(attr: Attr = ('', [], []), text: Text = '')
+          | RawBlock(format: Format = Format(''), text: Text = '')
+          | BlockQuote(content: [Block] = [])
+          | OrderedList(list_attributes: ListAttributes = (0, DefaultStyle(), DefaultDelim()), content: [[Block]] = [])
+          | BulletList(content: [[Block]] = [])
+          | DefinitionList(content: [([Inline], [[Block]])] = [])
+          | Header(level: Int = 0, attr: Attr = ('', [], []), content: [Inline] = [])
           | HorizontalRule()
-          | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
-          | Figure(Attr, Caption, [Block])
-          | Div(Attr, [Block])
+          | Table(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), col_specs: [ColSpec] = [], head: TableHead = TableHead(('', [], []), []), bodies: [TableBody] = [], foot: TableFoot = TableFoot(('', [], []), []))
+          | Figure(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), content: [Block] = [])
+          | Div(attr: Attr = ('', [], []), content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -522,7 +522,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    BlockQuote([Block])
+    BlockQuote(content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -552,7 +552,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    BulletList([[Block]])
+    BulletList(content: [[Block]] = [])
     ```
 
     <h5>See also</h5>
@@ -568,7 +568,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Caption(ShortCaption or None, [Block])
+    Caption(short_caption: ShortCaption or None = None, content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -584,7 +584,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Cell(Attr, Alignment, RowSpan, ColSpan, [Block])
+    Cell(attr: Attr = ('', [], []), alignment: Alignment = AlignDefault(), row_span: RowSpan = RowSpan(0), col_span: ColSpan = ColSpan(0), content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -600,7 +600,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Citation(Text, [Inline], [Inline], CitationMode, Int, Int)
+    Citation(id: Text = '', prefix: [Inline] = [], suffix: [Inline] = [], mode: CitationMode = AuthorInText(), note_num: Int = 0, hash: Int = 0)
     ```
 
     <h5>See also</h5>
@@ -634,7 +634,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Cite([Citation], [Inline])
+    Cite(citations: [Citation] = [], content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -650,7 +650,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Code(Attr, Text)
+    Code(attr: Attr = ('', [], []), text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -666,7 +666,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    CodeBlock(Attr, Text)
+    CodeBlock(attr: Attr = ('', [], []), text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -682,7 +682,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    ColSpan(Int)
+    ColSpan(value: Int = 0)
     ```
 
     <h5>See also</h5>
@@ -714,7 +714,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    ColWidth = ColWidth_(Double)
+    ColWidth = ColWidth_(value: Double = 0.0)
              | ColWidthDefault()
     ```
 
@@ -745,7 +745,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    ColWidth_(Double)
+    ColWidth_(value: Double = 0.0)
     ```
 
     <h5>See also</h5>
@@ -803,7 +803,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    DefinitionList([([Inline], [[Block]])])
+    DefinitionList(content: [([Inline], [[Block]])] = [])
     ```
 
     <h5>See also</h5>
@@ -833,7 +833,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Div(Attr, [Block])
+    Div(attr: Attr = ('', [], []), content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -877,7 +877,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Emph([Inline])
+    Emph(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -907,7 +907,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Figure(Attr, Caption, [Block])
+    Figure(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -923,7 +923,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Format(Text)
+    Format(text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -939,7 +939,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Header(Int, Attr, [Inline])
+    Header(level: Int = 0, attr: Attr = ('', [], []), content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -969,7 +969,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Image(Attr, [Inline], Target)
+    Image(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
     ```
 
     <h5>See also</h5>
@@ -985,26 +985,26 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Inline = Str(Text)
-           | Emph([Inline])
-           | Underline([Inline])
-           | Strong([Inline])
-           | Strikeout([Inline])
-           | Superscript([Inline])
-           | Subscript([Inline])
-           | SmallCaps([Inline])
-           | Quoted(QuoteType, [Inline])
-           | Cite([Citation], [Inline])
-           | Code(Attr, Text)
+    Inline = Str(text: Text = '')
+           | Emph(content: [Inline] = [])
+           | Underline(content: [Inline] = [])
+           | Strong(content: [Inline] = [])
+           | Strikeout(content: [Inline] = [])
+           | Superscript(content: [Inline] = [])
+           | Subscript(content: [Inline] = [])
+           | SmallCaps(content: [Inline] = [])
+           | Quoted(quote_type: QuoteType = SingleQuote(), content: [Inline] = [])
+           | Cite(citations: [Citation] = [], content: [Inline] = [])
+           | Code(attr: Attr = ('', [], []), text: Text = '')
            | Space()
            | SoftBreak()
            | LineBreak()
-           | Math(MathType, Text)
-           | RawInline(Format, Text)
-           | Link(Attr, [Inline], Target)
-           | Image(Attr, [Inline], Target)
-           | Note([Block])
-           | Span(Attr, [Inline])
+           | Math(type: MathType = DisplayMath(), text: Text = '')
+           | RawInline(format: Format = Format(''), text: Text = '')
+           | Link(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
+           | Image(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
+           | Note(content: [Block] = [])
+           | Span(attr: Attr = ('', [], []), content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1048,7 +1048,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    LineBlock([[Inline]])
+    LineBlock(content: [[Inline]] = [])
     ```
 
     <h5>See also</h5>
@@ -1078,7 +1078,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Link(Attr, [Inline], Target)
+    Link(attr: Attr = ('', [], []), content: [Inline] = [], target: Target = ('', ''))
     ```
 
     <h5>See also</h5>
@@ -1179,7 +1179,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Math(MathType, Text)
+    Math(type: MathType = DisplayMath(), text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -1212,7 +1212,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Meta({Text: MetaValue})
+    Meta(map: {Text: MetaValue} = {})
     ```
 
     <h5>See also</h5>
@@ -1228,7 +1228,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaBlocks([Block])
+    MetaBlocks(blocks: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -1244,7 +1244,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaBool(Bool)
+    MetaBool(bool: Bool = False)
     ```
 
     <h5>See also</h5>
@@ -1260,7 +1260,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaInlines([Inline])
+    MetaInlines(inlines: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1276,7 +1276,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaList([MetaValue])
+    MetaList(meta_values: [MetaValue] = [])
     ```
 
     <h5>See also</h5>
@@ -1292,7 +1292,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaMap({Text: MetaValue})
+    MetaMap(content: {Text: MetaValue} = {})
     ```
 
     <h5>See also</h5>
@@ -1308,7 +1308,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaString(Text)
+    MetaString(text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -1324,12 +1324,12 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    MetaValue = MetaMap({Text: MetaValue})
-              | MetaList([MetaValue])
-              | MetaBool(Bool)
-              | MetaString(Text)
-              | MetaInlines([Inline])
-              | MetaBlocks([Block])
+    MetaValue = MetaMap(content: {Text: MetaValue} = {})
+              | MetaList(meta_values: [MetaValue] = [])
+              | MetaBool(bool: Bool = False)
+              | MetaString(text: Text = '')
+              | MetaInlines(inlines: [Inline] = [])
+              | MetaBlocks(blocks: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -1359,7 +1359,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Note([Block])
+    Note(content: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -1389,7 +1389,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    OrderedList(ListAttributes, [[Block]])
+    OrderedList(list_attributes: ListAttributes = (0, DefaultStyle(), DefaultDelim()), content: [[Block]] = [])
     ```
 
     <h5>See also</h5>
@@ -1405,7 +1405,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Pandoc(Meta, [Block])
+    Pandoc(meta: Meta = Meta({}), blocks: [Block] = [])
     ```
 
     <h5>See also</h5>
@@ -1421,7 +1421,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Para([Inline])
+    Para(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1451,7 +1451,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Plain([Inline])
+    Plain(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1484,7 +1484,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Quoted(QuoteType, [Inline])
+    Quoted(quote_type: QuoteType = SingleQuote(), content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1500,7 +1500,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    RawBlock(Format, Text)
+    RawBlock(format: Format = Format(''), text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -1516,7 +1516,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    RawInline(Format, Text)
+    RawInline(format: Format = Format(''), text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -1532,7 +1532,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Row(Attr, [Cell])
+    Row(attr: Attr = ('', [], []), cells: [Cell] = [])
     ```
 
     <h5>See also</h5>
@@ -1548,7 +1548,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    RowHeadColumns(Int)
+    RowHeadColumns(value: Int = 0)
     ```
 
     <h5>See also</h5>
@@ -1564,7 +1564,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    RowSpan(Int)
+    RowSpan(value: Int = 0)
     ```
 
     <h5>See also</h5>
@@ -1610,7 +1610,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    SmallCaps([Inline])
+    SmallCaps(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1654,7 +1654,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Span(Attr, [Inline])
+    Span(attr: Attr = ('', [], []), content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1670,7 +1670,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Str(Text)
+    Str(text: Text = '')
     ```
 
     <h5>See also</h5>
@@ -1686,7 +1686,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Strikeout([Inline])
+    Strikeout(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1716,7 +1716,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Strong([Inline])
+    Strong(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1732,7 +1732,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Subscript([Inline])
+    Subscript(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1748,7 +1748,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Superscript([Inline])
+    Superscript(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1778,7 +1778,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+    Table(attr: Attr = ('', [], []), caption: Caption = Caption(None, []), col_specs: [ColSpec] = [], head: TableHead = TableHead(('', [], []), []), bodies: [TableBody] = [], foot: TableFoot = TableFoot(('', [], []), []))
     ```
 
     <h5>See also</h5>
@@ -1794,7 +1794,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    TableBody(Attr, RowHeadColumns, [Row], [Row])
+    TableBody(attr: Attr = ('', [], []), row_head_columns: RowHeadColumns = RowHeadColumns(0), head: [Row] = [], body: [Row] = [])
     ```
 
     <h5>See also</h5>
@@ -1810,7 +1810,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    TableFoot(Attr, [Row])
+    TableFoot(attr: Attr = ('', [], []), rows: [Row] = [])
     ```
 
     <h5>See also</h5>
@@ -1826,7 +1826,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    TableHead(Attr, [Row])
+    TableHead(attr: Attr = ('', [], []), rows: [Row] = [])
     ```
 
     <h5>See also</h5>
@@ -1886,7 +1886,7 @@ from pandoc.types import *
     <h5>Signature</h5>
 
     ``` skip
-    Underline([Inline])
+    Underline(content: [Inline] = [])
     ```
 
     <h5>See also</h5>
@@ -1918,5 +1918,6 @@ from pandoc.types import *
     ``` skip
     UpperRoman()
     ```
+
 
 

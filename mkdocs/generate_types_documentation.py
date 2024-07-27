@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
+import os
+
 import pandoc
 import pandoc.types
-from pandoc.types import *
 
-with open("api.md.template", encoding="utf-8") as file:
+
+file_path = os.path.dirname(os.path.realpath(__file__))
+
+with open(os.path.join(file_path, "api.md.template"), encoding="utf-8") as file:
     src = file.read()
 
 
@@ -41,8 +45,8 @@ td = pandoc.types._types_dict
 for key in sorted(td):
     if key[0].isupper():
         type_ = td[key]
-        if issubclass(type_, Data):
-            if issubclass(type_, Constructor):
+        if issubclass(type_, pandoc.types.Data):
+            if issubclass(type_, pandoc.types.Constructor):
                 type_doc = "Concrete data type"
                 type_sig = indent(repr(type_))
                 see_also_ = see_also(type_)
@@ -51,7 +55,7 @@ for key in sorted(td):
                 type_doc = "Abstract data type"
                 type_sig = indent(repr(type_))
                 see_also_ = see_also(type_)
-        elif issubclass(type_, TypeDef):
+        elif issubclass(type_, pandoc.types.TypeDef):
             type_doc = "Typedef"
             type_sig = indent(repr(type_))
             see_also_ = see_also(type_)
@@ -77,5 +81,5 @@ for key in sorted(td):
 
 
 src = src.replace("${types_documentation}", doc)
-with open("api.md", "w") as file:
+with open(os.path.join(file_path, "api.md"), "w") as file:
     file.write(src)
