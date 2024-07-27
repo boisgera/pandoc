@@ -366,8 +366,8 @@ from pandoc.types import *
     >>> pandoc.configure(read=True) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     {'auto': False, 
      'path': ..., 
-     'version': '3.1.1', 
-     'pandoc_types_version': '1.23'}    
+     'version': '3.2', 
+     'pandoc_types_version': '1.23.1'}    
     ```
 
     <h5>See also</h5>
