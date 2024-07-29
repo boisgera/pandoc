@@ -21,7 +21,7 @@ before you do anything else with the library:
 
 ```python
 import pandoc
-pandoc.configure(...)
+pandoc.configure(...)  # doctest: +SKIP
 ```
 
 If you do this, the implicit configuration does not take place;
@@ -46,7 +46,7 @@ If instead you want to specify manually the pandoc executable,
 use the `path` argument, for example:
 
 ```python
-pandoc.configure(path='/usr/bin/pandoc')
+pandoc.configure(path='/usr/bin/pandoc')  # doctest: +SKIP
 ```
 
 Some features[^features] of the Python `pandoc` library
@@ -55,7 +55,7 @@ we still need to know what version of pandoc you target,
 so specify for example:
 
 ```python
-pandoc.configure(version=' 2.18')
+pandoc.configure(version='2.18')  # doctest: +SKIP
 ```
 
 [^features]: typically conversion between json and Python object representations
@@ -71,7 +71,7 @@ Accordingly, you may configure `pandoc` with the
 `pandoc_types_version` argument:
 
 ```python
-pandoc.configure(pandoc_types_version='1.22.2')
+pandoc.configure(pandoc_types_version='1.22.2')  # doctest: +SKIP
 ```
 
 [pt]: https://hackage.haskell.org/package/pandoc-types
