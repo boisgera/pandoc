@@ -1050,7 +1050,7 @@ You can repeat an earlier numbered example by re-using its label:
 
 === "Python"
 
-        Pandoc(Meta({}), [OrderedList((1, Example(), TwoParens()), [[Plain([Str('Sample'), Space(), Str('sentence.')])]]), Para([Str('Intervening'), Space(), Str('text…')]), Para([Str('This'), Space(), Str('theory'), Space(), Str('can'), Space(), Str('explain'), Space(), Str('the'), Space(), Str('case'), Space(), Str('we'), Space(), Str('saw'), Space(), Str('earlier'), Space(), Str('(repeated):')]), OrderedList((2, Example(), TwoParens()), [[Plain([Str('Sample'), Space(), Str('sentence.')])]])])
+        Pandoc(Meta({}), [OrderedList((1, Example(), TwoParens()), [[Plain([Str('Sample'), Space(), Str('sentence.')])]]), Para([Str('Intervening'), Space(), Str('text…')]), Para([Str('This'), Space(), Str('theory'), Space(), Str('can'), Space(), Str('explain'), Space(), Str('the'), Space(), Str('case'), Space(), Str('we'), Space(), Str('saw'), Space(), Str('earlier'), Space(), Str('(repeated):')]), OrderedList((1, Example(), TwoParens()), [[Plain([Str('Sample'), Space(), Str('sentence.')])]])])
 
 <!-- prevent container tabs merge -->
 
