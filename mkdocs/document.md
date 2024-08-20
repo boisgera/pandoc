@@ -29,7 +29,7 @@ Haskell & Python
 The primary source of information about pandoc's meta-model is the hierarchy
 of types defined by the [pandoc-types](https://hackage.haskell.org/package/pandoc-types)
 Haskell package. The meta-model, represented by a collection of Haskell types,
-is described in [the documentation of the `Text.Pandoc.Definition` module](<https://hackage.haskell.org/package/pandoc-types-1.22/docs/Text-Pandoc-Definition.html>).
+is described in [the documentation of the `Text.Pandoc.Definition` module](https://hackage.haskell.org/package/pandoc-types/docs/Text-Pandoc-Definition.html).
 
 However, this source of information requires some understanding of the Haskell
 programming language. The pandoc Python library brings to Python this hierarchy
