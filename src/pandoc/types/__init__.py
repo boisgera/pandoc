@@ -466,7 +466,7 @@ def make_types(
     if not isinstance(defs_src, str):  # resource loaded as bytes in Python 3
         defs_src = defs_src.decode("utf-8")
 
-    defs = parser.parse(defs_src)
+    defs = parser.parse_defs(defs_src)
 
     # Create the types
     for decl in defs:
@@ -565,9 +565,3 @@ def set_data_repr(
 # ------------------------------------------------------------------------------
 if pandoc.configure(read=True) is None:
     pandoc.configure(auto=True)
-
-
-# Tempory; integrate into the main test suite
-def test():
-    import doctest
-    doctest.testmod(verbose=True)

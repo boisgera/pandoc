@@ -222,10 +222,139 @@ def split(src: str) -> list[str]:
             type_decls[-1] = type_decls[-1] + "\n" + line
     return type_decls
 
+def parse(text: str) -> Decl:
+    '''
 
-def parse(src: str) -> list[Decl]:
+    TODO: !, (), newtype, 
+
+    Type Synonyms, List, Tuple, Map & Maybe
+    ---------------------------------------
+
+    >>> parse("type Text = String")
+    ['type', ['Text', 'String']]
+
+    >>> parse("type Text = (String)")
+    ['type', ['Text', 'String']]
+
+    >>> parse("type Text = ((String))")
+    ['type', ['Text', 'String']]
+
+    >>> parse("type Numbers = [Int]")
+    ['type', ['Numbers', ['list', ['Int']]]]
+
+    >>> parse("type Sequences = [[Int]]")
+    ['type', ['Sequences', ['list', [['list', ['Int']]]]]]
+
+    >>> parse("type Pair = (String, Int)")
+    ['type', ['Pair', ['tuple', ['String', 'Int']]]]
+
+    >>> parse("type Count = Map String Int")
+    ['type', ['Count', ['map', ['String', 'Int']]]]
+    
+    >>> parse("type OptionalText = Maybe String")
+    ['type', ['OptionalText', ['maybe', ['String']]]]
+
+    These patterns may be nested; a real-life Pandoc example would be:
+
+    >>> parse("type Attr = (String, [String], [(String, String)])") == \\
+    ... ['type', 
+    ...     ['Attr', 
+    ...         ['tuple', 
+    ...             [
+    ...                 'String', 
+    ...                 ['list', ['String']], 
+    ...                 ['list', [['tuple', ['String', 'String']]]]
+    ...             ]
+    ...         ]
+    ...     ]
+    ... ]
+    True
+
+    Data Types
+    ----------
+
+
+    >>> parse("""
+    ... data Citation
+    ...   = Citation {citationId :: Text,
+    ...               citationPrefix :: [Inline],
+    ...               citationSuffix :: [Inline],
+    ...               citationMode :: CitationMode,
+    ...               citationNoteNum :: Int,
+    ...               citationHash :: Int}
+    ... """) == \\
+    ... ['data', 
+    ...     ['Citation', 
+    ...         [
+    ...             ['Citation', 
+    ...                 ['map', 
+    ...                     [
+    ...                         ['citationId', 'Text'], 
+    ...                         ['citationPrefix', ['list', ['Inline']]], 
+    ...                         ['citationSuffix', ['list', ['Inline']]], 
+    ...                         ['citationMode', 'CitationMode'], 
+    ...                         ['citationNoteNum', 'Int'], 
+    ...                         ['citationHash', 'Int']
+    ...                     ]
+    ...                 ]
+    ...             ]
+    ...         ]
+    ...     ]
+    ... ]
+    True
+
+    >>> parse("newtype Meta = Meta {unMeta :: Map Text MetaValue}") == \\
+    ... ['newtype', 
+    ...    ['Meta', 
+    ...        [
+    ...            ['Meta', 
+    ...                ['map', 
+    ...                    [
+    ...                        ['unMeta', ['map', ['Text', 'MetaValue']]]
+    ...                    ]
+    ...                ]
+    ...            ]
+    ...        ]
+    ...    ]
+    ... ]
+    True
+
+    >>> parse("newtype Format = Format Text") == \\
+    ... ['newtype', 
+    ...     ['Format', 
+    ...         [
+    ...            ['Format', 
+    ...               ['list', 
+    ...                   ['Text']
+    ...               ]
+    ...            ]
+    ...         ]
+    ...     ]
+    ... ]
+    True
+
+    >>> parse("data Caption = Caption (Maybe ShortCaption) [Block]") == \\
+    ... ['data', 
+    ...     ['Caption', 
+    ...         [
+    ...             ['Caption', 
+    ...                 ['list', 
+    ...                     [
+    ...                         ['maybe', ['ShortCaption']], 
+    ...                         ['list', ['Block']]
+    ...                     ]
+    ...                 ]
+    ...             ]
+    ...         ]
+    ...    ]
+    ... ]
+    True
+    '''
+    return parser.parse(text)
+
+def parse_defs(src: str) -> list[Decl]:
     """
-    >>> parse("data Color = Red | Green | Blue") == [
+    >>> parse_defs("data Color = Red | Green | Blue") == [
     ...     ['data', 
     ...         ['Color', 
     ...             [
@@ -238,7 +367,7 @@ def parse(src: str) -> list[Decl]:
     ... ]
     True
 
-    >>> parse("data Alignment = AlignLeft | AlignRight | AlignCenter | AlignDefault") == [
+    >>> parse_defs("data Alignment = AlignLeft | AlignRight | AlignCenter | AlignDefault") == [
     ...     ['data', 
     ...         ['Alignment', 
     ...             [
@@ -251,21 +380,21 @@ def parse(src: str) -> list[Decl]:
     ...     ]
     ... ]
     True
-    >>> parse("data Pandoc = Pandoc Meta [Block]") # doctest: +NORMALIZE_WHITESPACE
+    >>> parse_defs("data Pandoc = Pandoc Meta [Block]") # doctest: +NORMALIZE_WHITESPACE
     [['data', 
         ['Pandoc', 
         [['Pandoc', 
             ['list', 
                 ['Meta', 
                 ['list', ['Block']]]]]]]]]
-    >>> parse("data Meta = Meta {docTitle :: [Inline], docAuthors :: [[Inline]], docDate :: [Inline]}") # doctest: +NORMALIZE_WHITESPACE
+    >>> parse_defs("data Meta = Meta {docTitle :: [Inline], docAuthors :: [[Inline]], docDate :: [Inline]}") # doctest: +NORMALIZE_WHITESPACE
     [['data', 
         ['Meta', 
         [['Meta', ['map', 
             [['docTitle', ['list', ['Inline']]], 
              ['docAuthors', ['list', [['list', ['Inline']]]]], 
              ['docDate', ['list', ['Inline']]]]]]]]]]
-    >>> parse("type Attr = (String, [String], [(String, String)])") # doctest: +NORMALIZE_WHITESPACE
+    >>> parse_defs("type Attr = (String, [String], [(String, String)])") # doctest: +NORMALIZE_WHITESPACE
     [['type', 
         ['Attr', 
         ['tuple', 
@@ -274,12 +403,4 @@ def parse(src: str) -> list[Decl]:
              ['list', [['tuple', ['String', 'String']]]]]]]]]
     >>>
     """
-    return [parser.parse(type_decl) for type_decl in split(src)]
-
-
-# Tempory; integrate into the main test suite
-# Bug: doctests not found
-def test():
-    import doctest
-    import sys
-    doctest.testmod(sys.modules[__name__])
+    return [parse(type_decl) for type_decl in split(src)]

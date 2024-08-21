@@ -3,13 +3,14 @@
 # Python Standard Library
 import codeop
 import doctest
-import glob
+import importlib
 import os
 import shutil
 import platform
 import re
 import sys
 import tempfile
+from typing import Any
 
 # Third-Party Libraries
 import strictyaml
@@ -148,28 +149,41 @@ for filename in test_files:
     with open(filename, "w", encoding="utf-8") as file:
         file.write(src)
 
+# Test Modules
+# ------------------------------------------------------------------------------
+
+test_modules = ["pandoc.types", "pandoc.types.parser"]
+
+
 # Run the Tests
 # ------------------------------------------------------------------------------
 verbose = "-v" in sys.argv or "--verbose" in sys.argv
 
+options : dict[str, Any] 
+
+options = {"module_relative": False, "verbose": verbose}
+# Relax the tests to deal with test files that have a '\n' line break
+# (Linux flavor) which does not match the pandoc line break on Windows
+# (Windows flavor : '\r\n').
+# The proper way to deal with this would be to convert the test files
+# beforehand on Windows.
+if platform.system() == "Windows":
+    options["optionflags"] = doctest.NORMALIZE_WHITESPACE
+
 fails = 0
 tests = 0
 for filename in test_files:
-    options = {"module_relative": False, "verbose": verbose}
-
-    # Relax the tests to deal with test files that have a '\n' line break
-    # (Linux flavor) which does not match the pandoc line break on Windows
-    # (Windows flavor : '\r\n').
-    # The proper way to deal with this would be to convert the test files
-    # beforehand on Windows.
-    if platform.system() == "Windows":
-        options["optionflags"] = doctest.NORMALIZE_WHITESPACE
-
     _fails, _tests = doctest.testfile(filename, **options)
     fails += _fails
     tests += _tests
-
 os.chdir(cwd)
+
+options = {"verbose": verbose}
+for module in test_modules:
+    m = importlib.import_module(module)
+    _fails, _tests = doctest.testmod(m, **options)
+    fails += _fails
+    tests += _tests
 
 if fails > 0 or verbose:  # pragma: no cover
     print()
