@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # Python 3 Standard Library
 import dataclasses
 import re
@@ -8,19 +6,35 @@ from abc import ABCMeta
 from collections import Counter
 from collections.abc import Iterable, Sequence
 from functools import partial
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional
 
 # Pandoc
 import pandoc
 import pandoc.utils
+from . import parser
 
 
 def _to_snake_case(x: str):
+    """
+    >>> _to_snake_case("CamelCase")
+    'camel_case'
+    """
     # https://stackoverflow.com/questions/1175208
     return re.sub(r"(?<!^)(?=[A-Z])", "_", x).lower()
 
 
 def _to_plural(word: str):
+    """
+    >>> _to_plural("cat")
+    'cats'
+    >>> _to_plural("dish")
+    'dishes'
+    >>> _to_plural("sky")
+    'skies'
+    >>> _to_plural("day")
+    'days'
+
+    """
     # https://en.wikipedia.org/wiki/English_plurals
     if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
         return word[:-1] + "ies"
@@ -30,7 +44,7 @@ def _to_plural(word: str):
         return word + "s"
 
 
-def _rename_duplicate_fields(fields: List[str]):
+def _rename_duplicate_fields(fields: list[str]):
     counter = Counter(fields)
 
     counter_max = 0
@@ -67,7 +81,7 @@ def _field_type_name(field_type, field):
         return None
 
 
-def _rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
+def _rename_fields(fields: list[str], names: dict[str, str]) -> list[str]:
     result = fields.copy()
 
     for old_name, new_name in names.items():
@@ -82,10 +96,10 @@ def _rename_fields(fields: List[str], names: Dict[str, str]) -> List[str]:
 @dataclasses.dataclass
 class Field:
     name: str
-    type: Union[str, List[Any]]
+    type: str | list
 
 
-def _get_data_fields(decl: List[Any]) -> List[Field]:
+def _get_data_fields(decl: list) -> list[Field]:
     type_name = decl[0]
     type_def = decl[1]
     field_names = []  # field names
@@ -137,7 +151,7 @@ def _get_data_fields(decl: List[Any]) -> List[Field]:
     return [Field(n, t) for n, t in zip(field_names, field_types)]
 
 
-def _get_default_value(type_def: Union[str, List[Any]]) -> Any:
+def _get_default_value(type_def: str | list) -> Any:
     if isinstance(type_def, str):
         try:
             type = globals()[type_def]
@@ -175,7 +189,7 @@ def _get_default_value(type_def: Union[str, List[Any]]) -> Any:
         raise ValueError("type_def must be a string or a list")
 
 
-def docstring(decl, show_fields: bool = False, show_default_values: bool = False):
+def docstring(decl, show_fields: bool = False, show_default_values: bool = False) -> str:
     if isinstance(decl, str):
         return decl
     else:
@@ -337,7 +351,7 @@ def _data_iter(self):
 
 
 def _make_constructor_class(
-    name: str, fields: List[Field], bases: Tuple[type, ...], attrs: Dict[str, Any]
+    name: str, fields: list[Field], bases: tuple[type, ...], attrs: dict[str, Any]
 ):
     assert "tag" not in fields and "t" not in fields
 
@@ -394,8 +408,8 @@ def _make_constructor_class(
 # Pandoc Types
 # ------------------------------------------------------------------------------
 
-_types_version = None
-_types_dict = {}
+_types_version: str | None = None
+_types_dict: dict[str, type] = {}
 
 
 def _make_builtin_types():
@@ -452,7 +466,7 @@ def make_types(
     if not isinstance(defs_src, str):  # resource loaded as bytes in Python 3
         defs_src = defs_src.decode("utf-8")
 
-    defs = pandoc.utils.parse(defs_src)
+    defs = parser.parse(defs_src)
 
     # Create the types
     for decl in defs:
@@ -551,3 +565,9 @@ def set_data_repr(
 # ------------------------------------------------------------------------------
 if pandoc.configure(read=True) is None:
     pandoc.configure(auto=True)
+
+
+# Tempory; integrate into the main test suite
+def test():
+    import doctest
+    doctest.testmod(verbose=True)

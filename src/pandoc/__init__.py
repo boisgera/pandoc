@@ -65,7 +65,7 @@ def configure(
 
     if reset is True:
         _configuration = None  # TODO: clean the types
-        return
+        return None
 
     read_only = (
         read
@@ -132,8 +132,7 @@ def configure(
         types = import_types()
         types.make_types(pandoc_types_version)
 
-    if read:
-        return _configuration
+    return _configuration if read else None
 
 
 # JSON Reader / Writer
