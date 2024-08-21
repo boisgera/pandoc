@@ -235,7 +235,8 @@ def parse(src: str) -> list[Decl]:
     ...             ]
     ...         ]
     ...     ]
-    ...]
+    ... ]
+    True
 
     >>> parse("data Alignment = AlignLeft | AlignRight | AlignCenter | AlignDefault") == [
     ...     ['data', 
