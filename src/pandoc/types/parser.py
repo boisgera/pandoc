@@ -1,3 +1,267 @@
+'''
+TODO: !, (), newtype, 
+
+Type Synonyms, List, Tuple, Map & Maybe
+---------------------------------------
+
+>>> parse("type Text = String")
+['type', ['Text', 'String']]
+
+>>> parse("type Text = (String)")
+['type', ['Text', 'String']]
+
+>>> parse("type Text = ((String))")
+['type', ['Text', 'String']]
+
+>>> parse("type Numbers = [Int]")
+['type', ['Numbers', ['list', ['Int']]]]
+
+>>> parse("type Sequences = [[Int]]")
+['type', ['Sequences', ['list', [['list', ['Int']]]]]]
+
+>>> parse("type Pair = (String, Int)")
+['type', ['Pair', ['tuple', ['String', 'Int']]]]
+
+>>> parse("type Count = Map String Int")
+['type', ['Count', ['map', ['String', 'Int']]]]
+
+>>> parse("type OptionalText = Maybe String")
+['type', ['OptionalText', ['maybe', ['String']]]]
+
+These patterns may be nested; a real-life Pandoc example would be:
+
+>>> parse("type Attr = (String, [String], [(String, String)])") == \\
+... ['type', 
+...     ['Attr', 
+...         ['tuple', 
+...             [
+...                 'String', 
+...                 ['list', ['String']], 
+...                 ['list', [['tuple', ['String', 'String']]]]
+...             ]
+...         ]
+...     ]
+... ]
+True
+
+Data Types
+----------
+
+New data types are defined with the `data` keyword.  
+For example in Pandoc, documents are instances of the top-level `Pandoc` data type;
+they are built with `Pandoc` constructor given metadata and a list of blocks.
+
+>>> parse("data Pandoc = Pandoc Meta [Block]") == \\
+... ['data', 
+...     ['Pandoc', 
+...         [
+...             ['Pandoc', 
+...                 ['list', 
+...                     [
+...                         'Meta', 
+...                         ['list', ['Block']]
+...                     ]
+...                 ]
+...             ]
+...         ]
+...     ]
+... ]
+True
+
+Data types may have several constructors, separated by a `|`. 
+
+>>> parse("data Color = RGB Int Int Int | Hex String") == \\
+... ['data', 
+...    ['Color', 
+...        [
+...            ['RGB', ['list', ['Int', 'Int', 'Int']]], 
+...            ['Hex', ['list', ['String']]]
+...        ]
+...    ]
+... ]
+True
+
+Such data types are often defined on several lines.
+
+>>> parse(
+... """
+... data Color
+...   = RGB Int Int Int
+...   | Hex String
+... """) == \\
+... ['data', 
+...    ['Color', 
+...        [
+...            ['RGB', ['list', ['Int', 'Int', 'Int']]], 
+...            ['Hex', ['list', ['String']]]
+...        ]
+...    ]
+... ]
+True
+
+"Enums" can be defined as datatypes with only constructors with no arguments; 
+they are handled exactly like that by the parser.
+
+>>> parse("data QuoteType = SingleQuote | DoubleQuote") == \\
+... ['data', 
+...     ['QuoteType', 
+...         [
+...             ['SingleQuote', ['list', []]], 
+...             ['DoubleQuote', ['list', []]]
+...         ]
+...     ]
+... ]
+True
+
+A real-life data type: in Pandoc the `Block` data type used to be defined as:
+
+>>> parse("""
+... data Block
+...   = Plain [Inline]
+...   | Para [Inline]
+...   | CodeBlock Attr String
+...   | RawBlock Format String
+...   | BlockQuote [Block]
+...   | OrderedList ListAttributes [[Block]]
+...   | BulletList [[Block]]
+...   | DefinitionList [([Inline], [[Block]])]
+...   | Header Int [Inline]
+...   | HorizontalRule
+...   | Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]]
+...   | Null
+... """) == \\
+... ['data', 
+...    ['Block', 
+...        [
+...            ['Plain', ['list', [['list', ['Inline']]]]], 
+...            ['Para', ['list', [['list', ['Inline']]]]], 
+...            ['CodeBlock', ['list', ['Attr', 'String']]], 
+...            ['RawBlock', ['list', ['Format', 'String']]], 
+...            ['BlockQuote', ['list', [['list', ['Block']]]]], 
+...            ['OrderedList', ['list', ['ListAttributes', ['list', [['list', ['Block']]]]]]], 
+...            ['BulletList', ['list', [['list', [['list', ['Block']]]]]]], 
+...            ['DefinitionList', ['list', [['list', [['tuple', [['list', ['Inline']], ['list', [['list', ['Block']]]]]]]]]]], 
+...            ['Header', ['list', ['Int', ['list', ['Inline']]]]], 
+...            ['HorizontalRule', ['list', []]], 
+...            ['Table', ['list', [['list', ['Inline']], ['list', ['Alignment']], ['list', ['Double']], ['list', ['TableCell']], ['list', [['list', ['TableCell']]]]]]], 
+...            ['Null', ['list', []]]
+...        ]
+...     ]
+... ]
+True
+
+Record data types are defined with braces
+
+>>> parse("data Person = Person { name :: String, age :: Int}") == \\
+... ['data', 
+...     ['Person', 
+...         [
+...             ['Person', 
+...                 ['map', 
+...                     [
+...                         ['name', 'String'], 
+...                         ['age', 'Int']
+...                     ]
+...                 ]
+...             ]
+...         ]
+...     ]
+... ]
+True
+
+Pandoc only defines a few records
+
+>>> parse("""
+... data Citation
+...   = Citation {citationId :: Text,
+...               citationPrefix :: [Inline],
+...               citationSuffix :: [Inline],
+...               citationMode :: CitationMode,
+...               citationNoteNum :: Int,
+...               citationHash :: Int}
+... """) == \\
+... ['data', 
+...     ['Citation', 
+...         [
+...             ['Citation', 
+...                 ['map', 
+...                     [
+...                         ['citationId', 'Text'], 
+...                         ['citationPrefix', ['list', ['Inline']]], 
+...                         ['citationSuffix', ['list', ['Inline']]], 
+...                         ['citationMode', 'CitationMode'], 
+...                         ['citationNoteNum', 'Int'], 
+...                         ['citationHash', 'Int']
+...                     ]
+...                 ]
+...             ]
+...         ]
+...     ]
+... ]
+True
+
+>>> parse("newtype Meta = Meta {unMeta :: Map Text MetaValue}") == \\
+... ['newtype', 
+...    ['Meta', 
+...        [
+...            ['Meta', 
+...                ['map', 
+...                    [
+...                        ['unMeta', ['map', ['Text', 'MetaValue']]]
+...                    ]
+...                ]
+...            ]
+...        ]
+...    ]
+... ]
+True
+
+
+
+Pandoc-types introduced some strictness flags ("!") in version 1.23. 
+Since this information is meaningless for Python, we do not keep this information;
+this flags will not change the results of the parser:
+
+>>> parse("data Pandoc = Pandoc Meta [Block]")
+['data', ['Pandoc', [['Pandoc', ['list', ['Meta', ['list', ['Block']]]]]]]]
+
+>>> parse ("data Pandoc = Pandoc !Meta ![Block]")
+['data', ['Pandoc', [['Pandoc', ['list', ['Meta', ['list', ['Block']]]]]]]]
+
+
+
+>>> parse("newtype Format = Format Text") == \\
+... ['newtype', 
+...     ['Format', 
+...         [
+...            ['Format', 
+...               ['list', 
+...                   ['Text']
+...               ]
+...            ]
+...         ]
+...     ]
+... ]
+True
+
+>>> parse("data Caption = Caption (Maybe ShortCaption) [Block]") == \\
+... ['data', 
+...     ['Caption', 
+...         [
+...             ['Caption', 
+...                 ['list', 
+...                     [
+...                         ['maybe', ['ShortCaption']], 
+...                         ['list', ['Block']]
+...                     ]
+...                 ]
+...             ]
+...         ]
+...    ]
+... ]
+True
+'''
+
 import ply.lex as lex
 import ply.yacc as yacc
 
@@ -223,133 +487,6 @@ def split(src: str) -> list[str]:
     return type_decls
 
 def parse(text: str) -> Decl:
-    '''
-
-    TODO: !, (), newtype, 
-
-    Type Synonyms, List, Tuple, Map & Maybe
-    ---------------------------------------
-
-    >>> parse("type Text = String")
-    ['type', ['Text', 'String']]
-
-    >>> parse("type Text = (String)")
-    ['type', ['Text', 'String']]
-
-    >>> parse("type Text = ((String))")
-    ['type', ['Text', 'String']]
-
-    >>> parse("type Numbers = [Int]")
-    ['type', ['Numbers', ['list', ['Int']]]]
-
-    >>> parse("type Sequences = [[Int]]")
-    ['type', ['Sequences', ['list', [['list', ['Int']]]]]]
-
-    >>> parse("type Pair = (String, Int)")
-    ['type', ['Pair', ['tuple', ['String', 'Int']]]]
-
-    >>> parse("type Count = Map String Int")
-    ['type', ['Count', ['map', ['String', 'Int']]]]
-    
-    >>> parse("type OptionalText = Maybe String")
-    ['type', ['OptionalText', ['maybe', ['String']]]]
-
-    These patterns may be nested; a real-life Pandoc example would be:
-
-    >>> parse("type Attr = (String, [String], [(String, String)])") == \\
-    ... ['type', 
-    ...     ['Attr', 
-    ...         ['tuple', 
-    ...             [
-    ...                 'String', 
-    ...                 ['list', ['String']], 
-    ...                 ['list', [['tuple', ['String', 'String']]]]
-    ...             ]
-    ...         ]
-    ...     ]
-    ... ]
-    True
-
-    Data Types
-    ----------
-
-
-    >>> parse("""
-    ... data Citation
-    ...   = Citation {citationId :: Text,
-    ...               citationPrefix :: [Inline],
-    ...               citationSuffix :: [Inline],
-    ...               citationMode :: CitationMode,
-    ...               citationNoteNum :: Int,
-    ...               citationHash :: Int}
-    ... """) == \\
-    ... ['data', 
-    ...     ['Citation', 
-    ...         [
-    ...             ['Citation', 
-    ...                 ['map', 
-    ...                     [
-    ...                         ['citationId', 'Text'], 
-    ...                         ['citationPrefix', ['list', ['Inline']]], 
-    ...                         ['citationSuffix', ['list', ['Inline']]], 
-    ...                         ['citationMode', 'CitationMode'], 
-    ...                         ['citationNoteNum', 'Int'], 
-    ...                         ['citationHash', 'Int']
-    ...                     ]
-    ...                 ]
-    ...             ]
-    ...         ]
-    ...     ]
-    ... ]
-    True
-
-    >>> parse("newtype Meta = Meta {unMeta :: Map Text MetaValue}") == \\
-    ... ['newtype', 
-    ...    ['Meta', 
-    ...        [
-    ...            ['Meta', 
-    ...                ['map', 
-    ...                    [
-    ...                        ['unMeta', ['map', ['Text', 'MetaValue']]]
-    ...                    ]
-    ...                ]
-    ...            ]
-    ...        ]
-    ...    ]
-    ... ]
-    True
-
-    >>> parse("newtype Format = Format Text") == \\
-    ... ['newtype', 
-    ...     ['Format', 
-    ...         [
-    ...            ['Format', 
-    ...               ['list', 
-    ...                   ['Text']
-    ...               ]
-    ...            ]
-    ...         ]
-    ...     ]
-    ... ]
-    True
-
-    >>> parse("data Caption = Caption (Maybe ShortCaption) [Block]") == \\
-    ... ['data', 
-    ...     ['Caption', 
-    ...         [
-    ...             ['Caption', 
-    ...                 ['list', 
-    ...                     [
-    ...                         ['maybe', ['ShortCaption']], 
-    ...                         ['list', ['Block']]
-    ...                     ]
-    ...                 ]
-    ...             ]
-    ...         ]
-    ...    ]
-    ... ]
-    True
-    '''
     return parser.parse(text)
 
 def parse_defs(src: str) -> list[Decl]:
