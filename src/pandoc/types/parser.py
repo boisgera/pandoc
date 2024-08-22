@@ -1,8 +1,11 @@
 '''
-TODO: !, (), newtype, 
+Pandoc Types Parser
+================================================================================
+
+The `parse` function parses a single Haskell type definition.
 
 Type Synonyms, List, Tuple, Map & Maybe
----------------------------------------
+--------------------------------------------------------------------------------
 
 >>> parse("type Text = String")
 ['type', ['Text', 'String']]
@@ -45,10 +48,10 @@ These patterns may be nested; a real-life Pandoc example would be:
 True
 
 Data Types
-----------
+--------------------------------------------------------------------------------
 
-New data types are defined with the `data` keyword.  
-For example in Pandoc, documents are instances of the top-level `Pandoc` data type;
+Haskell data types are defined with the `data` keyword.  
+For example Pandoc documents are instances of the top-level `Pandoc` data type;
 they are built with `Pandoc` constructor given metadata and a list of blocks.
 
 >>> parse("data Pandoc = Pandoc Meta [Block]") == \\
@@ -169,7 +172,7 @@ Record data types are defined with braces
 ... ]
 True
 
-Pandoc only defines a few records
+Pandoc only defines a few record data types actually:
 
 >>> parse("""
 ... data Citation
@@ -216,8 +219,6 @@ True
 ... ]
 True
 
-
-
 Pandoc-types introduced some strictness flags ("!") in version 1.23. 
 Since this information is meaningless for Python, we do not keep this information;
 this flags will not change the results of the parser:
@@ -227,8 +228,6 @@ this flags will not change the results of the parser:
 
 >>> parse ("data Pandoc = Pandoc !Meta ![Block]")
 ['data', ['Pandoc', [['Pandoc', ['list', ['Meta', ['list', ['Block']]]]]]]]
-
-
 
 >>> parse("newtype Format = Format Text") == \\
 ... ['newtype', 
@@ -260,6 +259,59 @@ True
 ...    ]
 ... ]
 True
+
+Newtype
+--------------------------------------------------------------------------------
+
+From the [Haskell wiki]:
+
+> A newtype declaration creates a new type in much the same way as data. 
+> The syntax and usage of newtypes is virtually identical to that 
+> of data declarations - in fact, you can replace the newtype keyword with data 
+> and it'll still compile, indeed there's even a good chance your program will 
+> still work. 
+> The converse is not true, however - data can only be replaced with newtype 
+> if the type has exactly one constructor with exactly one field inside it. 
+
+We such a declaration as if it was a data construct 
+- except that we don't accept multiple constructors -
+and replace the `"data"` tag with `"newtype"`.
+
+>>> parse("data Color = RGB Int Int Int")
+['data', ['Color', [['RGB', ['list', ['Int', 'Int', 'Int']]]]]]
+>>> parse("newtype Color = RGB Int Int Int")
+['newtype', ['Color', [['RGB', ['list', ['Int', 'Int', 'Int']]]]]]
+
+>>> assert parse("newtype Answer = Yes | No") is None
+Syntax error in input.
+
+This construct is used a couple of types in pandoc:
+
+>>> parse("newtype Meta = Meta {unMeta :: Map Text MetaValue}") == \\
+... ['newtype', 
+...    ['Meta', 
+...        [
+...            ['Meta', 
+...                ['map', 
+...                    [
+...                        ['unMeta', ['map', ['Text', 'MetaValue']]]
+...                    ]
+...                ]
+...            ]
+...        ]
+...    ]
+... ]
+True
+>>> parse("newtype Format = Format Text")
+['newtype', ['Format', [['Format', ['list', ['Text']]]]]]
+>>> parse("newtype RowHeadColumns = RowHeadColumns Int")
+['newtype', ['RowHeadColumns', [['RowHeadColumns', ['list', ['Int']]]]]]
+>>> parse("newtype RowSpan = RowSpan Int")
+['newtype', ['RowSpan', [['RowSpan', ['list', ['Int']]]]]]
+>>> parse("newtype ColSpan = ColSpan Int")
+['newtype', ['ColSpan', [['ColSpan', ['list', ['Int']]]]]]
+
+
 '''
 
 import ply.lex as lex
