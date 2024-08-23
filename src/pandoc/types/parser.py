@@ -331,7 +331,7 @@ This construct is used a couple of types in pandoc:
 import ply.lex as lex
 import ply.yacc as yacc
 
-type Decl = str | list["Decl"]
+type Decl = list[str | Decl]
 type Token = lex.LexToken
 type Production = yacc.YaccProduction
 

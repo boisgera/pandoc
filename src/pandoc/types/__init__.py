@@ -276,12 +276,13 @@ class MetaType(ABCMeta):
         <class 'pandoc.types.MyType'>
 
     Class with the `MetaType` metaclass:
-    
+
         >>> class MyType(metaclass=MetaType):
         ...     "MyType docstring"
         >>> MyType
         MyType docstring
     """
+
     def __repr__(cls):
         doc = getattr(cls, "__doc__", None)
         if doc is not None:
@@ -291,21 +292,31 @@ class MetaType(ABCMeta):
 
 
 class Type(metaclass=MetaType):
+    """
+    Abstract base class for non-primitive pandoc types
+    """
+
     @abstractmethod
     def __init__(self, *args, **kwargs):
         pass
 
 
 class Data(Type):
-    pass
-
-
-class TypeDef(Type):
-    pass
+    """
+    Abstract base class for abstract and concrete data classes
+    """
 
 
 class Constructor(Sequence):
-    pass
+    """
+    Abstract base class for concrete data classes
+    """
+
+
+class TypeDef(Type):
+    """
+    Abstract base class for type aliases
+    """
 
 
 def _data_get_attr(self, key):
@@ -487,7 +498,7 @@ def make_types(
     # Create the types
     for decl in defs:
         match decl:
-            case [("data" | "newtype") as decl_type, [type_name, constructors]]:
+            case [("data" | "newtype"), [type_name, constructors]]:
                 # Remark: when there is a constructor with the same name as its
                 # data type, the data type is shadowed.
                 # This was intentional, because in pandoc-types < 1.21,
