@@ -189,7 +189,9 @@ def _get_default_value(type_def: str | list) -> Any:
         raise ValueError("type_def must be a string or a list")
 
 
-def docstring(decl, show_fields: bool = False, show_default_values: bool = False) -> str:
+def docstring(
+    decl, show_fields: bool = False, show_default_values: bool = False
+) -> str:
     if isinstance(decl, str):
         return decl
     else:
@@ -263,6 +265,23 @@ def docstring(decl, show_fields: bool = False, show_default_values: bool = False
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
 class MetaType(ABCMeta):
+    """
+    Use the MetaType metaclass to get a type that displays it docstring.
+
+    Class with the `type` metaclass:
+
+        >>> class MyType:
+        ...     "MyType docstring"
+        >>> MyType
+        <class 'pandoc.types.MyType'>
+
+    Class with the `MetaType` metaclass:
+    
+        >>> class MyType(metaclass=MetaType):
+        ...     "MyType docstring"
+        >>> MyType
+        MyType docstring
+    """
     def __repr__(cls):
         doc = getattr(cls, "__doc__", None)
         if doc is not None:
@@ -275,6 +294,7 @@ class Type(metaclass=MetaType):
     @abstractmethod
     def __init__(self, *args, **kwargs):
         pass
+
 
 class Data(Type):
     pass
@@ -467,13 +487,13 @@ def make_types(
     # Create the types
     for decl in defs:
         match decl:
-            case [("data"|"newtype") as decl_type, [type_name, constructors]]:
+            case [("data" | "newtype") as decl_type, [type_name, constructors]]:
                 # Remark: when there is a constructor with the same name as its
                 # data type, the data type is shadowed.
                 # This was intentional, because in pandoc-types < 1.21,
                 # it used to happens only when there is a single constructor.
                 # But, now we have ColWidth, which is either a ColWidth(Double)
-                # or a ColWidthDefault. So we need to adapt the model: 
+                # or a ColWidthDefault. So we need to adapt the model:
                 # we add a "_" to the end of the constructor and patch the decl.
                 if len(constructors) > 1:
                     for constructor in constructors:
@@ -490,10 +510,12 @@ def make_types(
                     fields = _get_data_fields(constructor)
                     bases = (Constructor, data_type)
                     _dict = {"_def": constructor}
-                    type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
+                    type_ = _make_constructor_class(
+                        constructor_name, fields, bases, _dict
+                    )
 
                     _types_dict[constructor_name] = type_
-            case ["type", [type_name, _]]: # Type Synonym
+            case ["type", [type_name, _]]:  # Type Synonym
                 _dict = {"_def": decl}
                 type_ = type(type_name, (TypeDef,), _dict)
                 _types_dict[type_name] = type_
