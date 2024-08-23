@@ -323,10 +323,10 @@ it cannot be instantiated:
 ``` pycon
 >>> issubclass(Inline, Constructor)
 False
->>> Inline()
+>>> Inline() # doctest: +ELLIPSIS
 Traceback (most recent call last):
 ...
-TypeError: Can't instantiate abstract class Inline
+TypeError: Can't instantiate abstract class Inline ...
 ```
 
 The constructors associated to some abstract data type are concrete:
