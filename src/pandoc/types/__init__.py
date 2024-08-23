@@ -476,7 +476,7 @@ def make_types(
             # Remark: when there is a constructor with the same name as its
             #         data type, the data type is shadowed.
             #         This was intentional, because in pandoc-types < 1.21,
-            #         it used to happens only there is a single constructor.
+            #         it used to happens only when there is a single constructor.
             #         But, now we have ColWidth, which is either a ColWidth(Double)
             #         or a ColWidthDefault. So we need to adapt the model : we
             #         add a "_" to the end of the constructor and patch the decl
