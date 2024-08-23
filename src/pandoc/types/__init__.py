@@ -470,39 +470,37 @@ def make_types(
 
     # Create the types
     for decl in defs:
-        decl_type = decl[0]
-        type_name = decl[1][0]
-        if decl_type in ("data", "newtype"):
-            # Remark: when there is a constructor with the same name as its
-            #         data type, the data type is shadowed.
-            #         This was intentional, because in pandoc-types < 1.21,
-            #         it used to happens only when there is a single constructor.
-            #         But, now we have ColWidth, which is either a ColWidth(Double)
-            #         or a ColWidthDefault. So we need to adapt the model : we
-            #         add a "_" to the end of the constructor and patch the decl
-            constructors = decl[1][1]
-            if len(constructors) > 1:
+        match decl:
+            case [("data"|"newtype") as decl_type, [type_name, constructors]]:
+                # Remark: when there is a constructor with the same name as its
+                # data type, the data type is shadowed.
+                # This was intentional, because in pandoc-types < 1.21,
+                # it used to happens only when there is a single constructor.
+                # But, now we have ColWidth, which is either a ColWidth(Double)
+                # or a ColWidthDefault. So we need to adapt the model : we
+                # add a "_" to the end of the constructor and patch the decl
+                if len(constructors) > 1:
+                    for constructor in constructors:
+                        constructor_name = constructor[0]
+                        if constructor_name == type_name:
+                            constructor[0] = constructor_name + "_"
+
+                _dict = {"_def": decl}
+                data_type = type(type_name, (Data,), _dict)
+                _types_dict[type_name] = data_type
+
                 for constructor in constructors:
                     constructor_name = constructor[0]
-                    if constructor_name == type_name:
-                        constructor[0] = constructor_name + "_"
+                    fields = _get_data_fields(constructor)
+                    bases = (Constructor, data_type)
+                    _dict = {"_def": constructor}
+                    type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
 
-            _dict = {"_def": decl}
-            data_type = type(type_name, (Data,), _dict)
-            _types_dict[type_name] = data_type
-
-            for constructor in constructors:
-                constructor_name = constructor[0]
-                fields = _get_data_fields(constructor)
-                bases = (Constructor, data_type)
-                _dict = {"_def": constructor}
-                type_ = _make_constructor_class(constructor_name, fields, bases, _dict)
-
-                _types_dict[constructor_name] = type_
-        elif decl_type == "type":
-            _dict = {"_def": decl}
-            type_ = type(type_name, (TypeDef,), _dict)
-            _types_dict[type_name] = type_
+                    _types_dict[constructor_name] = type_
+            case ["type", [type_name, _]]: # Type Synonym
+                _dict = {"_def": decl}
+                type_ = type(type_name, (TypeDef,), _dict)
+                _types_dict[type_name] = type_
 
     # When the data types are created, their repr will show the field names,
     # if data_show_fields is False we update the data repr functions
