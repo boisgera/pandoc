@@ -2,7 +2,7 @@
 import dataclasses
 import re
 
-from abc import ABCMeta
+from abc import abstractmethod, ABCMeta
 from collections import Counter
 from collections.abc import Iterable, Sequence
 from functools import partial
@@ -262,12 +262,6 @@ def docstring(decl, show_fields: bool = False, show_default_values: bool = False
 
 # Haskell Type Constructs
 # ------------------------------------------------------------------------------
-def _fail_init(self, *args, **kwargs):
-    type_name = type(self).__name__
-    error = "Can't instantiate abstract class {type}"
-    raise TypeError(error.format(type=type_name))
-
-
 class MetaType(ABCMeta):
     def __repr__(cls):
         doc = getattr(cls, "__doc__", None)
@@ -277,8 +271,10 @@ class MetaType(ABCMeta):
             return type.__repr__(cls)
 
 
-Type = MetaType("Type", (object,), {"__init__": _fail_init})
-
+class Type(metaclass=MetaType):
+    @abstractmethod
+    def __init__(self, *args, **kwargs):
+        pass
 
 class Data(Type):
     pass
@@ -477,8 +473,8 @@ def make_types(
                 # This was intentional, because in pandoc-types < 1.21,
                 # it used to happens only when there is a single constructor.
                 # But, now we have ColWidth, which is either a ColWidth(Double)
-                # or a ColWidthDefault. So we need to adapt the model : we
-                # add a "_" to the end of the constructor and patch the decl
+                # or a ColWidthDefault. So we need to adapt the model: 
+                # we add a "_" to the end of the constructor and patch the decl.
                 if len(constructors) > 1:
                     for constructor in constructors:
                         constructor_name = constructor[0]
