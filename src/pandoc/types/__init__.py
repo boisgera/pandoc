@@ -152,6 +152,80 @@ def _get_data_fields(decl: list) -> list[Field]:
 
 
 def _get_default_value(type_def: str | list) -> Any:
+    """
+    Provide a default value for every pandoc type.
+
+    Basic types:
+
+        >>> _get_default_value("Bool")
+        False
+        >>> _get_default_value("Int")
+        0
+        >>> _get_default_value("Double")
+        0.0
+        >>> _get_default_value("String")
+        ''
+        >>> _get_default_value("Text")
+        ''
+
+    Collections and Optional:
+
+        >>> _get_default_value("list")
+        []
+        >>> _get_default_value(["list", ["Block"]])
+        []
+        >>> _get_default_value("tuple")
+        ()
+        >>> _get_default_value(['tuple', ['String', 'String']])
+        ('', '')
+        >>> _get_default_value("map")
+        {}
+        >>> _get_default_value(['map', ['Text', 'MetaValue']])
+        {}
+        >>> _get_default_value(['maybe', ['String']]) is None
+        True
+        
+    Type aliases:
+
+        >>> _get_default_value("ListAttributes") # (Int, ListNumberStyle, ListNumberDelim)
+        (0, DefaultStyle(), DefaultDelim())
+        >>> _get_default_value("Attr") # (Text, [Text], [(Text, Text)])
+        ('', [], [])
+        >>> _get_default_value("ColSpec") # (Alignment, ColWidth)
+        (AlignDefault(), ColWidthDefault())
+        >>> _get_default_value("ShortCaption") # [Inline]
+        []
+        >>> _get_default_value("Target") # (Text, Text)
+        ('', '')
+
+    The default value of an abstract data type is provided by its default constructor:
+
+        >>> _get_default_value("ListNumberStyle")
+        DefaultStyle()
+        >>> _get_default_value("Alignment")
+        AlignDefault()
+
+    or by the first constructor when no default constructor exists:
+
+        >>> _get_default_value("QuoteType") # QuoteType = SingleQuote() | DoubleQuote()
+        SingleQuote()
+        >>> _get_default_value("Block") # Block = Plain([Inline]) | Para([Inline]) | ...
+        Plain([])
+
+    Constructor default values are based on the default values of their arguments:
+
+        >> _get_default_value("Plain") # Plain([Inline])
+        Plain([])
+
+    This resolution is made recursively:    
+    
+        >>> _get_default_value("Pandoc") # Pandoc(Meta, [Block])
+        Pandoc(Meta({}), [])
+        >>> _get_default_value("Meta") # Meta({Text: MetaValue})
+        Meta({})
+        >>> _get_default_value(["list", ["Block"]])
+        []
+    """
     if isinstance(type_def, str):
         try:
             type = globals()[type_def]
