@@ -100,6 +100,43 @@ class Field:
 
 
 def _get_data_fields(decl: list) -> list[Field]:
+    """
+    Return for each constructor declaration the name & type of each argument.
+
+    For example:
+
+        >>> _get_data_fields(['Pandoc', ['list', ['Meta', ['list', ['Block']]]]]) == \\
+        ... [
+        ...    Field(name='meta', type='Meta'), 
+        ...    Field(name='blocks', type=['list', ['Block']])
+        ... ]
+        True
+
+    Haskell types not not named their arguments, we have to rely on some heuristics
+    to infer some convienient names.
+
+    To illustrate this let's introduce a helper that print these names:
+
+        >>> def args(constructor_type):
+        ...     decl = constructor_type._def
+        ...     print(", ".join(field.name for field in _get_data_fields(decl)))
+    
+
+    Constructors with no arguments are a no-brainer:
+
+        >>> args(LineBreak) # LineBreak
+        <BLANKLINE>
+
+    In general, the type of the argument is used to name the argument:
+
+        >>> args(Str) # Str(Text)
+        text
+        
+    However, for `Int` and `Double` types, we prefer to use the `value` name:
+
+        >>> args(RowHeadColumns) # RowHeadColumns(Int)
+        value
+    """
     type_name = decl[0]
     type_def = decl[1]
     field_names = []  # field names
