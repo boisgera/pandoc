@@ -68,35 +68,71 @@ def _rename_duplicate_fields(fields: list[str]):
     return ret
 
 
-def _field_type_name(field_type, field):
+def _field_type_name(
+    field_type,
+    field,
+    type_name=None,
+    make_plural=False,
+    recursive=False,
+    prefix="",
+    suffix="",
+):
     if (
         isinstance(field, list)
         and field[0] == field_type
         and isinstance(field[1], list)
         and len(field[1]) == 1
-        and isinstance(field[1][0], str)
     ):
-        return field[1][0]
+        if isinstance(name := field[1][0], str):
+            name = _to_snake_case(name).lower()
+            if type_name:
+                name = name.removeprefix(type_name.lower())
+            if make_plural:
+                name = _to_plural(name)
+            return name.removeprefix("_")
+        elif isinstance(field[1][0], list) and recursive:
+            if name := _field_type_name(
+                field_type,
+                field[1][0],
+                type_name,
+                make_plural,
+                recursive,
+                prefix,
+                suffix,
+            ):
+                return prefix + name + suffix
+            else:
+                return None
+        else:
+            return None
     else:
         return None
-
-
-def _rename_fields(fields: list[str], names: dict[str, str]) -> list[str]:
-    result = fields.copy()
-
-    for old_name, new_name in names.items():
-        try:
-            result[result.index(old_name)] = new_name
-        except ValueError:
-            pass
-
-    return result
 
 
 @dataclasses.dataclass
 class Field:
     name: str
     type: str | list
+
+
+def _get_field_name(type_decl, type_name=None) -> str:
+    if isinstance(type_decl, str):
+        field = type_decl.removeprefix(type_name) if type_name else type_decl
+        field = _to_snake_case(field).lower()
+    elif type_decl[0] == "map":
+        key_field = _get_field_name(type_decl[1][0], type_name).lower()
+        value_field = _get_field_name(type_decl[1][1], type_name).lower()
+        field = f"{key_field}_to_{value_field}"
+    elif field := _field_type_name("maybe", type_decl, type_name):
+        pass
+    elif field := _field_type_name(
+        "list", type_decl, type_name, make_plural=True, recursive=True, suffix="_list"
+    ):
+        pass
+    else:
+        field = "content"
+
+    return field
 
 
 def _get_data_fields(decl: list) -> list[Field]:
@@ -144,46 +180,22 @@ def _get_data_fields(decl: list) -> list[Field]:
 
     if type_def[0] == "map":
         for field, type in type_def[1]:
-            field = _to_snake_case(field).lower()
-            field = field.removeprefix(type_name.lower()).lstrip("_")
+            if field == "un" + type_name:
+                # detect the haskell pattern un<type name>.
+                # In this case we derive the field name from the type
+                field = _get_field_name(type, type_name)
+            else:
+                field = _to_snake_case(field).lower()
+                field = field.removeprefix(type_name.lower()).lstrip("_")
+
             field_names.append(field)
             field_types.append(type)
     else:
         for type in type_def[1]:
-            if isinstance(type, str):
-                if type == "Int" or type == "Double":
-                    field = "value"
-                else:
-                    field = _to_snake_case(type.removeprefix(type_name))
-            elif field := _field_type_name("maybe", type):
-                field = _to_snake_case(field).lower()
-                field = field.removeprefix(type_name.lower()).lstrip("_")
-            elif field := _field_type_name("list", type):
-                if (
-                    type_name != "Pandoc"
-                    and not type_name.startswith("Meta")
-                    and (field == "Block" or field == "Inline")
-                ):
-                    field = "content"
-                else:
-                    field = _to_snake_case(field).lower()
-                    field = field.removeprefix(type_name.lower()).lstrip("_")
-                    field = _to_plural(field)
-            else:
-                field = "content"
-
-            field_names.append(field)
+            field_names.append(_get_field_name(type, type_name))
             field_types.append(type)
 
     field_names = _rename_duplicate_fields(field_names)
-
-    # Handle special cases
-    if type_name == "Meta":
-        field_names = _rename_fields(field_names, {"un_meta": "map"})
-    elif type_name == "Header":
-        field_names = _rename_fields(field_names, {"value": "level"})
-    elif type_name == "TableBody":
-        field_names = _rename_fields(field_names, {"rows1": "head", "rows2": "body"})
 
     return [Field(n, t) for n, t in zip(field_names, field_types)]
 
@@ -221,7 +233,7 @@ def _get_default_value(type_def: str | list) -> Any:
         {}
         >>> _get_default_value(['maybe', ['String']]) is None
         True
-        
+
     Type aliases:
 
         >>> _get_default_value("ListAttributes") # (Int, ListNumberStyle, ListNumberDelim)
@@ -254,8 +266,8 @@ def _get_default_value(type_def: str | list) -> Any:
         >> _get_default_value("Plain") # Plain([Inline])
         Plain([])
 
-    This resolution is made recursively:    
-    
+    This resolution is made recursively:
+
         >>> _get_default_value("Pandoc") # Pandoc(Meta, [Block])
         Pandoc(Meta({}), [])
         >>> _get_default_value("Meta") # Meta({Text: MetaValue})
