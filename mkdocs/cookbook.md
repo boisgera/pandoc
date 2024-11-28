@@ -776,8 +776,6 @@ matches = [
 ]
 for elt, path in reversed(matches):
     holder, index = path[-1]
-    attr = ("", [], [])
-    target = ("https://github.com/boisgera/pandoc/", "")
     holder.insert(index + 1, Str("home"))
 ```
 
@@ -801,8 +799,6 @@ matches = [
 ]
 for elt, path in reversed(matches):
     holder, index = path[-1]
-    attr = ("", [], [])
-    target = ("https://github.com/boisgera/pandoc/", "")
     del holder[index] 
 ```
 
@@ -873,7 +869,7 @@ Consider the HTML fragment:
 blocks = [ # <p>html rocks!</p>
     RawBlock(Format("html"), "<p>"), 
     Plain([Str("html"), Space(), Str('rocks!')]), 
-    RawBlock(Format("html"), "<p/>")
+    RawBlock(Format("html"), "</p>")
 ]
 ```
 Let's say that we want to replace `"html"` with `"pandoc"` in the document text.
@@ -887,7 +883,7 @@ And you would end up with the (invalid) document fragment:
 invalid_blocks = [
     RawBlock(Format("pandoc"), "<p>"), 
     Plain([Str("pandoc"), Space(), Str('rocks!')]),  
-    RawBlock(Format("pandoc"), "<p/>")
+    RawBlock(Format("pandoc"), "</p>")
 ]
 ```
 
@@ -912,7 +908,7 @@ A correct, type-safe, way to proceed is instead:
 >>> blocks == [
 ...     RawBlock(Format("html"), "<p>"), 
 ...     Plain([Str("pandoc"), Space(), Str('rocks!')]), 
-...     RawBlock(Format("html"), "<p/>")
+...     RawBlock(Format("html"), "</p>")
 ... ]
 True
 ```
