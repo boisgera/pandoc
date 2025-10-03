@@ -6,7 +6,7 @@ The `pandoc-types.js` file of the source tree stores:
   - the Haskell definitions of the pandoc types for each version.
 
 To update this file when new pandoc releases appear, 
-install [pixi][https://pixi.sh] if needed, then run
+install [pixi](https://pixi.sh) if needed, then run
 
 ```
 $ pixi run build
