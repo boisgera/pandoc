@@ -2,34 +2,46 @@
 
 # Python 3.7 Standard Library
 import json
-import io
-import pathlib
+import os
+from pathlib import Path
 import re
 import sys
+import typing
 
 # Third-Party Libraries
 import bs4
 import requests
 import sh
 
+
 # Helpers
 # ------------------------------------------------------------------------------
-def version_key(string):
-    return [int(s) for s in string.split(".")]
+def version_key(version) -> list[int]:
+    if version.startswith("v"):
+        version = version[1:]
+    try:
+        return [int(s) for s in version.split(".")]
+    except ValueError:  # alpha/beta versions, etc.
+        return None
+
+
+# Pandoc Types Info Schema
+# ------------------------------------------------------------------------------
+class PandocTypes(typing.TypedDict):
+    version_mapping: dict[str, list[list[str]]]
+    definitions: dict[str, str]
 
 
 # Pandoc to Pandoc Types Version Mapping
 # ------------------------------------------------------------------------------
-#
-# We browse the Hackage page for existing pandoc versions,
-# get the pandoc.cabal file for every version we're interested in
-# (we start at pandoc 1.8 since it is when JSON was introduced)
-# "grep" the pandoc-types line inside them, get the dependency spec,
-# and write the stuff as JSON.
+def pandoc_versions() -> list[str]:
+    """
+    Get the existing pandoc versions from Hackage
 
-
-def update_version_mapping(pandoc_types):
-    pandoc_url = "https://hackage.haskell.org/package/pandoc"
+    >>> pandoc_versions() # doctest: +ELLIPSIS
+    ['0.4', '0.41', '0.42', '0.43', ...]
+    """
+    pandoc_url = "http://hackage.haskell.org/package/pandoc"
     html = requests.get(pandoc_url).content
     soup = bs4.BeautifulSoup(html, "html.parser")
     contents = soup.find(id="properties").table.tbody.tr.td.contents
@@ -43,13 +55,36 @@ def update_version_mapping(pandoc_types):
     for string in strings:
         if len(string) >= 1 and string[0] in "0123456789":
             versions.append(string)
+    return versions
 
-    print(versions)
 
-    # Nowadays the request directly returns a dictionary (?!?)
-    # dct = requests.get(pandoc_url).json()
+def pandoc_types_dependency(pandoc_version: str) -> list[list[str]]:
+    """
+    Get the range of pandoc-types versions that match a given pandoc version.
 
-    # versions = [k for k, v in dct.items() if v == "normal"]
+    >>> pandoc_types_dependency("0.4")
+    None
+    >>> pandoc_types_dependency("1.8")
+    [['==', '1.8.*']]
+    >>> pandoc_types_dependency("3.8.1")
+    [['>=', '1.23.1'], ['<', '1.24']]
+    """
+    url = "http://hackage.haskell.org/package/pandoc-{0}/src/pandoc.cabal"
+    url = url.format(pandoc_version)
+    cabal_file = requests.get(url).content.decode("utf-8")
+    for line in cabal_file.splitlines():
+        line = line.strip()
+        if "pandoc-types" in line:
+            vdep = line[13:-1]
+            vdep = [c.strip().split(" ") for c in vdep.split("&&")]
+            return vdep
+
+
+def update_version_mapping(pandoc_types: PandocTypes) -> None:
+    """
+    Update the pandoc-types dependencies info
+    """
+    versions = pandoc_versions()
 
     # start with 1.8 (no pandoc JSON support before)
     versions = [v for v in versions if version_key(v) >= [1, 8]]
@@ -60,23 +95,60 @@ def update_version_mapping(pandoc_types):
     # remove 2.10.x (see https://github.com/boisgera/pandoc/issues/22)
     versions = [v for v in versions if v != "2.10" and not v.startswith("2.10.")]
 
-    for i, version in enumerate(versions):
-        print(version + ": ", end="")
-        url = "http://hackage.haskell.org/package/pandoc-{0}/src/pandoc.cabal"
-        url = url.format(version)
-        cabal_file = requests.get(url).content.decode("utf-8")
-        for line in cabal_file.splitlines():
-            line = line.strip()
-            if "pandoc-types" in line:
-                vdep = line[13:-1]
-                vdep = [c.strip().split(" ") for c in vdep.split("&&")]
-                print(vdep)
-                version_mapping[version] = vdep
-                break
+    for version in versions:
+        vdep = pandoc_types_dependency(version)
+        if vdep is not None:
+            version_mapping[version] = vdep
 
 
 # Type Definitions Fetcher
 # ------------------------------------------------------------------------------
+
+shopts = {"_out": sys.stderr, "_err_to_out": True}
+
+def clone_pandoc_types() -> None:
+    """
+    Git clone the pandoc-types repository
+    """
+    sh.rm("-rf", "pandoc-types")
+    sh.git("clone", "https://github.com/jgm/pandoc-types.git", **shopts)
+    sh.chmod("go-w", "pandoc-types") # conform to stack requirements
+
+def pandoc_types_versions() -> list[str]:
+    """
+    Return the ordered list of pandoc-types versions
+    """
+    try:
+        os.chdir("pandoc-types")
+        version_string = str(sh.git("--no-pager", "tag"))  # no ANSI escape codes
+        versions = [
+            version
+            for version in version_string.split()
+            if version_key(version) is not None
+        ]
+        versions.sort(key=version_key)
+        # start with 1.8 (no pandoc JSON support before)
+        versions = [v for v in versions if version_key(v) >= [1, 8]]
+        return versions
+    finally:
+        os.chdir("..")
+
+
+def stack_build(version) -> None:
+    """
+    Build pandoc-types with stack
+    """
+    # Note: this function only works for pandoc-types >= 1.20
+    try:
+        os.chdir("pandoc-types")
+        print(f"*** Check out pandoc-types version {version}")
+        sh.git("--no-pager", "checkout", "-f", version)
+        print("*** Setting up stack", file=sys.stderr)
+        sh.stack("setup", **shopts)
+        print("*** Building pandoc-types", file=sys.stderr)
+        sh.stack("build", **shopts)
+    finally:
+        os.chdir("..")
 
 GHCI_SCRIPT = """
 import Data.Map (Map)
@@ -86,130 +158,65 @@ putStrLn ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 putStrLn "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 """
 
-
-def setup():
-    # clone the pandoc-types repository
-    sh.rm("-rf", "pandoc-types")
-    sh.git("clone", "https://github.com/jgm/pandoc-types.git")
-    sh.cd("pandoc-types")
-    # sh.rm("-rf", ".git") # don't want to see the folder as a git submodule
-
-    # install the GHCI script
-    script = open(".ghci", "w")
-    script.write(GHCI_SCRIPT)
-    script.close()
-
-    # conform to stack requirements
-    sh.chmod("go-w", "../pandoc-types")
-    sh.chmod("go-w", ".ghci")
-
-    sh.cd("..")
-
-
-def collect_ghci_script_output():
-    print("running GHCI script ...")
-    collect = False
-    lines = []
-    for line in sh.stack("ghci", _iter=True):
-        if line.startswith(">>>>>>>>>>"):
-            collect = True
-        elif line.startswith("<<<<<<<<<<"):
-            collect = False
-            break
-        elif collect == True:
-            sline = line.strip()
-            if not (
-                sline.startswith("type") and sline.endswith(":: *")
-            ):  # e.g. "type ListNumberStyle :: *"
-                lines.append(line)
-    definitions = "".join(lines)
-    return definitions
+def pandoc_types_type_definitions() -> str:
+    """
+    Return the pandoc-types type definitions
+    """
+    # Works only for pandoc-types >= 1.22.1
+    try:
+        os.chdir("pandoc-types")
+        # install the GHCI script
+        script = open(".ghci", "w")
+        script.write(GHCI_SCRIPT)
+        script.close()
+        sh.chmod("go-w", ".ghci") # conform to stack requirements
+        print("*** running GHCI script ...")
+        collect = False
+        lines = []
+        for line in sh.stack("ghci", _iter=True):
+            if line.startswith(">>>>>>>>>>"):
+                collect = True
+            elif line.startswith("<<<<<<<<<<"):
+                collect = False
+                break
+            elif collect == True:
+                sline = line.strip()
+                if not (
+                    sline.startswith("type") and sline.endswith(":: *")
+                ):  # e.g. "type ListNumberStyle :: *"
+                    lines.append(line)
+        definitions = "".join(lines)
+        return definitions
+    finally:
+        os.chdir("..")
 
 
-# def ansi_escape(string):
-#     ansi_escape_8bit = re.compile(
-#       r'(?:\x1B[@-Z\\-_]|[\x80-\x9A\x9C-\x9F]|(?:\x1B\[|\x9B)[0-?]*[ -/]*[@-~])'
-#     )
-#     return re.compile(ansi_escape_8bit).sub("", string)
-
-
-def update_type_definitions(pandoc_types):
-    # registered definitions
+def update_type_definitions(pandoc_types: PandocTypes) -> None:
+    # Registered definitions
     type_definitions = pandoc_types["definitions"]
-
-    # create the error log and logger function
-    sh.rm("-rf", "log.txt")
-    logfile = open("log.txt", "w", encoding="utf-8")
-
-    def log(message):
-        if isinstance(message, bytes):
-            ansi_escape = re.compile(rb"\x1b[^m]*m")
-            message = ansi_escape.sub(b"", message)
-            message = message.decode("utf-8")
-        print(message)
-        logfile.write(message + "\n")
-
-    # fetch the pandoc git repo and get into it
-    setup()
-    sh.cd("pandoc-types")
-
-    # get the version tags, write the (ordered) list down
-    version_string = str(sh.git("--no-pager", "tag"))  # no ANSI escape codes
-    versions = version_string.split()
-    # print("****", versions)
-    versions.sort(key=version_key)
-    # start with 1.8 (no pandoc JSON support before)
-    versions = [v for v in versions if version_key(v) >= [1, 8]]
-    # remove 1.21.x from the list (see https://github.com/boisgera/pandoc/issues/22)
-    versions = [v for v in versions if v != "1.21" and not v.startswith("1.21.x")]
-    # only fetch the data for unregistered versions
-    versions = [v for v in versions if v not in type_definitions]
-
-    typedefs = {}
-    for i, version in enumerate(versions):
-        log(80 * "-")
-        log(f"version: {version}")
-        log("")
-
-        try:
-            sh.git("--no-pager", "checkout", "-f", version)
-            if pathlib.Path("stack.yaml").exists():
-                log("found stack.yaml file")
-            else:
-                log("no stack.yaml file found")
-                try:
-                    sh.stack("init", "--solver")
-                except sh.ErrorReturnCode as error:
-                    log(error.stderr)
-                    log("ABORT")
-                    continue
-
+    versions = pandoc_types_versions()
+    for version in versions:
+        if version not in pandoc_types["definitions"]:
             try:
-                print("setting up stack ...")
-                for line in sh.stack("setup", _iter=True, _err_to_out=True):
-                    print("   ", line, end="")
-                print("building ...")
-                for line in sh.stack("build", _iter=True, _err_to_out=True):
-                    print("   ", line, end="")
-            except Exception as error:
-                log(error.stdout)
-                log("ABORT")
-                continue
+                stack_build(version)
+                definitions = pandoc_types_type_definitions()
+                type_definitions[version] = definitions
+            except:
+                error = f"❌ failed to get type defs for version {version}" 
+                print(error, file=sys.stderr)
 
-            # if we've gone so far
-            log("OK")
-            definitions = collect_ghci_script_output()
-            type_definitions[version] = definitions
-        finally:
-            sh.rm("-rf", "stack.yaml")
-    sh.cd("..")
-
-
-# Main
-# ------------------------------------------------------------------------------
-if __name__ == "__main__":
-    pandoc_types = json.load(open("../src/pandoc/pandoc-types.js"))
-    update_type_definitions(pandoc_types)
+def main() -> None:
+    # Load the pandoc types registry of the source tree
+    with open("../src/pandoc/pandoc-types.js") as input:
+        pandoc_types = json.load(input)
+    clone_pandoc_types()
+    # Update it with new version mapping and definitions
     update_version_mapping(pandoc_types)
-    output = open("pandoc-types.js", "w")
-    json.dump(pandoc_types, output, indent=2)
+    update_type_definitions(pandoc_types)
+    # Dump the updated registry in the current directory
+    with open("pandoc-types.js", "w") as output:
+        json.dump(pandoc_types, output, indent=2)
+    sh.rm("-rf", "pandoc-types")
+
+if __name__ == "__main__":
+    main()

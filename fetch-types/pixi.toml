@@ -1,0 +1,17 @@
+[workspace]
+authors = ["Sébastien Boisgérault <Sebastien.Boisgerault@gmail.com>"]
+channels = ["conda-forge"]
+name = "fetch-types"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+build = "python main.py"
+
+[dependencies]
+python = ">=3.13.7,<3.14"
+beautifulsoup4 = ">=4.14.2,<5"
+requests = ">=2.32.5,<3"
+sh = ">=2.2.2,<3"
+stack = ">=3.7.1,<4"
+
