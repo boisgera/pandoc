@@ -1,0 +1,1158 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../markdown/">
+      
+      
+        <link rel="next" href="../configuration/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.1.6">
+    
+    
+      
+        <title>Containers and iteration - Pandoc (Python Library)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#containers-and-iteration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Pandoc (Python Library)" class="md-header__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pandoc (Python Library)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Containers and iteration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pandoc (Python Library)" class="md-nav__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Pandoc (Python Library)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../document/" class="md-nav__link">
+        Document structure
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../markdown/" class="md-nav__link">
+        Pandoc's Markdown
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Containers and iteration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Containers and iteration
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#container" class="md-nav__link">
+    Container
+  </a>
+  
+    <nav class="md-nav" aria-label="Container">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-access" class="md-nav__link">
+    Random access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#length" class="md-nav__link">
+    Length
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equality" class="md-nav__link">
+    Equality
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#membership" class="md-nav__link">
+    Membership
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iteration" class="md-nav__link">
+    Iteration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-matching" class="md-nav__link">
+    Pattern matching
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree-iteration" class="md-nav__link">
+    Tree Iteration
+  </a>
+  
+    <nav class="md-nav" aria-label="Tree Iteration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#depth-first-traversal" class="md-nav__link">
+    Depth-first traversal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-built-in-types" class="md-nav__link">
+    Python built-in types
+  </a>
+  
+    <nav class="md-nav" aria-label="Python built-in types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#numbers" class="md-nav__link">
+    Numbers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strings" class="md-nav__link">
+    Strings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tuples-lists-dicts" class="md-nav__link">
+    Tuples, lists, dicts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    Path
+  </a>
+  
+    <nav class="md-nav" aria-label="Path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#principles" class="md-nav__link">
+    Principles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    Use cases
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        Cookbook
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command-line interface
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../labs/" class="md-nav__link">
+        Labs 🧪
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#container" class="md-nav__link">
+    Container
+  </a>
+  
+    <nav class="md-nav" aria-label="Container">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-access" class="md-nav__link">
+    Random access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#length" class="md-nav__link">
+    Length
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equality" class="md-nav__link">
+    Equality
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#membership" class="md-nav__link">
+    Membership
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iteration" class="md-nav__link">
+    Iteration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-matching" class="md-nav__link">
+    Pattern matching
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree-iteration" class="md-nav__link">
+    Tree Iteration
+  </a>
+  
+    <nav class="md-nav" aria-label="Tree Iteration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#depth-first-traversal" class="md-nav__link">
+    Depth-first traversal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-built-in-types" class="md-nav__link">
+    Python built-in types
+  </a>
+  
+    <nav class="md-nav" aria-label="Python built-in types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#numbers" class="md-nav__link">
+    Numbers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strings" class="md-nav__link">
+    Strings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tuples-lists-dicts" class="md-nav__link">
+    Tuples, lists, dicts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    Path
+  </a>
+  
+    <nav class="md-nav" aria-label="Path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#principles" class="md-nav__link">
+    Principles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    Use cases
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="containers-and-iteration">Containers and iteration<a class="headerlink" href="#containers-and-iteration" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandoc.types</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</code></pre></div>
+<h2 id="container">Container<a class="headerlink" href="#container" title="Permanent link">&para;</a></h2>
+<p>All concrete<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Pandoc element (of type <code>Pandoc</code>, <code>Para</code>, <code>Str</code>, etc.) are list-like ;
+their items are the arguments passed to their constructor. 
+We present here several familiar methods to access this content.</p>
+<p>We illustrate this interface with the <code>"Hello world!"</code> document:</p>
+<div class="highlight"><pre><span></span><code><span class="n">meta</span> <span class="o">=</span> <span class="n">Meta</span><span class="p">({})</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])]</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Pandoc</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="random-access">Random access<a class="headerlink" href="#random-access" title="Permanent link">&para;</a></h3>
+<p>Indexing and slicing for this element work pretty much as in lists:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Meta</span><span class="p">({})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">doc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">meta</span><span class="p">,</span> <span class="n">blocks</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[:]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">meta</span>
+<span class="n">Meta</span><span class="p">({})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">blocks</span>
+<span class="p">[</span><span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])]</span>
+</code></pre></div>
+<p>The same patterns apply to change the element contents:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">maths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Para</span><span class="p">([</span><span class="n">Math</span><span class="p">(</span><span class="n">InlineMath</span><span class="p">(),</span> <span class="s1">&#39;a=1&#39;</span><span class="p">)])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">maths</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Math(InlineMath(), &#39;a=1&#39;)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span> <span class="o">=</span> <span class="n">Meta</span><span class="p">({</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">MetaInlines</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Maths&#39;</span><span class="p">)])})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">,</span> <span class="n">maths</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({&#39;title&#39;: MetaInlines([Str(&#39;Maths&#39;)])}), [Para([Math(InlineMath(), &#39;a=1&#39;)])])</span>
+</code></pre></div>
+<h3 id="length">Length<a class="headerlink" href="#length" title="Permanent link">&para;</a></h3>
+<p>The length of element is the number of items it contains.
+Here for <code>doc</code>, the <code>meta</code> and <code>blocks</code> arguments of its constructor:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">[:])</span>
+<span class="go">True</span>
+</code></pre></div>
+<h3 id="equality">Equality<a class="headerlink" href="#equality" title="Permanent link">&para;</a></h3>
+<p>Pandoc elements can be compared. 
+The equality test checks for equality of type, 
+then (recusively if needed) for equality of contents:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">para</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">para</span> <span class="o">==</span> <span class="n">Para</span><span class="p">([</span><span class="n">Math</span><span class="p">(</span><span class="n">InlineMath</span><span class="p">(),</span> <span class="s1">&#39;a=1&#39;</span><span class="p">)])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">para</span> <span class="o">==</span> <span class="n">Para</span><span class="p">([</span><span class="n">Math</span><span class="p">(</span><span class="n">DisplayMath</span><span class="p">(),</span> <span class="s1">&#39;a=1&#39;</span><span class="p">)])</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">para</span> <span class="o">==</span> <span class="n">Para</span><span class="p">([</span><span class="n">Math</span><span class="p">(</span><span class="n">InlineMath</span><span class="p">(),</span> <span class="s1">&#39;a=2&#39;</span><span class="p">)])</span>
+<span class="go">False</span>
+</code></pre></div>
+<h3 id="membership">Membership<a class="headerlink" href="#membership" title="Permanent link">&para;</a></h3>
+<p>A membership test – that leverages the equality test – is also available:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Meta</span><span class="p">({})</span> <span class="ow">in</span> <span class="n">doc</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Meta</span><span class="p">({</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">MetaInlines</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Maths&#39;</span><span class="p">)])})</span> <span class="ow">in</span> <span class="n">doc</span>
+<span class="go">True</span>
+</code></pre></div>
+<h3 id="iteration">Iteration<a class="headerlink" href="#iteration" title="Permanent link">&para;</a></h3>
+<p>All pandoc item can be iterated. Consider</p>
+<div class="highlight"><pre><span></span><code><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>We have:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">Meta({})</span>
+<span class="go">[Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="p">,</span> <span class="n">blocks</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">para</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">para</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">[Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">world</span> <span class="o">=</span> <span class="n">para</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">world</span><span class="p">:</span>
+<span class="gp">... </span>     <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">world!</span>
+</code></pre></div>
+<h3 id="pattern-matching">Pattern matching<a class="headerlink" href="#pattern-matching" title="Permanent link">&para;</a></h3>
+<p>With Python 3.10 (or newer), pattern matching can be used for every
+Pandoc element:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">match</span> <span class="n">doc</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">case</span> <span class="n">Pandoc</span><span class="p">(</span><span class="n">Meta</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span> <span class="p">[</span><span class="n">Para</span><span class="p">(</span><span class="n">inlines</span><span class="p">)]):</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="n">meta</span> <span class="o">==</span> <span class="p">{}</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">inlines</span><span class="p">)</span>
+<span class="go">[Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+</code></pre></div>
+<h2 id="tree-iteration">Tree Iteration<a class="headerlink" href="#tree-iteration" title="Permanent link">&para;</a></h2>
+<h3 id="depth-first-traversal">Depth-first traversal<a class="headerlink" href="#depth-first-traversal" title="Permanent link">&para;</a></h3>
+<p>Python's built-in <code>iter</code> – which is used implicitly in the for loops – 
+yields the children of the pandoc element, that is the arguments 
+that were given to its constructor ;
+it is non-recursive: the contents of these children are not explored. </p>
+<p>On the contrary, <code>pandoc.iter</code> iterates a pandoc item recursively, 
+in document order. It performs a (preoder) depth-first traversal:
+the iteration first yields the element given as argument to <code>pandoc.iter</code>
+(the root), then its first child (if any), then the first child of this child 
+(if any), etc. recursively, before it yields the second child of the root (if
+any), then the first child of this child, etc.</p>
+<p>For example, with the following document</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2"># Title</span>
+<span class="gp">... </span><span class="s2">Content</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])])</span>
+</code></pre></div>
+<p>we have on one hand</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">Meta({})</span>
+<span class="go">[Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])]</span>
+</code></pre></div>
+<p>and on the other hand</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">Pandoc(Meta({}), [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])])</span>
+<span class="go">Meta({})</span>
+<span class="go">{}</span>
+<span class="go">[Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])]</span>
+<span class="go">Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)])</span>
+<span class="go">1</span>
+<span class="go">(&#39;title&#39;, [], [])</span>
+<span class="go">title</span>
+<span class="go">[]</span>
+<span class="go">[]</span>
+<span class="go">[Str(&#39;Title&#39;)]</span>
+<span class="go">Str(&#39;Title&#39;)</span>
+<span class="go">Title</span>
+<span class="go">Para([Str(&#39;Content&#39;)])</span>
+<span class="go">[Str(&#39;Content&#39;)]</span>
+<span class="go">Str(&#39;Content&#39;)</span>
+<span class="go">Content</span>
+</code></pre></div>
+<h3 id="python-built-in-types">Python built-in types<a class="headerlink" href="#python-built-in-types" title="Permanent link">&para;</a></h3>
+<h4 id="numbers">Numbers<a class="headerlink" href="#numbers" title="Permanent link">&para;</a></h4>
+<p>Tree iteration can be applied to Python builts-in types, including those which
+are not usually considered containers and thus are not iterable with the
+built-in <code>iter</code> function. The <code>Bool</code>, <code>Int</code> and <code>Double</code> primitive types
+(that is <code>bool</code>, <code>int</code> and <code>float</code>) fall in this case:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">Bool</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">iter</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;bool&#39; object is not iterable</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">iter</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;int&#39; object is not iterable</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="mf">3.14</span><span class="p">,</span> <span class="n">Double</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">iter</span><span class="p">(</span><span class="mf">3.14</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;float&#39; object is not iterable</span>
+</code></pre></div>
+<p>Since these elements have no child, tree iteration will only yield the elements
+themselves:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="mf">3.14</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">3.14</span>
+</code></pre></div>
+<h4 id="strings">Strings<a class="headerlink" href="#strings" title="Permanent link">&para;</a></h4>
+<p>Python strings are iterable, but in the context of tree iteration, we consider
+them as atomic objects like booleans, integers and doubles. Thus <code>pandoc.iter</code> 
+will not iterate on characters like the built-in <code>iter</code> function:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">,</span> <span class="n">Text</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">H</span>
+<span class="go">e</span>
+<span class="go">l</span>
+<span class="go">l</span>
+<span class="go">o</span>
+<span class="go">!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">Hello!</span>
+</code></pre></div>
+<h4 id="tuples-lists-dicts">Tuples, lists, dicts<a class="headerlink" href="#tuples-lists-dicts" title="Permanent link">&para;</a></h4>
+<p>Tree iteration for tuples holds no surprise:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">elts</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">(2, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">elts</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">(1, (2, 3))</span>
+<span class="go">1</span>
+<span class="go">(2, 3)</span>
+<span class="go">2</span>
+<span class="go">3</span>
+</code></pre></div>
+<p>List iteration is very similar:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">[2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">elts</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">[1, [2, 3]]</span>
+<span class="go">1</span>
+<span class="go">[2, 3]</span>
+<span class="go">2</span>
+<span class="go">3</span>
+</code></pre></div>
+<p>For maps/dicts, tree iteration combine recursivity and iteration on key-value
+pairs, while standard iteration is flat and iterates on keys only. In other
+words, tree iteration adds recursivity to the dict <code>items</code> iterator:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">elts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">elts</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">a</span>
+<span class="go">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">elts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">(&#39;a&#39;, True)</span>
+<span class="go">(&#39;b&#39;, [1, 2])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">elts</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">{&#39;a&#39;: True, &#39;b&#39;: [1, 2]}</span>
+<span class="go">(&#39;a&#39;, True)</span>
+<span class="go">a</span>
+<span class="go">True</span>
+<span class="go">(&#39;b&#39;, [1, 2])</span>
+<span class="go">b</span>
+<span class="go">[1, 2]</span>
+<span class="go">1</span>
+<span class="go">2</span>
+</code></pre></div>
+<h3 id="path">Path<a class="headerlink" href="#path" title="Permanent link">&para;</a></h3>
+<h4 id="principles">Principles<a class="headerlink" href="#principles" title="Permanent link">&para;</a></h4>
+<p>The function <code>pandoc.iter</code> accepts an optional boolean argument <code>path</code>.
+When it is set to <code>True</code>, the iteration returns <code>elt, path</code> pairs.
+In this pair, <code>elt</code> is equal to what the iteration with <code>path</code> set to
+<code>False</code> would have yielded and <code>path</code> contains additional 
+information about the location of <code>elt</code> in the iteration root.</p>
+<p>Path is a list of <code>(holder, i)</code> pairs which is not empty unless <code>elt</code> is <code>root</code> and such that:</p>
+<ul>
+<li>
+<p>the first holder in the path is the root of the iteration,</p>
+</li>
+<li>
+<p>the i-th item in holder is the next holder in the path ...</p>
+</li>
+<li>
+<p>or <code>elt</code> if we are at the end of the path.</p>
+</li>
+</ul>
+<p>Here i-th item in holder should be understood as <code>holder[i]</code> unless <code>holder</code>
+is a dict. In this special case, it would be its i-th key-value pair:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getitem</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">elt</span> <span class="o">=</span> <span class="n">elt</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">elt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</code></pre></div>
+<p>In any case, the following assertion is always valid:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="k">assert</span> <span class="n">elt</span> <span class="ow">is</span> <span class="n">root</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">root</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">holder</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">next_elt</span> <span class="o">=</span> <span class="n">getitem</span><span class="p">(</span><span class="n">holder</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">next_elt</span> <span class="ow">is</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">next_elt</span> <span class="ow">is</span> <span class="n">elt</span>
+</code></pre></div>
+<p>And indeed, if we consider the following document:</p>
+<div class="highlight"><pre><span></span><code><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># Title</span>
+<span class="s2">Content</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>the check works at any level:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">check</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="use-cases">Use cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h4>
+<p>The length of <code>path</code> provides the depth of <code>elt</code> with respect to the root:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">elt</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="go">0 - Pandoc(Meta({}), [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])])</span>
+<span class="go">1 - Meta({})</span>
+<span class="go">2 - {}</span>
+<span class="go">1 - [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])]</span>
+<span class="go">2 - Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)])</span>
+<span class="go">3 - 1</span>
+<span class="go">3 - (&#39;title&#39;, [], [])</span>
+<span class="go">4 - &#39;title&#39;</span>
+<span class="go">4 - []</span>
+<span class="go">4 - []</span>
+<span class="go">3 - [Str(&#39;Title&#39;)]</span>
+<span class="go">4 - Str(&#39;Title&#39;)</span>
+<span class="go">5 - &#39;Title&#39;</span>
+<span class="go">2 - Para([Str(&#39;Content&#39;)])</span>
+<span class="go">3 - [Str(&#39;Content&#39;)]</span>
+<span class="go">4 - Str(&#39;Content&#39;)</span>
+<span class="go">5 - &#39;Content&#39;</span>
+</code></pre></div>
+<p>The latest item of <code>path</code> provides the parent of the current element
+and its index in this parent:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elt</span><span class="si">!r}</span><span class="s2"> == </span><span class="si">{</span><span class="n">holder</span><span class="si">!r}</span><span class="s2">[</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="n">elt</span> <span class="ow">is</span> <span class="n">doc</span>
+<span class="go">Meta({}) == Pandoc(Meta({}), [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])])[0]</span>
+<span class="go">{} == Meta({})[0]</span>
+<span class="go">[Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])] == Pandoc(Meta({}), [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])])[1]</span>
+<span class="go">Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]) == [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])][0]</span>
+<span class="go">1 == Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)])[0]</span>
+<span class="go">(&#39;title&#39;, [], []) == Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)])[1]</span>
+<span class="go">&#39;title&#39; == (&#39;title&#39;, [], [])[0]</span>
+<span class="go">[] == (&#39;title&#39;, [], [])[1]</span>
+<span class="go">[] == (&#39;title&#39;, [], [])[2]</span>
+<span class="go">[Str(&#39;Title&#39;)] == Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)])[2]</span>
+<span class="go">Str(&#39;Title&#39;) == [Str(&#39;Title&#39;)][0]</span>
+<span class="go">&#39;Title&#39; == Str(&#39;Title&#39;)[0]</span>
+<span class="go">Para([Str(&#39;Content&#39;)]) == [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])][1]</span>
+<span class="go">[Str(&#39;Content&#39;)] == Para([Str(&#39;Content&#39;)])[0]</span>
+<span class="go">Str(&#39;Content&#39;) == [Str(&#39;Content&#39;)][0]</span>
+<span class="go">&#39;Content&#39; == Str(&#39;Content&#39;)[0]</span>
+</code></pre></div>
+<p>Grand-parents are available in the previous path items, all the way up to the
+root, allowing us to locate the current element with respect to the root if
+needed:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">holder</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">path</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;doc</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2"> == </span><span class="si">{</span><span class="n">elt</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="go">doc == Pandoc(Meta({}), [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])])</span>
+<span class="go">doc[0] == Meta({})</span>
+<span class="go">doc[0][0] == {}</span>
+<span class="go">doc[1] == [Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)]), Para([Str(&#39;Content&#39;)])]</span>
+<span class="go">doc[1][0] == Header(1, (&#39;title&#39;, [], []), [Str(&#39;Title&#39;)])</span>
+<span class="go">doc[1][0][0] == 1</span>
+<span class="go">doc[1][0][1] == (&#39;title&#39;, [], [])</span>
+<span class="go">doc[1][0][1][0] == &#39;title&#39;</span>
+<span class="go">doc[1][0][1][1] == []</span>
+<span class="go">doc[1][0][1][2] == []</span>
+<span class="go">doc[1][0][2] == [Str(&#39;Title&#39;)]</span>
+<span class="go">doc[1][0][2][0] == Str(&#39;Title&#39;)</span>
+<span class="go">doc[1][0][2][0][0] == &#39;Title&#39;</span>
+<span class="go">doc[1][1] == Para([Str(&#39;Content&#39;)])</span>
+<span class="go">doc[1][1][0] == [Str(&#39;Content&#39;)]</span>
+<span class="go">doc[1][1][0][0] == Str(&#39;Content&#39;)</span>
+<span class="go">doc[1][1][0][0][0] == &#39;Content&#39;</span>
+</code></pre></div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>any custom pandoc type that can be instantiated. If needed, refer to the <a href="../document/#kinds-of-types">kind of types</a> section of the documentation for additional explanations.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
+</html>

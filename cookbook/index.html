@@ -1,0 +1,1724 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../configuration/">
+      
+      
+        <link rel="next" href="../cli/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.1.6">
+    
+    
+      
+        <title>Cookbook - Pandoc (Python Library)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cookbook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Pandoc (Python Library)" class="md-header__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pandoc (Python Library)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cookbook
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pandoc (Python Library)" class="md-nav__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Pandoc (Python Library)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../document/" class="md-nav__link">
+        Document structure
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../markdown/" class="md-nav__link">
+        Pandoc's Markdown
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iteration/" class="md-nav__link">
+        Containers and iteration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Cookbook
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Cookbook
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#access" class="md-nav__link">
+    Access
+  </a>
+  
+    <nav class="md-nav" aria-label="Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-access" class="md-nav__link">
+    Random access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-checks" class="md-nav__link">
+    Structural checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-matching" class="md-nav__link">
+    Pattern matching
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#find" class="md-nav__link">
+    Find
+  </a>
+  
+    <nav class="md-nav" aria-label="Find">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filter" class="md-nav__link">
+    Filter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exclude" class="md-nav__link">
+    Exclude
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finder" class="md-nav__link">
+    Finder
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locate" class="md-nav__link">
+    Locate
+  </a>
+  
+    <nav class="md-nav" aria-label="Locate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#holder-and-index" class="md-nav__link">
+    Holder and index
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transforms" class="md-nav__link">
+    Transforms
+  </a>
+  
+    <nav class="md-nav" aria-label="Transforms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expand" class="md-nav__link">
+    Expand
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replace" class="md-nav__link">
+    Replace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insert" class="md-nav__link">
+    Insert
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    Delete
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#immutable-data" class="md-nav__link">
+    Immutable data
+  </a>
+  
+    <nav class="md-nav" aria-label="Immutable data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hello-world" class="md-nav__link">
+    Hello world!
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-safety" class="md-nav__link">
+    Type safety
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    Use cases
+  </a>
+  
+    <nav class="md-nav" aria-label="Use cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#targets" class="md-nav__link">
+    Targets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command-line interface
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../labs/" class="md-nav__link">
+        Labs 🧪
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#access" class="md-nav__link">
+    Access
+  </a>
+  
+    <nav class="md-nav" aria-label="Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#random-access" class="md-nav__link">
+    Random access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-checks" class="md-nav__link">
+    Structural checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-matching" class="md-nav__link">
+    Pattern matching
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#find" class="md-nav__link">
+    Find
+  </a>
+  
+    <nav class="md-nav" aria-label="Find">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filter" class="md-nav__link">
+    Filter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exclude" class="md-nav__link">
+    Exclude
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finder" class="md-nav__link">
+    Finder
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locate" class="md-nav__link">
+    Locate
+  </a>
+  
+    <nav class="md-nav" aria-label="Locate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#holder-and-index" class="md-nav__link">
+    Holder and index
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transforms" class="md-nav__link">
+    Transforms
+  </a>
+  
+    <nav class="md-nav" aria-label="Transforms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expand" class="md-nav__link">
+    Expand
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replace" class="md-nav__link">
+    Replace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insert" class="md-nav__link">
+    Insert
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    Delete
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#immutable-data" class="md-nav__link">
+    Immutable data
+  </a>
+  
+    <nav class="md-nav" aria-label="Immutable data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hello-world" class="md-nav__link">
+    Hello world!
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-safety" class="md-nav__link">
+    Type safety
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    Use cases
+  </a>
+  
+    <nav class="md-nav" aria-label="Use cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#targets" class="md-nav__link">
+    Targets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="cookbook">Cookbook<a class="headerlink" href="#cookbook" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="c1"># Python Standard Library</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="c1"># Pandoc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandoc.types</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</code></pre></div>
+<p>In this cookbook, we will use as reference the very simple "Hello world!" document</p>
+<div class="highlight"><pre><span></span><code><span class="n">HELLOWORLD_DOC</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>and the longer and more complex commonmark spec:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.request</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlopen</span>
+<span class="n">PATH</span> <span class="o">=</span> <span class="s2">&quot;raw.githubusercontent.com/commonmark/commonmark-spec&quot;</span>
+<span class="n">HASH</span> <span class="o">=</span> <span class="s2">&quot;499ebbad90163881f51498c4c620652d0c66fb2e&quot;</span> <span class="c1"># pinned version</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">HASH</span><span class="si">}</span><span class="s2">/spec.txt&quot;</span>
+<span class="n">COMMONMARK_SPEC</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">URL</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">COMMONMARK_SPEC</span><span class="p">[:</span><span class="mi">583</span><span class="p">])</span> <span class="c1"># excerpt</span>
+<span class="go">---</span>
+<span class="go">title: CommonMark Spec</span>
+<span class="go">author: John MacFarlane</span>
+<span class="go">version: &#39;0.30&#39;</span>
+<span class="go">date: &#39;2021-06-19&#39;</span>
+<span class="go">license: &#39;[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)&#39;</span>
+<span class="go">...</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="go"># Introduction</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="go">## What is Markdown?</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="go">Markdown is a plain text format for writing structured documents,</span>
+<span class="go">based on conventions for indicating formatting in email</span>
+<span class="go">and usenet posts.  It was developed by John Gruber (with</span>
+<span class="go">help from Aaron Swartz) and released in 2004 in the form of a</span>
+<span class="go">[syntax description](http://daringfireball.net/projects/markdown/syntax)</span>
+<span class="go">and a Perl script (`Markdown.pl`) for converting Markdown to</span>
+<span class="go">HTML.</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">COMMONMARK_DOC</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">COMMONMARK_SPEC</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="access">Access<a class="headerlink" href="#access" title="Permanent link">&para;</a></h2>
+<p>When we know the location and type of some information in a document,
+we can use either random access or pattern matching to retrieve it.</p>
+<h3 id="random-access">Random access<a class="headerlink" href="#random-access" title="Permanent link">&para;</a></h3>
+<p>A date is often included as inline text into a document's metadata; 
+in this case, we can access it and return it as a markdown string:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_date</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># doc: Pandoc(Meta, [Block])</span>
+    <span class="n">meta_dict</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># meta: Meta({Text: MetaValue})</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">meta_dict</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span>
+    <span class="n">date_inlines</span> <span class="o">=</span> <span class="n">date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># date: MetaInlines([Inline])</span>
+    <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">date_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</code></pre></div>
+<p>The commonmark specification includes such a date:
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">COMMONMARK_SPEC</span><span class="p">)</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">---</span>
+<span class="go">title: CommonMark Spec</span>
+<span class="go">author: John MacFarlane</span>
+<span class="go">version: &#39;0.30&#39;</span>
+<span class="go">date: &#39;2021-06-19&#39;</span>
+<span class="go">license: &#39;[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)&#39;</span>
+<span class="go">...</span>
+</code></pre></div></p>
+<p>and therefore</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_date</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;2021-06-19&#39;</span>
+</code></pre></div>
+<p>After the metadata, the document starts with a header.
+To get its title, we can use</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_first_header_title</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># doc: Pandoc(Meta, [Block])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">title_inlines</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># header: Header(Int, Attr, [Inline])</span>
+    <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">title_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_first_header_title</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;Introduction&#39;</span>
+</code></pre></div>
+<h3 id="structural-checks">Structural checks<a class="headerlink" href="#structural-checks" title="Permanent link">&para;</a></h3>
+<p>The functions <code>get_date</code> and <code>get_first_header_title</code> may fail if they are
+use on a document which doesn't have the expected structure. 
+For example, for the "Hello world!" document</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">HELLOWORLD_DOC</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+</code></pre></div>
+<p>which has no <code>date</code> metadata field, and doesn't start with a header,
+we end up with</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_date</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">KeyError</span>: <span class="n">&#39;date&#39;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_first_header_title</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">IndexError</span>: <span class="n">list index out of range</span>
+</code></pre></div>
+<p>A more robust version of these functions may return <code>None</code> when
+the document does not have the expected structure:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_date</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># doc: Pandoc(Meta, [Block])</span>
+    <span class="n">meta_dict</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># meta: Meta({Text: MetaValue})</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">meta_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">MetaInlines</span><span class="p">):</span>
+        <span class="n">date_inlines</span> <span class="o">=</span> <span class="n">date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># date: MetaInlines([Inline])</span>
+        <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">date_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_date</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;2021-06-19&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_date</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_first_header_title</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># doc: Pandoc(Meta, [Block])</span>
+    <span class="k">if</span> <span class="n">blocks</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Header</span><span class="p">):</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">title_inlines</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># header: Header(Int, Attr, [Inline])</span>
+        <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">title_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_first_header_title</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;Introduction&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_first_header_title</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">)</span>
+</code></pre></div>
+<!--
+We can also find the document's author name in the document metadata and 
+return it (as a markdown string).
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># doc: Pandoc(Meta, [Block])</span>
+    <span class="n">meta_dict</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># meta: Meta({Text: MetaValue})</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">meta_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">author</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">author</span><span class="p">,</span> <span class="n">MetaInlines</span><span class="p">):</span> <span class="c1"># author: MetaInlines([Inline])</span>
+            <span class="n">author_inlines</span> <span class="o">=</span> <span class="n">author</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">author_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">author</span><span class="p">,</span> <span class="n">MetaList</span><span class="p">):</span> <span class="c1"># author: MetaList([MetaValue])</span>
+            <span class="n">authors_meta</span> <span class="o">=</span> <span class="n">author</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">MetaInlines</span><span class="p">)</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">authors_meta</span><span class="p">):</span>
+                <span class="n">authors_inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">elt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">authors_meta</span><span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">inline</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">inline</span> <span class="ow">in</span> <span class="n">authors_inlines</span><span class="p">]</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_author</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;John MacFarlane&#39;</span>
+</code></pre></div>
+
+This `get_author` function is more complex than `get_date` but it can also 
+deal with multiple authors, specified as a list of inline texts. For example,
+with
+
+<div class="highlight"><pre><span></span><code><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">---</span>
+<span class="s2">author: </span>
+<span class="s2">  - Author 1</span>
+<span class="s2">  - Author 2</span>
+<span class="s2">  - Author 3</span>
+<span class="s2">---</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
+it yields
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_author</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="go">[&#39;Author 1&#39;, &#39;Author 2&#39;, &#39;Author 3&#39;]</span>
+</code></pre></div>
+
+-->
+
+<h3 id="pattern-matching">Pattern matching<a class="headerlink" href="#pattern-matching" title="Permanent link">&para;</a></h3>
+<p>With Python 3.10 or later, <a href="https://www.python.org/dev/peps/pep-0634/">pattern matching</a> can be used to combine
+random access and structural checks. The following implementation of <code>get_date</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_date</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">match</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">Pandoc</span><span class="p">(</span><span class="n">Meta</span><span class="p">({</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">MetaInlines</span><span class="p">(</span><span class="n">date_inlines</span><span class="p">)}),</span> <span class="n">_</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">date_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</code></pre></div>
+<p>and the previous one have identical behaviors:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_date</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;2021-06-19&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_date</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">)</span>
+</code></pre></div>
+<p>The behavior of the following <code>get_first_header_title</code> function</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_first_header_title</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">match</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="k">case</span><span class="w"> </span><span class="n">Pandoc</span><span class="p">(</span><span class="k">_</span><span class="p">,</span> <span class="p">[</span><span class="n">Header</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">header_inlines</span><span class="p">),</span> <span class="o">*</span><span class="n">_</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header_inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</code></pre></div>
+<p>is also unchanged:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">get_first_header_title</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">&#39;Introduction&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_first_header_title</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="find">Find<a class="headerlink" href="#find" title="Permanent link">&para;</a></h2>
+<p>When the items we are searching for are not in a known place in
+the document, we may use the tree iterator provided by <code>pandoc.iter</code>
+and a variety of filtering methods to fetch them. Here we focus on
+comprehensions first and then introduce a higher-level helper.</p>
+<h3 id="filter">Filter<a class="headerlink" href="#filter" title="Permanent link">&para;</a></h3>
+<p>The pattern to use is <code>[elt for elt in pandoc.iter(root) if condition_is_met(elt)]</code>.</p>
+<p>With it, we can build a simple table of contents of the document:
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">table_of_contents</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">elt</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Header</span><span class="p">)]</span>
+    <span class="n">toc_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+       <span class="n">level</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">inlines</span> <span class="o">=</span> <span class="n">header</span><span class="p">[:]</span> <span class="c1"># header: Header(Int, Attr, [Inline]) </span>
+       <span class="n">header_title</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">inlines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+       <span class="n">indent</span> <span class="o">=</span> <span class="p">(</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
+       <span class="n">toc_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">  - </span><span class="si">{</span><span class="n">header_title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">toc_lines</span><span class="p">)</span>
+</code></pre></div></p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">table_of_contents</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">))</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">  - Introduction</span>
+<span class="go">      - What is Markdown?</span>
+<span class="go">      - Why is a spec needed?</span>
+<span class="go">      - About this document</span>
+<span class="go">  - Preliminaries</span>
+<span class="go">      - Characters and lines</span>
+<span class="go">      - Tabs</span>
+<span class="go">      - Insecure characters</span>
+<span class="go">      - Backslash escapes</span>
+<span class="go">      - Entity and numeric character references</span>
+<span class="go">  ...</span>
+<span class="go">  - Appendix: A parsing strategy</span>
+<span class="go">      - Overview</span>
+<span class="go">      - Phase 1: block structure</span>
+<span class="go">      - Phase 2: inline structure</span>
+<span class="go">          - An algorithm for parsing nested emphasis and links</span>
+<span class="go">              - *look for link or image*</span>
+<span class="go">              - *process emphasis*</span>
+</code></pre></div>
+<p>We can display all external link URLs used in the commonmark specification:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_external_links</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">elt</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Link</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># link: Link(Attr, [Inline], Target)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># target: (Text, Text)</span>
+        <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http:&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https:&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">display_external_links</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="go">http://creativecommons.org/licenses/by-sa/4.0/</span>
+<span class="go">http://daringfireball.net/projects/markdown/syntax</span>
+<span class="go">http://daringfireball.net/projects/markdown/</span>
+<span class="go">http://www.methods.co.nz/asciidoc/</span>
+<span class="go">http://daringfireball.net/projects/markdown/syntax</span>
+<span class="go">http://article.gmane.org/gmane.text.markdown.general/1997</span>
+<span class="go">http://article.gmane.org/gmane.text.markdown.general/2146</span>
+<span class="go">http://article.gmane.org/gmane.text.markdown.general/2554</span>
+<span class="go">https://html.spec.whatwg.org/entities.json</span>
+<span class="go">http://www.aaronsw.com/2002/atx/atx.py</span>
+<span class="go">http://docutils.sourceforge.net/rst.html</span>
+<span class="go">http://daringfireball.net/projects/markdown/syntax#em</span>
+<span class="go">http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags</span>
+<span class="go">https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)</span>
+<span class="go">http://www.w3.org/TR/html5/syntax.html#comments</span>
+</code></pre></div>
+<p>We can get the list of all code blocks and collect their types 
+(registered as code block classes):</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fetch_code_types</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">code_blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">elt</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">CodeBlock</span><span class="p">)]</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">code_block</span> <span class="ow">in</span> <span class="n">code_blocks</span><span class="p">:</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">code_block</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># CodeBlock(Attr, Text)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">attr</span> <span class="c1"># Attr = (Text, [Text], [(Text, Text)])</span>
+        <span class="n">types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">code_types</span> <span class="o">=</span> <span class="n">fetch_code_types</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">code_types</span>
+<span class="go">[&#39;example&#39;, &#39;html&#39;, &#39;markdown&#39;, &#39;tree&#39;]</span>
+</code></pre></div>
+<!--
+### Write
+
+The "find" pattern can also be used to change the content of a document,
+as long as the items that are searched for are mutable.
+For example, to change all http links in the document to their https 
+counterpart:
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_https</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">elt</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Link</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># link: Link(Attr, [Inline], Target)</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">target</span> <span class="c1"># target: (Text, Text)</span>
+        <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http:&quot;</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;http:&quot;</span><span class="p">,</span> <span class="s2">&quot;https:&quot;</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">url</span><span class="p">,</span> <span class="n">title</span>
+            <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
+</code></pre></div>
+
+We can check that this function performs the expected change in the document:
+
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">commonmark_doc</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_https</span><span class="p">(</span><span class="n">commonmark_doc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">display_external_links</span><span class="p">(</span><span class="n">commonmark_doc</span><span class="p">)</span>
+<span class="go">https://creativecommons.org/licenses/by-sa/4.0/</span>
+<span class="go">https://daringfireball.net/projects/markdown/syntax</span>
+<span class="go">https://daringfireball.net/projects/markdown/</span>
+<span class="go">https://www.methods.co.nz/asciidoc/</span>
+<span class="go">https://daringfireball.net/projects/markdown/syntax</span>
+<span class="go">https://article.gmane.org/gmane.text.markdown.general/1997</span>
+<span class="go">https://article.gmane.org/gmane.text.markdown.general/2146</span>
+<span class="go">https://article.gmane.org/gmane.text.markdown.general/2554</span>
+<span class="go">https://html.spec.whatwg.org/entities.json</span>
+<span class="go">https://www.aaronsw.com/2002/atx/atx.py</span>
+<span class="go">https://docutils.sourceforge.net/rst.html</span>
+<span class="go">https://daringfireball.net/projects/markdown/syntax#em</span>
+<span class="go">https://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags</span>
+<span class="go">https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)</span>
+<span class="go">https://www.w3.org/TR/html5/syntax.html#comments</span>
+</code></pre></div>
+
+-->
+
+<h3 id="exclude">Exclude<a class="headerlink" href="#exclude" title="Permanent link">&para;</a></h3>
+<p>Some search patterns require to exclude some elements when one of their 
+ancestors meets some condition. For example, you may want to count the number 
+of words in your document (loosely defined as the number of <code>Str</code> instances)
+excluding those inside a div tagged as notes<sup id="fnref:reveal"><a class="footnote-ref" href="#fn:reveal">1</a></sup>.</p>
+<p>Let's use the following example document:</p>
+<div class="highlight"><pre><span></span><code><span class="n">words_doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">The words in this paragraph should be counted.</span>
+
+<span class="s2">::: notes ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::</span>
+
+<span class="s2">But these words should be excluded.</span>
+
+<span class="s2">::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Counting all words is easy</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">([</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">words_doc</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Str</span><span class="p">)])</span>
+<span class="go">14</span>
+</code></pre></div>
+<p>But to exclude all words with a <code>notes</code> div, we need to detect when the iteration
+enters and exits such an element. The easiest way to do this is to record the
+depth of the div when we enter it. As long as we iterate on items
+at a greater depth, we're still in the div scope ; when this depth becomes
+equal or smaller than this recorded depth, we're out of it. 
+Thus, we can implement this pattern with:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_notes</span><span class="p">(</span><span class="n">elt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Div</span><span class="p">):</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">elt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># elt: Div(Attr, [Block])</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># attr :(Text, [Text], [(Text, Text)])</span>
+        <span class="k">return</span> <span class="s2">&quot;notes&quot;</span> <span class="ow">in</span> <span class="n">classes</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">count_words</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">in_notes</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">in_notes</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">depth</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">is_notes</span><span class="p">(</span><span class="n">elt</span><span class="p">):</span>
+            <span class="n">in_notes</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">in_notes</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">in_notes</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">count</span>
+</code></pre></div>
+<p>It provides the expected result:
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">count_words</span><span class="p">(</span><span class="n">words_doc</span><span class="p">)</span>
+<span class="go">8</span>
+</code></pre></div></p>
+<h3 id="finder">Finder<a class="headerlink" href="#finder" title="Permanent link">&para;</a></h3>
+<p>If your code ends up being hard to read, it's not hard to wrap the more
+common search patterns into a <code>find</code> helper function, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_type_or_types</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">to_function</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_type_or_types</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">elt</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">condition</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">condition</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;condition should be a type, tuple of types or function&quot;</span>
+        <span class="n">error</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, not </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">to_function</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+    <span class="n">elts</span> <span class="o">=</span> <span class="p">(</span><span class="n">elt</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">elt</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">elts</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+<p>This <code>find</code> helper returns the first elt that matches the specified condition,
+or returns <code>None</code> if the condition was never met:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">Meta</span><span class="p">)</span>
+<span class="go">Meta({})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">Para</span><span class="p">)</span>
+<span class="go">Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">Str</span><span class="p">)</span>
+<span class="go">Str(&#39;Hello&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">LineBreak</span><span class="p">)</span>
+</code></pre></div>
+<p>With <code>all=True</code>, the list of all matching elements are returned instead:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">Meta</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[Meta({})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">Para</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[Str(&#39;Hello&#39;), Str(&#39;world!&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="n">LineBreak</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[]</span>
+</code></pre></div>
+<p>Types or multiple types can be specified (this is similar to what <code>isinstance</code>
+does):</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">Space</span><span class="p">))</span>
+<span class="go">Str(&#39;Hello&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="n">HELLOWORLD_DOC</span><span class="p">,</span> <span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">Space</span><span class="p">),</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+</code></pre></div>
+<p>Complex conditions based on types and values can be factored out in 
+a predicate function, such as <code>is_http_or_https_link</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_url</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># link: Link(Attr, [Inline], Target)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># target: (Text, Text)</span>
+    <span class="k">return</span> <span class="n">url</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_http_or_https_link</span><span class="p">(</span><span class="n">elt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Link</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">link</span><span class="o">=</span><span class="n">elt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http:&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https:&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">find</span><span class="p">(</span><span class="n">COMMONMARK_DOC</span><span class="p">,</span> <span class="n">is_http_or_https_link</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">get_url</span><span class="p">(</span><span class="n">link</span><span class="p">))</span>
+<span class="go">http://creativecommons.org/licenses/by-sa/4.0/</span>
+<span class="go">http://daringfireball.net/projects/markdown/syntax</span>
+<span class="go">http://daringfireball.net/projects/markdown/</span>
+<span class="go">http://www.methods.co.nz/asciidoc/</span>
+<span class="go">http://daringfireball.net/projects/markdown/syntax</span>
+<span class="go">http://article.gmane.org/gmane.text.markdown.general/1997</span>
+<span class="go">http://article.gmane.org/gmane.text.markdown.general/2146</span>
+<span class="go">http://article.gmane.org/gmane.text.markdown.general/2554</span>
+<span class="go">https://html.spec.whatwg.org/entities.json</span>
+<span class="go">http://www.aaronsw.com/2002/atx/atx.py</span>
+<span class="go">http://docutils.sourceforge.net/rst.html</span>
+<span class="go">http://daringfireball.net/projects/markdown/syntax#em</span>
+<span class="go">http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags</span>
+<span class="go">https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)</span>
+<span class="go">http://www.w3.org/TR/html5/syntax.html#comments</span>
+</code></pre></div>
+<p>We can improve <code>find</code> to make it support the exclusion pattern:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">to_function</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span> <span class="ow">or</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">elt</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">():</span>
+        <span class="n">is_excluded</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">is_excluded</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">depth</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">exclude</span><span class="p">(</span><span class="n">elt</span><span class="p">):</span>
+                <span class="n">is_excluded</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">is_excluded</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">elt</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">elt</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">generator</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+<p>We can then count again the words in the <code>words_doc</code> document:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="n">words_doc</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">14</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="n">words_doc</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">is_notes</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">8</span>
+</code></pre></div>
+<h2 id="locate">Locate<a class="headerlink" href="#locate" title="Permanent link">&para;</a></h2>
+<p>We sometimes need to find some elements meeting some condition <em>and</em> to know
+at the same times <em>where</em> they are in the document hierarchy.</p>
+<h3 id="holder-and-index">Holder and index<a class="headerlink" href="#holder-and-index" title="Permanent link">&para;</a></h3>
+<p>A way to locate an element <code>elt</code> is to provide the unique pair <code>holder</code>, <code>index</code> 
+such that <code>elt</code> is <code>holder[index]</code><sup id="fnref:except"><a class="footnote-ref" href="#fn:except">2</a></sup>.
+To get this information during a depth-first iteration of <code>root</code>, we
+iterate on <code>pandoc.iter(root, path=True)</code>: the iteration then yields <code>elt, path</code> 
+and <code>holder, index</code> is the last item of <code>path</code>. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">elt</span> <span class="o">!=</span> <span class="n">doc</span><span class="p">:</span> <span class="c1"># when doc is the root, path == []</span>
+<span class="gp">... </span>         <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">... </span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;elt: </span><span class="si">{</span><span class="n">elt</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  -&gt; holder: </span><span class="si">{</span><span class="n">holder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  -&gt; index: </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="go">elt: Meta({})</span>
+<span class="go">  -&gt; holder: Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+<span class="go">  -&gt; index: 0</span>
+<span class="go">elt: {}</span>
+<span class="go">  -&gt; holder: Meta({})</span>
+<span class="go">  -&gt; index: 0</span>
+<span class="go">elt: [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]</span>
+<span class="go">  -&gt; holder: Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+<span class="go">  -&gt; index: 1</span>
+<span class="go">elt: Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])</span>
+<span class="go">  -&gt; holder: [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]</span>
+<span class="go">  -&gt; index: 0</span>
+<span class="go">elt: [Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+<span class="go">  -&gt; holder: Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])</span>
+<span class="go">  -&gt; index: 0</span>
+<span class="go">elt: Str(&#39;Hello&#39;)</span>
+<span class="go">  -&gt; holder: [Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+<span class="go">  -&gt; index: 0</span>
+<span class="go">elt: &#39;Hello&#39;</span>
+<span class="go">  -&gt; holder: Str(&#39;Hello&#39;)</span>
+<span class="go">  -&gt; index: 0</span>
+<span class="go">elt: Space()</span>
+<span class="go">  -&gt; holder: [Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+<span class="go">  -&gt; index: 1</span>
+<span class="go">elt: Str(&#39;world!&#39;)</span>
+<span class="go">  -&gt; holder: [Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+<span class="go">  -&gt; index: 2</span>
+<span class="go">elt: &#39;world!&#39;</span>
+<span class="go">  -&gt; holder: Str(&#39;world!&#39;)</span>
+<span class="go">  -&gt; index: 0</span>
+</code></pre></div>
+<p>The previous components of the path contain the holder and index that locate
+the element holder, then their holder and index, etc. up to the document root:
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">elt</span> <span class="o">==</span> <span class="s2">&quot;world!&quot;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-&gt; </span><span class="si">{</span><span class="n">holder</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="go">-&gt; Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])[1]</span>
+<span class="go">-&gt; [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])][0]</span>
+<span class="go">-&gt; Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])[0]</span>
+<span class="go">-&gt; [Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)][2]</span>
+<span class="go">-&gt; Str(&#39;world!&#39;)[0]</span>
+</code></pre></div></p>
+<h3 id="transforms">Transforms<a class="headerlink" href="#transforms" title="Permanent link">&para;</a></h3>
+<p>The location (<code>holder</code>, <code>index</code> pair) of elements is a must-have for many 
+(in-place) document transforms. We demonstrate in this section several
+typical use of this information on the document</p>
+<div class="highlight"><pre><span></span><code><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;🏠, sweet 🏠.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;🏠,&#39;), Space(), Str(&#39;sweet&#39;), Space(), Str(&#39;🏠.&#39;)])])</span>
+</code></pre></div>
+<h4 id="expand">Expand<a class="headerlink" href="#expand" title="Permanent link">&para;</a></h4>
+<p>To easily locate the 🏠 symbol in the subsequent steps, 
+we expand every instance of <code>Str</code> where it appears.
+First, we define the helper function <code>split_home</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_home</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># string: Str(text)</span>
+    <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;🏠&quot;</span><span class="p">)]</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;🏠&quot;</span><span class="p">)])</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># remove trailing Str(&quot;🏠&quot;)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">elt</span> <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">parts</span> <span class="k">if</span> <span class="n">elt</span> <span class="o">!=</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">split_home</span><span class="p">(</span><span class="n">Str</span><span class="p">(</span><span class="s2">&quot;!🏠!&quot;</span><span class="p">))</span>
+<span class="go">[Str(&#39;!&#39;), Str(&#39;🏠&#39;), Str(&#39;!&#39;)]</span>
+</code></pre></div>
+<p>then we use it to expand all <code>Str</code> inlines accordingly:</p>
+<div class="highlight"><pre><span></span><code><span class="n">matches</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Str</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span> <span class="c1"># reversed: subsequent matches stay valid</span>
+    <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">holder</span><span class="p">[</span><span class="n">index</span><span class="p">:</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_home</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+</code></pre></div>
+<p>This operation had no apparent impact when the document is converted to markdown</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+<span class="go">🏠, sweet 🏠.</span>
+</code></pre></div>
+<p>but we can check that it has actually changed the document:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;🏠&#39;), Str(&#39;,&#39;), Space(), Str(&#39;sweet&#39;), Space(), Str(&#39;🏠&#39;), Str(&#39;.&#39;)])])</span>
+</code></pre></div>
+<h4 id="replace">Replace<a class="headerlink" href="#replace" title="Permanent link">&para;</a></h4>
+<p>We locate all locations of 🏠 in the text and wrap them into links.</p>
+<div class="highlight"><pre><span></span><code><span class="n">matches</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="n">elt</span> <span class="o">==</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;🏠&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+    <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;https://github.com/boisgera/pandoc/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">holder</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">Link</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="p">[</span><span class="n">elt</span><span class="p">],</span> <span class="n">target</span><span class="p">)</span> 
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">[🏠](https://github.com/boisgera/pandoc/), sweet [🏠](https://github.com/boisgera/pandoc/).</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Link((&#39;&#39;, [], []), [Str(&#39;🏠&#39;)], (&#39;https://github.com/boisgera/pandoc/&#39;, &#39;&#39;)), Str(&#39;,&#39;), Space(), Str(&#39;sweet&#39;), Space(), Link((&#39;&#39;, [], []), [Str(&#39;🏠&#39;)], (&#39;https://github.com/boisgera/pandoc/&#39;, &#39;&#39;)), Str(&#39;.&#39;)])])</span>
+</code></pre></div>
+<h4 id="insert">Insert<a class="headerlink" href="#insert" title="Permanent link">&para;</a></h4>
+<p>We insert the text "home" just after the 🏠 symbols:</p>
+<div class="highlight"><pre><span></span><code><span class="n">matches</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="n">elt</span> <span class="o">==</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;🏠&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+    <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;https://github.com/boisgera/pandoc/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">holder</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">))</span>
+</code></pre></div>
+<p><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">[🏠home](https://github.com/boisgera/pandoc/), sweet [🏠home](https://github.com/boisgera/pandoc/).</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Link((&#39;&#39;, [], []), [Str(&#39;🏠&#39;), Str(&#39;home&#39;)], (&#39;https://github.com/boisgera/pandoc/&#39;, &#39;&#39;)), Str(&#39;,&#39;), Space(), Str(&#39;sweet&#39;), Space(), Link((&#39;&#39;, [], []), [Str(&#39;🏠&#39;), Str(&#39;home&#39;)], (&#39;https://github.com/boisgera/pandoc/&#39;, &#39;&#39;)), Str(&#39;.&#39;)])])</span>
+</code></pre></div></p>
+<h4 id="delete">Delete<a class="headerlink" href="#delete" title="Permanent link">&para;</a></h4>
+<p>And finally, we get rid of the 🏠 symbols altogether.</p>
+<div class="highlight"><pre><span></span><code><span class="n">matches</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="n">elt</span> <span class="o">==</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;🏠&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+    <span class="n">holder</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;https://github.com/boisgera/pandoc/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">holder</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> 
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">[home](https://github.com/boisgera/pandoc/), sweet [home](https://github.com/boisgera/pandoc/).</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Link((&#39;&#39;, [], []), [Str(&#39;home&#39;)], (&#39;https://github.com/boisgera/pandoc/&#39;, &#39;&#39;)), Str(&#39;,&#39;), Space(), Str(&#39;sweet&#39;), Space(), Link((&#39;&#39;, [], []), [Str(&#39;home&#39;)], (&#39;https://github.com/boisgera/pandoc/&#39;, &#39;&#39;)), Str(&#39;.&#39;)])])</span>
+</code></pre></div>
+<h2 id="immutable-data">Immutable data<a class="headerlink" href="#immutable-data" title="Permanent link">&para;</a></h2>
+<p>Every non-trivial pandoc document contains some data which is immutable.
+To perform in-place modifications of your document, 
+you have to deal with them specifically. And this is a good thing!</p>
+<h3 id="hello-world">Hello world!<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h3>
+<p>Consider the most basic "Hello world!" paragraph:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span> <span class="o">=</span> <span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="n">paragraph</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">string</span>
+<span class="go">Str(&#39;world!&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span>
+<span class="go">&#39;world!&#39;</span>
+</code></pre></div>
+<p>Here <code>text</code> is a Python string, which is immutable.
+Thus, we cannot modify it in-place:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span><span class="p">[:]</span> <span class="o">=</span> <span class="s2">&quot;pandoc!&quot;</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;str&#39; object does not support item assignment</span>
+</code></pre></div>
+<p>Does it mean that we cannot modify any word of this sentence?
+Absolutely not! Because instead of modifying the Python string,
+we can <em>replace it</em> in its container instead:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pandoc!&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span>
+<span class="go">Para([Str(&#39;Hello&#39;), Space(), Str(&#39;pandoc!&#39;)])</span>
+</code></pre></div>
+<p>This works because the container of <code>"world!"</code> is an instance of <code>Str</code>,
+a custom Pandoc type, which is mutable.</p>
+<h3 id="type-safety">Type safety<a class="headerlink" href="#type-safety" title="Permanent link">&para;</a></h3>
+<p>While the above approach may seem to be a workaround at first, 
+it is actually <em>a good thing</em>, because it helps you to carefully consider
+the type of data that you select and transform. Python strings for example
+are of course in documents to describe fragments of text, but also in many
+other roles. </p>
+<p>Consider the HTML fragment:</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span> <span class="c1"># &lt;p&gt;html rocks!&lt;/p&gt;</span>
+    <span class="n">RawBlock</span><span class="p">(</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;p&gt;&quot;</span><span class="p">),</span> 
+    <span class="n">Plain</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;rocks!&#39;</span><span class="p">)]),</span> 
+    <span class="n">RawBlock</span><span class="p">(</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;p/&gt;&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div>
+Let's say that we want to replace <code>"html"</code> with <code>"pandoc"</code> in the document text.
+Notice that the string <code>"html"</code> is used in the <code>"html rocks!"</code>, 
+but also as a type field in the <code>Format</code> instance. 
+If Python strings were mutable, you could carelessly try to replace all
+<code>"html"</code> strings in the document model regardless of their role. 
+And you would end up with the (invalid) document fragment:</p>
+<div class="highlight"><pre><span></span><code><span class="n">invalid_blocks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">RawBlock</span><span class="p">(</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;pandoc&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;p&gt;&quot;</span><span class="p">),</span> 
+    <span class="n">Plain</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s2">&quot;pandoc&quot;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;rocks!&#39;</span><span class="p">)]),</span>  
+    <span class="n">RawBlock</span><span class="p">(</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;pandoc&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;p/&gt;&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Fortunately this approach will fail loudly:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">blocks</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">elt</span> <span class="o">==</span> <span class="s2">&quot;html&quot;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">elt</span><span class="p">[:]</span> <span class="o">=</span> <span class="s2">&quot;pandoc&quot;</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;str&#39; object does not support item assignment</span>
+</code></pre></div>
+<p>A correct, type-safe, way to proceed is instead:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">blocks</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">elt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;html&quot;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">elt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pandoc&quot;</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blocks</span> <span class="o">==</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">RawBlock</span><span class="p">(</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;p&gt;&quot;</span><span class="p">),</span> 
+<span class="gp">... </span>    <span class="n">Plain</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s2">&quot;pandoc&quot;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;rocks!&#39;</span><span class="p">)]),</span> 
+<span class="gp">... </span>    <span class="n">RawBlock</span><span class="p">(</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;p/&gt;&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="go">True</span>
+</code></pre></div>
+<h3 id="use-cases">Use cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h3>
+<p>Python strings is an example of primitive type which is immutable and thus
+require special handling when in-place algorithms are used. 
+Boolean, integers and floating-point numbers are also found in document
+and can be handled similarly.
+The other immutable types that appears in documents are based on tuples.
+We illustrate how to deal with them on the two most common use cases: 
+targets and attributes.</p>
+<h4 id="targets">Targets<a class="headerlink" href="#targets" title="Permanent link">&para;</a></h4>
+<p>In pandoc, targets are pairs of Python strings</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Target</span>
+<span class="go">Target = (Text, Text)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Text</span>
+<span class="go">&lt;class &#39;str&#39;&gt;</span>
+</code></pre></div>
+<p>The first text represents an URL and the second a title.
+Targets are used in link and image elements (and only there).</p>
+<p>Say that you want to find all links in your document whose target URL is
+<code>"https://pandoc.org"</code> and make sure that the associated title is 
+<code>"Pandoc - About pandoc"</code>. The relevant type signature is:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Link</span>
+<span class="go">Link(Attr, [Inline], Target)</span>
+</code></pre></div>
+<p>You may be tempted to iterate the document to find all pairs of text,
+then select those whose first item is "<code>https://pandoc.org</code>" and modify them. 
+But this approach will not work: we know by now that it is unsafe, since
+you may find some items which are not really targets<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">3</a></sup> ; and additionally,
+you cannot modify the targets in-place since tuples are immutable.</p>
+<p>The easiest way to handle this situation is to search for links that target 
+pandoc's web site.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;[Link to pandoc.org](https://pandoc.org)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Link</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">attr</span><span class="p">,</span> <span class="n">inlines</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">elt</span><span class="p">[:]</span> <span class="c1"># elt: Link(Attr, [Inline], Target)</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;https://pandoc.org&quot;</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">new_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;Pandoc - About pandoc&quot;</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="n">elt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_target</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">[Link to pandoc.org](https://pandoc.org &quot;Pandoc - About pandoc&quot;)</span>
+</code></pre></div>
+<h4 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h4>
+<p>The other most notable immutable type in documents is <code>Attr</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Attr</span>
+<span class="go">Attr = (Text, [Text], [(Text, Text)])</span>
+</code></pre></div>
+<p><code>Attr</code> is composed of an identifier, a list of classes, and a list of
+key-value pairs. To transform <code>Attr</code> content, again the easiest way to
+proceed is to target their holders. Say that we want to add a class tag 
+that described the type of the pandoc element for every element which 
+is a <code>Attr</code> holder. 
+The relevant type signatures – we display all <code>Attr</code> holders – are:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Inline</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">Inline = ...</span>
+<span class="go">       | Code(Attr, Text)</span>
+<span class="go">       ...</span>
+<span class="go">       | Link(Attr, [Inline], Target)</span>
+<span class="go">       | Image(Attr, [Inline], Target)</span>
+<span class="go">       ...</span>
+<span class="go">       | Span(Attr, [Inline])</span>
+</code></pre></div>
+<p>and </p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Block</span>  <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">Block = ...</span>
+<span class="go">      | CodeBlock(Attr, Text)</span>
+<span class="go">      ...</span>
+<span class="go">      | Header(Int, Attr, [Inline])</span>
+<span class="go">      ...</span>
+<span class="go">      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)</span>
+<span class="go">      ...</span>
+<span class="go">      | Div(Attr, [Block])</span>
+</code></pre></div>
+<p>So we need to target <code>Code</code>, <code>Link</code>, <code>Image</code>, <code>Span</code>, <code>Div</code>,<code>CodeBlock</code>,
+<code>Header</code>, <code>Table</code> and <code>Div</code> instances. <code>Header</code> is a special case here 
+since its attributes are its second item ; for every other type,
+the attributes come first. The transformation can be implemented as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AttrHolder</span> <span class="o">=</span> <span class="p">(</span><span class="n">Code</span><span class="p">,</span> <span class="n">Link</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Span</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">CodeBlock</span><span class="p">,</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Div</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add_class</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">AttrHolder</span><span class="p">):</span>
+            <span class="n">attr_index</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Header</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">identifier</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">key_value_pairs</span> <span class="o">=</span> <span class="n">elt</span><span class="p">[</span><span class="n">attr_index</span><span class="p">]</span>
+            <span class="n">typename</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">typename</span><span class="p">)</span>
+</code></pre></div>
+<p>The transformation works as expected:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">markdown</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2"># Pandoc {#pandoc}</span>
+<span class="gp">... </span><span class="s2">[Link to pandoc.org](https://pandoc.org)</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_class</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go"># Pandoc {#pandoc .header}</span>
+<span class="go">[Link to pandoc.org](https://pandoc.org){.link}</span>
+</code></pre></div>
+<p>Note that here we can get away without changing the attribute tuple entirely
+because its mutability is shallow: while we cannot rebind the reference to
+its items, if these items are mutable they can still be changed in-place.
+Here precisely, <code>classes</code> cannot be rebound, but since it is mutable,
+its contents can be changed.</p>
+<p>If we want to change the element ids instead, we would need to use a new tuple.
+For example, to add the id <code>anonymous</code> to every attribute holder without
+identifier, we can do:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_id</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">AttrHolder</span><span class="p">):</span>
+            <span class="n">attr_index</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elt</span><span class="p">,</span> <span class="n">Header</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">identifier</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">key_value_pairs</span> <span class="o">=</span> <span class="n">elt</span><span class="p">[</span><span class="n">attr_index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;anonymous&quot;</span>
+                <span class="n">elt</span><span class="p">[</span><span class="n">attr_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">key_value_pairs</span>
+</code></pre></div>
+<p>and this transformation would result in:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">add_id</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go"># Pandoc {#pandoc .header}</span>
+<span class="go">[Link to pandoc.org](https://pandoc.org){#anonymous .link}</span>
+</code></pre></div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:reveal">
+<p>such divs are used to include speaker notes into reveal.js presentations.&#160;<a class="footnote-backref" href="#fnref:reveal" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:except">
+<p>or <code>elt</code> is <code>list(holder.items())[index]</code> if <code>holder</code> is a dict.&#160;<a class="footnote-backref" href="#fnref:except" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:1">
+<p>These items would simply happen to share the same structure. 
+  For example, this can happen with attributes: 
+  since <code>Attr = (Text, [Text], [(Text, Text)])</code>,
+  the third component of every attribute – its list of key-value pairs – 
+  will contain some pairs of <code>Text</code> if it's not empty.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
+</html>

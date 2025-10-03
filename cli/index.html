@@ -1,0 +1,779 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../cookbook/">
+      
+      
+        <link rel="next" href="../api/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.1.6">
+    
+    
+      
+        <title>Command-line interface - Pandoc (Python Library)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#command-line-interface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Pandoc (Python Library)" class="md-header__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pandoc (Python Library)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Command-line interface
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pandoc (Python Library)" class="md-nav__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Pandoc (Python Library)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../document/" class="md-nav__link">
+        Document structure
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../markdown/" class="md-nav__link">
+        Pandoc's Markdown
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iteration/" class="md-nav__link">
+        Containers and iteration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        Cookbook
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Command-line interface
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../labs/" class="md-nav__link">
+        Labs 🧪
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="command-line-interface">Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permanent link">&para;</a></h1>
+<p>The Pandoc Python library includes a command-line tool to convert pandoc
+documents to their python representation. It is invoked with <code>python -m pandoc</code>
+followed by the <code>read</code> or <code>write</code> subcommands.</p>
+<p>You may use it to visualize the structure of markdown snippets:
+simply pipe them into the <code>read</code> subcommand standard input:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello world!&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pandoc<span class="w"> </span><span class="nb">read</span><span class="w"> </span>
+Pandoc<span class="o">(</span>Meta<span class="o">({})</span>,<span class="w"> </span><span class="o">[</span>Para<span class="o">([</span>Str<span class="o">(</span><span class="s1">&#39;Hello&#39;</span><span class="o">)</span>,<span class="w"> </span>Space<span class="o">()</span>,<span class="w"> </span>Str<span class="o">(</span><span class="s1">&#39;world!&#39;</span><span class="o">)])])</span>
+</code></pre></div>
+<p>Alternatively, you can use markdown files as inputs:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello world!&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>hello.md
+$<span class="w"> </span>cat<span class="w"> </span>hello.md
+Hello<span class="w"> </span>world!
+$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pandoc<span class="w"> </span><span class="nb">read</span><span class="w"> </span>hello.md
+Pandoc<span class="o">(</span>Meta<span class="o">({})</span>,<span class="w"> </span><span class="o">[</span>Para<span class="o">([</span>Str<span class="o">(</span><span class="s1">&#39;Hello&#39;</span><span class="o">)</span>,<span class="w"> </span>Space<span class="o">()</span>,<span class="w"> </span>Str<span class="o">(</span><span class="s1">&#39;world!&#39;</span><span class="o">)])])</span>
+</code></pre></div>
+<p>Note that the output of <code>python -m pandoc read</code> is always compact: 
+it holds on a single line.
+Consider the <code>README.md</code> file of this project for example</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">URL</span><span class="o">=</span><span class="s2">&quot;https://raw.githubusercontent.com/boisgera/pandoc/master/README.md&quot;</span>
+$<span class="w"> </span>curl<span class="w"> </span><span class="nv">$URL</span><span class="w"> </span>--output<span class="w"> </span>README.md<span class="w"> </span>
+$<span class="w"> </span>cat<span class="w"> </span>README.md<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span>
+
+Pandoc<span class="w"> </span><span class="o">(</span>Python<span class="w"> </span>Library<span class="o">)</span>
+<span class="o">================================================================================</span>
+
+<span class="o">[</span>!<span class="o">[</span>build<span class="o">](</span>https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg<span class="o">)](</span>https://github.com/boisgera/pandoc/actions/workflows/build.yml<span class="o">)</span>
+<span class="o">[</span>!<span class="o">[</span>Downloads<span class="o">](</span>https://pepy.tech/badge/pandoc<span class="o">)](</span>https://pepy.tech/project/pandoc<span class="o">)</span>
+<span class="o">[</span>!<span class="o">[</span>Gitter<span class="w"> </span>chat<span class="o">](</span>https://badges.gitter.im/boisgera/python-pandoc.svg<span class="o">)](</span>https://gitter.im/python-pandoc/community#<span class="o">)</span>
+
+*This<span class="w"> </span>README<span class="w"> </span>is<span class="w"> </span>about<span class="w"> </span>the<span class="w"> </span><span class="m">2</span>.x<span class="w"> </span>branch<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>library<span class="w"> </span><span class="o">(</span>alpha<span class="w"> </span>stage!<span class="o">)</span>.<span class="w"> </span>Only<span class="w"> </span>the<span class="w"> </span><span class="m">1</span>.x<span class="w"> </span>branch<span class="w"> </span>is<span class="w"> </span>available<span class="w"> </span>on<span class="w"> </span>PyPi<span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>moment.*
+</code></pre></div>
+<p>The output of the read subcommand is a very long line:
+<div class="highlight"><pre><span></span><code>$ python -m pandoc read README.md
+Pandoc(Meta({}), [Header(1, (&#39;pandoc-python-library&#39;, [], []), [Str(&#39;Pandoc&#39;), Space(), Str(&#39;(Python&#39;), Space(), Str(&#39;Library)&#39;)]), Para([Link((&#39;&#39;, [], []), [Image((&#39;&#39;, [], []), [Str(&#39;build&#39;)], (&#39;https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg&#39;, &#39;&#39;))], (&#39;https://github.com/boisgera/pandoc/actions/workflows/build.yml&#39;, &#39;&#39;)), SoftBreak(), Link((&#39;&#39;, [], []), [Image((&#39;&#39;, [], []), [Str(&#39;Downloads&#39;)], (&#39;https://pepy.tech/badge/pandoc&#39;, &#39;&#39;))], (&#39;https://pepy.tech/project/pandoc&#39;, &#39;&#39;)), SoftBreak(), Link((&#39;&#39;, [], []), [Image((&#39;&#39;, [], []), [Str(&#39;Gitter&#39;), Space(), Str(&#39;chat&#39;)], (&#39;https://badges.gitter.im/boisgera/python-pandoc.svg&#39;, &#39;&#39;))], (&#39;https://gitter.im/python-pandoc/community#&#39;, &#39;&#39;))]), Para([Emph([Str(&#39;This&#39;), Space(), Str(&#39;README&#39;), Space(), Str(&#39;is&#39;), Space(), Str(&#39;about&#39;), Space(), Str(&#39;the&#39;), Space(), Str(&#39;2.x&#39;), Space(), Str(&#39;branch&#39;), Space(), Str(&#39;of&#39;), Space(), Str(&#39;the&#39;), Space(), Str(&#39;library&#39;), Space(), Str(&#39;(alpha&#39;), Space(), Str(&#39;stage!).&#39;), Space(), Str(&#39;Only&#39;), Space(), Str(&#39;the&#39;), Space(), Str(&#39;1.x&#39;), Space(), Str(&#39;branch&#39;), Space(), Str(&#39;is&#39;), Space(), Str(&#39;available&#39;), Space(), Str(&#39;on&#39;), Space(), Str(&#39;PyPi&#39;), Space(), Str(&#39;at&#39;), Space(), Str(&#39;the&#39;), Space(), Str(&#39;moment.&#39;)])]), Header(2, (&#39;getting-started&#39;, [], []), [Str(&#39;Getting&#39;), Space(), Str(&#39;started&#39;)]), Para([Str(&#39;Install&#39;), Space(), Str(&#39;the&#39;), Space(), Str(&#39;latest&#39;), Space(), Str(&#39;version&#39;), Space(), Str(&#39;with:&#39;)]), CodeBlock((&#39;&#39;, [], []), &#39;$ pip install --upgrade git+https://github.com/boisgera/pandoc.git&#39;), Para([Str(&#39;The&#39;), Space(), Link((&#39;&#39;, [], []), [Str(&#39;Pandoc&#39;)], (&#39;http://pandoc.org/&#39;, &#39;&#39;)), Space(), Str(&#39;command-line&#39;), Space(), Str(&#39;tool&#39;), Space(), Str(&#39;is&#39;), Space(), Str(&#39;a&#39;), Space(), Str(&#39;also&#39;), Space(), Str(&#39;required&#39;), Space(), Str(&#39;dependency&#39;), Space(), Str(&#39;;&#39;), SoftBreak(), Str(&#39;you&#39;), Space(), Str(&#39;may&#39;), Space(), Str(&#39;install&#39;), Space(), Str(&#39;it&#39;), Space(), Str(&#39;with&#39;), Space(), Str(&#39;:&#39;)]), CodeBlock((&#39;&#39;, [], []), &#39;$ conda install -c conda-forge pandoc&#39;), Header(2, (&#39;overview&#39;, [], []), [Str(&#39;Overview&#39;)]), Para([Str(&#39;This&#39;), Space(), Str(&#39;project&#39;), Space(), Str(&#39;brings&#39;), Space(), Link((&#39;&#39;, [], []), [Str(&#39;Pandoc&#39;)], (&#39;http://pandoc.org/&#39;, &#39;&#39;)), Str(&#39;’s&#39;), Space(), Str(&#39;data&#39;), Space(), Str(&#39;model&#39;), Space(), Str(&#39;for&#39;), Space(), Str(&#39;markdown&#39;), Space(), Str(&#39;documents&#39;), Space(), Str(&#39;to&#39;), Space(), Str(&#39;Python:&#39;)]), CodeBlock((&#39;&#39;, [], []), &#39;$ echo &quot;Hello world!&quot; | python -m pandoc read \nPandoc(Meta({}), [Para([Str(\&#39;Hello\&#39;), Space(), Str(\&#39;world!\&#39;)])])&#39;), Para([Str(&#39;It&#39;), Space(), Str(&#39;can&#39;), Space(), Str(&#39;be&#39;), Space(), Str(&#39;used&#39;), Space(), Str(&#39;to&#39;), Space(), Str(&#39;analyze,&#39;), Space(), Str(&#39;create&#39;), Space(), Str(&#39;and&#39;), Space(), Str(&#39;transform&#39;), Space(), Str(&#39;documents,&#39;), Space(), Str(&#39;in&#39;), Space(), Str(&#39;Python&#39;), Space(), Str(&#39;:&#39;)]), CodeBlock((&#39;&#39;, [], []), &#39;&gt;&gt;&gt; import pandoc\n&gt;&gt;&gt; text = &quot;Hello world!&quot;\n&gt;&gt;&gt; doc = pandoc.read(text)\n&gt;&gt;&gt; doc\nPandoc(Meta({}), [Para([Str(\&#39;Hello\&#39;), Space(), Str(\&#39;world!\&#39;)])])\n\n&gt;&gt;&gt; paragraph = doc[1][0]\n&gt;&gt;&gt; paragraph\nPara([Str(\&#39;Hello\&#39;), Space(), Str(\&#39;world!\&#39;)])\n&gt;&gt;&gt; from pandoc.types import Str\n&gt;&gt;&gt; paragraph[0][2] = Str(\&#39;Python!\&#39;)\n&gt;&gt;&gt; text = pandoc.write(doc)\n&gt;&gt;&gt; print(text)\nHello Python!&#39;), Para([Link((&#39;&#39;, [], []), [Str(&#39;Pandoc&#39;)], (&#39;http://pandoc.org/&#39;, &#39;&#39;)), Space(), Str(&#39;is&#39;), Space(), Str(&#39;the&#39;), Space(), Str(&#39;general&#39;), Space(), Str(&#39;markup&#39;), Space(), Str(&#39;converter&#39;), Space(), Str(&#39;(and&#39;), Space(), Str(&#39;Haskell&#39;), Space(), Str(&#39;library)&#39;), Space(), Str(&#39;written&#39;), Space(), Str(&#39;by&#39;), Space(), Link((&#39;&#39;, [], []), [Str(&#39;John&#39;), Space(), Str(&#39;MacFarlane&#39;)], (&#39;http://johnmacfarlane.net/&#39;, &#39;&#39;)), Str(&#39;.&#39;)])])
+</code></pre></div></p>
+<p>If this is not what you want, remember that this output is valid Python code
+that any code formatter can handle. For example,
+if the <a href="https://black.readthedocs.io/en/stable/">black</a> formatter is available, 
+you can pretty-print the output with: </p>
+<div class="highlight"><pre><span></span><code>$ python -m pandoc read README.md | black -q -
+Pandoc(
+    Meta({}),
+    [
+        Header(
+            1,
+            (&quot;pandoc-python-library&quot;, [], []),
+            [Str(&quot;Pandoc&quot;), Space(), Str(&quot;(Python&quot;), Space(), Str(&quot;Library)&quot;)],
+        ),
+        Para(
+            [
+                Link(
+                    (&quot;&quot;, [], []),
+                    [
+                        Image(
+                            (&quot;&quot;, [], []),
+                            [Str(&quot;build&quot;)],
+                            (
+                                &quot;https://github.com/boisgera/pandoc/actions/workflows/build.yml/badge.svg&quot;,
+                                &quot;&quot;,
+                            ),
+                        )
+                    ],
+                    (
+                        &quot;https://github.com/boisgera/pandoc/actions/workflows/build.yml&quot;,
+                        &quot;&quot;,
+                    ),
+                ),
+                SoftBreak(),
+                Link(
+                    (&quot;&quot;, [], []),
+                    [
+                        Image(
+                            (&quot;&quot;, [], []),
+                            [Str(&quot;Downloads&quot;)],
+                            (&quot;https://pepy.tech/badge/pandoc&quot;, &quot;&quot;),
+                        )
+                    ],
+                    (&quot;https://pepy.tech/project/pandoc&quot;, &quot;&quot;),
+                ),
+                SoftBreak(),
+                Link(
+                    (&quot;&quot;, [], []),
+                    [
+                        Image(
+                            (&quot;&quot;, [], []),
+                            [Str(&quot;Gitter&quot;), Space(), Str(&quot;chat&quot;)],
+                            (&quot;https://badges.gitter.im/boisgera/python-pandoc.svg&quot;, &quot;&quot;),
+                        )
+                    ],
+                    (&quot;https://gitter.im/python-pandoc/community#&quot;, &quot;&quot;),
+                ),
+            ]
+        ),
+        Para(
+            [
+                Emph(
+                    [
+                        Str(&quot;This&quot;),
+                        Space(),
+                        Str(&quot;README&quot;),
+                        Space(),
+                        Str(&quot;is&quot;),
+                        Space(),
+                        Str(&quot;about&quot;),
+                        Space(),
+                        Str(&quot;the&quot;),
+                        Space(),
+                        Str(&quot;2.x&quot;),
+                        Space(),
+                        Str(&quot;branch&quot;),
+                        Space(),
+                        Str(&quot;of&quot;),
+                        Space(),
+                        Str(&quot;the&quot;),
+                        Space(),
+                        Str(&quot;library&quot;),
+                        Space(),
+                        Str(&quot;(alpha&quot;),
+                        Space(),
+                        Str(&quot;stage!).&quot;),
+                        Space(),
+                        Str(&quot;Only&quot;),
+                        Space(),
+                        Str(&quot;the&quot;),
+                        Space(),
+                        Str(&quot;1.x&quot;),
+                        Space(),
+                        Str(&quot;branch&quot;),
+                        Space(),
+                        Str(&quot;is&quot;),
+                        Space(),
+                        Str(&quot;available&quot;),
+                        Space(),
+                        Str(&quot;on&quot;),
+                        Space(),
+                        Str(&quot;PyPi&quot;),
+                        Space(),
+                        Str(&quot;at&quot;),
+                        Space(),
+                        Str(&quot;the&quot;),
+                        Space(),
+                        Str(&quot;moment.&quot;),
+                    ]
+                )
+            ]
+        ),
+        Header(
+            2, (&quot;getting-started&quot;, [], []), [Str(&quot;Getting&quot;), Space(), Str(&quot;started&quot;)]
+        ),
+        Para(
+            [
+                Str(&quot;Install&quot;),
+                Space(),
+                Str(&quot;the&quot;),
+                Space(),
+                Str(&quot;latest&quot;),
+                Space(),
+                Str(&quot;version&quot;),
+                Space(),
+                Str(&quot;with:&quot;),
+            ]
+        ),
+        CodeBlock(
+            (&quot;&quot;, [], []),
+            &quot;$ pip install --upgrade git+https://github.com/boisgera/pandoc.git&quot;,
+        ),
+        Para(
+            [
+                Str(&quot;The&quot;),
+                Space(),
+                Link((&quot;&quot;, [], []), [Str(&quot;Pandoc&quot;)], (&quot;http://pandoc.org/&quot;, &quot;&quot;)),
+                Space(),
+                Str(&quot;command-line&quot;),
+                Space(),
+                Str(&quot;tool&quot;),
+                Space(),
+                Str(&quot;is&quot;),
+                Space(),
+                Str(&quot;a&quot;),
+                Space(),
+                Str(&quot;also&quot;),
+                Space(),
+                Str(&quot;required&quot;),
+                Space(),
+                Str(&quot;dependency&quot;),
+                Space(),
+                Str(&quot;;&quot;),
+                SoftBreak(),
+                Str(&quot;you&quot;),
+                Space(),
+                Str(&quot;may&quot;),
+                Space(),
+                Str(&quot;install&quot;),
+                Space(),
+                Str(&quot;it&quot;),
+                Space(),
+                Str(&quot;with&quot;),
+                Space(),
+                Str(&quot;:&quot;),
+            ]
+        ),
+        CodeBlock((&quot;&quot;, [], []), &quot;$ conda install -c conda-forge pandoc&quot;),
+        Header(2, (&quot;overview&quot;, [], []), [Str(&quot;Overview&quot;)]),
+        Para(
+            [
+                Str(&quot;This&quot;),
+                Space(),
+                Str(&quot;project&quot;),
+                Space(),
+                Str(&quot;brings&quot;),
+                Space(),
+                Link((&quot;&quot;, [], []), [Str(&quot;Pandoc&quot;)], (&quot;http://pandoc.org/&quot;, &quot;&quot;)),
+                Str(&quot;’s&quot;),
+                Space(),
+                Str(&quot;data&quot;),
+                Space(),
+                Str(&quot;model&quot;),
+                Space(),
+                Str(&quot;for&quot;),
+                Space(),
+                Str(&quot;markdown&quot;),
+                Space(),
+                Str(&quot;documents&quot;),
+                Space(),
+                Str(&quot;to&quot;),
+                Space(),
+                Str(&quot;Python:&quot;),
+            ]
+        ),
+        CodeBlock(
+            (&quot;&quot;, [], []),
+            &quot;$ echo \&quot;Hello world!\&quot; | python -m pandoc read \nPandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])&quot;,
+        ),
+        Para(
+            [
+                Str(&quot;It&quot;),
+                Space(),
+                Str(&quot;can&quot;),
+                Space(),
+                Str(&quot;be&quot;),
+                Space(),
+                Str(&quot;used&quot;),
+                Space(),
+                Str(&quot;to&quot;),
+                Space(),
+                Str(&quot;analyze,&quot;),
+                Space(),
+                Str(&quot;create&quot;),
+                Space(),
+                Str(&quot;and&quot;),
+                Space(),
+                Str(&quot;transform&quot;),
+                Space(),
+                Str(&quot;documents,&quot;),
+                Space(),
+                Str(&quot;in&quot;),
+                Space(),
+                Str(&quot;Python&quot;),
+                Space(),
+                Str(&quot;:&quot;),
+            ]
+        ),
+        CodeBlock(
+            (&quot;&quot;, [], []),
+            &quot;&gt;&gt;&gt; import pandoc\n&gt;&gt;&gt; text = \&quot;Hello world!\&quot;\n&gt;&gt;&gt; doc = pandoc.read(text)\n&gt;&gt;&gt; doc\nPandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])\n\n&gt;&gt;&gt; paragraph = doc[1][0]\n&gt;&gt;&gt; paragraph\nPara([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])\n&gt;&gt;&gt; from pandoc.types import Str\n&gt;&gt;&gt; paragraph[0][2] = Str(&#39;Python!&#39;)\n&gt;&gt;&gt; text = pandoc.write(doc)\n&gt;&gt;&gt; print(text)\nHello Python!&quot;,
+        ),
+        Para(
+            [
+                Link((&quot;&quot;, [], []), [Str(&quot;Pandoc&quot;)], (&quot;http://pandoc.org/&quot;, &quot;&quot;)),
+                Space(),
+                Str(&quot;is&quot;),
+                Space(),
+                Str(&quot;the&quot;),
+                Space(),
+                Str(&quot;general&quot;),
+                Space(),
+                Str(&quot;markup&quot;),
+                Space(),
+                Str(&quot;converter&quot;),
+                Space(),
+                Str(&quot;(and&quot;),
+                Space(),
+                Str(&quot;Haskell&quot;),
+                Space(),
+                Str(&quot;library)&quot;),
+                Space(),
+                Str(&quot;written&quot;),
+                Space(),
+                Str(&quot;by&quot;),
+                Space(),
+                Link(
+                    (&quot;&quot;, [], []),
+                    [Str(&quot;John&quot;), Space(), Str(&quot;MacFarlane&quot;)],
+                    (&quot;http://johnmacfarlane.net/&quot;, &quot;&quot;),
+                ),
+                Str(&quot;.&quot;),
+            ]
+        ),
+    ],
+)
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
+</html>

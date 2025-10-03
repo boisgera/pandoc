@@ -1,0 +1,928 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../examples/">
+      
+      
+        <link rel="next" href="../markdown/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.1.6">
+    
+    
+      
+        <title>Document structure - Pandoc (Python Library)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#document-structure" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Pandoc (Python Library)" class="md-header__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pandoc (Python Library)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Document structure
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pandoc (Python Library)" class="md-nav__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Pandoc (Python Library)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Document structure
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Document structure
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#meta-model" class="md-nav__link">
+    Meta-model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#haskell-python" class="md-nav__link">
+    Haskell &amp; Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documents" class="md-nav__link">
+    Documents
+  </a>
+  
+    <nav class="md-nav" aria-label="Documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explore" class="md-nav__link">
+    Explore
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    Create
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types" class="md-nav__link">
+    Types
+  </a>
+  
+    <nav class="md-nav" aria-label="Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explore_1" class="md-nav__link">
+    Explore
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kinds-of-types" class="md-nav__link">
+    Kinds of Types
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../markdown/" class="md-nav__link">
+        Pandoc's Markdown
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iteration/" class="md-nav__link">
+        Containers and iteration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        Cookbook
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command-line interface
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        API reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../labs/" class="md-nav__link">
+        Labs 🧪
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#meta-model" class="md-nav__link">
+    Meta-model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#haskell-python" class="md-nav__link">
+    Haskell &amp; Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documents" class="md-nav__link">
+    Documents
+  </a>
+  
+    <nav class="md-nav" aria-label="Documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explore" class="md-nav__link">
+    Explore
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    Create
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types" class="md-nav__link">
+    Types
+  </a>
+  
+    <nav class="md-nav" aria-label="Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explore_1" class="md-nav__link">
+    Explore
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kinds-of-types" class="md-nav__link">
+    Kinds of Types
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="document-structure">Document structure<a class="headerlink" href="#document-structure" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandoc.types</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</code></pre></div>
+<h2 id="meta-model">Meta-model<a class="headerlink" href="#meta-model" title="Permanent link">&para;</a></h2>
+<p>Pandoc models every document as a tree of elements. Each element has
+a well-defined type such as paragraph, image, note link, etc. and of 
+course the document type. These elements are combined using a well-defined
+set of rules which defines the document meta-model<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>Pandoc can be used as a converter between different document formats;
+this usage requires very little knowledge about the document structure. 
+However, if one wishes to analyze, create or transform documents,
+some working knowledge of this meta-model becomes necessary.</p>
+<h2 id="haskell-python">Haskell &amp; Python<a class="headerlink" href="#haskell-python" title="Permanent link">&para;</a></h2>
+<p>The primary source of information about pandoc's meta-model is the hierarchy
+of types defined by the <a href="https://hackage.haskell.org/package/pandoc-types">pandoc-types</a> 
+Haskell package. The meta-model, represented by a collection of Haskell types,
+is described in <a href="https://hackage.haskell.org/package/pandoc-types-1.22/docs/Text-Pandoc-Definition.html">the documentation of the <code>Text.Pandoc.Definition</code> module</a>.</p>
+<p>However, this source of information requires some understanding of the Haskell
+programming language. The pandoc Python library brings to Python this hierarchy 
+of types; it also offers an alternate and interactive way to become familiar 
+with the meta-model. This is what we describe in the following sections.</p>
+<h2 id="documents">Documents<a class="headerlink" href="#documents" title="Permanent link">&para;</a></h2>
+<h3 id="explore">Explore<a class="headerlink" href="#explore" title="Permanent link">&para;</a></h3>
+<p>The basic idea here is that you can create markdown documents that feature
+exactly the kind of document constructs that you are interested in, and
+then read them as pandoc documents to see how they look. 
+By construction, these documents converted from markdown will be valid, 
+i.e. consistent with the pandoc meta-model. 
+And since you can display them, it's a great way to build some understanding
+of how things work.</p>
+<p>For example, the plain text <code>"Hello World!"</code> is represented in
+the following manner:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello, World!&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello,&#39;), Space(), Str(&#39;World!&#39;)])])</span>
+</code></pre></div>
+<p>We can see that this document is an instance of the <code>Pandoc</code> type,
+which contains some (empty) metadata and whose contents are a single 
+paragraph which contains strings and spaces.</p>
+<p>It's possible to explore interactively this document in a more precise manner:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello,&#39;), Space(), Str(&#39;World!&#39;)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span>
+<span class="go">Meta({})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contents</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contents</span>
+<span class="go">[Para([Str(&#39;Hello,&#39;), Space(), Str(&#39;World!&#39;)])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span> <span class="o">=</span> <span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span>
+<span class="go">Para([Str(&#39;Hello,&#39;), Space(), Str(&#39;World!&#39;)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[Str(&#39;Hello,&#39;), Space(), Str(&#39;World!&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">world</span> <span class="o">=</span> <span class="n">paragraph</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">world</span>
+<span class="go">Str(&#39;World!&#39;)</span>
+</code></pre></div>
+<p>I recommend that you try to reproduce the process above for small documents 
+that feature titles, headers, emphasized text, lists, etc. to become familiar 
+with the way that these constructs are described in pandoc documents.</p>
+<h3 id="create">Create<a class="headerlink" href="#create" title="Permanent link">&para;</a></h3>
+<p>At this stage, even if we have not yet described formally the meta-model, 
+we have already gathered enough knowledge to build a simple plain text document 
+from scratch.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="n">Str</span><span class="p">(</span><span class="s2">&quot;Python&quot;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;Pandoc&quot;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span> <span class="o">=</span> <span class="n">Para</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Meta</span><span class="p">({})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Pandoc</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="p">[</span><span class="n">paragraph</span><span class="p">])</span>
+</code></pre></div>
+<p>We can check that our document is valid and describes what we are expecting
+by converting it to markdown and displaying the result:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">Python &amp; Pandoc</span>
+</code></pre></div>
+<h2 id="types">Types<a class="headerlink" href="#types" title="Permanent link">&para;</a></h2>
+<h3 id="explore_1">Explore<a class="headerlink" href="#explore_1" title="Permanent link">&para;</a></h3>
+<p>The insights gathered in the previous sections were a good starting point to
+get a feel for the possible document structure. Now, to be certain that we
+always deal with valid documents, we need to explore the document meta-model 
+itself, i.e. the hierarchy of pandoc types, such as
+<code>Pandoc</code>, <code>Meta</code>, <code>Para</code>, <code>Str</code>, <code>Space</code>, etc.
+Luckily for us, these types are self-documented: in the Python interpreter 
+they are represented by a type signature. This signature described 
+how they can be constructed.</p>
+<p>For example, the top-level type <code>Pandoc</code> is represented as:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Pandoc</span>
+<span class="go">Pandoc(Meta, [Block])</span>
+</code></pre></div>
+<p>which means that a <code>Pandoc</code> instance is defined by an instance of <code>Meta</code>
+(the document metadata) and a list of blocks. In our exemple above,
+the metadata was not very interesting: <code>Meta({})</code>. Still, we can make
+sure that this fragment is valid: the <code>Meta</code> type signature is</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Meta</span>
+<span class="go">Meta({Text: MetaValue})</span>
+</code></pre></div>
+<p>which reads as: metadata instances contain a dictionary of <code>Text</code> keys and
+<code>MetaValue</code> values. In our example, this dictionary was empty, hence we
+don't need to explore the structure of <code>Text</code> and <code>MetaValue</code> any further
+to conclude that the fragment is valid.</p>
+<p>Now, let's explore the content of the document which is defined as a list of
+blocks. The <code>Block</code> type signature is</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Block</span>
+<span class="go">Block = Plain([Inline])</span>
+<span class="go">      | Para([Inline])</span>
+<span class="go">      | LineBlock([[Inline]])</span>
+<span class="go">      | CodeBlock(Attr, Text)</span>
+<span class="go">      | RawBlock(Format, Text)</span>
+<span class="go">      | BlockQuote([Block])</span>
+<span class="go">      | OrderedList(ListAttributes, [[Block]])</span>
+<span class="go">      | BulletList([[Block]])</span>
+<span class="go">      | DefinitionList([([Inline], [[Block]])])</span>
+<span class="go">      | Header(Int, Attr, [Inline])</span>
+<span class="go">      | HorizontalRule()</span>
+<span class="go">      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)</span>
+<span class="go">      | Figure(Attr, Caption, [Block])</span>
+<span class="go">      | Div(Attr, [Block])</span>
+</code></pre></div>
+<p>Each <code>"|"</code> symbol in the signature represents an alternative: blocks are 
+either instances of <code>Plain</code> or <code>Para</code> or <code>LineBlock</code>, etc. In our example
+document, the only type of block that was used is the paragraph type <code>Para</code>,
+whose signature is:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Para</span>
+<span class="go">Para([Inline])</span>
+</code></pre></div>
+<p>Paragraphs contain a list of inlines. An inline is</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Inline</span>
+<span class="go">Inline = Str(Text)</span>
+<span class="go">       | Emph([Inline])</span>
+<span class="go">       | Underline([Inline])</span>
+<span class="go">       | Strong([Inline])</span>
+<span class="go">       | Strikeout([Inline])</span>
+<span class="go">       | Superscript([Inline])</span>
+<span class="go">       | Subscript([Inline])</span>
+<span class="go">       | SmallCaps([Inline])</span>
+<span class="go">       | Quoted(QuoteType, [Inline])</span>
+<span class="go">       | Cite([Citation], [Inline])</span>
+<span class="go">       | Code(Attr, Text)</span>
+<span class="go">       | Space()</span>
+<span class="go">       | SoftBreak()</span>
+<span class="go">       | LineBreak()</span>
+<span class="go">       | Math(MathType, Text)</span>
+<span class="go">       | RawInline(Format, Text)</span>
+<span class="go">       | Link(Attr, [Inline], Target)</span>
+<span class="go">       | Image(Attr, [Inline], Target)</span>
+<span class="go">       | Note([Block])</span>
+<span class="go">       | Span(Attr, [Inline])</span>
+</code></pre></div>
+<p>In our plain text example, only two types of inlines where used: strings
+<code>Str</code> and white space <code>Space</code>. Since</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Str</span>
+<span class="go">Str(Text)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Text</span>
+<span class="go">&lt;class &#39;str&#39;&gt;</span>
+</code></pre></div>
+<p>we see that <code>Str</code> merely wraps an instance of <code>Text</code> which is simply a 
+synonym for the Python string type. On the other hand, the white space
+is a type without any content:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Space</span>
+<span class="go">Space()</span>
+</code></pre></div>
+<p>We now have successfully discovered all pandoc types used in our simple
+"Hello world!" document. Again, I recommend that you reproduce this process 
+for all document constructs that you are interested in.</p>
+<h3 id="kinds-of-types">Kinds of Types<a class="headerlink" href="#kinds-of-types" title="Permanent link">&para;</a></h3>
+<p>The types defined in <code>pandoc.types</code> are either data types, typedefs or aliases 
+for Python built-ins.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pandoc.types</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</code></pre></div>
+<p>The <code>Pandoc</code> type is an example of data type:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Pandoc</span><span class="p">,</span> <span class="n">Type</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Pandoc</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>Data types come in two flavors: abstract or concrete. The signature of abstract 
+data types lists the collection of concrete types they correspond to:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Inline</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">Inline = Str(Text)</span>
+<span class="go">       | Emph([Inline])</span>
+<span class="go">       | Underline([Inline])</span>
+<span class="go">       | Strong([Inline])</span>
+<span class="go">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Inline</span><span class="p">,</span> <span class="n">Type</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Inline</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>The concrete types on the right-hand side of this signature are constructor
+(concrete) types. The abstract type itself is not a constructor ; 
+it cannot be instantiated:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Inline</span><span class="p">,</span> <span class="n">Constructor</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Inline</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">Can&#39;t instantiate abstract class Inline</span>
+</code></pre></div>
+<p>The constructors associated to some abstract data type are concrete:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">Type</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">Constructor</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>They can be instantiated and the classic inheritance test apply:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">Str</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>Constructor types inherit from the corresponding abstract data type:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">Inline</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">Inline</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>Typedefs are also another kind of abstract type. They are merely introduced
+so that we can name some constructs in the type hierarchy, but no instance
+of such types exist in documents. For example, consider 
+the <code>Attr</code> and <code>Target</code> types:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Attr</span>
+<span class="go">Attr = (Text, [Text], [(Text, Text)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Target</span>
+<span class="go">Target = (Text, Text)</span>
+</code></pre></div>
+<p>They are pandoc types which are not data types but typedefs:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Attr</span><span class="p">,</span> <span class="n">Type</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Attr</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Attr</span><span class="p">,</span> <span class="n">TypeDef</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Target</span><span class="p">,</span> <span class="n">Type</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Target</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Target</span><span class="p">,</span> <span class="n">TypeDef</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>They enable more compact and readable types signatures. 
+For example, with typedefs, the <code>Link</code> signature is:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Link</span>
+<span class="go">Link(Attr, [Inline], Target)</span>
+</code></pre></div>
+<p>instead of <code>Link((Text, [Text], [(Text, Text)]), [Inline], (Text, Text))</code>
+without them.</p>
+<!--
+
+???+ error "TODO"
+    Generate error on `isinstance` test for typedefs, even if structurally valid.
+    Or tweak isinstance to make the appropriare structural test?
+    That would be a lousy pattern matching practice **but** also a handy
+    type checking construct.
+
+    `isinstance(("text", "text"), Target)` ???
+-->
+
+<p>To mimick closely the original Haskell type hierarchy, we also define aliases 
+for some Python primitive types. For example, the <code>Text</code> type used in the <code>Str</code> 
+data constructor is not a custom Pandoc type:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Str</span>
+<span class="go">Str(Text)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">Text</span><span class="p">,</span> <span class="n">Type</span><span class="p">)</span>
+<span class="go">False</span>
+</code></pre></div>
+<p>Instead, it's a mere alias for the builtin Python string:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Text</span>
+<span class="go">&lt;class &#39;str&#39;&gt;</span>
+</code></pre></div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>A document model represents a given document. The document
+meta-model represents the document model itself, i.e. the set of all valid 
+documents.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
+</html>

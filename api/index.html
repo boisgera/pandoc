@@ -1,0 +1,1927 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../cli/">
+      
+      
+        <link rel="next" href="../changelog/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.1.6">
+    
+    
+      
+        <title>API reference - Pandoc (Python Library)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Pandoc (Python Library)" class="md-header__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pandoc (Python Library)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pandoc (Python Library)" class="md-nav__button md-logo" aria-label="Pandoc (Python Library)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Pandoc (Python Library)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/boisgera/pandoc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pandoc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../document/" class="md-nav__link">
+        Document structure
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../markdown/" class="md-nav__link">
+        Pandoc's Markdown
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iteration/" class="md-nav__link">
+        Containers and iteration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        Cookbook
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        Command-line interface
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          API reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        API reference
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pandoc" class="md-nav__link">
+    pandoc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pandoctypes" class="md-nav__link">
+    pandoc.types
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../labs/" class="md-nav__link">
+        Labs 🧪
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pandoc" class="md-nav__link">
+    pandoc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pandoctypes" class="md-nav__link">
+    pandoc.types
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandoc.types</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</code></pre></div>
+<h2 id="pandoc"><code>pandoc</code><a class="headerlink" href="#pandoc" title="Permanent link">&para;</a></h2>
+<details class="note">
+<summary><code>read(source=None, file=None, format=None, options=None)</code></summary>
+<p>Read a source document.</p>
+<p>The source document must be specified by either <code>source</code> or <code>file</code>.
+Implicitly, the document format is inferred from the filename extension
+when possible<sup id="fnref:heuristics"><a class="footnote-ref" href="#fn:heuristics">1</a></sup>, otherwise the markdown format is assumed
+by default; the input format can also be specified explicitly.
+Extra options can be passed to the pandoc command-line tool.</p>
+<p><h5>Arguments</h5></p>
+<ul>
+<li>
+<p><code>source</code>: the document content, as a string or as utf-8 encoded bytes.</p>
+</li>
+<li>
+<p><code>file</code>: the document, provided as a file or filename.</p>
+</li>
+<li>
+<p><code>format</code>: the document format (such as <code>"markdown"</code>, <code>"odt"</code>, <code>"docx"</code>, <code>"html"</code>, etc.)</p>
+<p>Refer to <a href="https://github.com/jgm/pandoc#pandoc">Pandoc's README</a> for
+the list of supported input formats.</p>
+</li>
+<li>
+<p><code>options</code>: additional pandoc options (a list of strings).</p>
+<p>Refer to <a href="https://pandoc.org/MANUAL.html">Pandoc's user guide</a> for a
+complete list of options.</p>
+</li>
+</ul>
+<p><h5>Returns</h5></p>
+<ul>
+<li><code>doc</code>: the document, as a <code>Pandoc</code> object.</li>
+</ul>
+<p><h5>Usage</h5></p>
+<p>Read documents from strings:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">markdown</span> <span class="o">=</span> <span class="s2">&quot;Hello world!&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;p&gt;Hello world!&lt;/p&gt;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">)</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+</code></pre></div>
+<p>Read documents from files:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;doc.html&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># html format inferred from filename</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">)</span> <span class="c1"># but here it must be explicit</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+</code></pre></div>
+<p>Use extra pandoc options:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">markdown</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-M&quot;</span><span class="p">,</span> <span class="s2">&quot;id=hello&quot;</span><span class="p">])</span> <span class="c1"># add metadata</span>
+<span class="go">Pandoc(Meta({&#39;id&#39;: MetaString(&#39;hello&#39;)}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+</code></pre></div>
+</details>
+<details class="note">
+<summary><code>write(doc, file=None, format=None, options=None)</code></summary>
+<p>Write a pandoc document (or document fragment) to a file and return its contents.</p>
+<p>Inline document fragments are automatically wrapped into a <code>Plain</code> 
+blocks; block document fragments are automatically wrapped into
+a <code>Pandoc</code> element with no metadata. </p>
+<p>Implicitly, the document format is inferred from the filename extension
+when possible<sup id="fnref2:heuristics"><a class="footnote-ref" href="#fn:heuristics">1</a></sup>, otherwise the markdown format is assumed
+by default; the output format can also be specified explicitly.
+Extra options can be passed to the pandoc command-line tool.</p>
+<p><h5>Arguments</h5></p>
+<ul>
+<li>
+<p><code>doc</code>: a <code>Pandoc</code> object or a document fragment 
+    (<code>Inline</code>, <code>[Inline]</code>, <code>MetaInlines</code>, 
+     <code>Block</code>, <code>[Block]</code> or <code>MetaBlocks</code>).</p>
+</li>
+<li>
+<p><code>file</code>: a file, filename or <code>None</code>.</p>
+</li>
+<li>
+<p><code>format</code>: the document format (such as <code>"markdown"</code>, <code>"odt"</code>, <code>"docx"</code>, <code>"html"</code>, etc.)</p>
+<p>Refer to <a href="https://github.com/jgm/pandoc#pandoc">Pandoc's README</a> for
+the list of supported output formats.</p>
+</li>
+<li>
+<p><code>options</code>: additional pandoc options (a list of strings).</p>
+<p>Refer to <a href="https://pandoc.org/MANUAL.html">Pandoc's user guide</a> for a
+complete list of options.</p>
+</li>
+</ul>
+<p><h5>Returns</h5></p>
+<ul>
+<li>
+<p><code>output</code>: the output document, as a string or as a byte sequence.</p>
+<p>Bytes are only used for binary output formats (doc, ppt, etc.).</p>
+</li>
+</ul>
+<p><h5>Usage</h5></p>
+<p>Write documents to markdown strings:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>  <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">Hello world!</span>
+</code></pre></div>
+<p>Write document fragments to markdown strings:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">elt</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">elt</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="p">(</span><span class="n">Str</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">Hello!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">Hello world!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="p">(</span><span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)]))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">Hello world!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="p">([</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="gp">... </span>    <span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="go">Hello world!</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="go">Hello world!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="p">(</span><span class="n">MetaInlines</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)]))</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="go">Hello world!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span><span class="p">(</span><span class="n">MetaBlocks</span><span class="p">([</span> <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
+<span class="gp">... </span>    <span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])</span>
+<span class="gp">... </span><span class="p">]))</span>
+<span class="go">Hello world!</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="go">Hello world!</span>
+</code></pre></div>
+<p>Use alternate (text or binary) output formats:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">)</span> <span class="c1"># html output</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="go">&lt;class &#39;str&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="go">&lt;p&gt;Hello world!&lt;/p&gt;</span>
+<span class="go">&lt;BLANKLINE&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;odt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="go">&lt;class &#39;bytes&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">b&#39;PK...&#39;</span>
+</code></pre></div>
+<p>Write documents to files:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;doc.md&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;doc.md&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">&#39;Hello world!\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;doc.html&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;doc.html&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">&#39;&lt;p&gt;Hello world!&lt;/p&gt;\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;doc.pdf&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;doc.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">b&#39;%PDF...&#39;</span>
+</code></pre></div>
+<p>Use extra pandoc options:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">doc</span><span class="p">,</span> 
+<span class="gp">... </span>    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">,</span> 
+<span class="gp">... </span>    <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;--standalone&quot;</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;lang=en&quot;</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="c1"># doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE</span>
+<span class="go">&lt;!DOCTYPE html&gt;</span>
+<span class="go">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; lang=&quot;en&quot; xml:lang=&quot;en&quot;&gt;</span>
+<span class="go">...</span>
+<span class="go">&lt;body&gt;</span>
+<span class="go">&lt;p&gt;Hello world!&lt;/p&gt;</span>
+<span class="go">&lt;/body&gt;</span>
+<span class="go">&lt;/html&gt;</span>
+</code></pre></div>
+</details>
+<details class="note">
+<summary><code>iter(elt, path=False)</code></summary>
+<p>Iterate on document elements in document order.</p>
+<p><h5>Arguments</h5></p>
+<ul>
+<li>
+<p><code>elt</code>: a pandoc item (or more generally any Python object),</p>
+</li>
+<li>
+<p><code>path</code>: a boolean; defaults to <code>False</code>.</p>
+</li>
+</ul>
+<p><h5>Returns</h5></p>
+<ul>
+<li>
+<p><code>iterator</code>: a depth-first tree iterator.</p>
+</li>
+<li>
+<p><code>elt_path</code> (when <code>path==True</code>): a list of <code>(elt, index)</code> pairs. </p>
+</li>
+</ul>
+<p><h5>Usage</h5></p>
+<p>This iterator may be used as a general-purpose tree iterator</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">[1, [2, [3]]]</span>
+<span class="go">1</span>
+<span class="go">[2, [3]]</span>
+<span class="go">2</span>
+<span class="go">[3]</span>
+<span class="go">3</span>
+</code></pre></div>
+<p>Non-iterable objects yield themselves:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">1</span>
+</code></pre></div>
+<p>But it is really meant to be used with pandoc objects:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Pandoc</span><span class="p">(</span><span class="n">Meta</span><span class="p">({}),</span> <span class="p">[</span><span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])])</span>
+<span class="go">Meta({})</span>
+<span class="go">{}</span>
+<span class="go">[Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]</span>
+<span class="go">Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])</span>
+<span class="go">[Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]</span>
+<span class="go">Str(&#39;Hello&#39;)</span>
+<span class="go">Hello</span>
+<span class="go">Space()</span>
+<span class="go">Str(&#39;world!&#39;)</span>
+<span class="go">world!</span>
+</code></pre></div>
+<p>Two gotchas: characters in strings are not iterated (strings are considered
+"atomic")</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="s2">&quot;Hello world!&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">Hello world!</span>
+</code></pre></div>
+<p>and dicts yield their key-value pairs (and not only their keys):</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+<span class="gp">... </span>     <span class="nb">print</span><span class="p">(</span><span class="n">elt</span><span class="p">)</span>
+<span class="go">{&#39;a&#39;: 1, &#39;b&#39;: 2}</span>
+<span class="go">(&#39;a&#39;, 1)</span>
+<span class="go">a</span>
+<span class="go">1</span>
+<span class="go">(&#39;b&#39;, 2)</span>
+<span class="go">b</span>
+<span class="go">2</span>
+</code></pre></div>
+<p>Use <code>path=True</code> when you need to locate the element in the document.
+You can get the element parent and index within this parent as <code>path[-1]</code>,
+the grand-parent and the index of the parent within the grand-parent 
+as <code>path[-2]</code>, etc. up to the document root.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Pandoc</span><span class="p">(</span><span class="n">Meta</span><span class="p">({}),</span> <span class="p">[</span><span class="n">Para</span><span class="p">([</span><span class="n">Str</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">),</span> <span class="n">Space</span><span class="p">(),</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;world!&#39;</span><span class="p">)])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">world</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="s2">&quot;world!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="c1"># find the path to Str(&quot;world!&quot;)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">elt</span> <span class="o">==</span> <span class="n">world</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">break</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elt</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;At index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">elt</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">world</span><span class="p">)</span>
+<span class="go">At index 1 in Pandoc(Meta({}), [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]):</span>
+<span class="go">At index 0 in [Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)])]:</span>
+<span class="go">At index 0 in Para([Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]):</span>
+<span class="go">At index 2 in [Str(&#39;Hello&#39;), Space(), Str(&#39;world!&#39;)]:</span>
+<span class="go">Str(&#39;world!&#39;)</span>
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p>Refer to the <a href="../iteration#tree-iteration">Tree iteration section</a>.</p>
+</details>
+<details class="note">
+<summary><code>configure(auto=False, path=None, version=None, pandoc_types_version=None, read=False, reset=False)</code></summary>
+<p><h5>Arguments</h5></p>
+<ul>
+<li>
+<p><code>auto</code>: a boolean; defaults to <code>False</code>; set to <code>True</code> to
+    infer the configuration from the <code>pandoc</code> in your path.</p>
+</li>
+<li>
+<p><code>path</code>: the path to the pandoc executable, such as <code>"/usr/bin/pandoc"</code>.</p>
+</li>
+<li>
+<p><code>version</code>: the <code>pandoc</code> command-line tool version, such as <code>"2.14.2"</code>.</p>
+</li>
+<li>
+<p><code>pandoc_types_version</code>: the <a href="https://hackage.haskell.org/package/pandoc-types"><code>pandoc-types</code></a>
+     version, such as <code>"1.22.1"</code>.</p>
+</li>
+<li>
+<p><code>read</code>: a boolean; defaults to <code>False</code>. Return the configuration dictionary.</p>
+</li>
+<li>
+<p><code>reset</code>: a boolean; defaults to <code>False</code>. Delete the current configuration.</p>
+</li>
+</ul>
+<p><h5>Returns</h5></p>
+<ul>
+<li><code>configuration</code> (if <code>read==True</code>): the configuration dictionary,
+    with entries <code>"auto"</code>, <code>"path"</code>, <code>"version"</code> and "<code>pandoc_types_version</code>".</li>
+</ul>
+<p><h5>Usage</h5></p>
+<p>The configuration step is triggered when you import <code>pandoc.types</code> or
+call <code>pandoc.read</code> or <code>pandoc.write</code> and will automatically infer the
+configuration from the <code>pandoc</code> executable found in the path (or fails).</p>
+<p><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">pandoc</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="c1"># doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE</span>
+<span class="go">{&#39;auto&#39;: True, </span>
+<span class="go"> &#39;path&#39;: ..., </span>
+<span class="go"> &#39;version&#39;: &#39;3.2.1&#39;, </span>
+<span class="go"> &#39;pandoc_types_version&#39;: &#39;1.23.1&#39;}</span>
+</code></pre></div>
+To avoid this, call <code>pandoc.configure(...)</code> yourself beforehand.
+Alternatively, select manually your pandoc executable afterwards:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pandoc</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE</span>
+<span class="go">{&#39;auto&#39;: False, </span>
+<span class="go"> &#39;path&#39;: ..., </span>
+<span class="go"> &#39;version&#39;: &#39;3.2.1&#39;, </span>
+<span class="go"> &#39;pandoc_types_version&#39;: &#39;1.23.1&#39;}    </span>
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p>Refer to the <a href="../configuration">Configuration section</a>.</p>
+</details>
+<h2 id="pandoctypes"><code>pandoc.types</code><a class="headerlink" href="#pandoctypes" title="Permanent link">&para;</a></h2>
+<div id="AlignCenter"></div>
+
+<details class="note">
+<summary><code>AlignCenter</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>AlignCenter()
+</code></pre></div>
+</details>
+<div id="AlignDefault"></div>
+
+<details class="note">
+<summary><code>AlignDefault</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>AlignDefault()
+</code></pre></div>
+</details>
+<div id="AlignLeft"></div>
+
+<details class="note">
+<summary><code>AlignLeft</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>AlignLeft()
+</code></pre></div>
+</details>
+<div id="AlignRight"></div>
+
+<details class="note">
+<summary><code>AlignRight</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>AlignRight()
+</code></pre></div>
+</details>
+<div id="Alignment"></div>
+
+<details class="note">
+<summary><code>Alignment</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Alignment = AlignLeft()
+          | AlignRight()
+          | AlignCenter()
+          | AlignDefault()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#AlignCenter"><code>AlignCenter</code></a>, <a href="#AlignDefault"><code>AlignDefault</code></a>, <a href="#AlignLeft"><code>AlignLeft</code></a>, <a href="#AlignRight"><code>AlignRight</code></a>.</p>
+</details>
+<div id="Attr"></div>
+
+<details class="note">
+<summary><code>Attr</code></summary>
+<p>Typedef</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Attr = (Text, [Text], [(Text, Text)])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="AuthorInText"></div>
+
+<details class="note">
+<summary><code>AuthorInText</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>AuthorInText()
+</code></pre></div>
+</details>
+<div id="Block"></div>
+
+<details class="note">
+<summary><code>Block</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Block = Plain([Inline])
+      | Para([Inline])
+      | LineBlock([[Inline]])
+      | CodeBlock(Attr, Text)
+      | RawBlock(Format, Text)
+      | BlockQuote([Block])
+      | OrderedList(ListAttributes, [[Block]])
+      | BulletList([[Block]])
+      | DefinitionList([([Inline], [[Block]])])
+      | Header(Int, Attr, [Inline])
+      | HorizontalRule()
+      | Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+      | Figure(Attr, Caption, [Block])
+      | Div(Attr, [Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#BlockQuote"><code>BlockQuote</code></a>, <a href="#BulletList"><code>BulletList</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#CodeBlock"><code>CodeBlock</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#DefinitionList"><code>DefinitionList</code></a>, <a href="#Div"><code>Div</code></a>, <a href="#Figure"><code>Figure</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Header"><code>Header</code></a>, <a href="#HorizontalRule"><code>HorizontalRule</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#LineBlock"><code>LineBlock</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>, <a href="#OrderedList"><code>OrderedList</code></a>, <a href="#Para"><code>Para</code></a>, <a href="#Plain"><code>Plain</code></a>, <a href="#RawBlock"><code>RawBlock</code></a>, <a href="#Table"><code>Table</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="BlockQuote"></div>
+
+<details class="note">
+<summary><code>BlockQuote</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>BlockQuote([Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>.</p>
+</details>
+<div id="Bool"></div>
+
+<details class="note">
+<summary><code>Bool</code></summary>
+<p>Primitive type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>bool
+</code></pre></div>
+</details>
+<div id="BulletList"></div>
+
+<details class="note">
+<summary><code>BulletList</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>BulletList([[Block]])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>.</p>
+</details>
+<div id="Caption"></div>
+
+<details class="note">
+<summary><code>Caption</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Caption(ShortCaption or None, [Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>, <a href="#ShortCaption"><code>ShortCaption</code></a>.</p>
+</details>
+<div id="Cell"></div>
+
+<details class="note">
+<summary><code>Cell</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Cell(Attr, Alignment, RowSpan, ColSpan, [Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Alignment"><code>Alignment</code></a>, <a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#ColSpan"><code>ColSpan</code></a>, <a href="#RowSpan"><code>RowSpan</code></a>.</p>
+</details>
+<div id="Citation"></div>
+
+<details class="note">
+<summary><code>Citation</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Citation(Text, [Inline], [Inline], CitationMode, Int, Int)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#CitationMode"><code>CitationMode</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="CitationMode"></div>
+
+<details class="note">
+<summary><code>CitationMode</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>CitationMode = AuthorInText()
+             | SuppressAuthor()
+             | NormalCitation()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#AuthorInText"><code>AuthorInText</code></a>, <a href="#NormalCitation"><code>NormalCitation</code></a>, <a href="#SuppressAuthor"><code>SuppressAuthor</code></a>.</p>
+</details>
+<div id="Cite"></div>
+
+<details class="note">
+<summary><code>Cite</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Cite([Citation], [Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Citation"><code>Citation</code></a>, <a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="Code"></div>
+
+<details class="note">
+<summary><code>Code</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Code(Attr, Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="CodeBlock"></div>
+
+<details class="note">
+<summary><code>CodeBlock</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>CodeBlock(Attr, Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="ColSpan"></div>
+
+<details class="note">
+<summary><code>ColSpan</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ColSpan(Int)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Int"><code>Int</code></a>.</p>
+</details>
+<div id="ColSpec"></div>
+
+<details class="note">
+<summary><code>ColSpec</code></summary>
+<p>Typedef</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ColSpec = (Alignment, ColWidth)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Alignment"><code>Alignment</code></a>, <a href="#ColWidth"><code>ColWidth</code></a>.</p>
+</details>
+<div id="ColWidth"></div>
+
+<details class="note">
+<summary><code>ColWidth</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ColWidth = ColWidth_(Double)
+         | ColWidthDefault()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#ColWidthDefault"><code>ColWidthDefault</code></a>, <a href="#ColWidth_"><code>ColWidth_</code></a>, <a href="#Double"><code>Double</code></a>.</p>
+</details>
+<div id="ColWidthDefault"></div>
+
+<details class="note">
+<summary><code>ColWidthDefault</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ColWidthDefault()
+</code></pre></div>
+</details>
+<div id="ColWidth_"></div>
+
+<details class="note">
+<summary><code>ColWidth_</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ColWidth_(Double)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Double"><code>Double</code></a>.</p>
+</details>
+<div id="Decimal"></div>
+
+<details class="note">
+<summary><code>Decimal</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Decimal()
+</code></pre></div>
+</details>
+<div id="DefaultDelim"></div>
+
+<details class="note">
+<summary><code>DefaultDelim</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>DefaultDelim()
+</code></pre></div>
+</details>
+<div id="DefaultStyle"></div>
+
+<details class="note">
+<summary><code>DefaultStyle</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>DefaultStyle()
+</code></pre></div>
+</details>
+<div id="DefinitionList"></div>
+
+<details class="note">
+<summary><code>DefinitionList</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>DefinitionList([([Inline], [[Block]])])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>, <a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="DisplayMath"></div>
+
+<details class="note">
+<summary><code>DisplayMath</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>DisplayMath()
+</code></pre></div>
+</details>
+<div id="Div"></div>
+
+<details class="note">
+<summary><code>Div</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Div(Attr, [Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>.</p>
+</details>
+<div id="Double"></div>
+
+<details class="note">
+<summary><code>Double</code></summary>
+<p>Primitive type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>float
+</code></pre></div>
+</details>
+<div id="DoubleQuote"></div>
+
+<details class="note">
+<summary><code>DoubleQuote</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>DoubleQuote()
+</code></pre></div>
+</details>
+<div id="Emph"></div>
+
+<details class="note">
+<summary><code>Emph</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Emph([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="Example"></div>
+
+<details class="note">
+<summary><code>Example</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Example()
+</code></pre></div>
+</details>
+<div id="Figure"></div>
+
+<details class="note">
+<summary><code>Figure</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Figure(Attr, Caption, [Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#Caption"><code>Caption</code></a>.</p>
+</details>
+<div id="Format"></div>
+
+<details class="note">
+<summary><code>Format</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Format(Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="Header"></div>
+
+<details class="note">
+<summary><code>Header</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Header(Int, Attr, [Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Int"><code>Int</code></a>.</p>
+</details>
+<div id="HorizontalRule"></div>
+
+<details class="note">
+<summary><code>HorizontalRule</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>HorizontalRule()
+</code></pre></div>
+</details>
+<div id="Image"></div>
+
+<details class="note">
+<summary><code>Image</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Image(Attr, [Inline], Target)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Target"><code>Target</code></a>.</p>
+</details>
+<div id="Inline"></div>
+
+<details class="note">
+<summary><code>Inline</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Inline = Str(Text)
+       | Emph([Inline])
+       | Underline([Inline])
+       | Strong([Inline])
+       | Strikeout([Inline])
+       | Superscript([Inline])
+       | Subscript([Inline])
+       | SmallCaps([Inline])
+       | Quoted(QuoteType, [Inline])
+       | Cite([Citation], [Inline])
+       | Code(Attr, Text)
+       | Space()
+       | SoftBreak()
+       | LineBreak()
+       | Math(MathType, Text)
+       | RawInline(Format, Text)
+       | Link(Attr, [Inline], Target)
+       | Image(Attr, [Inline], Target)
+       | Note([Block])
+       | Span(Attr, [Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Block"><code>Block</code></a>, <a href="#Citation"><code>Citation</code></a>, <a href="#Cite"><code>Cite</code></a>, <a href="#Code"><code>Code</code></a>, <a href="#Emph"><code>Emph</code></a>, <a href="#Format"><code>Format</code></a>, <a href="#Image"><code>Image</code></a>, <a href="#LineBreak"><code>LineBreak</code></a>, <a href="#Link"><code>Link</code></a>, <a href="#Math"><code>Math</code></a>, <a href="#MathType"><code>MathType</code></a>, <a href="#Note"><code>Note</code></a>, <a href="#QuoteType"><code>QuoteType</code></a>, <a href="#Quoted"><code>Quoted</code></a>, <a href="#RawInline"><code>RawInline</code></a>, <a href="#SmallCaps"><code>SmallCaps</code></a>, <a href="#SoftBreak"><code>SoftBreak</code></a>, <a href="#Space"><code>Space</code></a>, <a href="#Span"><code>Span</code></a>, <a href="#Str"><code>Str</code></a>, <a href="#Strikeout"><code>Strikeout</code></a>, <a href="#Strong"><code>Strong</code></a>, <a href="#Subscript"><code>Subscript</code></a>, <a href="#Superscript"><code>Superscript</code></a>, <a href="#Target"><code>Target</code></a>, <a href="#Text"><code>Text</code></a>, <a href="#Underline"><code>Underline</code></a>.</p>
+</details>
+<div id="InlineMath"></div>
+
+<details class="note">
+<summary><code>InlineMath</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>InlineMath()
+</code></pre></div>
+</details>
+<div id="Int"></div>
+
+<details class="note">
+<summary><code>Int</code></summary>
+<p>Primitive type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>int
+</code></pre></div>
+</details>
+<div id="LineBlock"></div>
+
+<details class="note">
+<summary><code>LineBlock</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>LineBlock([[Inline]])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="LineBreak"></div>
+
+<details class="note">
+<summary><code>LineBreak</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>LineBreak()
+</code></pre></div>
+</details>
+<div id="Link"></div>
+
+<details class="note">
+<summary><code>Link</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Link(Attr, [Inline], Target)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#Target"><code>Target</code></a>.</p>
+</details>
+<div id="ListAttributes"></div>
+
+<details class="note">
+<summary><code>ListAttributes</code></summary>
+<p>Typedef</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ListAttributes = (Int, ListNumberStyle, ListNumberDelim)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Int"><code>Int</code></a>, <a href="#ListNumberDelim"><code>ListNumberDelim</code></a>, <a href="#ListNumberStyle"><code>ListNumberStyle</code></a>.</p>
+</details>
+<div id="ListNumberDelim"></div>
+
+<details class="note">
+<summary><code>ListNumberDelim</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ListNumberDelim = DefaultDelim()
+                | Period()
+                | OneParen()
+                | TwoParens()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#DefaultDelim"><code>DefaultDelim</code></a>, <a href="#OneParen"><code>OneParen</code></a>, <a href="#Period"><code>Period</code></a>, <a href="#TwoParens"><code>TwoParens</code></a>.</p>
+</details>
+<div id="ListNumberStyle"></div>
+
+<details class="note">
+<summary><code>ListNumberStyle</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ListNumberStyle = DefaultStyle()
+                | Example()
+                | Decimal()
+                | LowerRoman()
+                | UpperRoman()
+                | LowerAlpha()
+                | UpperAlpha()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Decimal"><code>Decimal</code></a>, <a href="#DefaultStyle"><code>DefaultStyle</code></a>, <a href="#Example"><code>Example</code></a>, <a href="#LowerAlpha"><code>LowerAlpha</code></a>, <a href="#LowerRoman"><code>LowerRoman</code></a>, <a href="#UpperAlpha"><code>UpperAlpha</code></a>, <a href="#UpperRoman"><code>UpperRoman</code></a>.</p>
+</details>
+<div id="LowerAlpha"></div>
+
+<details class="note">
+<summary><code>LowerAlpha</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>LowerAlpha()
+</code></pre></div>
+</details>
+<div id="LowerRoman"></div>
+
+<details class="note">
+<summary><code>LowerRoman</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>LowerRoman()
+</code></pre></div>
+</details>
+<div id="Math"></div>
+
+<details class="note">
+<summary><code>Math</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Math(MathType, Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#MathType"><code>MathType</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="MathType"></div>
+
+<details class="note">
+<summary><code>MathType</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MathType = DisplayMath()
+         | InlineMath()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#DisplayMath"><code>DisplayMath</code></a>, <a href="#InlineMath"><code>InlineMath</code></a>.</p>
+</details>
+<div id="Meta"></div>
+
+<details class="note">
+<summary><code>Meta</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Meta({Text: MetaValue})
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#MetaValue"><code>MetaValue</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="MetaBlocks"></div>
+
+<details class="note">
+<summary><code>MetaBlocks</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaBlocks([Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>.</p>
+</details>
+<div id="MetaBool"></div>
+
+<details class="note">
+<summary><code>MetaBool</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaBool(Bool)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Bool"><code>Bool</code></a>.</p>
+</details>
+<div id="MetaInlines"></div>
+
+<details class="note">
+<summary><code>MetaInlines</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaInlines([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="MetaList"></div>
+
+<details class="note">
+<summary><code>MetaList</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaList([MetaValue])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#MetaValue"><code>MetaValue</code></a>.</p>
+</details>
+<div id="MetaMap"></div>
+
+<details class="note">
+<summary><code>MetaMap</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaMap({Text: MetaValue})
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#MetaValue"><code>MetaValue</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="MetaString"></div>
+
+<details class="note">
+<summary><code>MetaString</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaString(Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="MetaValue"></div>
+
+<details class="note">
+<summary><code>MetaValue</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>MetaValue = MetaMap({Text: MetaValue})
+          | MetaList([MetaValue])
+          | MetaBool(Bool)
+          | MetaString(Text)
+          | MetaInlines([Inline])
+          | MetaBlocks([Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>, <a href="#Bool"><code>Bool</code></a>, <a href="#Inline"><code>Inline</code></a>, <a href="#MetaBlocks"><code>MetaBlocks</code></a>, <a href="#MetaBool"><code>MetaBool</code></a>, <a href="#MetaInlines"><code>MetaInlines</code></a>, <a href="#MetaList"><code>MetaList</code></a>, <a href="#MetaMap"><code>MetaMap</code></a>, <a href="#MetaString"><code>MetaString</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="NormalCitation"></div>
+
+<details class="note">
+<summary><code>NormalCitation</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>NormalCitation()
+</code></pre></div>
+</details>
+<div id="Note"></div>
+
+<details class="note">
+<summary><code>Note</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Note([Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>.</p>
+</details>
+<div id="OneParen"></div>
+
+<details class="note">
+<summary><code>OneParen</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>OneParen()
+</code></pre></div>
+</details>
+<div id="OrderedList"></div>
+
+<details class="note">
+<summary><code>OrderedList</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>OrderedList(ListAttributes, [[Block]])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>, <a href="#ListAttributes"><code>ListAttributes</code></a>.</p>
+</details>
+<div id="Pandoc"></div>
+
+<details class="note">
+<summary><code>Pandoc</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Pandoc(Meta, [Block])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Block"><code>Block</code></a>, <a href="#Meta"><code>Meta</code></a>.</p>
+</details>
+<div id="Para"></div>
+
+<details class="note">
+<summary><code>Para</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Para([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="Period"></div>
+
+<details class="note">
+<summary><code>Period</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Period()
+</code></pre></div>
+</details>
+<div id="Plain"></div>
+
+<details class="note">
+<summary><code>Plain</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Plain([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="QuoteType"></div>
+
+<details class="note">
+<summary><code>QuoteType</code></summary>
+<p>Abstract data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>QuoteType = SingleQuote()
+          | DoubleQuote()
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#DoubleQuote"><code>DoubleQuote</code></a>, <a href="#SingleQuote"><code>SingleQuote</code></a>.</p>
+</details>
+<div id="Quoted"></div>
+
+<details class="note">
+<summary><code>Quoted</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Quoted(QuoteType, [Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>, <a href="#QuoteType"><code>QuoteType</code></a>.</p>
+</details>
+<div id="RawBlock"></div>
+
+<details class="note">
+<summary><code>RawBlock</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>RawBlock(Format, Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Format"><code>Format</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="RawInline"></div>
+
+<details class="note">
+<summary><code>RawInline</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>RawInline(Format, Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Format"><code>Format</code></a>, <a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="Row"></div>
+
+<details class="note">
+<summary><code>Row</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Row(Attr, [Cell])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Cell"><code>Cell</code></a>.</p>
+</details>
+<div id="RowHeadColumns"></div>
+
+<details class="note">
+<summary><code>RowHeadColumns</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>RowHeadColumns(Int)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Int"><code>Int</code></a>.</p>
+</details>
+<div id="RowSpan"></div>
+
+<details class="note">
+<summary><code>RowSpan</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>RowSpan(Int)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Int"><code>Int</code></a>.</p>
+</details>
+<div id="ShortCaption"></div>
+
+<details class="note">
+<summary><code>ShortCaption</code></summary>
+<p>Typedef</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>ShortCaption = [Inline]
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="SingleQuote"></div>
+
+<details class="note">
+<summary><code>SingleQuote</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>SingleQuote()
+</code></pre></div>
+</details>
+<div id="SmallCaps"></div>
+
+<details class="note">
+<summary><code>SmallCaps</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>SmallCaps([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="SoftBreak"></div>
+
+<details class="note">
+<summary><code>SoftBreak</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>SoftBreak()
+</code></pre></div>
+</details>
+<div id="Space"></div>
+
+<details class="note">
+<summary><code>Space</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Space()
+</code></pre></div>
+</details>
+<div id="Span"></div>
+
+<details class="note">
+<summary><code>Span</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Span(Attr, [Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="Str"></div>
+
+<details class="note">
+<summary><code>Str</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Str(Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="Strikeout"></div>
+
+<details class="note">
+<summary><code>Strikeout</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Strikeout([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="String"></div>
+
+<details class="note">
+<summary><code>String</code></summary>
+<p>Primitive type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>str
+</code></pre></div>
+</details>
+<div id="Strong"></div>
+
+<details class="note">
+<summary><code>Strong</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Strong([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="Subscript"></div>
+
+<details class="note">
+<summary><code>Subscript</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Subscript([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="Superscript"></div>
+
+<details class="note">
+<summary><code>Superscript</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Superscript([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="SuppressAuthor"></div>
+
+<details class="note">
+<summary><code>SuppressAuthor</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>SuppressAuthor()
+</code></pre></div>
+</details>
+<div id="Table"></div>
+
+<details class="note">
+<summary><code>Table</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Table(Attr, Caption, [ColSpec], TableHead, [TableBody], TableFoot)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Caption"><code>Caption</code></a>, <a href="#ColSpec"><code>ColSpec</code></a>, <a href="#TableBody"><code>TableBody</code></a>, <a href="#TableFoot"><code>TableFoot</code></a>, <a href="#TableHead"><code>TableHead</code></a>.</p>
+</details>
+<div id="TableBody"></div>
+
+<details class="note">
+<summary><code>TableBody</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>TableBody(Attr, RowHeadColumns, [Row], [Row])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>, <a href="#RowHeadColumns"><code>RowHeadColumns</code></a>.</p>
+</details>
+<div id="TableFoot"></div>
+
+<details class="note">
+<summary><code>TableFoot</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>TableFoot(Attr, [Row])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>.</p>
+</details>
+<div id="TableHead"></div>
+
+<details class="note">
+<summary><code>TableHead</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>TableHead(Attr, [Row])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Attr"><code>Attr</code></a>, <a href="#Row"><code>Row</code></a>.</p>
+</details>
+<div id="Target"></div>
+
+<details class="note">
+<summary><code>Target</code></summary>
+<p>Typedef</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Target = (Text, Text)
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Text"><code>Text</code></a>.</p>
+</details>
+<div id="Text"></div>
+
+<details class="note">
+<summary><code>Text</code></summary>
+<p>Primitive type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>str
+</code></pre></div>
+</details>
+<div id="TwoParens"></div>
+
+<details class="note">
+<summary><code>TwoParens</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>TwoParens()
+</code></pre></div>
+</details>
+<div id="Underline"></div>
+
+<details class="note">
+<summary><code>Underline</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>Underline([Inline])
+</code></pre></div>
+<p><h5>See also</h5></p>
+<p><a href="#Inline"><code>Inline</code></a>.</p>
+</details>
+<div id="UpperAlpha"></div>
+
+<details class="note">
+<summary><code>UpperAlpha</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>UpperAlpha()
+</code></pre></div>
+</details>
+<div id="UpperRoman"></div>
+
+<details class="note">
+<summary><code>UpperRoman</code></summary>
+<p>Concrete data type</p>
+<p><h5>Signature</h5></p>
+<div class="highlight"><pre><span></span><code>UpperRoman()
+</code></pre></div>
+</details>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:heuristics">
+<p>refer to <a href="https://github.com/jgm/pandoc/blob/master/src/Text/Pandoc/App/FormatHeuristics.hs">Pandoc's heuristics</a> for the gory details of this inference.&#160;<a class="footnote-backref" href="#fnref:heuristics" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:heuristics" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
+</html>
